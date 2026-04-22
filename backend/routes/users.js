@@ -130,7 +130,7 @@ router.post(
 router.post(
   "/",
   authMiddleware,
-  checkPermission("Manage Users", "add"),
+  checkPermission("Staff / Trainee", "add"),
   async (req, res) => {
     try {
       const { name, email, role_id, status, phone_number, dob, password } = req.body;

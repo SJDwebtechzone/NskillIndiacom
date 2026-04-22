@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, ChangeEvent } from "react";
-import { useAuth } from "@/app/context/AuthContext"; // ✅ ADDED
+import { useAuth } from "@/app/context/AuthContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Associate {
@@ -30,6 +30,12 @@ interface Associate {
   additional_info: string; consent_agreed: boolean;
   consent_place: string; consent_date: string;
   status: string; has_password?: boolean; created_at: string;
+  // file path fields returned by backend
+  file_photo?: string;
+  file_aadhaar_copy?: string;
+  file_pan_copy?: string;
+  file_gst_certificate?: string;
+  file_address_proof?: string;
 }
 
 interface FileData {
@@ -43,8 +49,8 @@ interface FileData {
 interface Credentials { username: string; password: string; }
 type Errors = Partial<Record<string, string>>;
 
-// ✅ UPDATED: use env variable instead of hardcoded localhost
 const API = `${process.env.NEXT_PUBLIC_API_URL}/api/associate`;
+const ITEMS_PER_PAGE = 5;
 
 const STEPS = [
   "Personal Details", "Professional Details", "Service Details",
@@ -139,10 +145,465 @@ function fmtDate(d: string) {
   return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-// ✅ ADDED: get token from localStorage for authenticated API calls
 function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function parseArr(v: any): string[] {
+  if (Array.isArray(v)) return v;
+  try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch { return []; }
+}
+
+// ─── DOCUMENT HELPERS ─────────────────────────────────────────────────────────
+const DOC_FIELDS = [
+  { field: "file_photo",           label: "Profile Photo",   icon: "👤" },
+  { field: "file_aadhaar_copy",    label: "Aadhaar Card",    icon: "🪪" },
+  { field: "file_pan_copy",        label: "PAN Card",        icon: "💳" },
+  { field: "file_gst_certificate", label: "GST Certificate", icon: "🏢" },
+  { field: "file_address_proof",   label: "Address Proof",   icon: "📄" },
+];
+
+function getFileUrl(associateId: number, field: string): string {
+  const token = localStorage.getItem("token") || "";
+  return `${process.env.NEXT_PUBLIC_API_URL}/api/associate/${associateId}/files/${field}?token=${token}`;
+}
+
+function viewDoc(associateId: number, field: string) {
+  window.open(getFileUrl(associateId, field), "_blank");
+}
+
+async function downloadDoc(associateId: number, field: string, label: string) {
+  try {
+    const res = await fetch(getFileUrl(associateId, field));
+    if (!res.ok) throw new Error("File not found on server");
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = label.replace(/\s+/g, "_");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err: any) {
+    alert("Download failed: " + err.message);
+  }
+}
+
+async function printDoc(associateId: number, field: string, label: string) {
+  try {
+    const res  = await fetch(getFileUrl(associateId, field));
+    if (!res.ok) throw new Error("File not found on server");
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const mime = blob.type;
+    const w    = window.open("", "_blank");
+    if (!w) { alert("Please allow popups to print."); return; }
+
+    if (mime === "application/pdf") {
+      w.document.write(`<!DOCTYPE html><html><head><title>${label}</title>
+        <style>*{margin:0;padding:0}html,body,iframe{width:100%;height:100vh;border:none;overflow:hidden}</style>
+        </head><body>
+        <iframe src="${url}" onload="this.contentWindow.focus();this.contentWindow.print()"></iframe>
+        </body></html>`);
+    } else {
+      // image (JPG / PNG)
+      w.document.write(`<!DOCTYPE html><html><head><title>${label}</title>
+        <style>
+          *{margin:0;padding:0;box-sizing:border-box}
+          body{display:flex;align-items:center;justify-content:center;
+               min-height:100vh;background:#fff}
+          img{max-width:100%;max-height:100vh;object-fit:contain}
+        </style></head><body>
+        <img src="${url}" onload="window.focus();window.print()" />
+        </body></html>`);
+    }
+    w.document.close();
+  } catch (err: any) {
+    alert("Print failed: " + err.message);
+  }
+}
+
+// ─── DOCUMENT SECTION COMPONENT ───────────────────────────────────────────────
+const DocSection = ({ assoc }: { assoc: Associate }) => {
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const [printing,    setPrinting]    = useState<string | null>(null);
+
+  const handleDownload = async (field: string, label: string) => {
+    setDownloading(field);
+    await downloadDoc(assoc.id, field, label);
+    setDownloading(null);
+  };
+
+  const handlePrint = async (field: string, label: string) => {
+    setPrinting(field);
+    await printDoc(assoc.id, field, label);
+    setPrinting(null);
+  };
+
+  const uploaded = DOC_FIELDS.filter(d => !!(assoc as any)[d.field]);
+  const missing  = DOC_FIELDS.filter(d =>  !(assoc as any)[d.field]);
+
+  return (
+    <div style={{ gridColumn: "1/-1" }}>
+      {/* Section heading */}
+      <div style={{
+        gridColumn: "1/-1", borderBottom: "1.5px solid #f1f5f9",
+        paddingBottom: 6, marginTop: 8, marginBottom: 12,
+      }}>
+        <p style={{
+          fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase",
+          letterSpacing: "0.12em", color: "#6366f1",
+        }}>📎 Documents &amp; Files</p>
+      </div>
+
+      {uploaded.length === 0 && (
+        <p style={{ fontSize: "0.78rem", color: "#94a3b8", fontStyle: "italic" }}>
+          No documents uploaded yet.
+        </p>
+      )}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {uploaded.map(({ field, label, icon }) => (
+          <div key={field} style={{
+            display: "flex", alignItems: "center", gap: 14,
+            border: "1.5px solid #e0e7ff", borderRadius: 12,
+            padding: "12px 16px", background: "#fafbff",
+          }}>
+            {/* Icon */}
+            <div style={{
+              width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+              background: "#eef2ff", display: "flex",
+              alignItems: "center", justifyContent: "center", fontSize: 20,
+            }}>{icon}</div>
+
+            {/* Label */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: "0.84rem", fontWeight: 700, color: "#1e293b", margin: 0 }}>{label}</p>
+              <p style={{ fontSize: "0.7rem", color: "#10b981", margin: "2px 0 0", fontWeight: 600 }}>
+                ✅ Uploaded
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
+              {/* View */}
+              <button
+                title="Open in new tab"
+                onClick={() => viewDoc(assoc.id, field)}
+                style={{
+                  padding: "6px 12px", borderRadius: 8, border: "1.5px solid #e2e8f0",
+                  background: "#fff", cursor: "pointer", fontSize: "0.74rem",
+                  fontWeight: 700, color: "#475569", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", gap: 5,
+                }}>
+                👁 View
+              </button>
+
+              {/* Download */}
+              <button
+                title="Download file"
+                onClick={() => handleDownload(field, label)}
+                disabled={downloading === field}
+                style={{
+                  padding: "6px 12px", borderRadius: 8,
+                  border: "1.5px solid #a5b4fc",
+                  background: downloading === field ? "#e0e7ff" : "#eef2ff",
+                  cursor: downloading === field ? "not-allowed" : "pointer",
+                  fontSize: "0.74rem", fontWeight: 700,
+                  color: "#4338ca", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", gap: 5,
+                }}>
+                {downloading === field
+                  ? <><span style={{ width: 10, height: 10, border: "2px solid #a5b4fc", borderTopColor: "#4338ca", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} /> Saving…</>
+                  : "⬇ Download"}
+              </button>
+
+              {/* Print */}
+              <button
+                title="Print document"
+                onClick={() => handlePrint(field, label)}
+                disabled={printing === field}
+                style={{
+                  padding: "6px 12px", borderRadius: 8,
+                  border: "1.5px solid #86efac",
+                  background: printing === field ? "#dcfce7" : "#f0fdf4",
+                  cursor: printing === field ? "not-allowed" : "pointer",
+                  fontSize: "0.74rem", fontWeight: 700,
+                  color: "#16a34a", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", gap: 5,
+                }}>
+                {printing === field
+                  ? <><span style={{ width: 10, height: 10, border: "2px solid #86efac", borderTopColor: "#16a34a", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} /> Printing…</>
+                  : "🖨️ Print"}
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* Missing docs */}
+        {missing.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+            {missing.map(({ field, label, icon }) => (
+              <div key={field} style={{
+                display: "flex", alignItems: "center", gap: 8,
+                border: "1.5px dashed #e2e8f0", borderRadius: 10,
+                padding: "8px 14px", background: "#f8fafc", opacity: 0.6,
+              }}>
+                <span style={{ fontSize: 15 }}>{icon}</span>
+                <span style={{ fontSize: "0.74rem", color: "#94a3b8", fontWeight: 600 }}>{label} — not uploaded</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── PRINT / PDF EXPORT ───────────────────────────────────────────────────────
+function printAssociatePDF(assoc: Associate) {
+  const fmt = (v: any) => (!v || v === "false" || v === "[]") ? "—" : String(v);
+  const arr = (v: any): string[] => parseArr(v);
+
+  const section = (title: string, rows: [string, any][]) => `
+    <div class="section">
+      <div class="section-title">${title}</div>
+      <div class="grid">
+        ${rows.map(([label, val]) => `
+          <div class="field">
+            <div class="label">${label}</div>
+            <div class="value">${fmt(val)}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>`;
+
+  const chips = (title: string, items: string[]) =>
+    items.length ? `<div class="field full"><div class="label">${title}</div>
+      <div class="chips">${items.map(i => `<span class="chip">${i}</span>`).join("")}</div>
+    </div>` : "";
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Associate Form – ${assoc.full_name}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; padding: 28px 32px; }
+    .header { display: flex; align-items: center; gap: 16px; border-bottom: 2.5px solid #6366f1; padding-bottom: 14px; margin-bottom: 20px; }
+    .avatar { width: 56px; height: 56px; border-radius: 12px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .header-info h1 { font-size: 19px; font-weight: 800; color: #1e293b; }
+    .header-info p  { font-size: 11px; color: #6366f1; margin-top: 3px; }
+    .status-badge { margin-left: auto; padding: 4px 14px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .status-approved { background: #d1fae5; color: #065f46; }
+    .status-pending  { background: #fef3c7; color: #92400e; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+    .section { margin-bottom: 14px; page-break-inside: avoid; }
+    .section-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #6366f1; border-bottom: 1px solid #e0e7ff; padding-bottom: 5px; margin-bottom: 10px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+    .field { }
+    .full { grid-column: 1 / -1; }
+    .label { font-size: 8px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; letter-spacing: 0.06em; }
+    .value { font-size: 11px; font-weight: 600; color: #1e293b; word-break: break-word; }
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .chip { background: #eef2ff; color: #6366f1; padding: 2px 9px; border-radius: 99px; font-size: 9px; font-weight: 600; }
+    .footer { margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 9px; color: #94a3b8; display: flex; justify-content: space-between; }
+    .org-name { font-size: 13px; font-weight: 800; color: #6366f1; }
+    @media print { body { padding: 16px; } }
+  </style></head><body>
+
+  <div class="header">
+    <div class="avatar">${initials(assoc.full_name)}</div>
+    <div class="header-info">
+      <div class="org-name">NTSC Associate Enrolment Form</div>
+      <h1>${assoc.full_name}</h1>
+      <p>${assoc.current_profession || "Associate"} &nbsp;·&nbsp; Registered: ${fmtDate(assoc.created_at)} &nbsp;·&nbsp; ID: ${assoc.id}</p>
+    </div>
+    <span class="status-badge status-${assoc.status || "pending"}">${assoc.status || "pending"}</span>
+  </div>
+
+  ${section("👤 Personal Details", [
+    ["Email ID", assoc.email],
+    ["Mobile (Primary)", assoc.mobile_primary],
+    ["WhatsApp Number", assoc.mobile_whatsapp],
+    ["Gender", assoc.gender],
+    ["Date of Birth", fmtDate(assoc.date_of_birth)],
+    ["City", assoc.city],
+    ["District", assoc.district],
+    ["State", assoc.state],
+    ["Pincode", assoc.pincode],
+    ["Legislative Assembly", assoc.legislative_assembly],
+  ])}
+  <div class="section">
+    <div class="grid">
+      <div class="field full"><div class="label">Residential Address</div><div class="value">${fmt(assoc.residential_address)}</div></div>
+    </div>
+  </div>
+
+  ${section("💼 Professional Details", [
+    ["Current Profession", assoc.current_profession],
+    ["Profession (Other Specified)", assoc.profession_other_specify],
+    ["Educational Qualification", assoc.educational_qualification],
+    ["Special Skill", assoc.special_skill],
+    ["Total Experience", assoc.total_experience],
+    ["Experience in Career Counselling", assoc.experience_career_counselling],
+    ["Languages Other", assoc.languages_other],
+  ])}
+  <div class="section">
+    <div class="grid">
+      ${chips("Specialisation", arr(assoc.specialisation))}
+      ${chips("Languages Known", arr(assoc.languages_known))}
+    </div>
+  </div>
+
+  ${section("🎯 Service Details", [
+    ["Years of Operation", assoc.years_of_operation],
+    ["Avg Students / Month", assoc.avg_students_per_month],
+    ["Students Last 3 Years", assoc.students_last_3_years],
+    ["Students 2024–25", assoc.students_2024_25],
+    ["Students 2023–24", assoc.students_2023_24],
+    ["Students 2022–23", assoc.students_2022_23],
+  ])}
+  <div class="section">
+    <div class="grid">
+      ${chips("Current Services Offered", arr(assoc.current_services_offered))}
+    </div>
+  </div>
+
+  ${section("🏢 Office & Infrastructure", [
+    ["Has Office", assoc.has_office],
+    ["Interested in Setting Up Office", assoc.interested_in_setting_up_office],
+    ["Office No. / Street", assoc.office_no_street],
+    ["Office Area Name", assoc.office_area_name],
+    ["Office Location / Landmark", assoc.office_location],
+    ["Office District", assoc.office_district],
+    ["Office City", assoc.office_city],
+    ["Office Pincode", assoc.office_pincode],
+    ["Office Legislative Assembly", assoc.office_legislative_assembly],
+    ["Office Area (sqft)", assoc.office_area_sqft],
+    ["No. of Staff", assoc.no_of_staff],
+    ["Separate Counselling Room", assoc.has_separate_counselling_room],
+  ])}
+
+  ${section("🔗 Social Media & Partnership", [
+    ["LinkedIn", assoc.linkedin],
+    ["Instagram", assoc.instagram],
+    ["Facebook", assoc.facebook],
+    ["Expected Monthly Referrals", assoc.expected_monthly_referrals],
+  ])}
+  <div class="section">
+    <div class="grid">
+      ${chips("Partnership Areas with NTSC", arr(assoc.partnership_areas))}
+    </div>
+  </div>
+
+  ${section("🏦 Bank Account Details", [
+    ["Account Holder Name", assoc.bank_account_holder],
+    ["Bank Name & Branch", assoc.bank_name_branch],
+    ["Account Number", assoc.account_number],
+    ["IFSC Code", assoc.ifsc_code],
+  ])}
+
+  ${section("✅ Consent & Declaration", [
+    ["Consent Place", assoc.consent_place],
+    ["Consent Date", fmtDate(assoc.consent_date)],
+    ["Consent Agreed", assoc.consent_agreed ? "Yes" : "No"],
+  ])}
+  ${assoc.additional_info ? `<div class="section"><div class="grid"><div class="field full"><div class="label">Additional Information</div><div class="value">${fmt(assoc.additional_info)}</div></div></div></div>` : ""}
+
+  <div class="footer">
+    <span>NTSC Associate Enrolment &nbsp;·&nbsp; Printed on ${new Date().toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}</span>
+    <span>${assoc.email} &nbsp;·&nbsp; ${assoc.mobile_primary}</span>
+  </div>
+</body></html>`;
+
+  const w = window.open("", "_blank");
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => w.print(), 600);
+  }
+}
+
+// ─── EXCEL EXPORT ─────────────────────────────────────────────────────────────
+async function exportAssociatesToExcel(associates: Associate[], filename = "associates.xlsx") {
+  await new Promise<void>((resolve, reject) => {
+    if ((window as any).XLSX) { resolve(); return; }
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Failed to load SheetJS"));
+    document.head.appendChild(s);
+  });
+
+  const XLSX = (window as any).XLSX;
+  const arrStr = (v: any): string => {
+    if (Array.isArray(v)) return v.join(", ");
+    try { const p = JSON.parse(v); return Array.isArray(p) ? p.join(", ") : (v || ""); }
+    catch { return v || ""; }
+  };
+
+ const rows = associates.map((a, i) => ({
+  "#":             (i + 1),
+  "Full Name":     a.full_name || "",
+  "Email":         a.email || "",
+  "Mobile":        a.mobile_primary || "",
+  "City":          a.city || "",
+  "Profession":    a.current_profession || "",
+  "Credentials":   a.has_password ? "Set" : "Not Set",
+  "Status":        a.status || "",
+  "Registered On": a.created_at
+                    ? new Date(a.created_at).toLocaleDateString("en-IN")
+                    : "",
+}));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  ws["!cols"] = [
+  { wch: 4  },  // #
+  { wch: 24 },  // Full Name
+  { wch: 28 },  // Email
+  { wch: 16 },  // Mobile
+  { wch: 14 },  // City
+  { wch: 26 },  // Profession
+  { wch: 14 },  // Credentials
+  { wch: 12 },  // Status
+  { wch: 16 },  // Registered On
+];
+
+  const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
+  for (let col = range.s.c; col <= range.e.c; col++) {
+    const cellAddr = XLSX.utils.encode_cell({ r: 0, c: col });
+    if (!ws[cellAddr]) continue;
+    ws[cellAddr].s = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "6366F1" } },
+      alignment: { horizontal: "center" },
+    };
+  }
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Associates");
+
+  const approved = associates.filter(a => a.status === "approved").length;
+  const pending  = associates.filter(a => a.status === "pending").length;
+  const rejected = associates.filter(a => a.status === "rejected").length;
+  const summary = [
+    ["NTSC Associate Export Report"],
+    [],
+    ["Generated On",        new Date().toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })],
+    ["Total Associates",    associates.length],
+    [],
+    ["Status",              "Count"],
+    ["Approved",            approved],
+    ["Pending",             pending],
+    ["Rejected",            rejected],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(summary);
+  ws2["!cols"] = [{wch:22},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws2, "Summary");
+
+  XLSX.writeFile(wb, filename);
 }
 
 // ─── FORM FIELD COMPONENTS ────────────────────────────────────────────────────
@@ -384,7 +845,6 @@ const Chips = ({ label, items }: { label:string; items:string[] }) => (
   ) : null
 );
 
-// ✅ UPDATED ViewModal: receives canEdit prop to show/hide Edit button
 const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
   assoc: Associate; onClose:()=>void; onEdit:(a:Associate)=>void;
   onGenCreds:(id:number)=>void; canEdit: boolean;
@@ -395,6 +855,8 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
       display:"flex", alignItems:"center", justifyContent:"center", padding:20, overflowY:"auto" }}>
       <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:680,
         boxShadow:"0 24px 64px rgba(0,0,0,0.18)", maxHeight:"92vh", overflowY:"auto" }}>
+
+        {/* Header */}
         <div style={{ padding:"20px 24px 16px", borderBottom:"1px solid #f1f5f9",
           display:"flex", alignItems:"center", gap:14, position:"sticky", top:0,
           background:"#fff", zIndex:1 }}>
@@ -415,6 +877,7 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
             fontSize:13, color:"#64748b", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
         </div>
 
+        {/* Body */}
         <div style={{ padding:"20px 24px", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px 20px" }}>
           <SectionHead>👤 Personal Details</SectionHead>
           <FV label="Email"             value={assoc.email} wide />
@@ -428,6 +891,7 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           <FV label="State"             value={assoc.state} />
           <FV label="Pincode"           value={assoc.pincode} />
           <FV label="Legislative Assembly" value={assoc.legislative_assembly} wide />
+
           <SectionHead>💼 Professional Details</SectionHead>
           <FV label="Profession"         value={assoc.current_profession} />
           <FV label="Qualification"      value={assoc.educational_qualification} />
@@ -437,6 +901,7 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           <FV label="Languages Other"    value={assoc.languages_other} />
           <Chips label="Specialisation"  items={assoc.specialisation||[]} />
           <Chips label="Languages Known" items={assoc.languages_known||[]} />
+
           <SectionHead>🎯 Service Details</SectionHead>
           <FV label="Years of Operation"     value={assoc.years_of_operation} />
           <FV label="Avg Students / Month"   value={assoc.avg_students_per_month} />
@@ -445,6 +910,7 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           <FV label="Students 2023–24"       value={assoc.students_2023_24} />
           <FV label="Students 2022–23"       value={assoc.students_2022_23} />
           <Chips label="Services Offered"    items={assoc.current_services_offered||[]} />
+
           <SectionHead>🏢 Office & Infrastructure</SectionHead>
           <FV label="Has Office"         value={assoc.has_office} />
           <FV label="Office Area (sqft)" value={assoc.office_area_sqft} />
@@ -452,17 +918,20 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           <FV label="Counselling Room"   value={assoc.has_separate_counselling_room} />
           <FV label="Office City"        value={assoc.office_city} />
           <FV label="Office District"    value={assoc.office_district} />
+
           <SectionHead>🔗 Social & Partnership</SectionHead>
           <FV label="LinkedIn"  value={assoc.linkedin} />
           <FV label="Instagram" value={assoc.instagram} />
           <FV label="Facebook"  value={assoc.facebook} />
           <FV label="Expected Monthly Referrals" value={assoc.expected_monthly_referrals} />
           <Chips label="Partnership Areas" items={assoc.partnership_areas||[]} />
+
           <SectionHead>🏦 Bank Details</SectionHead>
           <FV label="Account Holder" value={assoc.bank_account_holder} />
           <FV label="Bank Name & Branch" value={assoc.bank_name_branch} />
           <FV label="Account Number" value={assoc.account_number} />
           <FV label="IFSC Code"      value={assoc.ifsc_code} />
+
           <SectionHead>🔐 Account & System</SectionHead>
           <FV label="Login Email"  value={assoc.email} />
           <FV label="Password"     value={assoc.has_password ? "••••••••• (set)" : "Not generated"} />
@@ -471,20 +940,27 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           <FV label="Consent Place" value={assoc.consent_place} />
           <FV label="Consent Date"  value={fmtDate(assoc.consent_date)} />
           {assoc.additional_info && <FV label="Additional Info" value={assoc.additional_info} wide />}
+
+          {/* ── DOCUMENTS SECTION ── */}
+          <DocSection assoc={assoc} />
         </div>
 
+        {/* Footer actions */}
         <div style={{ padding:"16px 24px", borderTop:"1px solid #f1f5f9",
-          display:"flex", gap:10, position:"sticky", bottom:0, background:"#fff" }}>
-
-          {/* ✅ Only show Edit button if user has edit permission */}
+          display:"flex", gap:10, flexWrap:"wrap", position:"sticky", bottom:0, background:"#fff" }}>
+          <button
+            onClick={() => printAssociatePDF(assoc)}
+            style={{ flex:1, padding:"10px 16px", background:"#f0fdf4", color:"#16a34a",
+              border:"1.5px solid #86efac", borderRadius:10, fontWeight:700, fontSize:"0.84rem",
+              cursor:"pointer", fontFamily:"inherit" }}>
+            🖨️ Print Profile
+          </button>
           {canEdit && (
             <button onClick={() => { onClose(); onEdit(assoc); }}
               style={{ flex:1, padding:"10px 16px", background:"#6366f1", color:"#fff",
                 border:"none", borderRadius:10, fontWeight:700, fontSize:"0.84rem",
                 cursor:"pointer", fontFamily:"inherit" }}>✏️ Edit</button>
           )}
-
-          {/* ✅ Only show credentials button if user has edit permission */}
           {canEdit && (
             <button onClick={() => { onClose(); onGenCreds(assoc.id); }}
               style={{ flex:1, padding:"10px 16px", background:"#f0f9ff", color:"#0284c7",
@@ -493,7 +969,6 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
               🔑 {assoc.has_password ? "Regenerate Password" : "Generate Credentials"}
             </button>
           )}
-
           <button onClick={onClose}
             style={{ padding:"10px 16px", background:"#f8fafc", color:"#64748b",
               border:"1.5px solid #e2e8f0", borderRadius:10, fontWeight:700, fontSize:"0.84rem",
@@ -537,11 +1012,71 @@ const DeleteConfirm = ({ assoc, onClose, onConfirm }: {
   );
 };
 
+// ─── PAGINATION COMPONENT ─────────────────────────────────────────────────────
+const Pagination = ({ currentPage, totalPages, onPageChange, totalItems, itemsPerPage }: {
+  currentPage: number; totalPages: number; onPageChange: (p: number) => void;
+  totalItems: number; itemsPerPage: number;
+}) => {
+  const start = Math.min((currentPage - 1) * itemsPerPage + 1, totalItems);
+  const end   = Math.min(currentPage * itemsPerPage, totalItems);
+
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+    .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+      if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+      acc.push(p);
+      return acc;
+    }, []);
+
+  const btnBase: React.CSSProperties = {
+    display: "inline-flex", alignItems: "center", justifyContent: "center",
+    borderRadius: 8, fontSize: "0.76rem", fontWeight: 700,
+    cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+    border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b",
+  };
+
+  return (
+    <div style={{
+      padding: "14px 16px", borderTop: "1px solid #f8fafc",
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      flexWrap: "wrap", gap: 10, background: "#fff",
+    }}>
+      <span style={{ fontSize: "0.72rem", color: "#94a3b8", fontWeight: 600 }}>
+        Showing <strong style={{ color: "#475569" }}>{start}–{end}</strong> of{" "}
+        <strong style={{ color: "#475569" }}>{totalItems}</strong> associates
+      </span>
+      {totalPages > 1 && (
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}
+            style={{ ...btnBase, padding: "5px 12px", opacity: currentPage === 1 ? 0.4 : 1,
+              cursor: currentPage === 1 ? "not-allowed" : "pointer" }}>← Prev</button>
+          {pages.map((p, idx) =>
+            p === "..." ? (
+              <span key={`dot-${idx}`} style={{ padding: "0 4px", color: "#94a3b8", fontSize: "0.76rem" }}>…</span>
+            ) : (
+              <button key={p} onClick={() => onPageChange(p as number)}
+                style={{ ...btnBase, width: 32, height: 32,
+                  background: currentPage === p ? "#6366f1" : "#fff",
+                  color: currentPage === p ? "#fff" : "#64748b",
+                  border: currentPage === p ? "none" : "1.5px solid #e2e8f0",
+                  boxShadow: currentPage === p ? "0 2px 8px rgba(99,102,241,0.3)" : "none" }}>{p}</button>
+            )
+          )}
+          <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}
+            style={{ ...btnBase, padding: "5px 12px", opacity: currentPage === totalPages ? 0.4 : 1,
+              cursor: currentPage === totalPages ? "not-allowed" : "pointer" }}>Next →</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── FULL 7-STEP FORM MODAL ───────────────────────────────────────────────────
-const AssociateFormModal = ({ existing, onClose, onSaved }: {
+export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = false }: {
   existing: Associate | null;
   onClose: () => void;
   onSaved: () => void;
+  isPublic?: boolean;
 }) => {
   const isEdit = !!existing;
 
@@ -592,7 +1127,6 @@ const AssociateFormModal = ({ existing, onClose, onSaved }: {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true); setApiError("");
     try {
-      // ✅ UPDATED: include auth token in all API calls
       if (isEdit) {
         const res = await fetch(`${API}/${existing!.id}`, {
           method:"PATCH",
@@ -609,8 +1143,8 @@ const AssociateFormModal = ({ existing, onClose, onSaved }: {
         Object.entries(files).forEach(([k,f]) => { if (f) payload.append(k, f as File); });
         const res = await fetch(API, {
           method:"POST",
-          headers: getAuthHeaders(), // ✅ token added
-          body:payload
+          headers: isPublic ? {} : getAuthHeaders(),
+          body: payload
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Submission failed");
@@ -622,7 +1156,6 @@ const AssociateFormModal = ({ existing, onClose, onSaved }: {
     } finally { setSubmitting(false); }
   };
 
-  // renderStep stays exactly the same as your original — no changes needed inside
   const renderStep = () => {
     switch(step) {
       case 0: return (
@@ -812,11 +1345,13 @@ const AssociateFormModal = ({ existing, onClose, onSaved }: {
     <div style={{ position:"fixed", inset:0, background:"#fff", zIndex:9000, display:"flex", alignItems:"stretch", justifyContent:"center" }}>
       <div style={{ width:"100%", maxWidth:"100%", background:"#fff", display:"flex", flexDirection:"column", height:"100vh", overflowY:"hidden", animation:"slideDrawer 0.28s cubic-bezier(0.4,0,0.2,1)" }}>
         <div style={{ padding:"22px 24px 18px", borderBottom:"1.5px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <div>
-            <h2 style={{ fontSize:"1.05rem", fontWeight:800, color:"#1e293b" }}>{isEdit ? `Edit: ${existing!.full_name}` : "Add New Associate"}</h2>
+          <div style={{ position:"absolute", left:0, right:0, textAlign:"center", pointerEvents:"none" }}>
+            <h2 style={{ fontSize:"2.05rem", fontWeight:800, color:"#6366f1" }}>{isEdit ? `Edit: ${existing!.full_name}` : "New Associate Form"}</h2>
             <p style={{ fontSize:"0.73rem", color:"#94a3b8", marginTop:2 }}>Step {step+1} of {STEPS.length} — {STEPS[step]}</p>
           </div>
-          <button onClick={onClose} style={{ width:32, height:32, borderRadius:"50%", border:"1.5px solid #e2e8f0", background:"#f8fafc", cursor:"pointer", fontSize:14, color:"#64748b", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+          {!isPublic && (
+            <button onClick={onClose} style={{ width:32, height:32, borderRadius:"50%", border:"1.5px solid #e2e8f0", background:"#f8fafc", cursor:"pointer", fontSize:14, color:"#64748b", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+          )}
         </div>
         <div style={{ padding:"14px 24px 0", flexShrink:0 }}>
           <div style={{ width:"100%", background:"#e2e8f0", borderRadius:99, height:4 }}>
@@ -850,26 +1385,25 @@ const AssociateFormModal = ({ existing, onClose, onSaved }: {
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function AssociateManagementPage() {
-
-  // ✅ ADDED: get permission checker from AuthContext
   const { can } = useAuth();
 
   const [data,          setData]          = useState<Associate[]>([]);
   const [loading,       setLoading]       = useState(true);
   const [search,        setSearch]        = useState("");
   const [statusFilter,  setStatusFilter]  = useState("all");
+  const [currentPage,   setCurrentPage]   = useState(1);
   const [viewAssoc,     setViewAssoc]     = useState<Associate|null>(null);
   const [formAssoc,     setFormAssoc]     = useState<Associate|null|undefined>(undefined);
   const [delAssoc,      setDelAssoc]      = useState<Associate|null>(null);
   const [creds,         setCreds]         = useState<Credentials|null>(null);
   const [toast,         setToast]         = useState("");
+  const [exporting,     setExporting]     = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(()=>setToast(""),3000); };
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      // ✅ UPDATED: include auth token
       const res  = await fetch(API, { headers: getAuthHeaders() });
       const json = await res.json();
       setData(json.data || []);
@@ -878,19 +1412,14 @@ export default function AssociateManagementPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { setCurrentPage(1); }, [search, statusFilter]);
 
   const fetchFull = async (id: number): Promise<Associate | null> => {
     try {
-      // ✅ UPDATED: include auth token
       const res  = await fetch(`${API}/${id}`, { headers: getAuthHeaders() });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed");
       const row = json.data;
-      const parseArr = (v: any): string[] => {
-        if (Array.isArray(v)) return v;
-        if (typeof v === "string") { try { return JSON.parse(v); } catch { return []; } }
-        return [];
-      };
       return {
         ...row,
         specialisation:           parseArr(row.specialisation),
@@ -903,10 +1432,8 @@ export default function AssociateManagementPage() {
 
   const generateCreds = async (id: number) => {
     try {
-      // ✅ UPDATED: include auth token
       const res  = await fetch(`${API}/${id}/credentials`, {
-        method: "POST",
-        headers: getAuthHeaders()
+        method: "POST", headers: getAuthHeaders()
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Server error");
@@ -914,19 +1441,14 @@ export default function AssociateManagementPage() {
       setCreds(json.credentials);
       showToast("🔑 Credentials generated!");
       await load();
-    } catch (e: any) {
-      showToast(`❌ ${e.message}`);
-      console.error("Credential error:", e);
-    }
+    } catch (e: any) { showToast(`❌ ${e.message}`); }
   };
 
   const deleteAssoc = async () => {
     if (!delAssoc) return;
     try {
-      // ✅ UPDATED: include auth token
       const res  = await fetch(`${API}/${delAssoc.id}`, {
-        method:"DELETE",
-        headers: getAuthHeaders()
+        method:"DELETE", headers: getAuthHeaders()
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error||"Failed");
@@ -938,7 +1460,6 @@ export default function AssociateManagementPage() {
 
   const changeStatus = async (id: number, status: string) => {
     try {
-      // ✅ UPDATED: include auth token
       await fetch(`${API}/${id}/status`, {
         method:"PATCH",
         headers:{"Content-Type":"application/json", ...getAuthHeaders()},
@@ -947,6 +1468,20 @@ export default function AssociateManagementPage() {
       showToast("✅ Status updated");
       await load();
     } catch { showToast("❌ Failed"); }
+  };
+
+  const handleExportExcel = async () => {
+    setExporting(true);
+    try {
+      const label = statusFilter === "all" ? "all" : statusFilter;
+      const dateStr = new Date().toISOString().slice(0,10);
+      await exportAssociatesToExcel(filtered, `NTSC_Associates_${label}_${dateStr}.xlsx`);
+      showToast(`📥 Exported ${filtered.length} associates to Excel`);
+    } catch (e: any) {
+      showToast(`❌ Export failed: ${e.message}`);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const counts = {
@@ -965,16 +1500,19 @@ export default function AssociateManagementPage() {
         d.mobile_primary?.includes(q);
     });
 
-  // ✅ ADDED: block entire page if user has no view permission
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginated  = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   if (!can("Associate", "view")) {
     return (
       <div style={{ display:"flex", flexDirection:"column", alignItems:"center",
         justifyContent:"center", height:"60vh", gap:12 }}>
         <div style={{ fontSize:48 }}>⛔</div>
         <h2 style={{ fontSize:"1.1rem", fontWeight:800, color:"#1e293b" }}>Access Denied</h2>
-        <p style={{ color:"#94a3b8", fontSize:"0.84rem" }}>
-          You don't have permission to view this page.
-        </p>
+        <p style={{ color:"#94a3b8", fontSize:"0.84rem" }}>You don't have permission to view this page.</p>
       </div>
     );
   }
@@ -995,14 +1533,13 @@ export default function AssociateManagementPage() {
       `}</style>
 
       <div className="am-root">
+        {/* ── Page Header ── */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
           flexWrap:"wrap", gap:14, marginBottom:24 }}>
           <div>
             <h1 style={{ fontSize:"1.45rem", fontWeight:800, color:"#1e293b" }}>Associate Management</h1>
             <p style={{ fontSize:"0.78rem", color:"#94a3b8", marginTop:2 }}>{data.length} total associates</p>
           </div>
-
-          {/* ✅ Only show Add button if user has add permission */}
           {can("Associate", "add") && (
             <button onClick={() => setFormAssoc(null)}
               style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 20px",
@@ -1017,6 +1554,7 @@ export default function AssociateManagementPage() {
           )}
         </div>
 
+        {/* ── Toolbar ── */}
         <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap", marginBottom:16 }}>
           <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1.5px solid #e2e8f0" }}>
             {(["all","pending","approved","rejected"] as const).map(s => (
@@ -1029,16 +1567,37 @@ export default function AssociateManagementPage() {
               </button>
             ))}
           </div>
+
           <div style={{ position:"relative", flex:1, minWidth:180, maxWidth:280 }}>
             <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", fontSize:13 }}>🔍</span>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search name, email, mobile…"
               style={{ width:"100%", padding:"8px 12px 8px 32px", borderRadius:10, border:"1.5px solid #e2e8f0",
                 fontSize:"0.8rem", outline:"none", fontFamily:"inherit", boxSizing:"border-box" as any }} />
           </div>
-          <button onClick={load} style={{ padding:"8px 14px", borderRadius:10, border:"1.5px solid #e2e8f0",
-            background:"#fff", cursor:"pointer", fontSize:"0.78rem", fontWeight:700, color:"#64748b", fontFamily:"inherit" }}>↻ Refresh</button>
+
+          <button onClick={load}
+            style={{ padding:"8px 14px", borderRadius:10, border:"1.5px solid #e2e8f0",
+              background:"#fff", cursor:"pointer", fontSize:"0.78rem", fontWeight:700,
+              color:"#64748b", fontFamily:"inherit" }}>↻ Refresh</button>
+
+          <button
+            onClick={handleExportExcel}
+            disabled={exporting || filtered.length === 0}
+            style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px",
+              borderRadius:10, border:"1.5px solid #bbf7d0",
+              background: exporting ? "#f0fdf4" : "#fff",
+              cursor: (exporting || filtered.length === 0) ? "not-allowed" : "pointer",
+              fontSize:"0.78rem", fontWeight:700, color:"#16a34a", fontFamily:"inherit",
+              opacity: filtered.length === 0 ? 0.5 : 1,
+              transition:"all 0.15s" }}>
+            {exporting
+              ? <><span style={{ width:12, height:12, border:"2px solid #86efac", borderTopColor:"#16a34a", borderRadius:"50%", animation:"spin 0.7s linear infinite", display:"inline-block" }} /> Exporting…</>
+              : <>📥 Export Excel {statusFilter !== "all" ? `(${filtered.length})` : ""}</>
+            }
+          </button>
         </div>
 
+        {/* ── Table ── */}
         <div style={{ background:"#fff", borderRadius:16, border:"1.5px solid #f1f5f9", overflow:"hidden" }}>
           <div style={{ overflowX:"auto" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"0.82rem" }}>
@@ -1059,19 +1618,21 @@ export default function AssociateManagementPage() {
                     </td>
                   ))}</tr>
                 ))}
-                {!loading && filtered.length===0 && (
+                {!loading && paginated.length===0 && (
                   <tr><td colSpan={9} style={{ textAlign:"center", padding:"52px 16px", color:"#cbd5e1" }}>
                     <div style={{ fontSize:32, marginBottom:8 }}>🔍</div>No associates found.
                   </td></tr>
                 )}
-                {!loading && filtered.map((row, i) => {
+                {!loading && paginated.map((row, i) => {
                   const s = STATUS_CFG[row.status] || STATUS_CFG.pending;
+                  const rowNum = (currentPage - 1) * ITEMS_PER_PAGE + i + 1;
                   return (
-                    <tr key={row.id} style={{ borderTop:"1px solid #f8fafc", transition:"background 0.1s",
-                      animation:"fadeUp 0.22s ease both", animationDelay:`${i*0.03}s` }}
+                    <tr key={row.id}
+                      style={{ borderTop:"1px solid #f8fafc", transition:"background 0.1s",
+                        animation:"fadeUp 0.22s ease both", animationDelay:`${i*0.03}s` }}
                       onMouseEnter={e=>(e.currentTarget.style.background="#fafbff")}
                       onMouseLeave={e=>(e.currentTarget.style.background="")}>
-                      <td style={{ padding:"12px 16px", color:"#cbd5e1", fontSize:"0.72rem", fontWeight:600 }}>{i+1}</td>
+                      <td style={{ padding:"12px 16px", color:"#cbd5e1", fontSize:"0.72rem", fontWeight:600 }}>{rowNum}</td>
                       <td style={{ padding:"12px 16px" }}>
                         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                           <div style={{ width:34, height:34, borderRadius:10, background:"linear-gradient(135deg,#6366f1,#8b5cf6)",
@@ -1098,7 +1659,6 @@ export default function AssociateManagementPage() {
                           : <span style={{ color:"#cbd5e1", fontSize:"0.72rem" }}>Not set</span>}
                       </td>
                       <td style={{ padding:"12px 16px" }}>
-                        {/* ✅ Only allow status change if user has edit permission */}
                         {can("Associate", "edit") ? (
                           <select value={row.status||"pending"} onChange={e=>changeStatus(row.id, e.target.value)}
                             style={{ background:s.bg, color:s.color, padding:"3px 9px", borderRadius:99,
@@ -1119,25 +1679,28 @@ export default function AssociateManagementPage() {
                       </td>
                       <td style={{ padding:"12px 16px" }}>
                         <div style={{ display:"flex", gap:5 }}>
-                          {/* ✅ view — always show (they can see the page) */}
-                          <button title="View" onClick={async()=>{ const full=await fetchFull(row.id); if(full) setViewAssoc(full); }}
+                          <button title="View"
+                            onClick={async()=>{ const full=await fetchFull(row.id); if(full) setViewAssoc(full); }}
                             className="action-btn" style={{ width:30, height:30, borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", cursor:"pointer", fontSize:13, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>👁</button>
-
-                          {/* ✅ edit — only show if edit permission */}
+                          <button title="Print / PDF"
+                            onClick={async()=>{
+                              const full = await fetchFull(row.id);
+                              if (full) printAssociatePDF(full);
+                            }}
+                            className="action-btn" style={{ width:30, height:30, borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", cursor:"pointer", fontSize:13, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>🖨️</button>
                           {can("Associate", "edit") && (
-                            <button title="Edit" onClick={async()=>{ const full=await fetchFull(row.id); if(full) setFormAssoc(full); }}
+                            <button title="Edit"
+                              onClick={async()=>{ const full=await fetchFull(row.id); if(full) setFormAssoc(full); }}
                               className="action-btn" style={{ width:30, height:30, borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", cursor:"pointer", fontSize:13, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>✏️</button>
                           )}
-
-                          {/* ✅ credentials — only show if edit permission */}
                           {can("Associate", "edit") && (
-                            <button title="Credentials" onClick={()=>generateCreds(row.id)}
+                            <button title="Credentials"
+                              onClick={()=>generateCreds(row.id)}
                               className="action-btn" style={{ width:30, height:30, borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", cursor:"pointer", fontSize:13, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>🔑</button>
                           )}
-
-                          {/* ✅ delete — only show if delete permission */}
                           {can("Associate", "delete") && (
-                            <button title="Delete" onClick={()=>setDelAssoc(row)}
+                            <button title="Delete"
+                              onClick={()=>setDelAssoc(row)}
                               className="action-btn red" style={{ width:30, height:30, borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", cursor:"pointer", fontSize:13, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>🗑️</button>
                           )}
                         </div>
@@ -1148,19 +1711,25 @@ export default function AssociateManagementPage() {
               </tbody>
             </table>
           </div>
+
           {!loading && (
-            <div style={{ padding:"12px 16px", borderTop:"1px solid #f8fafc", fontSize:"0.72rem", color:"#94a3b8", fontWeight:600 }}>
-              Showing {filtered.length} of {data.length} associates
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={filtered.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+            />
           )}
         </div>
       </div>
 
+      {/* ── Modals ── */}
       {viewAssoc && (
         <ViewModal assoc={viewAssoc} onClose={()=>setViewAssoc(null)}
           onEdit={a=>{setViewAssoc(null);setFormAssoc(a);}}
           onGenCreds={id=>{setViewAssoc(null);generateCreds(id);}}
-          canEdit={can("Associate", "edit")} // ✅ pass permission to modal
+          canEdit={can("Associate", "edit")}
         />
       )}
       {formAssoc !== undefined && (
@@ -1174,6 +1743,7 @@ export default function AssociateManagementPage() {
         <DeleteConfirm assoc={delAssoc} onClose={()=>setDelAssoc(null)} onConfirm={deleteAssoc} />
       )}
       {creds && <CredCard creds={creds} onClose={()=>setCreds(null)} />}
+
       {toast && (
         <div style={{ position:"fixed", bottom:24, right:24, zIndex:10000, background:"#1e293b",
           color:"#fff", padding:"12px 20px", borderRadius:12, fontSize:"0.83rem",

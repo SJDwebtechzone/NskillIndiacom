@@ -1,130 +1,87 @@
 export const courses = [
     // BASIC COURSES
     {
-        id: "airconditioner-training-ac",
-        title: "Airconditioner Training (A/C)",
-        category: "Basic",
-        eligibility: "8th / 10th",
-        duration: "6 days",
+        id: "ac-training",
+        title: "Refrigeration & Air Conditioner Technician Training",
+        category: "HVAC & Refrigeration",
+        eligibility: "8th / 10th Pass/Fail",
+        duration: "30 Days",
 
-        certification: "NSDC-approved certificate upon successful completion",
-        videos: [
-            { id: 'ac-1', url: 'https://assets.mixkit.co/videos/preview/mixkit-mechanical-parts-working-together-42790-large.mp4', type: 'intro' },
-            { id: 'ac-2', url: 'https://assets.mixkit.co/videos/preview/mixkit-welding-macro-video-4171-large.mp4', type: 'lab' },
-            { id: 'ac-3', url: 'https://assets.mixkit.co/videos/preview/mixkit-construction-site-surveying-42792-large.mp4', type: 'about' }
+        certification: "Government of India & Skill India NSDC Approved Certificate (upon successful completion)",
+          videos: [
+            { id: "1", type: "INTRO", url: '/videos/HVAC_Intro_Video.webm' },
+            { id: "2", type: "LAB", url: '/videos/HVAC_Partical.webm' },
+            { id: "3", type: "ABOUT", url: '/videos/HVAC_Practical.webm'}
         ],
 
         content: [`
--Introduction to Air Conditioning Systems
--Basics of Refrigeration and Cooling Principles
--Electrical and Electronics in AC Systems
--Components of Electrical Circuits in AC
--Safety Practices and Regulatory Standards
--Installation Procedures and Tools
--Mounting, Piping and Wiring Methods
--Operation and Preventive Maintenance
--Routine Servicing and Performance Checking
--Refrigerants and Their Properties
--Safe Handling and Storage of Refrigerants
--Troubleshooting and Fault Diagnosis
--Repair Techniques and Component Replacement
--Soft Skills and Communication in Technical Work
--Customer Interaction and Service Etiquette
--Hands-on Practical Training
--Assessment, Evaluation and Certification
+-Basic Refrigeration Principles
+-Installation Skills
+-Air Conditioner Systems
+-Maintenance Skills
+-Electrical Components
+-Troubleshooting Skills
         `]
     },
     {
-        id: "refrigerator-training",
-        title: "Refrigerator Training",
-        category: "Basic",
-        eligibility: "8th / 10th ",
-        duration: "6 Days",
+        id: "electrical-hvac-training",
+        title: "BASIC ELECTRICAL & HVAC TECHNICIAN TRAINING",
+        category: "HVAC & Refrigeration",
+        eligibility: "8th / 10th Pass ",
+        duration: "30 Days",
 
-        certification: "NSDC-approved certificate upon successful completion",
+        certification: "Government of India & Skill India – NSDC Approved Certificate will be issued upon successful completion of the course",
         content: [`
--Introduction to Refrigeration
--Basic Principles of Cooling and Heat Transfer
--Refrigerator Components and Their Functions
--Refrigeration Cycle and Working Process
--Installation and Setup Procedures
--Site Preparation and Positioning
--Electrical Connections and Safety Measures
--Routine Maintenance and Preventive Care
--Cleaning, Defrosting and Performance Checking
--Troubleshooting and Fault Diagnosis
--Repair Techniques and Component Replacement
--Refrigerant Handling and Leak Detection
--Hands-on Practical Training
--Assessment and Performance Evaluation
+-Basic Electrical Fundamentals & Systems
+-Basic refrigeration principles
+-Air conditioning systems
+-HVAC components and operations
+-Installation techniques
+-Preventive maintenance
+-Troubleshooting HVAC faults
+-Refrigerant handling
+-Customer service and communication
+
         `]
     },
     {
-        id: "washing-machine-training",
-        title: "Washing Machine Training",
-        category: "Basic",
-        eligibility: " 8th 10th ITI",
-        duration: "6 Days",
+        id: "diploma-hvac",
+        title: "Diploma in HVAC Training",
+        category: "HVAC & Refrigeration",
+        eligibility: " 10th / ITI / Diploma / Degree",
+        duration: "2 Months",
 
-        certification: "NSDC-approved certificate upon successful completion",
+        certification: "Government of India & Skill India – NSDC Approved Certificate will be issued upon successful completion of the course.",
         content: [`
--Introduction to Washing Machines and Safety Protocols
--Overview of Washing Machines
--Safety Measures
--Installation and Setup
--Washing Machine Installation
--Electrical and Plumbing Connections
--Understanding Components and Operation
--Components of a Washing Machine
--Washing Machine Operation
--Troubleshooting and Maintenance
--Common Washing Machine Issues
--Troubleshooting Techniques
--Routine Maintenance
--Practical
--Hands-On Training
--Hands-On Practice
--Final Assessment
+            -Basics of electricity and electrical components
+-Refrigeration cycle and air conditioning principles
+-Domestic and commercial air conditioning systems
+-HVAC components
+-Chiller systems and cooling towers
+-VRF / VRV air conditioning systems
+-Installation and servicing techniques
+-Troubleshooting and maintenance practices
 
-This short-term course ensures that trainees gain both theoretical knowledge and practical skills, preparing them for entry-level positions as washing machine technicians. The focus on troubleshooting and maintenance ensures quick employability in the home appliance repair sector.
-            `
+   `
         ]
     },
     {
-        id: "hvac-training",
-        title: "HVAC Training",
-        category: "Basic",
-        eligibility: "8th 10th ITI",
-        duration: "15 Days",
-        certification: "NSDC-approved certificate upon successful completion",
+        id: "certified-hvac-engineer",
+        title: "Certified HVAC Engineer (CHE)",
+        category: "HVAC & Refrigeration",
+        eligibility: "Diploma / Engineering Degree",
+        duration: "4 Months",
+        certification: "Government of India & Skill India – NSDC Approved Certificate will be issued upon successful completion of the course.",
         content: [`
--Introduction to HVAC Systems
--Overview of HVAC Systems
--Industry Safety Standards
--Components and Working of HVAC Systems
--Key Components of HVAC Systems
--Working of HVAC Systems
--Tools, Equipment, and Installation Techniques
--HVAC Tools and Equipment
--Installation of HVAC Systems
--Electrical Systems in HVAC
--Electrical Basics for HVAC
--Troubleshooting Electrical Issues
--Refrigerants and Their Handling
--Types of Refrigerants
--Safe Handling of Refrigerants
--Maintenance and Troubleshooting Techniques
--Routine Maintenance of HVAC Systems
--Troubleshooting Common HVAC Problems
--Advanced Troubleshooting and Customer Service
--Advanced Diagnosis and Repairs
--Customer Communication and Service
--Practical Hands-On Training and Final Assessment
--Hands-On Installation and Maintenance
--Final Assessment
-
-This short-term course ensures that trainees gain both theoretical knowledge and practical skills, preparing them for entry-level positions as HVAC TECHNICIAN technicians. The focus on troubleshooting and maintenance ensures quick employability.
-        `]
+- Fundamentals of HVAC systems
+- Refrigeration cycle and thermodynamics
+- Air conditioning systems and components
+- HVAC load calculation and duct design
+- Chiller systems and cooling towers
+- VRF / VRV air conditioning systems
+- HVAC installation and commissioning
+- Troubleshooting and maintenance of HVAC systems
+`]
     },
     {
         id: "electrician",

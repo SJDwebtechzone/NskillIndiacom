@@ -27,21 +27,176 @@ const Navbar = () => {
   const coursesMenuRef = useRef<HTMLDivElement>(null);
 
   // Group courses by category
-  const groupedCourses = [
-    {
-      name: "Basic Training",
-      items: courses.filter((c: any) => c.category === "Basic"),
-    },
-    {
-      name: "Advance Training",
-      items: courses.filter((c: any) => c.category === "Advance"),
-    },
-    {
-      name: "International Training",
-      items: courses.filter((c: any) => c.category === "International"),
-    },
-  ];
+// const skillTrainingMenu = [
+//   {
+//     title: "HVAC & Refrigeration",
+//     items: [
+//       { name: "Basic Refrigeration & A/C Training", id: "ac-training" },
+//       {name:"Basic Electrical & HVAC Training",
+//       "Advanced: Diploma in HVAC Training",
+//       "International: Certified HVAC Engineer (CHE)",
+//     ],
+//   },
+//   {
+//     title: "Welding Courses",
+//     items: [
+//       "Basic Arc Welding",
+//       "Basic TIG Welding",
+//       "Basic MIG Welding",
+//       "Pipe Fitter",
+//       "Arc Welding - 3G",
+//       "TIG Welding - 3G",
+//       "MIG Welding - 3G",
+//       "Advanced: Diploma in Welding (Arc, TIG, MIG-3G)",
+//       "Advanced: Welding Supervisor",
+//     ],
+//   },
+//   {
+//     title: "Electrical Courses",
+//     items: [
+//       "Basic Electrician",
+//       "Basic Industrial Electrician",
+//       "Advanced: Diploma in Electrician (Domestic & Industries)",
+//     ],
+//   },
+//   {
+//     title: "Plumbing Courses",
+//     items: [
+//       "Basic Plumber Training",
+//       "Pipeline Supervisor",
+//       "Water Treatment Technician",
+//     ],
+//   },
+//     {
+//     title: "Home Appliance Courses",
+//     items: [
+//       "Basic Washing Machine Training",
+//       "Advanced: Home Appliance Training",
+    
+//     ],
+//   },
+//   {
+//     title:"MEP Courses",
+//     items:[
+//       "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",
+//       "Basic MEP Technician",
+//       "Basic BMS & Fire Fighting"
+//     ]
+//   },
+//   {
+//     title:"Quality Courses",
+//     items:[
+//       "Basic NDT Training - ASNT Level -II (4 methods)",
+//       "Advanced: NDT & Quality Management Training",
+//       "Advanced Quality Inspector Training",
+//       "International Diploma in Quality Management Training"
 
+//     ]
+//   },
+
+//   {
+//     title: "Safety Courses",
+//     items: [
+//       "Basic Fire & Safety Training",
+//       "Advanced Diploma in Fire & Industrial Safety",
+//       "International Certified Health, Safety & Environmental Officer (CHSEO)",
+//       "NEBOSH Training",
+//     ],
+//   },
+//   {
+//     title:"Oil & Gas Courses",
+//     items:[
+//       "International Certified Oil & Gas Piping Engineer (CPE)",
+//       "Diploma in Oil & Gas Engineer",
+//       "Diploma Oil & Gas Rigger Training",
+//       "Certified Oil & Gas Safety Engineer"
+//     ]
+//   }
+// ];
+const skillTrainingMenu = [
+  {
+    title: "HVAC & Refrigeration",
+    items: [
+      { name: "Basic Refrigeration & A/C Training", id: "ac-training" },
+      { name: "Basic Electrical & HVAC Training", id: "electrical-hvac-training" },
+      { name: "Advanced: Diploma in HVAC Training", id: "diploma-hvac" },
+      { name: "International: Certified HVAC Engineer (CHE)", id: "certified-hvac-engineer" },
+    ],
+  },
+  
+  {
+    title: "Electrical Courses",
+    items: [
+      { name: "Basic Electrician", id: "basic-electrician" },
+      { name: "Basic Industrial Electrician", id: "industrial-electrician" },
+      { name: "Advanced: Diploma in Electrician (Domestic & Industries)", id: "diploma-electrician" },
+    ],
+  },
+  {
+    title: "Plumbing Courses",
+    items: [
+      { name: "Basic Plumber Training", id: "plumber-training" },
+      { name: "Pipeline Supervisor", id: "pipeline-supervisor" },
+      { name: "Water Treatment Technician", id: "water-treatment-technician" },
+    ],
+  },
+  {
+    title: "Welding Courses",
+    items: [
+      { name: "Basic Arc Welding", id: "arc-welding" },
+      { name: "Basic TIG Welding", id: "tig-welding" },
+      { name: "Basic MIG Welding", id: "mig-welding" },
+      { name: "Pipe Fitter", id: "pipe-fitter" },
+      { name: "Arc Welding - 3G", id: "arc-welding-3g" },
+      { name: "TIG Welding - 3G", id: "tig-welding-3g" },
+      { name: "MIG Welding - 3G", id: "mig-welding-3g" },
+      { name: "Advanced: Diploma in Welding (Arc, TIG, MIG-3G)", id: "diploma-welding" },
+      { name: "Advanced: Welding Supervisor", id: "welding-supervisor" },
+    ],
+  },
+  {
+    title: "Home Appliance Courses",
+    items: [
+      { name: "Basic Washing Machine Training", id: "washing-machine-training" },
+      { name: "Advanced: Home Appliance Training", id: "home-appliance-training" },
+    ],
+  },
+  {
+    title: "MEP Courses",
+    items: [
+      { name: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)", id: "certified-mep-engineer" },
+      { name: "Basic MEP Technician", id: "mep-technician" },
+      { name: "Basic BMS & Fire Fighting", id: "bms-fire-fighting" },
+    ],
+  },
+  {
+    title: "Quality Courses",
+    items: [
+      { name: "Basic NDT Training - ASNT Level -II (4 methods)", id: "ndt-level-2" },
+      { name: "Advanced: NDT & Quality Management Training", id: "ndt-quality-management" },
+      { name: "Advanced Quality Inspector Training", id: "quality-inspector" },
+      { name: "International Diploma in Quality Management Training", id: "diploma-quality-management" },
+    ],
+  },
+  {
+    title: "Safety Courses",
+    items: [
+      { name: "Basic Fire & Safety Training", id: "fire-safety-training" },
+      { name: "Advanced Diploma in Fire & Industrial Safety", id: "diploma-fire-safety" },
+      { name: "International Certified Health, Safety & Environmental Officer (CHSEO)", id: "chseo" },
+      { name: "NEBOSH Training", id: "nebosh-training" },
+    ],
+  },
+  {
+    title: "Oil & Gas Courses",
+    items: [
+      { name: "International Certified Oil & Gas Piping Engineer (CPE)", id: "oil-gas-piping-engineer" },
+      { name: "Diploma in Oil & Gas Engineer", id: "diploma-oil-gas" },
+      { name: "Diploma Oil & Gas Rigger Training", id: "oil-gas-rigger" },
+      { name: "Certified Oil & Gas Safety Engineer", id: "oil-gas-safety-engineer" },
+    ],
+  },
+];
   // Close menus on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -68,7 +223,7 @@ const Navbar = () => {
     { name: "Corporate Training", href: "#corporate-training" },
     { name: "Consulting Services", href: "#consulting" },
     { name: "Course Calendar", href: "/calendar" },
-    { name: "Placements", href: "/placements" },
+    { name: "Placements", href: "/placements/register" },
     { name: "Infrastructure", href: "/infrastructure" },
     { name: "Contact Us", href: "/contact" },
   ];
@@ -173,7 +328,8 @@ const Navbar = () => {
                   <div className="static" ref={coursesMenuRef}>
                     <button
                       onClick={() => setIsCoursesMenuOpen(!isCoursesMenuOpen)}
-                      className={`flex items-center gap-1 px-1 xl:px-4 py-2 font-bold transition lg:text-[11px] xl:text-[13px] uppercase tracking-tighter xl:tracking-tight whitespace-nowrap ${isCoursesMenuOpen ? "text-blue-600" : "text-[#0b1f3a] hover:text-blue-600"}`}
+                     className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap 
+${isCoursesMenuOpen ? "text-blue-600" : "text-[#0b1f3a] hover:text-blue-600"}`}
                     >
                       {item.name}
                       <ChevronDown size={14} className={`transition-transform duration-300 ${isCoursesMenuOpen ? "rotate-180" : ""}`} />
@@ -182,30 +338,36 @@ const Navbar = () => {
                     {/* Mega Menu Dropdown */}
                     <div className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[95vw] max-w-5xl bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.18)] z-50 border border-slate-100 overflow-hidden transition-all duration-300 origin-top ${isCoursesMenuOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}>
                       <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
-                        <div className="grid grid-cols-3 gap-6">
-                          {groupedCourses.map((group) => (
-                            <div key={group.name} className="space-y-2">
-                              <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
-                                <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
-                                <h4 className="font-black text-slate-800 text-[9px] tracking-[0.2em] uppercase">{group.name}</h4>
-                              </div>
-                              <ul className="grid grid-cols-1 gap-0.5">
-                                {group.items.map((course: any) => (
-                                  <li key={course.id}>
-                                    <Link
-                                      href={`/courses/${course.id}`}
-                                      className="block p-1 px-3 rounded-md hover:bg-slate-50 text-[#0b1f3a] hover:text-blue-700 transition-all group/item"
-                                      onClick={() => setIsCoursesMenuOpen(false)}
-                                    >
-                                      <span className="font-bold text-[9px] xl:text-[10px] uppercase tracking-tight block group-hover/item:translate-x-1 transition-transform text-left">
-                                        {course.title}
-                                      </span>
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
+                        <div className="grid grid-cols-3 gap-6 max-h-[400px] overflow-y-auto pr-2">
+                    {skillTrainingMenu.map((section, index) => (
+  <div key={index} className="space-y-2">
+
+    <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
+      <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
+      <h4 className="text-base font-bold text-slate-800 tracking-wide uppercase">
+      {/*  */}
+        {section.title}
+      </h4>
+    </div>
+
+    <ul className="grid grid-cols-1 gap-0.5">
+{section.items.map((item, i) => (
+  <li key={i}>
+    <Link
+      href={`/courses/${item.id}`}   // ✅ dynamic routing
+      className="block p-1 px-3 rounded-md hover:bg-slate-50 text-[#0b1f3a] hover:text-blue-700 transition-all"
+      onClick={() => setIsCoursesMenuOpen(false)}
+    >
+      <span className="text-base font-medium uppercase tracking-tight block">
+        {item.name}
+      </span>
+    </Link>
+  </li>
+))}
+    </ul>
+
+  </div>
+))}
                         </div>
 
                         {/* All Courses Link */}
@@ -227,7 +389,7 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
-                    className="px-1 xl:px-4 py-2 font-bold text-[#0b1f3a] hover:text-blue-600 transition lg:text-[11px] xl:text-[13px] uppercase tracking-tighter xl:tracking-tight whitespace-nowrap"
+                    className="px-2 xl:px-3 py-2 font-semibold text-[#0b1f3a] hover:text-blue-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
@@ -301,3 +463,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

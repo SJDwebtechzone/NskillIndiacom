@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { Briefcase, Search, Mail, Calendar, Hash, Shield, Users, Eye, Key, Trash2, X, Copy, CheckCircle2 } from "lucide-react";
+import { Briefcase, Search, Mail, Calendar, Hash, Shield, Users, Eye, Key, X, Copy, CheckCircle2, BookOpen } from "lucide-react";
 
 interface StaffMember {
   id: number;
@@ -12,6 +12,12 @@ interface StaffMember {
   phone_number: string;
   dob: string;
   created_at: string;
+}
+
+interface Course {
+  id: number;
+  title: string;
+  trainer_id: number | null;
 }
 
 const API = `${process.env.NEXT_PUBLIC_API_URL}/api/users`;
@@ -41,12 +47,7 @@ export default function StaffPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    phone_number: "",
-    dob: "",
-    email: "",
-    password: "",
-    role_id: 1, // Default to Trainee
+    name: "", phone_number: "", dob: "", email: "", password: "", role_id: 1,
   });
   const [saving, setSaving] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
@@ -54,6 +55,11 @@ export default function StaffPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetCreds, setResetCreds] = useState<{username: string, password: string} | null>(null);
   const [resetting, setResetting] = useState(false);
+
+  // ── Assign Courses Modal ──────────────────────────────
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [assigningCourses, setAssigningCourses] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -63,7 +69,7 @@ export default function StaffPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}?role=trainee`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API}?role=trainer`, { headers: getAuthHeaders() });
       const json = await res.json();
       setStaff(json.data || []);
     } catch {
@@ -74,6 +80,56 @@ export default function StaffPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // ── Fetch all courses ─────────────────────────────────
+  const fetchCourses = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/courses/all`,
+        { headers: getAuthHeaders() }
+      );
+      const data = await res.json();
+      setAllCourses(data.courses || []);
+    } catch {
+      showToast("❌ Failed to load courses");
+    }
+  };
+
+  // ── Open assign modal ─────────────────────────────────
+  const openAssignModal = async (member: StaffMember) => {
+    setSelectedStaff(member);
+    await fetchCourses();
+    setShowAssignModal(true);
+  };
+
+  // ── Toggle course assignment ──────────────────────────
+  const toggleCourse = async (courseId: number, currentTrainerId: number | null) => {
+    if (!selectedStaff) return;
+    setAssigningCourses(true);
+    try {
+      // If already assigned to this trainer → unassign, else assign
+      const newTrainerId = currentTrainerId === selectedStaff.id ? null : selectedStaff.id;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/courses/${courseId}/assign-trainer`,
+        {
+          method: 'PUT',
+          headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trainer_id: newTrainerId }),
+        }
+      );
+      if (res.ok) {
+        // Update local state
+        setAllCourses(prev =>
+          prev.map(c => c.id === courseId ? { ...c, trainer_id: newTrainerId } : c)
+        );
+        showToast(newTrainerId ? '✅ Course assigned' : '✅ Course unassigned');
+      }
+    } catch {
+      showToast('❌ Failed to update assignment');
+    } finally {
+      setAssigningCourses(false);
+    }
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,11 +160,10 @@ export default function StaffPage() {
     if (!selectedStaff) return;
     setResetting(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${baseUrl}/api/users/${selectedStaff.id}/reset-password`, {
-        method: "PUT",
-        headers: getAuthHeaders(),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${selectedStaff.id}/reset-password`,
+        { method: "PUT", headers: getAuthHeaders() }
+      );
       const data = await res.json();
       if (res.ok) {
         setResetCreds({ username: selectedStaff.email, password: data.plainPassword });
@@ -167,7 +222,7 @@ export default function StaffPage() {
           <p className="text-slate-500 font-medium mt-1">View and manage all staff members and trainees.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={() => setIsModalOpen(true)}
             className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-purple-600/20 active:scale-95 transition-all"
           >
@@ -199,11 +254,7 @@ export default function StaffPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
           {filtered.map((member, i) => (
-            <div
-              key={member.id}
-              className="staff-card group"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
+            <div key={member.id} className="staff-card group" style={{ animationDelay: `${i * 80}ms` }}>
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center text-white text-sm font-black shadow-lg shadow-purple-500/20">
                   {initials(member.name)}
@@ -216,26 +267,34 @@ export default function StaffPage() {
                   </p>
                 </div>
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <button 
-                     onClick={() => { setSelectedStaff(member); setShowViewModal(true); }}
-                     className="p-1.5 bg-slate-50 text-slate-400 hover:text-purple-600 rounded-lg border border-slate-100 transition-colors"
-                     title="View Details"
-                   >
-                     <Eye size={14} />
-                   </button>
-                   <button 
-                     onClick={() => { setSelectedStaff(member); setShowResetModal(true); setResetCreds(null); }}
-                     className="p-1.5 bg-slate-50 text-slate-400 hover:text-amber-600 rounded-lg border border-slate-100 transition-colors"
-                     title="Reset Password"
-                   >
-                     <Key size={14} />
-                   </button>
+                  <button
+                    onClick={() => { setSelectedStaff(member); setShowViewModal(true); }}
+                    className="p-1.5 bg-slate-50 text-slate-400 hover:text-purple-600 rounded-lg border border-slate-100 transition-colors"
+                    title="View Details"
+                  >
+                    <Eye size={14} />
+                  </button>
+                  <button
+                    onClick={() => { setSelectedStaff(member); setShowResetModal(true); setResetCreds(null); }}
+                    className="p-1.5 bg-slate-50 text-slate-400 hover:text-amber-600 rounded-lg border border-slate-100 transition-colors"
+                    title="Reset Password"
+                  >
+                    <Key size={14} />
+                  </button>
+                  <button
+                    onClick={() => openAssignModal(member)}
+                    className="p-1.5 bg-slate-50 text-slate-400 hover:text-blue-600 rounded-lg border border-slate-100 transition-colors"
+                    title="Assign Courses"
+                  >
+                    <BookOpen size={14} />
+                  </button>
                 </div>
               </div>
+
               <div className="pt-3 mt-2 flex flex-wrap items-center gap-2">
                 <span className="flex items-center gap-1 text-[10px] font-bold bg-purple-50 text-purple-600 px-2 py-1 rounded-lg uppercase tracking-widest">
                   <Shield className="w-3 h-3" />
-                  {member.role_name || "TRAINEE"}
+                  {member.role_name || "TRAINER"}
                 </span>
                 {member.phone_number && (
                   <span className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
@@ -243,7 +302,19 @@ export default function StaffPage() {
                   </span>
                 )}
               </div>
-              <div className="border-t border-slate-50 pt-4 mt-3 flex justify-between items-center">
+
+              {/* Assign Courses button always visible */}
+              <div className="mt-4 pt-3 border-t border-slate-50">
+                <button
+                  onClick={() => openAssignModal(member)}
+                  className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <BookOpen size={12} />
+                  Assign Courses
+                </button>
+              </div>
+
+              <div className="flex justify-between items-center mt-3">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {fmtDate(member.created_at)}
@@ -256,125 +327,6 @@ export default function StaffPage() {
             </div>
           ))}
 
-          {/* View Details Modal */}
-          {showViewModal && selectedStaff && (
-            <div className="modal-overlay">
-              <div className="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl relative animate-up">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <Shield size={20} className="text-purple-600" />
-                    </div>
-                    <h2 className="text-xl font-black text-slate-800">Account Details</h2>
-                  </div>
-                  <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400"> <X size={20} /> </button>
-                </div>
-                
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center text-white text-xl font-black">
-                      {initials(selectedStaff.name)}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-800">{selectedStaff.name}</h3>
-                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{selectedStaff.role_name || "TRAINEE"}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative group">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Email / Username</p>
-                      <p className="text-sm font-bold text-slate-800">{selectedStaff.email}</p>
-                      <button 
-                        onClick={() => copyToClipboard(selectedStaff.email)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-white rounded-lg opacity-0 group-hover:opacity-100 transition-all text-slate-400 hover:text-purple-600"
-                      >
-                        <Copy size={14} />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Phone</p>
-                        <p className="text-sm font-bold text-slate-800">{selectedStaff.phone_number || "—"}</p>
-                      </div>
-                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Created At</p>
-                        <p className="text-sm font-bold text-slate-800">{fmtDate(selectedStaff.created_at)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <button 
-                      onClick={() => { setShowViewModal(false); setShowResetModal(true); setResetCreds(null); }}
-                      className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
-                    >
-                      <Key size={14} /> Reset Academic Password
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Reset Password Modal */}
-          {showResetModal && selectedStaff && (
-            <div className="modal-overlay">
-              <div className="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl relative animate-up">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                      <Key size={20} className="text-amber-600" />
-                    </div>
-                    <h2 className="text-xl font-black text-slate-800">Reset Credentials</h2>
-                  </div>
-                  <button onClick={() => setShowResetModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400"> <X size={20} /> </button>
-                </div>
-
-                {!resetCreds ? (
-                  <div className="space-y-6">
-                    <p className="text-sm font-medium text-slate-500 leading-relaxed">
-                      This will generate a new <span className="text-slate-900 font-bold">one-time password</span> for 
-                      <span className="text-slate-900 font-bold"> {selectedStaff.name}</span>. The previous password will be instantly revoked.
-                    </p>
-                    <div className="flex gap-3">
-                      <button onClick={() => setShowResetModal(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Cancel</button>
-                      <button 
-                        onClick={handleResetPassword}
-                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20"
-                      >
-                        {resetting ? "Wait..." : "Generate"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                     <div className="bg-emerald-50 rounded-[24px] p-6 border-2 border-emerald-100 flex flex-col items-center text-center">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
-                      <h3 className="text-lg font-black text-slate-800">New Credentials</h3>
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Share these with the user</p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Username / Email</p>
-                        <p className="text-sm font-bold text-slate-800">{resetCreds.username}</p>
-                        <button onClick={() => copyToClipboard(resetCreds.username)} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-purple-600"> <Copy size={16} /> </button>
-                      </div>
-                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">New Password</p>
-                        <p className="text-sm font-mono font-black text-slate-800">{resetCreds.password}</p>
-                        <button onClick={() => copyToClipboard(resetCreds.password)} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-amber-600"> <Copy size={16} /> </button>
-                      </div>
-                    </div>
-                    
-                    <button onClick={() => setShowResetModal(false)} className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl">Done & Close</button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {filtered.length === 0 && (
             <div className="col-span-full border-2 border-dashed border-slate-200 rounded-3xl p-20 text-center">
               <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
@@ -383,6 +335,195 @@ export default function StaffPage() {
               </p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Assign Courses Modal ── */}
+      {showAssignModal && selectedStaff && (
+        <div className="modal-overlay">
+          <div className="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl relative animate-up">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <BookOpen size={20} className="text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-slate-800">Assign Courses</h2>
+                  <p className="text-xs text-slate-400 font-bold">{selectedStaff.name}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAssignModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {allCourses.length === 0 ? (
+                <p className="text-center text-slate-400 py-8 font-bold text-sm">No courses found</p>
+              ) : (
+                allCourses.map(course => {
+                  const isAssignedToThis = course.trainer_id === selectedStaff.id;
+                  const isAssignedToOther = course.trainer_id !== null && course.trainer_id !== selectedStaff.id;
+                  const otherTrainer = isAssignedToOther
+                    ? staff.find(s => s.id === course.trainer_id)
+                    : null;
+
+                  return (
+                    <div
+                      key={course.id}
+                      className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                        isAssignedToThis
+                          ? 'bg-blue-50 border-blue-200'
+                          : isAssignedToOther
+                          ? 'bg-slate-50 border-slate-200 opacity-60'
+                          : 'bg-white border-slate-200 hover:border-blue-300'
+                      }`}
+                    >
+                      <div>
+                        <p className="font-bold text-slate-800 text-sm">{course.title}</p>
+                        {isAssignedToThis && (
+                          <p className="text-[10px] text-blue-500 font-bold mt-0.5">✅ Assigned to you</p>
+                        )}
+                        {isAssignedToOther && otherTrainer && (
+                          <p className="text-[10px] text-slate-400 font-bold mt-0.5">
+                            Assigned to {otherTrainer.name}
+                          </p>
+                        )}
+                        {!course.trainer_id && (
+                          <p className="text-[10px] text-slate-400 font-bold mt-0.5">Not assigned</p>
+                        )}
+                      </div>
+                      <button
+                        disabled={isAssignedToOther || assigningCourses}
+                        onClick={() => toggleCourse(course.id, course.trainer_id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          isAssignedToThis
+                            ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                            : isAssignedToOther
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        {isAssignedToThis ? 'Unassign' : isAssignedToOther ? 'Taken' : 'Assign'}
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowAssignModal(false)}
+              className="w-full mt-6 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* View Details Modal */}
+      {showViewModal && selectedStaff && (
+        <div className="modal-overlay">
+          <div className="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl relative animate-up">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <Shield size={20} className="text-purple-600" />
+                </div>
+                <h2 className="text-xl font-black text-slate-800">Account Details</h2>
+              </div>
+              <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400"><X size={20} /></button>
+            </div>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center text-white text-xl font-black">
+                  {initials(selectedStaff.name)}
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">{selectedStaff.name}</h3>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{selectedStaff.role_name || "TRAINER"}</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative group">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Email / Username</p>
+                  <p className="text-sm font-bold text-slate-800">{selectedStaff.email}</p>
+                  <button onClick={() => copyToClipboard(selectedStaff.email)} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-white rounded-lg opacity-0 group-hover:opacity-100 transition-all text-slate-400 hover:text-purple-600">
+                    <Copy size={14} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Phone</p>
+                    <p className="text-sm font-bold text-slate-800">{selectedStaff.phone_number || "—"}</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Created At</p>
+                    <p className="text-sm font-bold text-slate-800">{fmtDate(selectedStaff.created_at)}</p>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowViewModal(false); setShowResetModal(true); setResetCreds(null); }}
+                className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+              >
+                <Key size={14} /> Reset Academic Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {showResetModal && selectedStaff && (
+        <div className="modal-overlay">
+          <div className="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl relative animate-up">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                  <Key size={20} className="text-amber-600" />
+                </div>
+                <h2 className="text-xl font-black text-slate-800">Reset Credentials</h2>
+              </div>
+              <button onClick={() => setShowResetModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400"><X size={20} /></button>
+            </div>
+            {!resetCreds ? (
+              <div className="space-y-6">
+                <p className="text-sm font-medium text-slate-500 leading-relaxed">
+                  This will generate a new <span className="text-slate-900 font-bold">one-time password</span> for
+                  <span className="text-slate-900 font-bold"> {selectedStaff.name}</span>.
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={() => setShowResetModal(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Cancel</button>
+                  <button onClick={handleResetPassword} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20">
+                    {resetting ? "Wait..." : "Generate"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-emerald-50 rounded-[24px] p-6 border-2 border-emerald-100 flex flex-col items-center text-center">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
+                  <h3 className="text-lg font-black text-slate-800">New Credentials</h3>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Share these with the user</p>
+                </div>
+                <div className="space-y-3">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Username / Email</p>
+                    <p className="text-sm font-bold text-slate-800">{resetCreds.username}</p>
+                    <button onClick={() => copyToClipboard(resetCreds.username)} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-purple-600"><Copy size={16} /></button>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">New Password</p>
+                    <p className="text-sm font-mono font-black text-slate-800">{resetCreds.password}</p>
+                    <button onClick={() => copyToClipboard(resetCreds.password)} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-amber-600"><Copy size={16} /></button>
+                  </div>
+                </div>
+                <button onClick={() => setShowResetModal(false)} className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl">Done & Close</button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -400,85 +541,36 @@ export default function StaffPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.name} 
-                    onChange={e => setFormData({...formData, name: e.target.value})}
-                    placeholder="John Doe"
-                    className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black"
-                  />
+                  <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="John Doe" className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={formData.phone_number} 
-                    onChange={e => setFormData({...formData, phone_number: e.target.value})}
-                    placeholder="9123456780"
-                    className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black"
-                  />
+                  <input type="text" required value={formData.phone_number} onChange={e => setFormData({...formData, phone_number: e.target.value})} placeholder="9123456780" className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">DOB</label>
-                  <input 
-                    type="date" 
-                    required 
-                    value={formData.dob} 
-                    onChange={e => setFormData({...formData, dob: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black"
-                  />
+                  <input type="date" required value={formData.dob} onChange={e => setFormData({...formData, dob: e.target.value})} className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Account Role</label>
-                  <select 
-                    value={formData.role_id} 
-                    onChange={e => setFormData({...formData, role_id: parseInt(e.target.value)})}
-                    className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black"
-                  >
-                    <option value={1}>Trainee</option>
+                  <select value={formData.role_id} onChange={e => setFormData({...formData, role_id: parseInt(e.target.value)})} className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black">
+                    <option value={1}>Trainer</option>
                   </select>
                 </div>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email / Username</label>
-                <input 
-                  type="email" 
-                  required 
-                  value={formData.email} 
-                  onChange={e => setFormData({...formData, email: e.target.value})}
-                  placeholder="name@nskill.in"
-                  className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black"
-                />
+                <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="name@nskill.in" className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black" />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Set Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  value={formData.password} 
-                  onChange={e => setFormData({...formData, password: e.target.value})}
-                  placeholder="••••••••"
-                  className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black"
-                />
+                <input type="password" required value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black" />
               </div>
-
               <div className="flex gap-3 pt-6">
-                <button 
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  disabled={saving}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all disabled:opacity-50"
-                >
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all">Cancel</button>
+                <button type="submit" disabled={saving} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all disabled:opacity-50">
                   {saving ? "Saving..." : "Create Credential"}
                 </button>
               </div>

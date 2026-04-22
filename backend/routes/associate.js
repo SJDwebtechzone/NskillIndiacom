@@ -5,8 +5,12 @@ const multer  = require("multer");
 const bcrypt  = require("bcryptjs");
 const path    = require("path");
 const fs      = require("fs");
+const jwt     = require("jsonwebtoken"); // ✅ ADD THIS LINE
 const pool    = require("../config/db");
 const { authMiddleware, checkPermission } = require("../middleware/authMiddleware");
+
+// ✅ Same SECRET as authMiddleware
+const SECRET = process.env.JWT_SECRET || "mysecret";
 
 // ── Multer ─────────────────────────────────────────────────────────────────────
 const uploadDir = path.join(__dirname, "../uploads");
@@ -168,6 +172,48 @@ router.get(
 // ══════════════════════════════════════════════════════════════════════════════
 // 3. GET /api/associate/:id  — full single record (auth + permission required)
 // ══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════════
+// GET /api/associate/:id/files/:field  — serve uploaded file (token auth)
+// ══════════════════════════════════════════════════════════════════════════════
+router.get("/:id/files/:field", async (req, res) => {
+  const allowedFields = [
+    "file_photo", "file_aadhaar_copy", "file_pan_copy",
+    "file_gst_certificate", "file_address_proof",
+  ];
+
+  const { id, field } = req.params;
+
+  if (!allowedFields.includes(field))
+    return res.status(400).json({ error: "Invalid field." });
+
+  const token = req.query.token || req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "No token provided." });
+
+  try {
+    // ✅ Use same SECRET as authMiddleware — fallback to "mysecret"
+    const SECRET = process.env.JWT_SECRET || "mysecret";
+    const decoded = jwt.verify(token, SECRET);
+
+    const r = await pool.query(
+      `SELECT ${field} FROM career_counsellors WHERE id = $1`,
+      [id]
+    );
+    if (!r.rowCount) return res.status(404).json({ error: "Associate not found." });
+
+    const filename = r.rows[0][field];
+    if (!filename) return res.status(404).json({ error: "File not uploaded." });
+
+    const filePath = path.join(__dirname, "../uploads", filename);
+    if (!fs.existsSync(filePath))
+      return res.status(404).json({ error: "File not found on server." });
+
+    res.sendFile(filePath);
+  } catch (err) {
+    console.error("❌ File route error:", err.name, err.message);
+    res.status(401).json({ error: "Invalid or expired token." });
+  }
+});
+
 router.get(
   "/:id",
   authMiddleware,

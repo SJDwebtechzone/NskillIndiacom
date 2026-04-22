@@ -1,124 +1,213 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
-import { Eye, Target, Heart, ChevronRight } from "lucide-react";
+import { Eye, Target, Heart } from "lucide-react";
 
 const tabs = [
-    {
-        id: "vision",
-        icon: Eye,
-        title: "VISION",
-        content: [
-            "Align industry demand and workforce productivity with trainees' aspirations for sustainable livelihoods.",
-            "Build capacity for skill development in critical un-organised sectors.",
-            "Ensure sufficient, high-quality options for long-term skilling, benchmarked to internationally acceptable qualification standards.",
-            "Support weaker and disadvantaged sections of society through focused outreach programmes.",
-        ],
-    },
-    {
-        id: "mission",
-        icon: Target,
-        title: "MISSION",
-        content: [
-            "NTSC will be a leader in social impact by preparing youth and companies to rapidly scale up skill development efforts, creating an end-to-end, outcome-focused implementation framework.",
-        ],
-    },
-    {
-        id: "values",
-        icon: Heart,
-        title: "CORE VALUES",
-        content: [
-            "A commitment to continuous quality improvement",
-            "Evaluations and innovations which are data driven",
-            "Customer focus — participants, employers, and grantors",
-            "Acknowledge the importance of teamwork and partnerships",
-        ],
-    },
+  {
+    id: "vision",
+    icon: Eye,
+    label: "Vision",
+    pill: "4 commitments",
+    items: [
+      "Align industry demand and workforce productivity with trainees' aspirations for sustainable livelihoods.",
+      "Build capacity for skill development in critical un-organised sectors.",
+      "Ensure high-quality options for long-term skilling.",
+      "Support weaker sections through outreach programmes.",
+    ],
+  },
+  {
+    id: "mission",
+    icon: Target,
+    label: "Mission",
+    pill: "1 core statement",
+    items: [
+      "Prepare youth and companies to scale skill development with outcome-focused implementation.",
+    ],
+  },
+  {
+    id: "values",
+    icon: Heart,
+    label: "Core Values",
+    pill: "4 principles",
+    items: [
+      "Continuous quality improvement.",
+      "Data-driven innovation.",
+      "Customer-first approach.",
+      "Strong teamwork & partnerships.",
+    ],
+  },
 ];
 
 const VisionSection = () => {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
-    const [activeTab, setActiveTab] = useState("vision");
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const [activeTab, setActiveTab] = useState("vision");
 
-    const active = tabs.find((t) => t.id === activeTab)!;
+  const active = tabs.find((t) => t.id === activeTab)!;
 
-    return (
-        <section className="py-24 bg-slate-50 relative overflow-hidden" ref={ref}>
-            <div className="container mx-auto px-6 max-w-7xl relative z-10">
-                <div className="grid lg:grid-cols-2 gap-16 items-start">
+  return (
+    <section ref={ref} className="py-24 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 overflow-hidden rounded-2xl shadow-lg border">
 
-                    {/* Image Side - STABLE */}
-                    <div className="relative">
-                        <div className="absolute -inset-4 bg-blue-600/5 rounded-[40px] blur-2xl" />
-                        <div className="relative rounded-[32px] overflow-hidden border-8 border-white shadow-xl bg-white">
-                            <img
-                                src="/images/vision.jpg"
-                                alt="Vision"
-                                className="w-full h-auto object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f3a]/20 to-transparent" />
-                        </div>
-                        {/* Floating Badge - STABLE */}
-                        <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 bg-white p-4 md:p-6 rounded-3xl shadow-xl border border-slate-100 block">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white">
-                                    <Target className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Our Focus</p>
-                                    <p className="text-sm font-bold text-[#0b1f3a]">Excellence in Training</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+          {/* ================= LEFT PANEL ================= */}
+          <div className="relative bg-[#0b1f3a] min-h-[320px] overflow-hidden">
 
-                    {/* Content Side - STABLE ALIGNMENT */}
-                    <div className="flex flex-col">
-                        {/* Tab Navigation - FIXED STABLE BUTTONS */}
-                        <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-4 mb-8 shrink-0">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center justify-center gap-2 md:gap-3 px-4 md:px-8 py-3 md:py-4 rounded-xl font-black text-[10px] md:text-xs tracking-widest transition-all duration-200 whitespace-nowrap shadow-sm border flex-1 md:flex-initial ${activeTab === tab.id
-                                        ? "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-lg shadow-blue-900/20"
-                                        : "bg-white text-slate-400 border-slate-100 hover:bg-slate-50 hover:text-slate-600 uppercase"
-                                        }`}
-                                >
-                                    <tab.icon className="w-3 h-3 md:w-4 md:h-4" />
-                                    <span>{tab.title}</span>
-                                </button>
-                            ))}
-                        </div>
+            {/* Ken Burns Image */}
+      <motion.img
+  src="/images/vision.jpg"
+  className="absolute inset-0 w-full h-full object-cover brightness-75 contrast-125"
+  initial={{ scale: 1.05 }}
+  animate={{ scale: 1.1 }}
+  transition={{
+    duration: 12,
+    repeat: Infinity,
+    repeatType: "reverse",
+    ease: "easeInOut",
+  }}
+/>
 
-                        <div className="min-h-[300px] bg-white/50 p-5 md:p-8 rounded-[24px] md:rounded-[32px] border border-slate-100/50 shadow-sm">
-                            <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
-                                <div className="w-10 md:w-12 h-1 bg-blue-600 rounded-full" />
-                                <h3 className="text-xl md:text-3xl font-black text-[#0b1f3a] tracking-tight italic uppercase">{active.title}</h3>
-                            </div>
+            {/* Floating Particles */}
+            {[...Array(10)].map((_, i) => (
+              <motion.span
+                key={i}
+                className="absolute w-2 h-2 bg-sky-400/40 rounded-full"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: -100, opacity: [0, 1, 0] }}
+                transition={{ duration: 6 + i, repeat: Infinity, delay: i * 0.4 }}
+                style={{ left: `${i * 10}%` }}
+              />
+            ))}
 
-                            <ul className="space-y-3 md:space-y-4">
-                                {active.content.map((item, i) => (
-                                    <li
-                                        key={`${activeTab}-${i}`}
-                                        className="flex items-start gap-3 md:gap-4 p-4 md:p-5 bg-white rounded-[20px] md:rounded-[24px] border border-slate-100 shadow-sm"
-                                    >
-                                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                                            <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
-                                        </div>
-                                        <span className="text-slate-600 leading-relaxed font-semibold text-xs md:text-sm">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
+            {/* Scan Line */}
+            <motion.div
+              className="absolute left-0 w-full h-[2px] bg-cyan-400/40"
+              animate={{ top: ["0%", "100%"] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+            />
 
-                </div>
+            {/* Glow */}
+            <motion.div
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-blue-500/20 blur-3xl rounded-full"
+              animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.2, 1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
+
+            {/* HUD Corners */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-sky-400 animate-pulse" />
+              <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-sky-400 animate-pulse" />
+              <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-sky-400 animate-pulse" />
+              <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-sky-400 animate-pulse" />
             </div>
-        </section>
-    );
+
+          </div>
+
+          {/* ================= RIGHT PANEL ================= */}
+          <div className="bg-white flex flex-col">
+
+            {/* Tabs */}
+            <div className="flex border-b">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider transition ${
+                    activeTab === tab.id
+                      ? "text-blue-700 border-b-2 border-blue-700"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="p-6">
+
+              {/* Heading + Icon */}
+              <div className="flex items-center gap-3 mb-4">
+                <motion.div
+                  key={activeTab}
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="w-10 h-10 bg-blue-50 rounded flex items-center justify-center"
+                >
+                  <active.icon className="text-blue-700 w-5 h-5" />
+                </motion.div>
+
+                <h3 className="font-black text-xl">{active.label}</h3>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="h-1 bg-gray-200 rounded mb-6 overflow-hidden">
+                <motion.div
+                  key={activeTab}
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1 }}
+                  className="h-full bg-blue-600 relative"
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                </motion.div>
+              </div>
+
+              {/* Content */}
+              <AnimatePresence mode="wait">
+                <motion.ul
+                  key={activeTab}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  className="space-y-3"
+                >
+                  {active.items.map((item, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.07 }}
+                      className="group flex gap-3 p-4 bg-gray-50 rounded border-l-4 border-transparent hover:border-blue-600 hover:translate-x-1 transition"
+                    >
+                      <span className="group-hover:bg-blue-700 group-hover:text-white w-6 h-6 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 text-xs font-bold transition">
+                        {i + 1}
+                      </span>
+                      <p className="text-sm text-gray-600">{item}</p>
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              </AnimatePresence>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-between items-center p-4 border-t">
+              <span className="text-xs bg-blue-50 px-3 py-1 rounded text-blue-700 font-bold">
+                {active.pill}
+              </span>
+
+              <a className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-700">
+                Learn More
+                <motion.span
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                >
+                  →
+                </motion.span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default VisionSection;
