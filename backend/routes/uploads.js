@@ -1,0 +1,213 @@
+// // backend/routes/upload.js
+const express = require("express");
+const router  = express.Router();
+const multer  = require("multer");
+const path    = require("path");
+const fs      = require("fs");
+
+// ── Ensure upload directories exist ──────────────────────────────────────────
+const uploadDir = path.join(__dirname, "../uploads/videos");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+const assessmentUploadDir = path.join(__dirname, "../uploads/assessments");
+if (!fs.existsSync(assessmentUploadDir)) fs.mkdirSync(assessmentUploadDir, { recursive: true });
+
+const practicalVideoDir = path.join(__dirname, "../uploads/practical-videos");
+if (!fs.existsSync(practicalVideoDir)) fs.mkdirSync(practicalVideoDir, { recursive: true });
+
+const thumbnailDir = path.join(__dirname, "../uploads/thumbnails");
+if (!fs.existsSync(thumbnailDir)) fs.mkdirSync(thumbnailDir, { recursive: true });
+
+const brochureDir = path.join(__dirname, "../uploads/brochures");   // ← NEW
+if (!fs.existsSync(brochureDir)) fs.mkdirSync(brochureDir, { recursive: true });
+
+// ─────────────────────────────────────────
+// VIDEO STORAGE
+// ─────────────────────────────────────────
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ext      = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    cb(null, `${basename}-${Date.now()}${ext}`);
+  },
+});
+const fileFilter = (req, file, cb) => {
+  const allowed = ["video/mp4", "video/quicktime", "video/x-msvideo", "video/webm", "video/mpeg"];
+  allowed.includes(file.mimetype)
+    ? cb(null, true)
+    : cb(new Error("Only video files are allowed (MP4, MOV, AVI, WEBM)"), false);
+};
+const upload = multer({ storage, fileFilter, limits: { fileSize: 500 * 1024 * 1024 } });
+
+// POST /api/upload/video
+router.post("/video", upload.single("video"), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No video file uploaded" });
+    const url = `/uploads/videos/${req.file.filename}`;
+    res.json({ success: true, url, filename: req.file.filename, size: req.file.size });
+  } catch (err) {
+    console.error("POST /api/upload/video error:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+// ─────────────────────────────────────────
+// IMAGE STORAGE (thumbnails / gallery)
+// ─────────────────────────────────────────
+const imageStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, thumbnailDir),
+  filename: (req, file, cb) => {
+    const ext      = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    cb(null, `${basename}-${Date.now()}${ext}`);
+  },
+});
+const imageFileFilter = (req, file, cb) => {
+  const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+  allowed.includes(file.mimetype)
+    ? cb(null, true)
+    : cb(new Error("Only image files are allowed (JPG, PNG, WebP, GIF)"), false);
+};
+const imageUpload = multer({
+  storage: imageStorage,
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+// POST /api/upload/image
+router.post("/image", imageUpload.single("image"), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No image file uploaded" });
+    const url = `/uploads/thumbnails/${req.file.filename}`;
+    res.json({ success: true, url, filename: req.file.filename, size: req.file.size });
+  } catch (err) {
+    console.error("POST /api/upload/image error:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+// ─────────────────────────────────────────
+// BROCHURE STORAGE (PDF) ← NEW
+// ─────────────────────────────────────────
+const brochureStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, brochureDir),
+  filename: (req, file, cb) => {
+    const ext      = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    cb(null, `${basename}-${Date.now()}${ext}`);
+  },
+});
+const brochureFileFilter = (req, file, cb) => {
+  file.mimetype === "application/pdf"
+    ? cb(null, true)
+    : cb(new Error("Only PDF files are allowed"), false);
+};
+const brochureUpload = multer({
+  storage: brochureStorage,
+  fileFilter: brochureFileFilter,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+});
+
+// POST /api/upload/brochure
+router.post("/brochure", brochureUpload.single("brochure"), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No PDF file uploaded" });
+    const url = `/uploads/brochures/${req.file.filename}`;
+    res.json({ success: true, url, filename: req.file.filename, size: req.file.size });
+  } catch (err) {
+    console.error("POST /api/upload/brochure error:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+// ─────────────────────────────────────────
+// ASSESSMENT STORAGE
+// ─────────────────────────────────────────
+const assessmentStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, assessmentUploadDir),
+  filename: (req, file, cb) => {
+    const ext      = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    cb(null, `${basename}-${Date.now()}${ext}`);
+  },
+});
+const assessmentFileFilter = (req, file, cb) => {
+  const allowed = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg", "image/jpg", "image/png",
+  ];
+  allowed.includes(file.mimetype)
+    ? cb(null, true)
+    : cb(new Error("Only PDF, DOC, DOCX, JPG, PNG files are allowed"), false);
+};
+const assessmentUpload = multer({
+  storage: assessmentStorage,
+  fileFilter: assessmentFileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
+
+// POST /api/upload/assessment
+router.post("/assessment", assessmentUpload.single("file"), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    const fileUrl    = `${backendUrl}/uploads/assessments/${req.file.filename}`;
+    res.json({ success: true, file_url: fileUrl, filename: req.file.filename, size: req.file.size });
+  } catch (err) {
+    console.error("POST /api/upload/assessment error:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+// ─────────────────────────────────────────
+// PRACTICAL VIDEO STORAGE
+// ─────────────────────────────────────────
+const practicalVideoStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, practicalVideoDir),
+  filename: (req, file, cb) => {
+    const ext      = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    cb(null, `${basename}-${Date.now()}${ext}`);
+  },
+});
+const practicalVideoFilter = (req, file, cb) => {
+  const allowed = ["video/mp4", "video/quicktime", "video/x-msvideo", "video/webm", "video/mpeg"];
+  allowed.includes(file.mimetype)
+    ? cb(null, true)
+    : cb(new Error("Only video files are allowed (MP4, MOV, AVI, WEBM)"), false);
+};
+const practicalUpload = multer({
+  storage: practicalVideoStorage,
+  fileFilter: practicalVideoFilter,
+  limits: { fileSize: 500 * 1024 * 1024 },
+});
+
+// POST /api/upload/practical-video
+router.post("/practical-video", practicalUpload.single("video"), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No video file uploaded" });
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    const fileUrl    = `${backendUrl}/uploads/practical-videos/${req.file.filename}`;
+    res.json({ success: true, file_url: fileUrl, filename: req.file.filename, size: req.file.size });
+  } catch (err) {
+    console.error("POST /api/upload/practical-video error:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+// ── Multer error handler — MUST BE LAST ──────────────────────────────────────
+router.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ error: "File too large. Maximum: video 500MB, image 5MB, PDF 20MB." });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+  if (err) return res.status(400).json({ error: err.message });
+  next();
+});
+
+module.exports = router;

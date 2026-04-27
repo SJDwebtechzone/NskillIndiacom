@@ -17,20 +17,22 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
       .then(r => r.json())
       .then(raw => {
         setData({
-          title:                raw.title               ?? "",
-          slug:                 raw.slug                ?? "",
-          category:             raw.category            ?? "",
-          duration:             raw.duration            ?? "",
-          eligibility:          raw.eligibility         ?? "",
-          certification:        raw.certification       ?? "NSDC Approved",
-          delivery_method:      raw.delivery_method     ?? "Offline",
-          content:              raw.content             ?? "",
-          career_opportunities: raw.career_opportunities ?? [""],
-          videos:               raw.videos              ?? [],
-          extra_sections:       raw.extra_sections      ?? [],
-          brochure_url:         raw.brochure_url        ?? "",
-          is_active:            raw.is_active           ?? true,
-        });
+  title:                raw.title               ?? "",
+  slug:                 raw.slug                ?? "",
+  category:             raw.category            ?? "",
+  duration:             raw.duration            ?? "",
+  eligibility:          raw.eligibility         ?? "",
+  certification:        raw.certification       ?? "NSDC Approved",
+  delivery_method:      raw.delivery_method     ?? "Offline",
+  content:              raw.content             ?? "",
+  career_opportunities: raw.career_opportunities ?? [""],
+  videos:               raw.videos              ?? [],
+  extra_sections:       raw.extra_sections      ?? [],
+  brochure_url:         raw.brochure_url        ?? "",
+  thumbnail_url:        raw.thumbnail_url       ?? "",  // ← add
+  gallery:              raw.gallery             ?? [],  // ← add
+  is_active:            raw.is_active           ?? true,
+});
       })
       .catch(() => setError("Failed to load course data"));
   }, [id]);

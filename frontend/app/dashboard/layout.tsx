@@ -61,6 +61,7 @@ import {
   Scan, 
   Menu,  // ← ADD
   X,
+  ClipboardCheck
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -87,6 +88,9 @@ const websiteSettingsItems = [
 { name: "Post jobs ",       path: "/dashboard/settings/placement",          module: "Placement",       icon: Phone,     tab: null              },
   { name: "Apllied jobs ",    path: "/dashboard/settings/apllied-jobs",       module: "Apllied Jobs",     icon: Phone,     tab: null              },
   { name: "Upload videos ",    path: "/dashboard/settings/upload-videos",       module: "Upload videos",     icon: Phone,     tab: null              },
+{ name: "Student Placements", path: "/dashboard/settings/student-placements", module: "Student Placements", icon: Upload, tab: null },
+{ name: "Testimonials",       path: "/dashboard/settings/testimonials",        module: "Testimonials",       icon: MessageSquare, tab: null },
+{ name: "Reviews & Videos", path: "/dashboard/settings/reviews", module: "Reviews & Videos", icon: Share2, tab: null },
 ];
 
 // ── NEW: Course Management items ───────────────────────────────────────────────
@@ -133,12 +137,15 @@ const studentManagementItems = [
   { name: "My Weekly Test", path: "/dashboard/student-management/weekly-test", module: "My Weekly Test", icon: MonitorPlay },
   { name: "My Assessment", path: "/dashboard/student-management/assessments",          module: "My Assessment",     icon: PenTool       },
   { name: "My Practical Video",           path: "/dashboard/student-management/practical-video",     module: "My Practical Video",               icon: Video         },
-  { name: "Final Exam",                path: "/dashboard/student-management/final-exam",           module: "Final Exam",                    icon: GraduationCap },
-  { name: "Mark and Result",           path: "/dashboard/student-management/results",              module: "Mark and Result",               icon: CheckSquare   },
-  { name: "Certification", module: "Certification", icon: Award, isDropdown: true, children: [
-      { name: "Download Certificate", path: "/dashboard/student-management/certificates/download", icon: FileDown },
-      { name: "Request Certificate",  path: "/dashboard/student-management/certificates/request",  icon: Send     },
-  ]},
+  { name: "My Post Test", path: "/dashboard/student-management/post-test", module: "My Post Test", icon: ClipboardCheck },
+  // Trainer
+
+
+// Student
+{ name: "My Results", path: "/dashboard/student-management/results", module: "My Results", icon: CheckSquare },   
+  { name: "Download Certificate", path: "/dashboard/student-management/certificates/download", module: "Download Certificate", icon: FileDown },
+{ name: "Request Certificate",  path: "/dashboard/student-management/certificates/request",  module: "Request Certificate",  icon: Send },
+  
   { name: "Placement Details Uploads", path: "/dashboard/student-management/placements",          module: "Placement Details Uploads",     icon: Upload        },
   { name: "Feedback & Testimonial",    path: "/dashboard/student-management/feedback",            module: "Feedback & Testimonial",        icon: MessageSquare },
   { name: "Google Review & Videos",    path: "/dashboard/student-management/reviews",             module: "Google Review & Videos",        icon: Share2        },
@@ -167,12 +174,11 @@ const traineeManagementItems = [
   module: "Trainer Pre-Test", // ← renamed
   icon: FileText      
 },{ name: "Weekly Test", path: "/dashboard/trainer-management/weekly-test", module: "Weekly Test", icon: MonitorPlay },
-
+{ name: "Post Test", path: "/dashboard/trainer-management/post-test", module: "Trainer Post-Test", icon: ClipboardCheck },
   { name: "Trainer Assessment", path: "/dashboard/trainer-management/assessments",          module: "Trainer Assessment", icon: PenTool       },
   { name: "Practical Video", path: "/dashboard/trainer-management/practical-video", module: "Trainer Practical Video", icon: Video },
-  { name: "Final Exam",                path: "/dashboard/trainer-management/final-exam",           module: "Final Exam",                icon: GraduationCap },
-  { name: "Mark and Result",           path: "/dashboard/trainer-management/results",              module: "Mark and Result",           icon: CheckSquare   },
-];
+  
+  { name: "Marks & Results", path: "/dashboard/trainer-management/results", module: "Trainer Marks", icon: CheckSquare },];
 
 const ntscManagementItems = [
   { name: "Dashboard",                               path: "/dashboard/ntsc-management/dashboard",          module: "NTSC Dashboard",                              icon: DashboardIcon },

@@ -1,6 +1,5 @@
 "use client";
-
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import axios from "axios";
 
@@ -59,7 +58,7 @@ const AccreditationsSection = () => {
                         animation-play-state: paused;
                     }
                 `}} />
-                <div className="animate-marquee-custom gap-6 py-4 px-3">
+             <div className="animate-marquee-custom py-4 px-3" style={{ gap: "24px" }}>
                     {[...accreditations, ...accreditations].map((accreditation, i) => (
                         <div
                             key={i}

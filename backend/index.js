@@ -92,6 +92,13 @@ const apllied = require("./routes/apllied_jobs");
 const contactInfoRoutes = require("./routes/contact_info");
 const placementAuth = require("./routes/placementAuth");
 const placementLogin = require("./routes/placementLogin");
+const finaltestRoutes = require('./routes/finaltest');
+const marksRoutes = require('./routes/marks');
+const placementFeedbackRoutes = require('./routes/placement-feedback');
+const reviewsRoutes = require('./routes/reviews');
+const bgImagesRoutes = require('./routes/background-images');
+
+
 
 // In index.js — add this if not already there
 const path = require('path');
@@ -140,6 +147,15 @@ app.use("/api/jobs", apllied);
 app.use("/api/settings", contactInfoRoutes);
 app.use("/api/placement", placementAuth);
 app.use("/api/placement", placementLogin);
+
+
+app.use('/api/admin/finaltest', finaltestRoutes);
+app.use('/api/marks', marksRoutes);
+
+app.use('/api/placement-feedback', placementFeedbackRoutes);
+app.use('/api/reviews', reviewsRoutes);
+app.use('/api/background-images', bgImagesRoutes);
+
 
 
 // app.use("/api", authRoutes);

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,7 +17,11 @@ import { Pause, Play, Volume2, VolumeX, Maximize2, LayoutGrid, ChevronDown } fro
 function toSlug(str: string) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
-
+function resolveVideoUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+}
 // ─── Custom Video Player ───────────────────────────────────────────────────────
 function VideoPlayer({
   src,
@@ -44,11 +49,23 @@ function VideoPlayer({
     setProgress(0);
   }, [src]);
 
+  // useEffect(() => {
+  //   const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+  //   document.addEventListener("fullscreenchange", onChange);
+  //   return () => document.removeEventListener("fullscreenchange", onChange);
+  // }, []);
   useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
-  }, []);
+  const onChange = () => {
+    const full = !!document.fullscreenElement;
+    setIsFullscreen(full);
+    // ensure native controls off when not fullscreen
+    if (!full && videoRef.current) {
+      videoRef.current.controls = false;
+    }
+  };
+  document.addEventListener("fullscreenchange", onChange);
+  return () => document.removeEventListener("fullscreenchange", onChange);
+}, []);
 
   const togglePlay = useCallback(() => {
     const v = videoRef.current;
@@ -84,27 +101,44 @@ function VideoPlayer({
     v.currentTime = ((e.clientX - rect.left) / rect.width) * v.duration;
   };
 
-  const handleFullscreen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    videoRef.current?.requestFullscreen?.();
-  };
+ // Replace handleFullscreen with this
+const handleFullscreen = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  const v = videoRef.current;
+  if (!v) return;
+
+  // Add native controls temporarily during fullscreen
+  v.controls = true;
+  v.requestFullscreen?.().then(() => {
+    // Remove native controls when exiting fullscreen
+    const onExit = () => {
+      v.controls = false;
+      document.removeEventListener("fullscreenchange", onExit);
+    };
+    document.addEventListener("fullscreenchange", onExit);
+  }).catch(() => {
+    v.controls = false;
+  });
+};
 
   return (
-    <div
-      className="relative rounded-2xl bg-slate-950 cursor-pointer overflow-hidden"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={togglePlay}
-    >
-      <video
-        ref={videoRef}
-        poster={poster}
-        className="w-full aspect-video object-cover"
-        preload="metadata"
-        onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setPlaying(false)}
-        playsInline
-      />
+   <div
+  className="relative rounded-2xl bg-slate-950 cursor-pointer overflow-hidden isolate"
+  onMouseEnter={() => setHovered(true)}
+  onMouseLeave={() => setHovered(false)}
+  onClick={togglePlay}
+  style={{ contain: "layout" }}
+>
+    <video
+  ref={videoRef}
+  poster={poster}
+  className="w-full aspect-video object-cover"
+  preload="metadata"
+  onTimeUpdate={handleTimeUpdate}
+  onEnded={() => setPlaying(false)}
+  playsInline
+  style={{ display: "block" }}
+/>
       <AnimatePresence>
         {!playing && !isFullscreen && (
           <motion.div
@@ -408,7 +442,6 @@ function BrochureModal({
   const handleSendOtp = async () => {
     if (!validate()) return;
     setSendingOtp(true);
-    // Save lead to DB
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
         method: "POST",
@@ -446,7 +479,6 @@ function BrochureModal({
     e.preventDefault();
   };
 
-  // ── Real PDF download from brochure_url ─────────────────────────────────────
   const triggerDownload = () => {
     if (course.brochure_url) {
       const a = document.createElement("a");
@@ -520,7 +552,6 @@ function BrochureModal({
         </div>
         <div className="overflow-y-auto flex-1 p-6 sm:p-8">
           <AnimatePresence mode="wait">
-            {/* STEP 1 */}
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
                 <div className="flex items-start justify-between mb-2">
@@ -606,7 +637,6 @@ function BrochureModal({
               </motion.div>
             )}
 
-            {/* STEP 2 */}
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
                 <div className="flex items-start justify-between mb-2">
@@ -671,7 +701,6 @@ function BrochureModal({
               </motion.div>
             )}
 
-            {/* STEP 3 */}
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-2">
                 <StepDots />
@@ -934,10 +963,10 @@ function CourseSidebar({
 // ─── Stats Bar ─────────────────────────────────────────────────────────────────
 function StatsBar({ course }: { course: any }) {
   const stats = [
-    { value: "500+",          label: "Students Enrolled", icon: Users    },
-    { value: "4.8★",          label: "Average Rating",    icon: Star     },
-    { value: course.duration, label: "Course Duration",   icon: Clock    },
-    { value: "100%",          label: "Job Assistance",    icon: Briefcase},
+    { value: "500+",          label: "Students Enrolled", icon: Users     },
+    { value: "4.8★",          label: "Average Rating",    icon: Star      },
+    { value: course.duration, label: "Course Duration",   icon: Clock     },
+    { value: "100%",          label: "Job Assistance",    icon: Briefcase },
   ];
   return (
     <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
@@ -983,8 +1012,24 @@ const FALLBACK_SLIDES = [
 ];
 
 // ─── Image Carousel ────────────────────────────────────────────────────────────
-function ImageCarousel({ category, courseTitle }: { category: string; courseTitle: string }) {
-  const slides = CATEGORY_IMAGES[category] ?? FALLBACK_SLIDES;
+function ImageCarousel({ category, courseTitle, gallery, thumbnailUrl }: {
+  category:      string;
+  courseTitle:   string;
+  gallery?:      string[];
+  thumbnailUrl?: string;
+}) {
+  const categorySlides = CATEGORY_IMAGES[category] ?? FALLBACK_SLIDES;
+
+  // If admin uploaded gallery images — use those as slides
+  // Otherwise fall back to category Unsplash images
+  const slides = gallery && gallery.length > 0
+    ? gallery.map((url, i) => ({
+        url,
+        caption: i === 0 ? courseTitle : `${courseTitle} — Photo ${i + 1}`,
+      }))
+    : thumbnailUrl
+    ? [{ url: thumbnailUrl, caption: courseTitle }, ...categorySlides]
+    : categorySlides;
   const [current, setCurrent] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -1044,37 +1089,101 @@ function ImageCarousel({ category, courseTitle }: { category: string; courseTitl
   );
 }
 
-// ─── Video Section ─────────────────────────────────────────────────────────────
-function VideoSection({ videos, activeVideoIdx, setActiveVideoIdx }: {
-  videos: any[];
-  activeVideoIdx: number;
-  setActiveVideoIdx: (i: number) => void;
-}) {
+// ─── Video Section — Option A (main player + thumbnail strip) ─────────────────
+function VideoSection({ videos }: { videos: any[] }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  if (!videos || videos.length === 0) return null;
+
+  const active = videos[activeIdx];
+
   return (
     <div className="relative">
       <div className="absolute -inset-4 bg-blue-600/20 rounded-3xl blur-2xl pointer-events-none" />
-      <div className="relative rounded-2xl border border-white/10 shadow-2xl">
-        <VideoPlayer src={videos[activeVideoIdx].url} label={videos[activeVideoIdx].type ?? videos[activeVideoIdx].title ?? "Video"} />
-      </div>
-      {videos.length > 1 && (
-        <div className="flex gap-2 mt-3">
-          {videos.map((v: any, i: number) => (
-            <button
-              key={v.id ?? i}
-              onClick={() => setActiveVideoIdx(i)}
-              className={`flex-1 py-2 rounded-xl text-xs font-semibold uppercase tracking-wide transition border ${
-                i === activeVideoIdx ? "bg-blue-600 text-white border-blue-600" : "bg-white/5 text-white/50 border-white/10 hover:bg-white/10"
-              }`}
-            >
-              {v.type ?? v.title ?? `Video ${i + 1}`}
-            </button>
-          ))}
+
+     <div className="relative bg-slate-950 rounded-2xl border border-white/10 p-3 pt-4 space-y-3">
+
+        {videos.length > 1 && (
+          <div className="flex items-center gap-2 px-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+            <span className="text-[11px] text-white/40 font-semibold uppercase tracking-wider">
+              Now playing —
+            </span>
+            <span className="text-[11px] text-white/80 font-semibold truncate">
+              {active.type ?? active.title ?? `Video ${activeIdx + 1}`}
+            </span>
+          </div>
+        )}
+
+        {/* ✅ FIX 1 — resolveVideoUrl added here */}
+        <div className="rounded-xl overflow-hidden">
+          <VideoPlayer
+            key={activeIdx}
+            src={resolveVideoUrl(active.url)}
+            label={active.type ?? active.title ?? "Video"}
+          />
         </div>
-      )}
+
+        {videos.length > 1 && (
+          <div
+            className="flex gap-2 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+          >
+            {videos.map((v: any, i: number) => (
+              <button
+                key={v.id ?? i}
+                onClick={() => setActiveIdx(i)}
+                className={`relative flex-shrink-0 w-28 rounded-lg overflow-hidden border-2 transition-all duration-150 ${
+                  i === activeIdx
+                    ? "border-blue-500"
+                    : "border-white/10 hover:border-white/30 opacity-60 hover:opacity-100"
+                }`}
+              >
+                {/* ✅ FIX 2 — resolveVideoUrl added here */}
+                <video
+                  src={resolveVideoUrl(v.url)}
+                  className="w-full aspect-video object-cover bg-slate-800"
+                  preload="metadata"
+                  muted
+                  playsInline
+                  onLoadedMetadata={(e) => {
+                    e.currentTarget.currentTime = 1;
+                  }}
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-1.5">
+                  <p className="text-[9px] font-black uppercase tracking-wider text-blue-300 leading-none mb-0.5">
+                    {v.type ?? "Video"}
+                  </p>
+                  <p className="text-[10px] font-semibold text-white leading-tight line-clamp-1">
+                    {v.title ?? `Video ${i + 1}`}
+                  </p>
+                </div>
+
+                {i === activeIdx && (
+                  <div className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-blue-500 flex items-center justify-center">
+                    <div className="w-1 h-1 rounded-full bg-white" />
+                  </div>
+                )}
+
+                {i !== activeIdx && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
+                      <svg width="8" height="8" viewBox="0 0 8 8" fill="white">
+                        <path d="M2 1l5 3-5 3z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
-
 // ─── Course Info Card ──────────────────────────────────────────────────────────
 function CourseInfoCard({ course }: { course: any }) {
   const certifications = [
@@ -1165,57 +1274,349 @@ function CourseInfoCard({ course }: { course: any }) {
     </motion.div>
   );
 }
+interface FAQItem {
+  q: string;
+  a: string;
+  table?: {
+    skill: string;
+    fresher: string;
+    experienced: string;
+    overseas: string;
+  }[];
+}
 
-// ─── FAQ Section ──────────────────────────────────────────────────────────────
-const DEFAULT_FAQS = [
-  { q: "Where is your training institute located? Do you provide accommodation and food?", a: "Our training centre is located in Kovur, Chennai, Tamil Nadu. NTSC provides accommodation for all students during the training period, along with lunch." },
-  { q: "Who can join these courses?", a: "8th / 10th / 12th Pass, Degree / Diploma / ITI students, Engineering students, job seekers, and working technicians who want to upgrade their skills." },
-  { q: "Does the training include both theory and practical sessions?", a: "Yes. Our courses primarily focus on hands-on practical training using world-class industrial equipment." },
-  { q: "Do you provide placement assistance?", a: "Yes. We provide placement assurance for jobs in India and overseas after course completion. Fresher salary (India): ₹15,000–₹25,000/month. Overseas (Gulf): ₹60,000–₹80,000/month." },
-  { q: "Will I receive a recognised certificate?", a: "Yes. Students receive certificates from the Government of India or NSDC-accredited organisations." },
-  { q: "What is the course duration and class timing?", a: "Basic: 15–30 days | Diploma: 2–4 months | International: 2–6 months. Class timings: 10:00 AM – 5:00 PM." },
-  { q: "Can I attend a demo class before admission?", a: "Yes! Use the 'Book a Free Demo' button on this page to reserve your slot." },
-  { q: "How can I register?", a: "Visit our centre in Kovur, Chennai OR call/WhatsApp: +91 98842 09774 OR fill the registration form on our website." },
+const DEFAULT_FAQS_EN: FAQItem[] = [
+  {
+    q: "Where is your training institute located? Do you provide accommodation and food?",
+    a: "Our training centre is located in Kovur, Chennai, Tamil Nadu, equipped with modern facilities and world-class industrial equipment. NTSC provides accommodation for all students during the training period, along with lunch.",
+  },
+  {
+    q: "What courses are available at your institute?",
+    a: "We offer HVAC & Refrigeration, Welding, Electrical, Plumbing, Home Appliance, MEP, Quality, Safety, and Oil & Gas courses.",
+  },
+  {
+    q: "Who can join these courses?",
+    a: "8th / 10th / 12th Pass, Degree / Diploma / ITI students, Engineering students, job seekers, and working technicians who want to upgrade their skills.",
+  },
+  {
+    q: "Does the training include both theory and practical sessions, and what practical facilities are available?",
+    a: "Yes, both theory and practical sessions are covered. However, our courses primarily focus on hands-on practical training using world class industrial equipment, enabling students to gain real-world experience",
+  },
+{
+  q: "Do you provide placement assistance, and what are the job opportunities and starting salary for freshers & experienced?",
+  a: "Yes. We provide placement assurance for jobs in India and overseas industries after successful completion of the course. NTSC gives several opportunities to students to attend interviews for their placement.",
+  table: [
+    { skill: "HVAC Technician",                                              fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Electrician",                                                  fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Plumbing Technician",                                          fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Welding (MIG/TIG)",                                            fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "MEP Technician",                                               fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Fire & Safety Officer",                                        fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Home Appliance Technician",                                    fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Certified HVAC Engineer (CHE)",                                fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    { skill: "International Diploma in Quality Management Training",                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    { skill: "International Certified Health, Safety & Environmental Officer (CHSEO)",                                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    { skill: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",                                   fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+ ],
+},
+  {
+    q: "Will I receive a recognized certificate after course completion, valid for jobs in India and abroad?",
+    a: "Yes, students receive recognized certificates from Government of India or NSDC-accredited organizations, which help them secure jobs or start their own businesses.",
+  },
+  {
+    q: "What is the course duration, class timing and mode of training?",
+    a: "Basic courses: 15–30 days\nDiploma (Advanced): 2–4 months\nInternational programmes: 2–6 months\n\nClass timings: 10:00 AM – 5:00 PM\nMode: Safety and NDT courses are available online. All other courses are conducted offline.",
+  },
+  {
+    q: "What is the fee structure and are EMI options available?",
+    a: "Course fees and EMI options depend on the programme and duration. Contact our admissions team or visit our centre for details.",
+  },
+  {
+    q: "Who will be the trainer, what is their industry experience, and will they provide additional classes if I miss any session?",
+    a: "Our trainers have several years of industrial experience and are well-versed in delivering theory, practical training, and live projects. They are responsible for continuous student assessment. Additional classes will be provided on a need basis if any sessions are missed.",
+  },
+  {
+    q: "Can I attend a demo class before admission?",
+    a: "Yes. Students can visit our training centre and attend a free counseling session or demo class before joining",
+  },
+  {
+    q: "How can I register for a course?",
+    a: "Visit our training centre  OR call/WhatsApp: +91 98842 09774 OR fill the registration form on our website OR attend a career counselling session.",
+  },
+  {
+    q: "For any clarifications / queries",
+    a: "Please contact this no: +91 9884209774",
+  },
+];
+
+const DEFAULT_FAQS_TA: FAQItem[] = [
+  {
+    q: "உங்கள் பயிற்சி மையம் எங்கு உள்ளது? தங்கும் வசதி மற்றும் உணவு வழங்கப்படுமா?",
+    a: "எங்கள் பயிற்சி மையம் தமிழ்நாடு, சென்னை, கோவூர் பகுதியில் அமைந்துள்ளது. இது நவீன வசதிகள் மற்றும் தொழில்துறை தரமான உபகரணங்களுடன் நடைமுறை பயிற்சிக்கு உகந்ததாக உள்ளது.NTSC நிறுவனம் பயிற்சி காலத்தில் அனைத்து மாணவர்களுக்கும் தங்கும் வசதியையும் மதிய உணவையும் வழங்குகிறது.",
+  },
+  {
+    q: "உங்கள் நிறுவனத்தில் எந்த கோர்ஸ்கள் வழங்கப்படுகின்றன?",
+    a: "HVAC & Refrigeration, Welding, Electrical, Plumbing, Home Appliance, MEP, Quality, Safety மற்றும் Oil & Gas கோர்ஸ்கள் வழங்கப்படுகின்றன.",
+  },
+  {
+    q: "யார் இந்த கோர்ஸ்களில் சேரலாம்?",
+    a: "8ம் / 10ம் / 12ம் வகுப்பு தேர்ச்சி, Degree / Diploma / ITI மாணவர்கள், Engineering மாணவர்கள், வேலை தேடுபவர்கள் மற்றும் திறனை மேம்படுத்த விரும்பும் தொழில்நுட்ப நிபுணர்கள் சேரலாம்.",
+  },
+  {
+    q: "இந்த பயிற்சியில் Theory மற்றும் Practical இரண்டும் உள்ளதா? என்ன வகையான Practical வசதிகள் உள்ளன?",
+    a: "ஆம், Theory மற்றும் Practical இரண்டும் உள்ளன. ஆனால் எங்கள் பயிற்சியின் முக்கிய கவனம் முழுமையாக Hands-on Practical Training மீது உள்ளது. உலகத் தரம் வாய்ந்த தொழில்துறை உபகரணங்கள் மூலம் மாணவர்கள் நேரடி அனுபவம் பெறுவர்.",
+  },
+{
+  q: "Placement உதவி வழங்கப்படுமா? வேலை வாய்ப்புகள் மற்றும் சம்பளம் எப்படி இருக்கும்?",
+  a: "ஆம். கோர்ஸ் வெற்றிகரமாக முடித்த பிறகு இந்தியா மற்றும் வெளிநாடுகளில் வேலை வாய்ப்புகளுக்கு Placement Assistance வழங்கப்படுகிறது.குறிப்பு:  NTSC மாணவர்களுக்கு பல Interview வாய்ப்புகள் வழங்குகிறது.",
+  table: [
+    { skill: "HVAC Technician",                                          fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Electrician",                                              fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Plumbing Technician",                                      fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Welding (MIG/TIG)",                                        fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "MEP Technician",                                           fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Fire & Safety Officer",                                    fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Home Appliance Technician",                                fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+    { skill: "Certified HVAC Engineer (CHE)",                            fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    { skill: "International Diploma in Quality Management Training",                               fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    { skill: "International Certified Health, Safety & Environmental Officer (CHSEO)",                                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    { skill: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",                                   fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+  ],
+},
+  {
+    q: "கோர்ஸ் முடித்த பிறகு அங்கீகரிக்கப்பட்ட சான்றிதழ் கிடைக்குமா?",
+    a: "ஆம், மாணவர்கள் இந்திய அரசு அல்லது NSDC அங்கீகாரம் பெற்ற சான்றிதழ்களை பெறுவார்கள். இது இந்தியா மற்றும் வெளிநாடுகளில் வேலை பெற உதவும் அல்லது தனியாக தொழில் தொடங்கவும் உதவும்.",
+  },
+  {
+    q: "கோர்ஸ் காலம், நேரம் மற்றும் பயிற்சி முறை என்ன?",
+    a: "கால அளவு:Basic கோர்ஸ்கள்: 15–30 நாட்கள்\nDiploma (Advanced): 2–4 மாதங்கள்\nInternational Programs: 2–6 மாதங்கள்\n\nClass Timing: காலை 10:00 – மாலை 5:00\nSafety மற்றும் NDT கோர்ஸ்கள் மட்டும் Online. மற்றவை Offline.",
+  },
+  {
+    q: "கட்டண அமைப்பு மற்றும் EMI வசதி உள்ளதா?",
+    a: "கட்டணம் மற்றும் EMI வசதி கோர்ஸ் மற்றும் கால அளவை பொறுத்தது. மேலும் விவரங்களுக்கு எங்கள் Admission Team-ஐ தொடர்பு கொள்ளவும் அல்லது மையத்தை பார்வையிடவும்.",
+  },
+  {
+    q: "பயிற்றுவிப்பாளர்கள் யார்? அவர்கள் அனுபவம் என்ன? கூடுதல் வகுப்புகள் கிடைக்குமா?",
+    a: "எங்கள் Trainers பல வருட தொழில்துறை அனுபவம் கொண்டவர்கள். அவர்கள் Theory, Practical மற்றும் Live Projects அனைத்தையும் கற்பிப்பதில் திறமையானவர்கள்.மாணவர்களின் முன்னேற்றத்தை தொடர்ந்து கண்காணிப்பார்கள். தவறவிட்ட வகுப்புகளுக்கு தேவைக்கேற்ப கூடுதல் வகுப்புகள் வழங்கப்படும்.",
+  },
+  {
+    q: "Admission முன் Demo Class attend செய்ய முடியுமா?",
+    a: "ஆம். மாணவர்கள் எங்கள் பயிற்சி மையத்தை வருகை தந்து இலவச Counselling அல்லது Demo Class-ல் கலந்து கொள்ளலாம். இந்த பக்கத்தில் உள்ள 'Book a Free Demo' பட்டனை பயன்படுத்தவும்.",
+  },
+  {
+    q: "கோர்ஸில் எப்படி பதிவு செய்வது?",
+    a: "•	பயிற்சி மையத்திற்கு நேரில் வருகை  அல்லது Call / WhatsApp: +91 98842 09774 அல்லது Website-ல் Registration Form பூர்த்தி செய்யவும் அல்லதுCareer Counselling Session-ல் கலந்து கொள்ளுதல் ",
+  },
+    {
+    q: "மேலதிக தகவல்களுக்கு",
+    a: "📞 தொடர்புக்கு: +91 9884209774",
+  },
 ];
 
 function FAQSection({ faqs }: { faqs?: { q: string; a: string }[] }) {
-  const items = faqs && faqs.length > 0 ? faqs : DEFAULT_FAQS;
+  const [lang, setLang]       = useState<"en" | "ta">("en");
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
+  const courseSpecific = faqs && faqs.length > 0 ? faqs : [];
+  const defaultFaqs   = lang === "en" ? DEFAULT_FAQS_EN : DEFAULT_FAQS_TA;
+  const items         = [...courseSpecific, ...defaultFaqs];
+
+  // reset open item when language switches
+  const handleLangSwitch = (l: "en" | "ta") => {
+    setLang(l);
+    setOpenIdx(null);
+  };
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-      <div className="px-6 sm:px-8 pt-6 pb-4 border-b border-slate-100 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
-          <HelpCircle className="w-4 h-4 text-purple-500" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+      className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+    >
+      {/* Header */}
+      <div className="px-6 sm:px-8 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
+            <HelpCircle className="w-4 h-4 text-purple-500" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+            {lang === "en" ? "Frequently Asked Questions" : "அடிக்கடி கேட்கப்படும் கேள்விகள்"}
+          </h2>
         </div>
-        <h2 className="text-xl sm:text-2xl font-black text-slate-900">Frequently Asked Questions</h2>
+
+        {/* Language toggle */}
+        <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-1 shrink-0">
+          <button
+            onClick={() => handleLangSwitch("en")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+              lang === "en"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            English
+          </button>
+          <button
+            onClick={() => handleLangSwitch("ta")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+              lang === "ta"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            தமிழ்
+          </button>
+        </div>
       </div>
+
+      {/* Course-specific label */}
+      {courseSpecific.length > 0 && (
+        <div className="px-6 sm:px-8 pt-4 pb-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+            <p className="text-[11px] font-black uppercase tracking-wider text-blue-500">
+              {lang === "en" ? "Course-specific questions" : "கோர்ஸ் சார்ந்த கேள்விகள்"}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* FAQ list */}
       <div className="px-4 sm:px-6 py-4 space-y-2">
         {items.map((item, i) => {
-          const isOpen = openIdx === i;
+          const isOpen           = openIdx === i;
+          const isCourseSpecific = i < courseSpecific.length;
+          const isFirstDefault   = courseSpecific.length > 0 && i === courseSpecific.length;
+
           return (
-            <div key={i} className={`rounded-2xl border transition-all duration-200 overflow-hidden ${isOpen ? "border-purple-200 bg-purple-50/50" : "border-slate-100 bg-slate-50 hover:border-slate-200"}`}>
-              <button onClick={() => setOpenIdx(isOpen ? null : i)} className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left">
-                <span className={`text-sm font-bold transition-colors ${isOpen ? "text-purple-800" : "text-slate-700"}`}>{item.q}</span>
-                <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${isOpen ? "bg-purple-500 text-white" : "bg-slate-200 text-slate-500"}`}>
-                  {isOpen ? <Minus className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                </span>
-              </button>
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} className="overflow-hidden">
-                    <p className="px-5 pb-4 text-sm text-slate-600 leading-relaxed whitespace-pre-line">{item.a}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            <div key={`${lang}-${i}`}>
+
+              {/* Divider between course-specific and general */}
+              {isFirstDefault && (
+                <div className="flex items-center gap-2 mb-3 mt-1 px-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                  <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">
+                    {lang === "en" ? "General questions" : "பொதுவான கேள்விகள்"}
+                  </p>
+                </div>
+              )}
+
+              <div
+                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                  isOpen
+                    ? "border-purple-200 bg-purple-50/50"
+                    : isCourseSpecific
+                    ? "border-blue-100 bg-blue-50/30 hover:border-blue-200"
+                    : "border-slate-100 bg-slate-50 hover:border-slate-200"
+                }`}
+              >
+                <button
+                  onClick={() => setOpenIdx(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+                >
+                  <span
+                    className={`text-sm font-bold transition-colors leading-snug ${
+                      isOpen ? "text-purple-800" : "text-slate-700"
+                    }`}
+                  >
+                    {item.q}
+                  </span>
+                  <span
+                    className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                      isOpen
+                        ? "bg-purple-500 text-white"
+                        : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {isOpen ? (
+                      <Minus className="w-3 h-3" />
+                    ) : (
+                      <Plus className="w-3 h-3" />
+                    )}
+                  </span>
+                </button>
+            <AnimatePresence initial={false}>
+  {isOpen && (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      className="overflow-hidden"
+    >
+      <div className="px-5 pb-4 space-y-3">
+
+        {/* Answer text */}
+        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+          {item.a}
+        </p>
+
+        {/* Salary table — only renders if this FAQ has table data */}
+        {item.table && item.table.length > 0 && (
+          <div className="overflow-x-auto rounded-xl border border-slate-100 mt-2">
+            <table className="w-full text-xs min-w-[480px]">
+              <thead>
+                <tr className="bg-slate-800 text-white">
+                  <th className="text-left px-3 py-2.5 font-bold rounded-tl-xl">
+                    {lang === "en" ? "Skill" : "திறன்"}
+                  </th>
+                  <th className="text-left px-3 py-2.5 font-bold">
+                    {lang === "en" ? "Fresher (India)" : "புதியவர் (இந்தியா)"}
+                  </th>
+                  <th className="text-left px-3 py-2.5 font-bold">
+                    {lang === "en" ? "Experienced (India)" : "அனுபவம் (இந்தியா)"}
+                  </th>
+                  <th className="text-left px-3 py-2.5 font-bold rounded-tr-xl">
+                    {lang === "en" ? "Overseas (Gulf)" : "வெளிநாடு (Gulf)"}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.table.map((row, ri) => (
+                  <tr
+                    key={ri}
+                    className={ri % 2 === 0 ? "bg-white" : "bg-slate-50"}
+                  >
+                    <td className="px-3 py-2.5 font-semibold text-slate-700 border-b border-slate-100">
+                      {row.skill}
+                    </td>
+                    <td className="px-3 py-2.5 text-emerald-700 font-semibold border-b border-slate-100">
+                      {row.fresher}
+                    </td>
+                    <td className="px-3 py-2.5 text-blue-700 font-semibold border-b border-slate-100">
+                      {row.experienced}
+                    </td>
+                    <td className="px-3 py-2.5 text-violet-700 font-semibold border-b border-slate-100">
+                      {row.overseas}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* Footer */}
       <div className="px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/50">
         <p className="text-sm text-slate-500 text-center">
-          Still have questions?{" "}
-          <Link href="/contact" className="font-bold text-purple-600 hover:text-purple-700 transition">Talk to our counsellors →</Link>
+          {lang === "en" ? "Still have questions?" : "இன்னும் கேள்விகள் உள்ளதா?"}{" "}
+          <Link
+            href="/contact"
+            className="font-bold text-purple-600 hover:text-purple-700 transition"
+          >
+            {lang === "en" ? "Talk to our counsellors →" : "எங்கள் ஆலோசகரை தொடர்பு கொள்ளுங்கள் →"}
+          </Link>
         </p>
       </div>
     </motion.div>
@@ -1235,7 +1636,6 @@ export default function CourseDetailClient({
   const [showBrochure,    setShowBrochure]    = useState(false);
   const [showBookDemo,    setShowBookDemo]    = useState(false);
   const [showMobileSheet, setShowMobileSheet] = useState(false);
-  const [activeVideoIdx,  setActiveVideoIdx]  = useState(0);
 
   const syllabusItems = (course.content[0] ?? "")
     .split("\n")
@@ -1263,7 +1663,7 @@ export default function CourseDetailClient({
       <div className="min-h-screen bg-[#f8f9fc]">
 
         {/* ── HERO ── */}
-        <section className="relative pt-28 md:pt-32 pb-20 md:pb-28 overflow-hidden bg-slate-900">
+       <section className="relative pt-28 md:pt-32 pb-28 md:pb-36 overflow-hidden bg-slate-900">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-blue-700/25 rounded-full blur-[120px]" />
             <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-600/20 rounded-full blur-[90px]" />
@@ -1271,7 +1671,7 @@ export default function CourseDetailClient({
           </div>
 
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
               {/* Left: Text */}
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
@@ -1294,10 +1694,10 @@ export default function CourseDetailClient({
 
                 <div className="flex flex-wrap gap-2 text-sm text-white/80 mb-8">
                   {[
-                    { icon: Clock,        label: course.duration },
-                    { icon: GraduationCap,label: course.eligibility ?? "Open to All" },
-                    { icon: ShieldCheck,  label: "Govt. Certified" },
-                    { icon: Award,        label: course.certification ?? "NSDC Approved" },
+                    { icon: Clock,         label: course.duration },
+                    { icon: GraduationCap, label: course.eligibility ?? "Open to All" },
+                    { icon: ShieldCheck,   label: "Govt. Certified" },
+                    { icon: Award,         label: course.certification ?? "NSDC Approved" },
                   ].map(({ icon: Icon, label }) => (
                     <div key={label} className="flex items-center gap-2 bg-white/8 backdrop-blur border border-white/10 px-3 py-1.5 rounded-xl text-xs">
                       <Icon className="w-3.5 h-3.5 text-blue-400" />
@@ -1322,16 +1722,26 @@ export default function CourseDetailClient({
 
               {/* Right: Video — desktop only */}
               {videos.length > 0 && (
-                <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55, delay: 0.15 }} className="hidden lg:block">
-                  <VideoSection videos={videos} activeVideoIdx={activeVideoIdx} setActiveVideoIdx={setActiveVideoIdx} />
+            <motion.div
+  initial={{ opacity: 0, x: 30 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.55, delay: 0.15 }}
+  className="hidden lg:block mt-4"
+>
+                  <VideoSection videos={videos} />
                 </motion.div>
               )}
             </div>
 
             {/* Mobile Video */}
             {videos.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.25 }} className="block lg:hidden mt-8">
-                <VideoSection videos={videos} activeVideoIdx={activeVideoIdx} setActiveVideoIdx={setActiveVideoIdx} />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.25 }}
+                className="block lg:hidden mt-8"
+              >
+                <VideoSection videos={videos} />
               </motion.div>
             )}
           </div>
@@ -1346,7 +1756,12 @@ export default function CourseDetailClient({
 
         {/* ── IMAGE CAROUSEL ── */}
         <div className="container mx-auto px-4 sm:px-6 mb-8">
-          <ImageCarousel category={course.category} courseTitle={course.title} />
+         <ImageCarousel
+  category={course.category}
+  courseTitle={course.title}
+  gallery={course.gallery}
+  thumbnailUrl={course.thumbnail_url}
+/>
         </div>
 
         {/* ── MAIN CONTENT ── */}

@@ -15,7 +15,7 @@ interface NewsItem {
 const LatestNewsSection = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
-    const scrollRef = useRef<HTMLDivElement>(null);
+ 
     const [news, setNews] = useState<NewsItem[]>([]);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -69,7 +69,7 @@ const LatestNewsSection = () => {
                             animation-play-state: paused;
                         }
                     `}} />
-                    <div className="animate-marquee-news gap-6 py-4 px-3">
+                  <div className="animate-marquee-news py-4 px-3" style={{ gap: "24px" }}>
                         {[...news, ...news].map((item, i) => (
                             <div
                                 key={`${item.id}-${i}`}

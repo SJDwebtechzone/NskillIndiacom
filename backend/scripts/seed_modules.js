@@ -25,19 +25,29 @@ const modules = [
   "My Practical Video",         // ← student uploads videos
 
   "Daily Attendance", "Practical Video",
-  "Final Exam", "Mark and Result", "Certification", "Placement Details Uploads",
-  "Feedback & Testimonial", "Google Review & Videos", "Fee Details",
+  "Final Exam",  "Certification",  "Google Review & Videos", "Fee Details",
 
   // ── Trainer Management ──
   "TrainerDashboard", "Class Status", "Attendance Status", "Trainer Management",
   "Weekly Test",
+  "Trainer Post-Test",  // trainer manages
+"My Post Test",
 
   // ── Missing modules ──
   "Dashboard",
   "Payments",
   "Course Management",
   "Background Images",
+   "Trainer Marks",   // ← Trainer
+  "My Results",
 
+  "Placement Details Uploads",  // student uploads
+"Feedback & Testimonial",     // student submits
+"Student Placements",         // admin views placements
+"Testimonials",               // admin approves testimonials
+// Certificate
+"Download Certificate",   // student downloads certificate
+"Request Certificate",    // student requests manual review
   "NTSC Dashboard", "Download A4 Sheet", "Enquiry / Admission and Document",
   "Update Class Status", "Monitor Student Changes and Approval"
 ];

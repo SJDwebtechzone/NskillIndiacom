@@ -364,5 +364,276 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Server Error" });
     }
 });
+// GET /my-profile — get logged in student's profile for ID card
+router.get("/my-profile", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const token = authHeader.split(' ')[1];
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
+
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      [decoded.id]
+    );
+    const email = userResult.rows[0]?.email;
+    if (!email) return res.status(404).json({ error: 'User not found' });
+
+    const studentResult = await pool.query(
+      `SELECT id, full_name, admission_number, dob, mobile_number, 
+              course_name, batch_allotted, photo_url, admission_date, email_id
+       FROM student_admissions 
+       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      [email]
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Student profile not found' });
+    }
+
+    res.json({ student: studentResult.rows[0] });
+  } catch (err) {
+    console.error('GET /my-profile error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+// Add this route to admissions.js before module.exports = router;
+
+// GET /fees-receipt — get logged in student's fee receipt data
+router.get("/fees-receipt", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const token = authHeader.split(' ')[1];
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
+
+    // Get email from users table
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      [decoded.id]
+    );
+    const email = userResult.rows[0]?.email;
+    if (!email) return res.status(404).json({ error: 'User not found' });
+
+    // Get student fee details
+    const studentResult = await pool.query(
+      `SELECT 
+        id, full_name, admission_number, course_name, batch_allotted,
+        mobile_number, email_id, admission_date,
+        course_fees, total_fees, paid_fees, balance_amount,
+        payment_mode, payment_ref_no, payment_date,
+        instalment_1, instalment_2
+       FROM student_admissions 
+       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      [email]
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    res.json({ student: studentResult.rows[0] });
+  } catch (err) {
+    console.error('GET /fees-receipt error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Add this route to admissions.js before module.exports = router;
+
+// GET /course-fees-details — get logged in student's course and fees details
+router.get("/course-fees-details", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const token = authHeader.split(' ')[1];
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
+
+    // Get email from users table
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      [decoded.id]
+    );
+    const email = userResult.rows[0]?.email;
+    if (!email) return res.status(404).json({ error: 'User not found' });
+
+    // Get student + course + trainer details
+    const result = await pool.query(
+      `SELECT 
+        sa.full_name, sa.admission_number, sa.admission_date,
+        sa.course_name, sa.course_level, sa.mode_of_training,
+        sa.batch_allotted, sa.training_location,
+        sa.course_fees, sa.total_fees, sa.paid_fees, sa.balance_amount,
+        sa.payment_mode, sa.payment_date, sa.payment_ref_no,
+        sa.instalment_1, sa.instalment_2,
+        c.duration,
+        u.name AS trainer_name
+       FROM student_admissions sa
+       LEFT JOIN courses c ON LOWER(c.title) = LOWER(sa.course_name)
+       LEFT JOIN users u ON u.id = c.trainer_id
+       WHERE LOWER(sa.email_id) = LOWER($1)
+       LIMIT 1`,
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    res.json({ data: result.rows[0] });
+  } catch (err) {
+    console.error('GET /course-fees-details error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+// Add these routes to admissions.js before module.exports = router;
+
+// GET /certificate-status — check all conditions for certificate
+router.get("/certificate-status", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const token = authHeader.split(' ')[1];
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
+
+    // Get email from users
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      [decoded.id]
+    );
+    const email = userResult.rows[0]?.email;
+    if (!email) return res.status(404).json({ error: 'User not found' });
+
+    // Get student
+    const studentResult = await pool.query(
+      `SELECT id, full_name, course_name, balance_amount, admission_number,
+              batch_allotted, admission_date
+       FROM student_admissions 
+       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      [email]
+    );
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+    const student = studentResult.rows[0];
+    const studentId = student.id;
+    const courseName = student.course_name;
+
+    // ── Check all conditions ──────────────────────────────────────────────────
+
+    // 1. Fees cleared
+    const feesCleared = parseFloat(student.balance_amount) <= 0;
+
+    // 2. Pre-test passed
+    const pretestResult = await pool.query(
+      `SELECT passed FROM pretest_attempts 
+       WHERE student_id = $1 AND course_name = $2 
+       ORDER BY submitted_at DESC LIMIT 1`,
+      [studentId, courseName]
+    );
+    const pretestPassed = pretestResult.rows.length > 0 && pretestResult.rows[0].passed;
+
+    // 3. Post-test passed
+    const posttestResult = await pool.query(
+      `SELECT passed FROM finaltest_attempts 
+       WHERE student_id = $1 AND course_name = $2 
+       ORDER BY submitted_at DESC LIMIT 1`,
+      [studentId, courseName]
+    );
+    const posttestPassed = posttestResult.rows.length > 0 && posttestResult.rows[0].passed;
+
+    // 4. Weekly test attempted
+    const weeklyResult = await pool.query(
+      `SELECT id FROM posttest_attempts 
+       WHERE student_id = $1 AND course_name = $2 LIMIT 1`,
+      [studentId, courseName]
+    );
+    const weeklyDone = weeklyResult.rows.length > 0;
+
+    // 5. Assessment submitted
+    const assessmentResult = await pool.query(
+      `SELECT id FROM assessment_submissions 
+       WHERE student_id = $1 LIMIT 1`,
+      [studentId]
+    );
+    const assessmentDone = assessmentResult.rows.length > 0;
+
+    // 6. Practical video verified
+    const practicalResult = await pool.query(
+      `SELECT id FROM practical_submissions 
+       WHERE student_id = $1 AND status = 'verified' LIMIT 1`,
+      [studentId]
+    );
+    const practicalDone = practicalResult.rows.length > 0;
+
+    // 7. Google review submitted
+    const reviewResult = await pool.query(
+      `SELECT id FROM student_google_reviews 
+       WHERE student_id = $1 LIMIT 1`,
+      [studentId]
+    );
+    const reviewDone = reviewResult.rows.length > 0;
+
+    // 8. Feedback submitted
+    const feedbackResult = await pool.query(
+      `SELECT id FROM student_feedback 
+       WHERE student_id = $1 LIMIT 1`,
+      [studentId]
+    );
+    const feedbackDone = feedbackResult.rows.length > 0;
+
+    // 9. Attendance 75%+
+    const attendanceResult = await pool.query(
+      `SELECT 
+         COUNT(*) FILTER (WHERE status = 'Present') as present_count,
+         COUNT(*) FILTER (WHERE status IS NOT NULL AND status != '') as total_count
+       FROM attendance WHERE admission_id = $1`,
+      [studentId]
+    );
+    const { present_count, total_count } = attendanceResult.rows[0];
+    const attendancePercent = total_count > 0 ? Math.round((present_count / total_count) * 100) : 0;
+    const attendanceDone = attendancePercent >= 75;
+
+    // 10. Placement details uploaded
+    const placementResult = await pool.query(
+      `SELECT id FROM student_placements 
+       WHERE student_id = $1 LIMIT 1`,
+      [studentId]
+    );
+    const placementDone = placementResult.rows.length > 0;
+
+    // ── Build conditions list ─────────────────────────────────────────────────
+    const conditions = [
+      { key: "fees", label: "Fees Cleared", passed: feesCleared, message: feesCleared ? "No balance due" : "Clear your pending balance" },
+      { key: "pretest", label: "Pre-Test", passed: pretestPassed, message: pretestPassed ? "Passed" : "Take and pass the pre-test" },
+      { key: "posttest", label: "Post-Test", passed: posttestPassed, message: posttestPassed ? "Passed" : "Take and pass the post-test" },
+      { key: "weekly", label: "Weekly Test", passed: weeklyDone, message: weeklyDone ? "Completed" : "Complete the weekly test" },
+      { key: "assessment", label: "Assessment", passed: assessmentDone, message: assessmentDone ? "Submitted" : "Submit your assessment" },
+      { key: "practical", label: "Practical Video", passed: practicalDone, message: practicalDone ? "Verified" : "Submit and get practical video verified" },
+      { key: "review", label: "Google Review", passed: reviewDone, message: reviewDone ? "Submitted" : "Submit your Google review" },
+      { key: "feedback", label: "Feedback & Testimonial", passed: feedbackDone, message: feedbackDone ? "Submitted" : "Submit your feedback" },
+      { key: "attendance", label: `Attendance (${attendancePercent}%)`, passed: attendanceDone, message: attendanceDone ? `${attendancePercent}% attendance` : `Need 75%+ attendance (current: ${attendancePercent}%)` },
+      { key: "placement", label: "Placement Details", passed: placementDone, message: placementDone ? "Uploaded" : "Upload your placement details" },
+    ];
+
+    const allPassed = conditions.every(c => c.passed);
+    const passedCount = conditions.filter(c => c.passed).length;
+
+    res.json({
+      student,
+      conditions,
+      allPassed,
+      passedCount,
+      totalConditions: conditions.length,
+    });
+  } catch (err) {
+    console.error('GET /certificate-status error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;

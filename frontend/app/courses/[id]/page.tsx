@@ -10,7 +10,7 @@ async function getCourse(slug: string) {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/courses/slug/${slug}`,
       {
-        next: { revalidate: 60 }, // re-fetch every 60 seconds (ISR)
+         cache: "no-store",  // re-fetch every 60 seconds (ISR)
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -31,7 +31,7 @@ async function getAllCourses() {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/courses`,
       {
-        next: { revalidate: 60 },
+       cache: "no-store",  
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -63,16 +63,19 @@ export default async function CourseDetailPage({
   if (!raw) return notFound();
 
   // ── Map DB columns to the shape CourseDetailClient expects ─────────────────
-  const course = {
-    ...raw,
-    content:             [raw.content ?? ""],           // components use content[0]
-    videos:              raw.videos ?? [],               // JSONB array
-    faqs:                raw.extra_sections ?? [],       // {q, a}[] from extra_sections
-    careerOpportunities: raw.career_opportunities ?? [], // text[]
-    duration:            raw.duration ?? "N/A",
-    certification:       raw.certification ?? "NSDC Approved",
-    brochure_url:        raw.brochure_url ?? null,
-  };
+// In courses/[id]/page.tsx — add to course mapping
+const course = {
+  ...raw,
+  content:             [raw.content ?? ""],
+  videos:              raw.videos ?? [],
+  faqs:                raw.extra_sections ?? [],
+  careerOpportunities: raw.career_opportunities ?? [],
+  duration:            raw.duration ?? "N/A",
+  certification:       raw.certification ?? "NSDC Approved",
+  brochure_url:        raw.brochure_url   ?? null,
+  thumbnail_url:       raw.thumbnail_url  ?? null,   // ← add
+  gallery:             raw.gallery        ?? [],      // ← add
+};
 
   // Normalise allCourses so sidebar uses slug as the link id
   const normalisedCourses = allCourses.map((c: any) => ({

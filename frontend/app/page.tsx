@@ -5,6 +5,9 @@ import WhyUsSection from "./components/WhyUsSection";
 import TeamSection from "./components/TeamSection";
 import LatestNewsSection from "./components/LatestNewsSection";
 import AccreditationsSection from "./components/AccreditationsSection";
+import TestimonialsSection from "./components/TestimonialsSection";
+import GoogleReviewsSection from "./components/GoogleReviewsSection";
+import VideoTestimonialsSection from "./components/VideoTestimonialsSection";
 
 export default function Home() {
   return (
@@ -34,6 +37,18 @@ export default function Home() {
         <TeamSection />
       </div>
 
+
+
+      
+
+
+<div className="w-full">
+  <TestimonialsSection />
+</div>
+
+
+<div className="w-full"><GoogleReviewsSection /></div>
+<div className="w-full"><VideoTestimonialsSection /></div>
       {/* Latest News Section */}
       <div className="w-full">
         <LatestNewsSection />

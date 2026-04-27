@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Save, X, Plus, Trash2, Loader2, AlertCircle,
-  Upload, Film, Link as LinkIcon,
+  Upload, Film, Link as LinkIcon, Image as ImageIcon,
 } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -26,6 +26,8 @@ export interface CourseFormData {
   videos:               VideoItem[];
   extra_sections:       FAQ[];
   brochure_url:         string;
+  thumbnail_url:        string;
+  gallery:              string[];
   is_active:            boolean;
 }
 
@@ -39,7 +41,10 @@ const EMPTY: CourseFormData = {
   title: "", slug: "", category: "", duration: "", eligibility: "",
   certification: "NSDC Approved", delivery_method: "Offline",
   content: "", career_opportunities: [""],
-  videos: [], extra_sections: [], brochure_url: "", is_active: true,
+  videos: [], extra_sections: [], brochure_url: "",
+  thumbnail_url: "",
+  gallery:       [],
+  is_active: true,
 };
 
 const CATEGORIES = [
@@ -58,10 +63,17 @@ function toSlug(s: string) {
 // ── Shared style ──────────────────────────────────────────────────────────────
 const inputCls = "w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all";
 
-// ── Sub-components OUTSIDE the main component ─────────────────────────────────
-// IMPORTANT: Defining Section/Field inside CourseForm caused them to remount
-// on every render, which unmounted inputs and caused focus/typing loss.
+// ── PDF icon ──────────────────────────────────────────────────────────────────
+function PdfIcon({ color = "#DC2626", size = 16 }: { color?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="1" width="12" height="14" rx="2"/>
+      <path d="M5 5h6M5 8h6M5 11h3"/>
+    </svg>
+  );
+}
 
+// ── Sub-components ─────────────────────────────────────────────────────────────
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -89,19 +101,23 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
   const router = useRouter();
   const isEdit = courseId !== undefined;
 
-  const [form,    setForm]    = useState<CourseFormData>({ ...EMPTY, ...initialData });
-  const [saving,  setSaving]  = useState(false);
-  const [error,   setError]   = useState("");
-  const [success, setSuccess] = useState("");
-  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
+  const [form,               setForm]               = useState<CourseFormData>({ ...EMPTY, ...initialData });
+  const [saving,             setSaving]             = useState(false);
+  const [error,              setError]              = useState("");
+  const [success,            setSuccess]            = useState("");
+  const [uploadingIdx,       setUploadingIdx]       = useState<number | null>(null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [uploadingBrochure,  setUploadingBrochure]  = useState(false);  // ← NEW
 
-  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const fileInputRefs     = useRef<(HTMLInputElement | null)[]>([]);
+  const thumbnailInputRef = useRef<HTMLInputElement | null>(null);
+  const brochureInputRef  = useRef<HTMLInputElement | null>(null);     // ← NEW
 
   // ── Generic setter ─────────────────────────────────────────────────────────
   const set = (key: keyof CourseFormData, value: any) =>
     setForm(f => ({ ...f, [key]: value }));
 
-  // ── Title change: single setState keeps title + slug in sync without double render
+  // ── Title → slug sync ──────────────────────────────────────────────────────
   const handleTitleChange = (val: string) => {
     setForm(f => ({
       ...f,
@@ -150,13 +166,33 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
       const res  = await fetch(`${API}/api/upload/video`, { method: "POST", body: fd });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
+      const fullUrl = data.url.startsWith("http") ? data.url : `${API}${data.url}`;
       const arr  = [...form.videos];
-      arr[idx]   = { ...arr[idx], url: data.url, source: "upload" };
+      arr[idx]   = { ...arr[idx], url: fullUrl, source: "upload" };
       set("videos", arr);
     } catch {
       alert("Video upload failed. Try pasting a URL instead.");
     } finally {
       setUploadingIdx(null);
+    }
+  };
+
+  // ── Brochure upload ─────────────────────────────────────────────────────── NEW
+  const handleBrochureUpload = async (file: File) => {
+    setUploadingBrochure(true);
+    try {
+      const fd = new FormData();
+      fd.append("brochure", file);
+      const res  = await fetch(`${API}/api/upload/brochure`, { method: "POST", body: fd });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      const fullUrl = data.url.startsWith("http") ? data.url : `${API}${data.url}`;
+      set("brochure_url", fullUrl);
+    } catch {
+      alert("Brochure upload failed. Try pasting a URL instead.");
+    } finally {
+      setUploadingBrochure(false);
+      if (brochureInputRef.current) brochureInputRef.current.value = "";
     }
   };
 
@@ -211,7 +247,7 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </div>
       )}
 
-      {/* Basic Info */}
+      {/* ── Basic Info ── */}
       <Section title="Basic Information">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
@@ -289,7 +325,127 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </div>
       </Section>
 
-      {/* Syllabus */}
+      {/* ── Course Image Gallery ── */}
+      <Section title="Course Image Gallery">
+        <p className="text-xs text-slate-400 -mt-2">
+          Upload multiple images — they will appear as slides in the carousel on the course page.
+          First image is the main thumbnail. Recommended: 1200×630px (16:9).
+        </p>
+
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          ref={thumbnailInputRef}
+          onChange={async (e) => {
+            const files = Array.from(e.target.files ?? []);
+            if (!files.length) return;
+            setUploadingThumbnail(true);
+            try {
+              const uploaded: string[] = [];
+              for (const file of files) {
+                const fd = new FormData();
+                fd.append("image", file);
+                const res  = await fetch(`${API}/api/upload/image`, { method: "POST", body: fd });
+                if (!res.ok) throw new Error("Upload failed");
+                const data = await res.json();
+                const url  = data.url.startsWith("http") ? data.url : `${API}${data.url}`;
+                uploaded.push(url);
+              }
+              set("gallery", [...form.gallery, ...uploaded]);
+              if (!form.thumbnail_url && uploaded.length > 0) {
+                set("thumbnail_url", uploaded[0]);
+              }
+            } catch {
+              alert("Image upload failed.");
+            } finally {
+              setUploadingThumbnail(false);
+              if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
+            }
+          }}
+        />
+
+        {form.gallery.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {form.gallery.map((url, i) => (
+              <div key={i} className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-100" style={{ aspectRatio: "16/9" }}>
+                <img src={url} alt={`Gallery image ${i + 1}`} className="w-full h-full object-cover" />
+                {i === 0 && (
+                  <div className="absolute top-1.5 left-1.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                    Main
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = form.gallery.filter((_, idx) => idx !== i);
+                    set("gallery", updated);
+                    if (i === 0) set("thumbnail_url", updated[0] ?? "");
+                  }}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+                {i > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = [url, ...form.gallery.filter((_, idx) => idx !== i)];
+                      set("gallery", updated);
+                      set("thumbnail_url", url);
+                    }}
+                    className="absolute bottom-1.5 left-1.5 bg-white/90 text-slate-700 text-[9px] font-bold px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition"
+                  >
+                    Set as main
+                  </button>
+                )}
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => thumbnailInputRef.current?.click()}
+              className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-blue-400 bg-slate-50 hover:bg-blue-50 rounded-xl transition"
+              style={{ aspectRatio: "16/9" }}
+            >
+              {uploadingThumbnail ? (
+                <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+              ) : (
+                <>
+                  <Plus className="w-5 h-5 text-slate-400" />
+                  <span className="text-xs text-slate-400 font-medium">Add more</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {form.gallery.length === 0 && (
+          uploadingThumbnail ? (
+            <div className="flex items-center justify-center gap-3 bg-blue-50 border border-blue-200 rounded-2xl py-10">
+              <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+              <span className="text-sm text-blue-600 font-medium">Uploading images…</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => thumbnailInputRef.current?.click()}
+              className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-300 hover:border-blue-400 bg-slate-50 hover:bg-blue-50 rounded-2xl py-10 transition"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+                <ImageIcon className="w-6 h-6 text-blue-500" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-slate-600">Click to upload images</p>
+                <p className="text-xs text-slate-400 mt-0.5">Select multiple at once · JPG, PNG, WebP — up to 5MB each</p>
+              </div>
+            </button>
+          )
+        )}
+      </Section>
+
+      {/* ── Syllabus ── */}
       <Section title="Course Syllabus / Content">
         <Field label="Syllabus (one topic per line, start each line with -)">
           <textarea
@@ -305,7 +461,7 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </Field>
       </Section>
 
-      {/* Career Opportunities */}
+      {/* ── Career Opportunities ── */}
       <Section title="Career Opportunities">
         <div className="space-y-2">
           {form.career_opportunities.map((role, idx) => (
@@ -329,13 +485,12 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </div>
       </Section>
 
-      {/* Videos */}
+      {/* ── Videos ── */}
       <Section title="Course Videos (optional)">
         <div className="space-y-4">
           {form.videos.map((v, idx) => (
             <div key={v.id} className="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-3">
 
-              {/* Title + Type + Delete */}
               <div className="flex gap-2">
                 <input
                   className={`${inputCls} flex-1`}
@@ -356,27 +511,21 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
                 </button>
               </div>
 
-              {/* Source toggle: URL vs Upload */}
               <div className="flex gap-2">
                 <button type="button" onClick={() => setVideo(idx, "source", "url")}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    v.source !== "upload"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    v.source !== "upload" ? "bg-blue-600 text-white" : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
                   }`}>
                   <LinkIcon className="w-3 h-3" /> Paste URL
                 </button>
                 <button type="button" onClick={() => setVideo(idx, "source", "upload")}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    v.source === "upload"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    v.source === "upload" ? "bg-blue-600 text-white" : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
                   }`}>
                   <Upload className="w-3 h-3" /> Upload File
                 </button>
               </div>
 
-              {/* URL input or file upload area */}
               {v.source === "upload" ? (
                 <div>
                   <input
@@ -420,7 +569,6 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
                   onChange={e => setVideo(idx, "url", e.target.value)}
                 />
               )}
-
             </div>
           ))}
 
@@ -431,7 +579,7 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </div>
       </Section>
 
-      {/* FAQs */}
+      {/* ── FAQs ── */}
       <Section title="FAQs (optional)">
         <div className="space-y-3">
           {form.extra_sections.map((faq, idx) => (
@@ -464,22 +612,99 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </div>
       </Section>
 
-      {/* Brochure */}
+      {/* ── Brochure PDF ── */}
       <Section title="Brochure PDF">
-        <Field label="Brochure URL (paste a public PDF link or /brochures/filename.pdf)">
+        <p className="text-xs text-slate-400 -mt-2">
+          Upload a PDF brochure or paste a public URL. Students download this after OTP verification.
+        </p>
+
+        {/* Hidden file input */}
+        <input
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          ref={brochureInputRef}
+          onChange={e => {
+            const file = e.target.files?.[0];
+            if (file) handleBrochureUpload(file);
+          }}
+        />
+
+        {/* Uploaded state */}
+        {form.brochure_url && !uploadingBrochure && (
+          <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+            <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+              <PdfIcon />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-emerald-700 mb-0.5">PDF Ready</p>
+              <p className="text-[11px] text-emerald-600 truncate">{form.brochure_url}</p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => brochureInputRef.current?.click()}
+                className="text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg transition"
+              >
+                Replace
+              </button>
+              <button
+                type="button"
+                onClick={() => set("brochure_url", "")}
+                className="text-xs font-semibold text-red-500 hover:text-red-700 bg-white border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Uploading state */}
+        {uploadingBrochure && (
+          <div className="flex items-center justify-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-5">
+            <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+            <span className="text-sm text-blue-600 font-medium">Uploading PDF…</span>
+          </div>
+        )}
+
+        {/* Empty upload area */}
+        {!form.brochure_url && !uploadingBrochure && (
+          <button
+            type="button"
+            onClick={() => brochureInputRef.current?.click()}
+            className="w-full flex items-center gap-4 border-2 border-dashed border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50 rounded-xl px-5 py-5 transition group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-red-100 group-hover:bg-red-200 flex items-center justify-center shrink-0 transition">
+              <PdfIcon size={18} />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-slate-600 group-hover:text-slate-800">
+                Click to upload brochure PDF
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">PDF only — up to 20MB</p>
+            </div>
+          </button>
+        )}
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs text-slate-400 font-semibold">OR paste URL</span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        {/* URL input */}
+        <Field label="Brochure URL">
           <input
             className={inputCls}
-            placeholder="https://... or /brochures/hvac-basic.pdf"
+            placeholder="https://... or /uploads/brochures/hvac-basic.pdf"
             value={form.brochure_url}
             onChange={e => set("brochure_url", e.target.value)}
           />
-          <p className="text-[11px] text-slate-400 mt-1">
-            Students will download this file after OTP verification.
-          </p>
         </Field>
       </Section>
 
-      {/* Action Buttons */}
+      {/* ── Action Buttons ── */}
       <div className="flex items-center gap-3 pt-2">
         <button
           type="button"
