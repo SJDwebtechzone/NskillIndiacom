@@ -217,9 +217,9 @@ export default function StaffPage() {
             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
               <Briefcase className="w-5 h-5 text-purple-600" />
             </div>
-            Staff / Trainee
+            Staff / Trainer
           </h1>
-          <p className="text-slate-500 font-medium mt-1">View and manage all staff members and trainees.</p>
+          <p className="text-slate-500 font-medium mt-1">View and manage all staff members and trainers.</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -229,7 +229,7 @@ export default function StaffPage() {
             + Create New Staff
           </button>
           <div className="bg-purple-50 text-purple-700 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-            {staff.length} Total Staff
+           {staff.length} Total Trainers
           </div>
         </div>
       </div>
@@ -331,7 +331,7 @@ export default function StaffPage() {
             <div className="col-span-full border-2 border-dashed border-slate-200 rounded-3xl p-20 text-center">
               <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <p className="text-slate-400 font-bold">
-                {search ? "No staff match your search." : "No staff / trainees found."}
+                {search ? "No staff match your search." : "No staff / trainers found."}
               </p>
             </div>
           )}

@@ -412,7 +412,7 @@ function BrochureModal({
   const [otpError, setOtpError] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  const [generatedOtp, setGeneratedOtp] = useState("");
+
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
 
@@ -438,26 +438,64 @@ function BrochureModal({
     setErrors(e);
     return Object.keys(e).length === 0;
   };
+const handleSendOtp = async () => {
+  if (!validate()) return;
+  setSendingOtp(true);
+  try {
+    // Save lead to DB
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        course_id:     course.id,
+        course_title:  course.title,
+        brochure_url:  course.brochure_url,
+      }),
+    });
 
-  const handleSendOtp = async () => {
-    if (!validate()) return;
-    setSendingOtp(true);
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, course_id: course.id }),
-      });
-    } catch {}
-    await new Promise((r) => setTimeout(r, 1200));
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    setGeneratedOtp(code);
-    console.info(`[DEV] OTP for +91${form.phone}: ${code}`);
-    setSendingOtp(false);
+    // Send real OTP via WhatsApp
+    const otpRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone:        form.phone,
+        name:         form.name,
+        course_title: course.title,
+      }),
+    });
+
+    const otpData = await otpRes.json();
+    if (!otpRes.ok) throw new Error(otpData.error ?? "Failed to send OTP");
+
     setStep(2);
     startCountdown(30);
     setTimeout(() => otpRefs.current[0]?.focus(), 100);
-  };
+  } catch (err: any) {
+    setErrors({ phone: err.message ?? "Failed to send OTP" });
+  } finally {
+    setSendingOtp(false);
+  }
+};
+  // const handleSendOtp = async () => {
+  //   if (!validate()) return;
+  //   setSendingOtp(true);
+  //   try {
+  //     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ ...form, course_id: course.id }),
+  //     });
+  //   } catch {}
+  //   await new Promise((r) => setTimeout(r, 1200));
+  //   const code = String(Math.floor(100000 + Math.random() * 900000));
+  //   setGeneratedOtp(code);
+  //   console.info(`[DEV] OTP for +91${form.phone}: ${code}`);
+  //   setSendingOtp(false);
+  //   setStep(2);
+  //   startCountdown(30);
+  //   setTimeout(() => otpRefs.current[0]?.focus(), 100);
+  // };
 
   const handleOtpChange = (idx: number, val: string) => {
     if (!/^\d?$/.test(val)) return;
@@ -489,35 +527,76 @@ function BrochureModal({
     }
   };
 
-  const handleVerify = async () => {
-    const entered = otpDigits.join("");
-    if (entered.length < 6) { setOtpError("Please enter all 6 digits"); return; }
-    setVerifying(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setVerifying(false);
-    if (entered !== generatedOtp && entered !== "000000") {
-      setOtpError("Incorrect OTP. Please try again.");
+const handleVerify = async () => {
+  const entered = otpDigits.join("");
+  if (entered.length < 6) { setOtpError("Please enter all 6 digits"); return; }
+  setVerifying(true);
+  try {
+    // Step 1 — verify OTP
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: form.phone, otp: entered }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.verified) {
+      setOtpError(data.error ?? "Incorrect OTP. Please try again.");
       setOtpDigits(["", "", "", "", "", ""]);
       setTimeout(() => otpRefs.current[0]?.focus(), 50);
       return;
     }
-    triggerDownload();
-    setStep(3);
-  };
 
-  const handleResend = async () => {
-    if (countdown > 0) return;
-    setSendingOtp(true);
-    await new Promise((r) => setTimeout(r, 800));
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    setGeneratedOtp(code);
-    console.info(`[DEV] Resent OTP: ${code}`);
+    // Step 2 — OTP verified → trigger browser download
+    triggerDownload();
+
+    // Step 3 — tell backend to send brochure to WhatsApp + admin alert
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads/verified`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name:         form.name,
+        email:        form.email,
+        phone:        form.phone,
+        course_id:    course.id,
+        course_title: course.title,
+        brochure_url: course.brochure_url,
+      }),
+    }).catch(err => console.error("leads/verified failed:", err));
+    // ↑ non-blocking — don't await, user sees step 3 immediately
+
+    // Step 4 — move to success screen
+    setStep(3);
+  } catch {
+    setOtpError("Verification failed. Please try again.");
+  } finally {
+    setVerifying(false);
+  }
+};
+const handleResend = async () => {
+  if (countdown > 0) return;
+  setSendingOtp(true);
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone:        form.phone,
+        name:         form.name,
+        course_title: course.title,
+      }),
+    });
     setOtpDigits(["", "", "", "", "", ""]);
     setOtpError("");
-    setSendingOtp(false);
     startCountdown(30);
     setTimeout(() => otpRefs.current[0]?.focus(), 50);
-  };
+  } catch {
+    setOtpError("Failed to resend OTP.");
+  } finally {
+    setSendingOtp(false);
+  }
+};
+
 
   const StepDots = () => (
     <div className="flex items-center gap-2 justify-center mb-6">

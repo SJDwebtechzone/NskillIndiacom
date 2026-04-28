@@ -73,7 +73,7 @@ const userManagementItems = [
   { name: "NTSC Admin",      path: "/dashboard/ntsc-admin",   module: "NTSC Admin",      icon: ShieldCheck   },
   { name: "Associate",       path: "/dashboard/associate",    module: "Associate",       icon: UserCheck     },
   { name: "Students",        path: "/dashboard/students",     module: "Students",        icon: GraduationCap },
-  { name: "Staff / Trainee", path: "/dashboard/staff",        module: "Staff / Trainee", icon: Briefcase     },
+  { name: "Staff / Trainer", path: "/dashboard/staff",        module: "Staff / Trainer", icon: Briefcase     },
   { name: "Manage Users",    path: "/dashboard/manage-users", module: "Manage Users",    icon: UserCog       },
   { name: "Manage Roles",    path: "/dashboard/manage-roles", module: "Manage Roles",    icon: KeyRound      },
 ];
@@ -91,6 +91,7 @@ const websiteSettingsItems = [
 { name: "Student Placements", path: "/dashboard/settings/student-placements", module: "Student Placements", icon: Upload, tab: null },
 { name: "Testimonials",       path: "/dashboard/settings/testimonials",        module: "Testimonials",       icon: MessageSquare, tab: null },
 { name: "Reviews & Videos", path: "/dashboard/settings/reviews", module: "Reviews & Videos", icon: Share2, tab: null },
+{name: "Course Calender ", path: "/dashboard/settings/course_calender", module: "course calender", icon: Phone, tab: null },
 ];
 
 // ── NEW: Course Management items ───────────────────────────────────────────────
@@ -110,7 +111,7 @@ const associateManagementItems = [
 ];
 
 const studentManagementItems = [
-  { name: "Dashboard",                 path: "/dashboard/student-management/dashboard",         module: "StudentDashboard",              icon: DashboardIcon },
+  // { name: "Dashboard",                 path: "/dashboard/student-management/dashboard",         module: "StudentDashboard",              icon: DashboardIcon },
   { name: "ID Generation",             path: "/dashboard/student-management/id-generation",      module: "ID Generation",                 icon: FileDigit     },
   { name: "Course and Fees Details",   path: "/dashboard/student-management/course-details",     module: "Course and Fees Details",       icon: BookOpen      },
   { name: "Fees Receipt",              path: "/dashboard/student-management/fees-receipt",        module: "Fees Receipt",                  icon: Receipt       },
@@ -156,7 +157,7 @@ const studentManagementItems = [
 ];
 
 const traineeManagementItems = [
-  { name: "Dashboard",                 path: "/dashboard/trainer-management/dashboard",         module: "TrainerDashboard",          icon: DashboardIcon },
+  // { name: "Dashboard",                 path: "/dashboard/trainer-management/dashboard",         module: "TrainerDashboard",          icon: DashboardIcon },
   { name: "Class Status", module: "Class Status", icon: ClipboardList, isDropdown: true, children: [
       { name: "Ongoing",     path: "/dashboard/trainer-management/class-status/ongoing",     icon: Play        },
       { name: "Completed",   path: "/dashboard/trainer-management/class-status/completed",   icon: CheckCircle },
@@ -181,7 +182,7 @@ const traineeManagementItems = [
   { name: "Marks & Results", path: "/dashboard/trainer-management/results", module: "Trainer Marks", icon: CheckSquare },];
 
 const ntscManagementItems = [
-  { name: "Dashboard",                               path: "/dashboard/ntsc-management/dashboard",          module: "NTSC Dashboard",                              icon: DashboardIcon },
+  // { name: "Dashboard",                               path: "/dashboard/ntsc-management/dashboard",          module: "NTSC Dashboard",                              icon: DashboardIcon },
   { name: "Download A4 Sheet",                       path: "/dashboard/ntsc-management/download-a4",        module: "Download A4 Sheet",                           icon: Printer       },
   { name: "Enquiry / Admission and Document",        path: "/dashboard/ntsc-management/enquiry-admission",  module: "Enquiry / Admission and Document",             icon: FileText      },
   { name: "Update Class Status",                     path: "/dashboard/ntsc-management/class-status",       module: "Update Class Status",                         icon: RefreshCw     },
@@ -251,19 +252,37 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const [isClassStatusOpen,        setIsClassStatusOpen]        = useState(pathname.includes("/class-status"));
   const [isBackgroundImagesOpen,   setIsBackgroundImagesOpen]   = useState(pathname.includes("/background-images"));
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !user) router.push("/login");
-  }, [user, loading, router]);
+useEffect(() => {
+  if (loading) return; // still loading, wait
+  if (!user) {
+    // Double check localStorage before redirecting
+    const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
+    if (!savedUser || !savedToken) {
+      router.push("/");
+    }
+  }
+}, [user, loading, router]);
   useEffect(() => {
   setIsMobileSidebarOpen(false);
 }, [pathname]);
 
   const hasPerm = (modName: string) =>
-    user?.role === "Super Admin" || user?.role === "Admin" || permissions?.[modName]?.view;
-
-  const showDashboard = permissions?.["Dashboard"]?.view || user?.role === "Super Admin" || user?.role === "Admin";
-  const showPayments  = permissions?.["Payments"]?.view  || user?.role === "Super Admin" || user?.role === "Admin";
+  user?.role === "Super Admin"
+  || user?.role === "Admin"
+  || user?.roleName === "Super Admin"   // ← add
+  || user?.roleName === "Admin"         // ← add
+  || permissions?.[modName]?.view;
+  const showDashboard = permissions?.["Dashboard"]?.view
+  || user?.role === "Super Admin"
+  || user?.role === "Admin"
+  || user?.roleName === "Super Admin"   // ← add
+  || user?.roleName === "Admin";        // ← add
+  const showPayments = permissions?.["Payments"]?.view
+  || user?.role === "Super Admin"
+  || user?.role === "Admin"
+  || user?.roleName === "Super Admin"   // ← add
+  || user?.roleName === "Admin";        // ← add
 
   const visibleUserItems      = userManagementItems.filter(i => hasPerm(i.module));
   const visibleSettingsItems  = websiteSettingsItems.filter(i => hasPerm(i.module));

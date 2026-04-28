@@ -1,468 +1,3 @@
-// "use client";
-
-// import { useState, useRef, useEffect } from "react";
-// import Link from "next/link";
-// import Image from "next/image";
-// import { usePathname } from "next/navigation";
-// import {
-//   Lock,
-//   User,
-//   Users,
-//   GraduationCap,
-//   Menu,
-//   X,
-//   Phone,
-//   Mail,
-//   Clock,
-//   ChevronDown,
-//   Briefcase
-// } from "lucide-react";
-// import { courses } from "@/data/courses";
-
-// const Navbar = () => {
-//   const pathname = usePathname();
-//   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const [isCoursesMenuOpen, setIsCoursesMenuOpen] = useState(false);
-//   const coursesMenuRef = useRef<HTMLDivElement>(null);
-
-//   // Group courses by category
-// // const skillTrainingMenu = [
-// //   {
-// //     title: "HVAC & Refrigeration",
-// //     items: [
-// //       { name: "Basic Refrigeration & A/C Training", id: "ac-training" },
-// //       {name:"Basic Electrical & HVAC Training",
-// //       "Advanced: Diploma in HVAC Training",
-// //       "International: Certified HVAC Engineer (CHE)",
-// //     ],
-// //   },
-// //   {
-// //     title: "Welding Courses",
-// //     items: [
-// //       "Basic Arc Welding",
-// //       "Basic TIG Welding",
-// //       "Basic MIG Welding",
-// //       "Pipe Fitter",
-// //       "Arc Welding - 3G",
-// //       "TIG Welding - 3G",
-// //       "MIG Welding - 3G",
-// //       "Advanced: Diploma in Welding (Arc, TIG, MIG-3G)",
-// //       "Advanced: Welding Supervisor",
-// //     ],
-// //   },
-// //   {
-// //     title: "Electrical Courses",
-// //     items: [
-// //       "Basic Electrician",
-// //       "Basic Industrial Electrician",
-// //       "Advanced: Diploma in Electrician (Domestic & Industries)",
-// //     ],
-// //   },
-// //   {
-// //     title: "Plumbing Courses",
-// //     items: [
-// //       "Basic Plumber Training",
-// //       "Pipeline Supervisor",
-// //       "Water Treatment Technician",
-// //     ],
-// //   },
-// //     {
-// //     title: "Home Appliance Courses",
-// //     items: [
-// //       "Basic Washing Machine Training",
-// //       "Advanced: Home Appliance Training",
-    
-// //     ],
-// //   },
-// //   {
-// //     title:"MEP Courses",
-// //     items:[
-// //       "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",
-// //       "Basic MEP Technician",
-// //       "Basic BMS & Fire Fighting"
-// //     ]
-// //   },
-// //   {
-// //     title:"Quality Courses",
-// //     items:[
-// //       "Basic NDT Training - ASNT Level -II (4 methods)",
-// //       "Advanced: NDT & Quality Management Training",
-// //       "Advanced Quality Inspector Training",
-// //       "International Diploma in Quality Management Training"
-
-// //     ]
-// //   },
-
-// //   {
-// //     title: "Safety Courses",
-// //     items: [
-// //       "Basic Fire & Safety Training",
-// //       "Advanced Diploma in Fire & Industrial Safety",
-// //       "International Certified Health, Safety & Environmental Officer (CHSEO)",
-// //       "NEBOSH Training",
-// //     ],
-// //   },
-// //   {
-// //     title:"Oil & Gas Courses",
-// //     items:[
-// //       "International Certified Oil & Gas Piping Engineer (CPE)",
-// //       "Diploma in Oil & Gas Engineer",
-// //       "Diploma Oil & Gas Rigger Training",
-// //       "Certified Oil & Gas Safety Engineer"
-// //     ]
-// //   }
-// // ];
-// const skillTrainingMenu = [
-//   {
-//     title: "HVAC & Refrigeration",
-//     items: [
-//       { name: "Basic Refrigeration & A/C Training", id: "ac-training" },
-//       { name: "Basic Electrical & HVAC Training", id: "electrical-hvac-training" },
-//       { name: "Advanced: Diploma in HVAC Training", id: "diploma-hvac" },
-//       { name: "International: Certified HVAC Engineer (CHE)", id: "certified-hvac-engineer" },
-//     ],
-//   },
-  
-//   {
-//     title: "Electrical Courses",
-//     items: [
-//       { name: "Basic Electrician", id: "basic-electrician" },
-//       { name: "Basic Industrial Electrician", id: "industrial-electrician" },
-//       { name: "Advanced: Diploma in Electrician (Domestic & Industries)", id: "diploma-electrician" },
-//     ],
-//   },
-//   {
-//     title: "Plumbing Courses",
-//     items: [
-//       { name: "Basic Plumber Training", id: "plumber-training" },
-//       { name: "Pipeline Supervisor", id: "pipeline-supervisor" },
-//       { name: "Water Treatment Technician", id: "water-treatment-technician" },
-//     ],
-//   },
-//   {
-//     title: "Welding Courses",
-//     items: [
-//       { name: "Basic Arc Welding", id: "arc-welding" },
-//       { name: "Basic TIG Welding", id: "tig-welding" },
-//       { name: "Basic MIG Welding", id: "mig-welding" },
-//       { name: "Pipe Fitter", id: "pipe-fitter" },
-//       { name: "Arc Welding - 3G", id: "arc-welding-3g" },
-//       { name: "TIG Welding - 3G", id: "tig-welding-3g" },
-//       { name: "MIG Welding - 3G", id: "mig-welding-3g" },
-//       { name: "Advanced: Diploma in Welding (Arc, TIG, MIG-3G)", id: "diploma-welding" },
-//       { name: "Advanced: Welding Supervisor", id: "welding-supervisor" },
-//     ],
-//   },
-//   {
-//     title: "Home Appliance Courses",
-//     items: [
-//       { name: "Basic Washing Machine Training", id: "washing-machine-training" },
-//       { name: "Advanced: Home Appliance Training", id: "home-appliance-training" },
-//     ],
-//   },
-//   {
-//     title: "MEP Courses",
-//     items: [
-//       { name: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)", id: "certified-mep-engineer" },
-//       { name: "Basic MEP Technician", id: "mep-technician" },
-//       { name: "Basic BMS & Fire Fighting", id: "bms-fire-fighting" },
-//     ],
-//   },
-//   {
-//     title: "Quality Courses",
-//     items: [
-//       { name: "Basic NDT Training - ASNT Level -II (4 methods)", id: "ndt-level-2" },
-//       { name: "Advanced: NDT & Quality Management Training", id: "ndt-quality-management" },
-//       { name: "Advanced Quality Inspector Training", id: "quality-inspector" },
-//       { name: "International Diploma in Quality Management Training", id: "diploma-quality-management" },
-//     ],
-//   },
-//   {
-//     title: "Safety Courses",
-//     items: [
-//       { name: "Basic Fire & Safety Training", id: "fire-safety-training" },
-//       { name: "Advanced Diploma in Fire & Industrial Safety", id: "diploma-fire-safety" },
-//       { name: "International Certified Health, Safety & Environmental Officer (CHSEO)", id: "chseo" },
-//       { name: "NEBOSH Training", id: "nebosh-training" },
-//     ],
-//   },
-//   {
-//     title: "Oil & Gas Courses",
-//     items: [
-//       { name: "International Certified Oil & Gas Piping Engineer (CPE)", id: "oil-gas-piping-engineer" },
-//       { name: "Diploma in Oil & Gas Engineer", id: "diploma-oil-gas" },
-//       { name: "Diploma Oil & Gas Rigger Training", id: "oil-gas-rigger" },
-//       { name: "Certified Oil & Gas Safety Engineer", id: "oil-gas-safety-engineer" },
-//     ],
-//   },
-// ];
-//   // Close menus on click outside
-//   useEffect(() => {
-//     const handleClickOutside = (event: MouseEvent) => {
-//       if (
-//         coursesMenuRef.current &&
-//         !coursesMenuRef.current.contains(event.target as Node)
-//       ) {
-//         setIsCoursesMenuOpen(false);
-//       }
-//     };
-
-//     document.addEventListener("mousedown", handleClickOutside);
-//     return () => document.removeEventListener("mousedown", handleClickOutside);
-//   }, []);
-
-//   // Hide Navbar on login and dashboard pages
-//   if (pathname?.startsWith("/login") || pathname?.startsWith("/dashboard")) {
-//     return null;
-//   }
-
-//   const menuItems = [
-//     { name: "Home", href: "/" },
-//     { name: "Skill Training", href: "/courses", dropdown: true },
-//     { name: "Corporate Training", href: "#corporate-training" },
-//     { name: "Consulting Services", href: "#consulting" },
-//     { name: "Course Calendar", href: "/calendar" },
-//     { name: "Placements", href: "/placements/register" },
-//     { name: "Infrastructure", href: "/infrastructure" },
-//     { name: "Contact Us", href: "/contact" },
-//   ];
-
-//   return (
-//     <header className="w-full relative shadow-sm">
-//       {/* Top Bar */}
-//       <div className="bg-[#0b1f3a] text-white py-2 px-4 md:px-12 flex flex-row justify-between items-center text-[10px] sm:text-xs md:text-sm font-medium">
-//         <div className="flex items-center space-x-4">
-//           <span className="flex items-center gap-1.5">
-//             <Clock size={14} className="text-blue-400" />
-//             Business Hours : 9.30 am to 7.00 pm
-//           </span>
-//         </div>
-
-//         <div className="flex items-center space-x-6">
-//           <div
-//             className="relative group py-1"
-//             onMouseEnter={() => setIsLoginMenuOpen(true)}
-//             onMouseLeave={() => setIsLoginMenuOpen(false)}
-//           >
-//             <button className="flex items-center gap-2 text-white hover:text-blue-300 transition-colors uppercase tracking-wider text-[10px] md:text-xs">
-//               <Lock size={14} />
-//               Login Access
-//             </button>
-
-//             {/* Dropdown */}
-//             <div
-//               className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${isLoginMenuOpen
-//                 ? "opacity-100 translate-y-0 visible"
-//                 : "opacity-0 -translate-y-2 invisible"
-//                 }`}
-//             >
-//               <div className="p-2">
-//                 <Link
-//                   href="/login/admin"
-//                   className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-//                   onClick={() => setIsLoginMenuOpen(false)}
-//                 >
-//                   <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-//                     <User size={16} />
-//                   </div>
-//                   <span className="font-semibold text-sm">Admin</span>
-//                 </Link>
-
-//                 <Link
-//                   href="/login/associate"
-//                   className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-//                   onClick={() => setIsLoginMenuOpen(false)}
-//                 >
-//                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-//                     <Users size={16} />
-//                   </div>
-//                   <span className="font-semibold text-sm">Associate</span>
-//                 </Link>
-
-//                 <Link
-//                   href="/login/student"
-//                   className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-//                   onClick={() => setIsLoginMenuOpen(false)}
-//                 >
-//                   <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-//                     <GraduationCap size={16} />
-//                   </div>
-//                   <span className="font-semibold text-sm">Student</span>
-//                 </Link>
-
-//                 <Link
-//                   href="/login/trainee"
-//                   className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-//                   onClick={() => setIsLoginMenuOpen(false)}
-//                 >
-//                   <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-//                     <Briefcase size={16} />
-//                   </div>
-//                   <span className="font-semibold text-sm">Trainee</span>
-//                 </Link>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Main Navbar */}
-//       <nav className="bg-white px-4 md:px-6 py-3 sticky top-0 z-40 border-b">
-//         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 relative">
-//           <Link href="/" className="flex items-center shrink-0">
-//             <Image
-//               src="/logo.png"
-//               alt="NSKILL Logo"
-//               width={180}
-//               height={50}
-//               className="object-contain h-8 md:h-11 w-auto"
-//               priority
-//             />
-//           </Link>
-
-//           <ul className="hidden lg:flex items-center justify-end flex-1 md:space-x-0.5 xl:space-x-1">
-//             {menuItems.map((item) => (
-//               <li key={item.name} className={`shrink-0 ${item.dropdown ? "" : "relative group"}`}>
-//                 {item.dropdown ? (
-//                   <div className="static" ref={coursesMenuRef}>
-//                     <button
-//                       onClick={() => setIsCoursesMenuOpen(!isCoursesMenuOpen)}
-//                      className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap 
-// ${isCoursesMenuOpen ? "text-blue-600" : "text-[#0b1f3a] hover:text-blue-600"}`}
-//                     >
-//                       {item.name}
-//                       <ChevronDown size={14} className={`transition-transform duration-300 ${isCoursesMenuOpen ? "rotate-180" : ""}`} />
-//                     </button>
-
-//                     {/* Mega Menu Dropdown */}
-//                     <div className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[95vw] max-w-5xl bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.18)] z-50 border border-slate-100 overflow-hidden transition-all duration-300 origin-top ${isCoursesMenuOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}`}>
-//                       <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
-//                         <div className="grid grid-cols-3 gap-6 max-h-[400px] overflow-y-auto pr-2">
-//                     {skillTrainingMenu.map((section, index) => (
-//   <div key={index} className="space-y-2">
-
-//     <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
-//       <div className="w-1 h-4 bg-blue-600 rounded-full"></div>
-//       <h4 className="text-base font-bold text-slate-800 tracking-wide uppercase">
-//       {/*  */}
-//         {section.title}
-//       </h4>
-//     </div>
-
-//     <ul className="grid grid-cols-1 gap-0.5">
-// {section.items.map((item, i) => (
-//   <li key={i}>
-//     <Link
-//       href={`/courses/${item.id}`}   // ✅ dynamic routing
-//       className="block p-1 px-3 rounded-md hover:bg-slate-50 text-[#0b1f3a] hover:text-blue-700 transition-all"
-//       onClick={() => setIsCoursesMenuOpen(false)}
-//     >
-//       <span className="text-base font-medium uppercase tracking-tight block">
-//         {item.name}
-//       </span>
-//     </Link>
-//   </li>
-// ))}
-//     </ul>
-
-//   </div>
-// ))}
-//                         </div>
-
-//                         {/* All Courses Link */}
-//                         <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
-//                           <Link
-//                             href="/courses"
-//                             className="group flex items-center gap-2 px-6 py-2 bg-[#0b1f3a] text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-blue-600 transition-all shadow-lg active:scale-95"
-//                             onClick={() => setIsCoursesMenuOpen(false)}
-//                           >
-//                             Explore Full Catalog
-//                             <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
-//                               <ChevronDown size={10} className="-rotate-90" />
-//                             </div>
-//                           </Link>
-//                         </div>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 ) : (
-//                   <Link
-//                     href={item.href}
-//                     className="px-2 xl:px-3 py-2 font-semibold text-[#0b1f3a] hover:text-blue-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
-//                   >
-//                     {item.name}
-//                   </Link>
-//                 )}
-//               </li>
-//             ))}
-//           </ul>
-
-//           {/* Mobile Toggle */}
-//           <div className="lg:hidden">
-//             <button
-//               onClick={() => setIsMenuOpen(!isMenuOpen)}
-//               className="p-2 text-[#0b1f3a] hover:bg-gray-100 rounded-lg transition"
-//             >
-//               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-//             </button>
-//           </div>
-//         </div>
-//       </nav>
-
-//       {/* Mobile Menu Backdrop */}
-//       {isMenuOpen && (
-//         <div
-//           className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
-//           onClick={() => setIsMenuOpen(false)}
-//         />
-//       )}
-
-//       {/* Mobile Menu Panel */}
-//       <div className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 p-6 flex flex-col lg:hidden transform transition-transform duration-300 ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
-//         <div className="flex justify-between items-center mb-10">
-//           <Link href="/" onClick={() => setIsMenuOpen(false)}>
-//             <Image
-//               src="/logo.png"
-//               alt="NSKILL Logo"
-//               width={200}
-//               height={60}
-//               className="object-contain"
-//             />
-//           </Link>
-//           <button
-//             onClick={() => setIsMenuOpen(false)}
-//             className="p-2 hover:bg-gray-100 rounded-full"
-//           >
-//             <X size={24} />
-//           </button>
-//         </div>
-
-//         <ul className="space-y-1 overflow-y-auto">
-//           {menuItems.map((item) => (
-//             <li key={item.name}>
-//               <Link
-//                 href={item.href}
-//                 onClick={() => setIsMenuOpen(false)}
-//                 className="block px-4 py-3 text-lg font-bold text-[#0b1f3a] hover:bg-blue-50 hover:text-blue-600 rounded-xl transition"
-//               >
-//                 {item.name}
-//               </Link>
-//             </li>
-//           ))}
-//         </ul>
-
-//         <div className="mt-auto pt-6 border-t">
-//           <p className="text-xs text-center text-gray-500 font-medium uppercase tracking-widest">
-//             Business Hours : 9.30 to 7.00
-//           </p>
-//         </div>
-//       </div>
-//     </header>
-//   );
-// };
-
-// export default Navbar;
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -476,8 +11,6 @@ import {
   GraduationCap,
   Menu,
   X,
-  Phone,
-  Mail,
   Clock,
   ChevronDown,
   Briefcase,
@@ -485,15 +18,21 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface CourseMenuItem {
-  name: string;
-  id: string;
+  name:           string;
+  id:             string;
+  thumbnail_url?: string | null;
 }
 interface CategoryMenu {
   title: string;
   items: CourseMenuItem[];
 }
+interface HoveredCourse {
+  name: string;
+  img:  string;
+  cat:  string;
+}
 
-// ─── Category order (controls display order in mega menu) ─────────────────────
+// ─── Category order ───────────────────────────────────────────────────────────
 const CATEGORY_ORDER = [
   "HVAC & Refrigeration",
   "Electrical",
@@ -506,6 +45,75 @@ const CATEGORY_ORDER = [
   "Oil & Gas",
 ];
 
+// ─── Fallback images per category ────────────────────────────────────────────
+const CATEGORY_FALLBACK: Record<string, string> = {
+  "HVAC & Refrigeration": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80",
+  "Electrical":           "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
+  "Plumbing":             "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80",
+  "Welding":              "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+  "Home Appliance":       "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80",
+  "MEP":                  "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80",
+  "Quality":              "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
+  "Safety":               "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+  "Oil & Gas":            "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+};
+const DEFAULT_FALLBACK = "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80";
+
+// ─── Course link ──────────────────────────────────────────────────────────────
+function CourseLink({
+  course,
+  category,
+  onClose,
+  onHover,
+  onHoverEnd,
+}: {
+  course:     CourseMenuItem;
+  category:   string;
+  onClose:    () => void;
+  onHover:    (data: HoveredCourse) => void;
+  onHoverEnd: () => void;
+}) {
+  const imgSrc = course.thumbnail_url
+    || CATEGORY_FALLBACK[category]
+    || DEFAULT_FALLBACK;
+
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleMouseEnter = () => {
+    clearTimeout(timerRef.current);
+    onHover({ name: course.name, img: imgSrc, cat: category });
+  };
+
+  const handleMouseLeave = () => {
+    // Small delay so image doesn't flash when moving between course items
+    timerRef.current = setTimeout(onHoverEnd, 150);
+  };
+
+  return (
+    <li>
+      <Link
+        href={`/courses/${course.id}`}
+        className="flex items-center gap-2 p-1 px-3 rounded-md hover:bg-slate-50 text-[#0b1f3a] hover:text-blue-700 transition-all group/item"
+        onClick={onClose}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <span className="text-sm font-medium uppercase tracking-tight block flex-1">
+          {course.name}
+        </span>
+        <svg
+          width="10" height="10" viewBox="0 0 10 10" fill="none"
+          className="opacity-0 group-hover/item:opacity-100 transition-opacity shrink-0 text-blue-500"
+          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+        >
+          <path d="M2 8L8 2M4 2h4v4"/>
+        </svg>
+      </Link>
+    </li>
+  );
+}
+
+// ─── Main Navbar ──────────────────────────────────────────────────────────────
 const Navbar = () => {
   const pathname = usePathname();
   const [isLoginMenuOpen,   setIsLoginMenuOpen]   = useState(false);
@@ -513,11 +121,14 @@ const Navbar = () => {
   const [isCoursesMenuOpen, setIsCoursesMenuOpen] = useState(false);
   const [skillTrainingMenu, setSkillTrainingMenu] = useState<CategoryMenu[]>([]);
   const [menuLoading,       setMenuLoading]       = useState(true);
+  const [hoveredCourse,     setHoveredCourse]     = useState<HoveredCourse | null>(null);
   const coursesMenuRef = useRef<HTMLDivElement>(null);
 
-  // ── Fetch all courses from API and group by category ──────────────────────
+  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
+  // ── Fetch courses ─────────────────────────────────────────────────────────
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses`)
+    fetch(`${API_URL}/api/courses`)
       .then(r => {
         if (!r.ok) throw new Error("Failed to fetch courses");
         return r.json();
@@ -525,23 +136,24 @@ const Navbar = () => {
       .then((courses: any[]) => {
         if (!Array.isArray(courses)) return;
 
-        // Group courses by category
-        const grouped = courses.reduce((acc: Record<string, CourseMenuItem[]>, course: any) => {
-          const cat = course.category ?? "Other";
-          if (!acc[cat]) acc[cat] = [];
-          acc[cat].push({
-            name: course.title,
-            id:   course.slug,  // ← real slug from DB
-          });
-          return acc;
-        }, {});
+        const grouped = courses.reduce(
+          (acc: Record<string, CourseMenuItem[]>, course: any) => {
+            const cat = course.category ?? "Other";
+            if (!acc[cat]) acc[cat] = [];
+            acc[cat].push({
+              name:          course.title,
+              id:            course.slug,
+              thumbnail_url: course.thumbnail_url ?? null,
+            });
+            return acc;
+          },
+          {}
+        );
 
-        // Sort by CATEGORY_ORDER, unknown categories go to end
         const sorted: CategoryMenu[] = CATEGORY_ORDER
           .filter(cat => grouped[cat])
           .map(cat => ({ title: cat, items: grouped[cat] }));
 
-        // Append any categories not in CATEGORY_ORDER
         Object.keys(grouped).forEach(cat => {
           if (!CATEGORY_ORDER.includes(cat)) {
             sorted.push({ title: cat, items: grouped[cat] });
@@ -554,7 +166,7 @@ const Navbar = () => {
       .finally(() => setMenuLoading(false));
   }, []);
 
-  // ── Close mega menu on outside click ─────────────────────────────────────
+  // ── Close on outside click ────────────────────────────────────────────────
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -562,109 +174,127 @@ const Navbar = () => {
         !coursesMenuRef.current.contains(event.target as Node)
       ) {
         setIsCoursesMenuOpen(false);
+        setHoveredCourse(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ── Hide Navbar on login and dashboard pages ──────────────────────────────
+  const closeMegaMenu = () => {
+    setIsCoursesMenuOpen(false);
+    setHoveredCourse(null);
+  };
+
   if (pathname?.startsWith("/login") || pathname?.startsWith("/dashboard")) {
     return null;
   }
 
   const menuItems = [
-    { name: "Home",               href: "/"                    },
-    { name: "Skill Training",     href: "/courses", dropdown: true },
-    { name: "Corporate Training", href: "#corporate-training"  },
-    { name: "Consulting Services",href: "#consulting"          },
-    { name: "Course Calendar",    href: "/calendar"            },
-    { name: "Placements",         href: "/placements/register" },
-    { name: "Infrastructure",     href: "/infrastructure"      },
-    { name: "Contact Us",         href: "/contact"             },
+    { name: "Home",                href: "/"                    },
+    { name: "Skill Training",      href: "/courses", dropdown: true },
+    { name: "Corporate Training",  href: "#corporate-training"  },
+    { name: "Consulting Services", href: "#consulting"          },
+    { name: "Course Calendar",     href: "/course_calender"     },
+    { name: "Placements",          href: "/placements/register" },
+    { name: "Infrastructure",      href: "/infrastructure"      },
+    { name: "Contact Us",          href: "/contact"             },
   ];
 
   return (
     <header className="w-full relative shadow-sm">
 
       {/* ── Top Bar ── */}
-      <div className="bg-[#0b1f3a] text-white py-2 px-4 md:px-12 flex flex-row justify-between items-center text-[10px] sm:text-xs md:text-sm font-medium">
-        <div className="flex items-center space-x-4">
-          <span className="flex items-center gap-1.5">
-            <Clock size={14} className="text-blue-400" />
-            Business Hours : 9.30 am to 7.00 pm
-          </span>
-        </div>
+      
+{/* ── Top Bar ── */}
+{/* ── Top Bar ── */}
+<div className="bg-[#0b1f3a] text-white py-2 px-4 md:px-6 text-[10px] sm:text-xs font-medium">
+  <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1">
+    {/* Left side — hours + contact */}
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {/* Business hours — always visible */}
+      <span className="flex items-center gap-1.5 whitespace-nowrap">
+        <Clock size={12} className="text-blue-400 shrink-0" />
+        Business Hours : 9.30 am to 7.00 pm
+      </span>
 
-        <div className="flex items-center space-x-6">
-          <div
-            className="relative group py-1"
-            onMouseEnter={() => setIsLoginMenuOpen(true)}
-            onMouseLeave={() => setIsLoginMenuOpen(false)}
-          >
-            <button className="flex items-center gap-2 text-white hover:text-blue-300 transition-colors uppercase tracking-wider text-[10px] md:text-xs">
-              <Lock size={14} />
-              Login Access
-            </button>
+      <span className="text-white/20 hidden sm:inline">|</span>
 
-            {/* Login Dropdown */}
-            <div
-              className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${
-                isLoginMenuOpen
-                  ? "opacity-100 translate-y-0 visible"
-                  : "opacity-0 -translate-y-2 invisible"
-              }`}
-            >
-              <div className="p-2">
-                <Link
-                  href="/login/admin"
-                  className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-                  onClick={() => setIsLoginMenuOpen(false)}
-                >
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                    <User size={16} />
-                  </div>
-                  <span className="font-semibold text-sm">Admin</span>
-                </Link>
+      {/* Phone numbers — hidden on xs, show on sm+ */}
+      <span className="hidden sm:flex items-center gap-1.5 whitespace-nowrap">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+          stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+        <a href="tel:09884209774" className="hover:text-blue-300 transition-colors">
+          +91 98842 09774
+        </a>
+        <span className="text-white/20">|</span>
+        <a href="tel:08056063023" className="hover:text-blue-300 transition-colors">
+          +91 80560 63023
+        </a>
+      </span>
 
-                <Link
-                  href="/login/associate"
-                  className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-                  onClick={() => setIsLoginMenuOpen(false)}
-                >
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                    <Users size={16} />
-                  </div>
-                  <span className="font-semibold text-sm">Associate</span>
-                </Link>
+      <span className="text-white/20 hidden md:inline">|</span>
 
-                <Link
-                  href="/login/student"
-                  className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-                  onClick={() => setIsLoginMenuOpen(false)}
-                >
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-                    <GraduationCap size={16} />
-                  </div>
-                  <span className="font-semibold text-sm">Student</span>
-                </Link>
+      {/* Email — hidden on xs+sm, show on md+ */}
+      <span className="hidden md:flex items-center gap-1.5 whitespace-nowrap">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+          stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <a href="mailto:nskilltraining@gmail.com" className="hover:text-blue-300 transition-colors">
+          nskilltraining@gmail.com
+        </a>
+      </span>
+    </div>
 
-                <Link
-                  href="/login/trainee"
-                  className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-                  onClick={() => setIsLoginMenuOpen(false)}
-                >
-                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                    <Briefcase size={16} />
-                  </div>
-                  <span className="font-semibold text-sm">Trainee</span>
-                </Link>
-              </div>
-            </div>
+    {/* Right side — Login Access */}
+    <div className="flex items-center">
+      <div
+        className="relative py-1"
+        onMouseEnter={() => setIsLoginMenuOpen(true)}
+        onMouseLeave={() => setIsLoginMenuOpen(false)}
+      >
+        <button className="flex items-center gap-1.5 text-white hover:text-blue-300 transition-colors uppercase tracking-wider text-[10px] md:text-xs whitespace-nowrap">
+          <Lock size={13} />
+          Login Access
+        </button>
+
+        <div
+          className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${
+            isLoginMenuOpen
+              ? "opacity-100 translate-y-0 visible"
+              : "opacity-0 -translate-y-2 invisible"
+          }`}
+        >
+          <div className="p-2">
+            {[
+              { href: "/login/admin",    icon: <User size={16}/>,          bg: "bg-blue-100",   text: "text-blue-600",   label: "Admin"     },
+              { href: "/login/associate",icon: <Users size={16}/>,         bg: "bg-green-100",  text: "text-green-600",  label: "Associate" },
+              { href: "/login/student",  icon: <GraduationCap size={16}/>, bg: "bg-purple-100", text: "text-purple-600", label: "Student"   },
+              { href: "/login/trainer",  icon: <Briefcase size={16}/>,     bg: "bg-orange-100", text: "text-orange-600", label: "Trainer"   },
+            ].map(({ href, icon, bg, text, label }) => (
+              <Link
+                key={label}
+                href={href}
+                className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
+                onClick={() => setIsLoginMenuOpen(false)}
+              >
+                <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center ${text}`}>
+                  {icon}
+                </div>
+                <span className="font-semibold text-sm">{label}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
+    </div>
 
+  </div>
+</div>
       {/* ── Main Navbar ── */}
       <nav className="bg-white px-4 md:px-6 py-3 sticky top-0 z-40 border-b">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 relative">
@@ -687,7 +317,10 @@ const Navbar = () => {
                 {item.dropdown ? (
                   <div className="static" ref={coursesMenuRef}>
                     <button
-                      onClick={() => setIsCoursesMenuOpen(!isCoursesMenuOpen)}
+                      onClick={() => {
+                        setIsCoursesMenuOpen(!isCoursesMenuOpen);
+                        setHoveredCourse(null);
+                      }}
                       className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap ${
                         isCoursesMenuOpen
                           ? "text-blue-600"
@@ -709,65 +342,102 @@ const Navbar = () => {
                           : "opacity-0 scale-95 invisible"
                       }`}
                     >
-                      <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
+                      {/* ── Course list — fades out when course is hovered ── */}
+                   <div
+  className={`transition-opacity duration-200 ${
+    hoveredCourse ? "opacity-0" : "opacity-100"
+  }`}
+>
+                        <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
 
-                        {/* Loading state */}
-                        {menuLoading ? (
-                          <div className="flex items-center justify-center py-12 text-slate-400">
-                            <svg className="animate-spin w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                            </svg>
-                            Loading courses...
-                          </div>
-                        ) : skillTrainingMenu.length === 0 ? (
-                          <div className="text-center py-12 text-slate-400 text-sm">
-                            No courses available
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-3 gap-6 max-h-[400px] overflow-y-auto pr-2">
-                            {skillTrainingMenu.map((section, index) => (
-                              <div key={index} className="space-y-2">
-                                <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
-                                  <div className="w-1 h-4 bg-blue-600 rounded-full" />
-                                  <h4 className="text-base font-bold text-slate-800 tracking-wide uppercase">
-                                    {section.title}
-                                  </h4>
-                                </div>
-                                <ul className="grid grid-cols-1 gap-0.5">
-                                  {section.items.map((course, i) => (
-                                    <li key={i}>
-                                      <Link
-                                        href={`/courses/${course.id}`}
-                                        className="block p-1 px-3 rounded-md hover:bg-slate-50 text-[#0b1f3a] hover:text-blue-700 transition-all"
-                                        onClick={() => setIsCoursesMenuOpen(false)}
-                                      >
-                                        <span className="text-sm font-medium uppercase tracking-tight block">
-                                          {course.name}
-                                        </span>
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* All Courses Link */}
-                        <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
-                          <Link
-                            href="/courses"
-                            className="group flex items-center gap-2 px-6 py-2 bg-[#0b1f3a] text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-blue-600 transition-all shadow-lg active:scale-95"
-                            onClick={() => setIsCoursesMenuOpen(false)}
-                          >
-                            Explore Full Catalog
-                            <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                              <ChevronDown size={10} className="-rotate-90" />
+                          {menuLoading ? (
+                            <div className="flex items-center justify-center py-12 text-slate-400">
+                              <svg className="animate-spin w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                              </svg>
+                              Loading courses...
                             </div>
-                          </Link>
+                          ) : skillTrainingMenu.length === 0 ? (
+                            <div className="text-center py-12 text-slate-400 text-sm">
+                              No courses available
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-3 gap-6 max-h-[400px] overflow-y-auto pr-2">
+                              {skillTrainingMenu.map((section, index) => (
+                                <div key={index} className="space-y-2">
+                                  <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
+                                    <div className="w-1 h-4 bg-blue-600 rounded-full" />
+                                    <h4 className="text-base font-bold text-slate-800 tracking-wide uppercase">
+                                      {section.title}
+                                    </h4>
+                                  </div>
+                                  <ul className="grid grid-cols-1 gap-0.5">
+                                    {section.items.map((course, i) => (
+                                      <CourseLink
+                                        key={i}
+                                        course={course}
+                                        category={section.title}
+                                        onClose={closeMegaMenu}
+                                        onHover={setHoveredCourse}
+                                        onHoverEnd={() => setHoveredCourse(null)}
+                                      />
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* All Courses Link */}
+                          <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
+                            <Link
+                              href="/courses"
+                              className="group flex items-center gap-2 px-6 py-2 bg-[#0b1f3a] text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-blue-600 transition-all shadow-lg active:scale-95"
+                              onClick={closeMegaMenu}
+                            >
+                              Explore Full Catalog
+                              <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                <ChevronDown size={10} className="-rotate-90" />
+                              </div>
+                            </Link>
+                          </div>
                         </div>
                       </div>
+
+                      {/* ── Image preview inside mega menu — shown on hover ── */}
+                    {/* ── Image preview inside mega menu — shown on hover ── */}
+{hoveredCourse && (
+  <div
+    className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none"
+  >
+                          <img
+                            src={hoveredCourse.img}
+                            alt={hoveredCourse.name}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                          {/* Text at bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 px-8 py-8">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-blue-300 mb-2">
+                              {hoveredCourse.cat}
+                            </p>
+                            <p className="text-white font-black text-2xl leading-snug mb-2">
+                              {hoveredCourse.name}
+                            </p>
+                            <p className="text-white/60 text-sm font-medium">
+                              Click to view full course details →
+                            </p>
+                          </div>
+                          {/* Category badge top right */}
+                          <div className="absolute top-5 right-5">
+                            <span className="bg-blue-600/80 backdrop-blur text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
+                              {hoveredCourse.cat}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -839,7 +509,6 @@ const Navbar = () => {
             </li>
           ))}
 
-          {/* Mobile course list grouped by category */}
           {!menuLoading && skillTrainingMenu.length > 0 && (
             <li>
               <div className="mt-4 space-y-4">
@@ -880,4 +549,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

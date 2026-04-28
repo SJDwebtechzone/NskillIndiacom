@@ -39,7 +39,7 @@ export default function NtscAdminPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}?role=NTSC_ADMIN`, { headers: getAuthHeaders() });
+     const res = await fetch(`${API}?role=Admin`, { headers: getAuthHeaders() });
       const json = await res.json();
       setUsers(json.data || []);
     } catch {
@@ -50,8 +50,7 @@ export default function NtscAdminPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
-
-  if (!can("Manage Users", "view")) {
+if (!can("NTSC Admin", "view")) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "60vh", gap: 12 }}>
         <div style={{ fontSize: 48 }}>⛔</div>

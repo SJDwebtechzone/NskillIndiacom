@@ -33,7 +33,7 @@ const AssociateLogin = () => {
             localStorage.setItem("user",        JSON.stringify(res.data.user));
             localStorage.setItem("permissions", JSON.stringify(res.data.permissions));
             
-            router.push("/dashboard");
+            router.push("/dashboard/associate-management/dashboard");
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Invalid credentials");

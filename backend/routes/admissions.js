@@ -635,5 +635,39 @@ router.get("/certificate-status", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// PATCH /api/admissions/:id/verify
+router.patch("/:id/verify", authMiddleware, async (req, res) => {
+  try {
+    if (req.user.roleName !== "Admin" && req.user.roleName !== "Super Admin") {
+      return res.status(403).json({ error: "Access denied. Admin only." });
+    }
 
+    const { id } = req.params;
+    const { verified_status, verified_remarks } = req.body;
+
+    const allowed = ["Verified", "Needs Update", "Pending Review"];
+    if (!allowed.includes(verified_status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    const result = await pool.query(
+      `UPDATE student_admissions
+       SET verified_status  = $1,
+           verified_remarks = $2,
+           verified_at      = NOW(),
+           verified_by_id   = $3
+       WHERE id = $4
+       RETURNING id, full_name, verified_status`,
+      [verified_status, verified_remarks || null, req.user.id, id]
+    );
+
+    if (result.rows.length === 0)
+      return res.status(404).json({ error: "Student not found" });
+
+    res.json({ success: true, student: result.rows[0] });
+  } catch (err) {
+    console.error("PATCH /verify error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 module.exports = router;
