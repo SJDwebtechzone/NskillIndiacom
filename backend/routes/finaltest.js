@@ -76,7 +76,7 @@ router.get('/student/course', async (req, res) => {
     }
 
     const email = userResult.rows[0].email;
-    console.log('Email from users table:', email);
+  
 
     // Now find course using that email
     const result = await pool.query(
@@ -84,7 +84,7 @@ router.get('/student/course', async (req, res) => {
       [email]
     );
 
-    console.log('DB result rows:', result.rows);
+   
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Student not found' });
@@ -175,7 +175,7 @@ router.post('/student/submit', async (req, res) => {
     let score = 0;
     questions.forEach((q) => {
       const studentAnswer = answers[q.id] || answers[String(q.id)]; // ← fix: check both int and string key
-      console.log(`Q${q.id}: student=${studentAnswer}, correct=${q.correct_ans}`);
+   
       if (studentAnswer && studentAnswer.toLowerCase() === q.correct_ans.toLowerCase()) {
         score++;
       }
@@ -189,7 +189,7 @@ router.post('/student/submit', async (req, res) => {
     const passPercent = configResult.rows[0]?.pass_percent || 50;
     const passed = total > 0 && (score / total) * 100 >= passPercent;
 
-    console.log(`Score: ${score}/${total}, Passed: ${passed}`);
+   
 
     await pool.query(
       `INSERT INTO finaltest_attempts (student_id, course_name, score, total, passed, time_taken)

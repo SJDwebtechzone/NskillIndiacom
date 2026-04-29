@@ -51,7 +51,8 @@ router.post("/upload", upload.array("media", 20), async (req, res) => {
 
     for (const file of req.files) {
       const isVideo = file.mimetype.startsWith("video/");
-      const fileUrl = `http://localhost:5000/uploads/${file.filename}`;
+      const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+const fileUrl = `${backendUrl}/uploads/${file.filename}`;
 
       await pool.query( // ✅ FIXED (db → pool)
         "INSERT INTO media (file_name, file_type, file_url) VALUES ($1, $2, $3)",

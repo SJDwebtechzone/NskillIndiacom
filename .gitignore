@@ -37,3 +37,15 @@ yarn-error.log*
 # Next.js
 **/.next/
 **/out/
+# ── ADD THESE NEW LINES ──
+# Backend uploads
+backend/uploads/
+uploads/
+
+# Backend log files
+backend/scripts/query_log.txt
+backend/scripts/patch_query_log.txt
+backend/scripts/error_log.txt
+
+# Backend env
+backend/.env

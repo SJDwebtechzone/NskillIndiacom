@@ -77,12 +77,12 @@ function CourseLink({
     || CATEGORY_FALLBACK[category]
     || DEFAULT_FALLBACK;
 
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleMouseEnter = () => {
-    clearTimeout(timerRef.current);
-    onHover({ name: course.name, img: imgSrc, cat: category });
-  };
+const handleMouseEnter = () => {
+  if (timerRef.current) clearTimeout(timerRef.current);
+  onHover({ name: course.name, img: imgSrc, cat: category });
+};
 
   const handleMouseLeave = () => {
     // Small delay so image doesn't flash when moving between course items
@@ -193,8 +193,9 @@ const Navbar = () => {
   const menuItems = [
     { name: "Home",                href: "/"                    },
     { name: "Skill Training",      href: "/courses", dropdown: true },
-    { name: "Corporate Training",  href: "#corporate-training"  },
-    { name: "Consulting Services", href: "#consulting"          },
+   // AFTER — disabled until pages are built
+{ name: "Corporate Training",  href: "/corporate-training"  },
+{ name: "Consulting Services", href: "/consulting"           },
     { name: "Course Calendar",     href: "/course_calender"     },
     { name: "Placements",          href: "/placements/register" },
     { name: "Infrastructure",      href: "/infrastructure"      },

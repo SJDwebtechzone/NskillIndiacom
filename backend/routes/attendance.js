@@ -1,5 +1,3 @@
-
-
 const express = require("express");
 const router  = express.Router();
 const pool    = require("../config/db");
@@ -7,13 +5,14 @@ const { authMiddleware } = require("../middleware/authMiddleware");
 const multer  = require("multer");
 const crypto  = require("crypto");
 
-// ✅ FIX 1: Only ONE multer instance — removed duplicate declaration
-// Your file had TWO `const upload = multer(...)` which crashes Node.js
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/attendance/"),
   filename:    (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
 });
 const upload = multer({ storage });
+
+// ✅ Single status list used everywhere — easy to update
+const ACTIVE_STATUSES = `('Approved', 'Completed', 'Ongoing', 'Active')`;
 
 /* =====================================================
    1. GET STUDENTS WITH ATTENDANCE STATUS
@@ -26,22 +25,23 @@ router.get("/students", authMiddleware, async (req, res) => {
       return res.status(400).json({ success: false, message: "Batch and date are required." });
     }
 
+    // ✅ FIX 1: Accept all active statuses not just 'Approved'
     let studentsQuery = `
       SELECT id, admission_number, full_name, email_id,
              course_name, photo_url, batch_allotted
       FROM student_admissions
-      WHERE status = 'Approved'
+      WHERE status IN ${ACTIVE_STATUSES}
     `;
     const params = [];
 
-if (batchAllotted) {
-  params.push(batchAllotted);                                    // ← exact match, no % wrapping
-  studentsQuery += ` AND batch_allotted = $${params.length}`;   // ← = instead of ILIKE
-}
-if (course) {
-  params.push(`%${course}%`);
-  studentsQuery += ` AND course_name ILIKE $${params.length}`;  // ← keep ILIKE for course
-}
+    if (batchAllotted) {
+      params.push(batchAllotted);
+      studentsQuery += ` AND batch_allotted = $${params.length}`;
+    }
+    if (course) {
+      params.push(`%${course}%`);
+      studentsQuery += ` AND course_name ILIKE $${params.length}`;
+    }
     studentsQuery += ` ORDER BY full_name ASC`;
 
     const studentsRes = await pool.query(studentsQuery, params);
@@ -74,7 +74,7 @@ if (course) {
 
     const attendanceMap = {};
     attendanceRes.rows.forEach(a => {
-       attendanceMap[String(a.admission_id)] = { 
+      attendanceMap[String(a.admission_id)] = {
         status:         a.status,
         method:         a.method || "manual",
         punch_in:       a.time_in  ? new Date(a.time_in).toTimeString().slice(0, 5)  : "09:00",
@@ -90,7 +90,7 @@ if (course) {
 
     const data = studentsRes.rows.map(s => ({
       ...s,
-     attendance: attendanceMap[String(s.id)] || { 
+      attendance: attendanceMap[String(s.id)] || {
         status:     "Absent",
         method:     "manual",
         punch_in:   "09:00",
@@ -136,18 +136,15 @@ router.post("/mark", authMiddleware, async (req, res) => {
           status       = EXCLUDED.status,
           remarks      = EXCLUDED.remarks,
           marked_by_id = COALESCE(EXCLUDED.marked_by_id, attendance.marked_by_id),
-          -- ✅ FIX: Keep original method if already set (qr/photo)
-          -- Only set to 'manual' if no method exists yet
-          method       = CASE 
-                           WHEN attendance.method IN ('qr', 'photo') 
-                           THEN attendance.method    -- ← keep original
-                           ELSE 'manual'             -- ← only for new/manual records
+          method       = CASE
+                           WHEN attendance.method IN ('qr', 'photo')
+                           THEN attendance.method
+                           ELSE 'manual'
                          END,
+          time_in      = COALESCE(attendance.time_in,  EXCLUDED.time_in),
+          time_out     = COALESCE(attendance.time_out, EXCLUDED.time_out),
           created_at   = CURRENT_TIMESTAMP
-      `, [
-        r.admission_id, date, batch,
-        r.status, r.remarks, marked_by_id
-      ]);
+      `, [r.admission_id, date, batch, r.status, r.remarks, marked_by_id]);
     }
 
     await client.query("COMMIT");
@@ -417,8 +414,9 @@ router.get("/student-report", authMiddleware, async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    // ✅ No status filter — find admission by email only
     const admRes = await pool.query(
-      "SELECT id, full_name, admission_number FROM student_admissions WHERE email_id = $1",
+      "SELECT id, full_name, admission_number FROM student_admissions WHERE email_id = $1 LIMIT 1",
       [email]
     );
 
@@ -501,6 +499,7 @@ router.get("/my-admission", authMiddleware, async (req, res) => {
 
     const { email, name } = userRes.rows[0];
 
+    // ✅ FIX 2: Accept all active statuses including Ongoing
     const admRes = await pool.query(`
       SELECT id AS admission_id,
              admission_number,
@@ -510,7 +509,7 @@ router.get("/my-admission", authMiddleware, async (req, res) => {
              photo_url
       FROM student_admissions
       WHERE email_id = $1
-        AND status = 'Approved'
+        AND status IN ${ACTIVE_STATUSES}
       LIMIT 1
     `, [email]);
 
@@ -555,8 +554,9 @@ router.post("/face/enrol", authMiddleware, async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    // ✅ Accept all active statuses
     const admRes = await pool.query(
-      "SELECT id FROM student_admissions WHERE email_id = $1 AND status = 'Approved' LIMIT 1",
+      `SELECT id FROM student_admissions WHERE email_id = $1 AND status IN ${ACTIVE_STATUSES} LIMIT 1`,
       [userRes.rows[0].email]
     );
     if (!admRes.rows.length) {
@@ -620,6 +620,7 @@ router.get("/face/check", authMiddleware, async (req, res) => {
 ===================================================== */
 router.get("/face/embeddings", authMiddleware, async (req, res) => {
   try {
+    // ✅ FIX 3: Removed broken "sa.AND status" — fixed to correct SQL
     const result = await pool.query(`
       SELECT
         fe.admission_id,
@@ -630,7 +631,7 @@ router.get("/face/embeddings", authMiddleware, async (req, res) => {
         sa.admission_number
       FROM face_embeddings fe
       JOIN student_admissions sa ON fe.admission_id = sa.id
-      WHERE sa.status = 'Approved'
+      WHERE sa.status IN ${ACTIVE_STATUSES}
       ORDER BY sa.full_name ASC
     `);
 

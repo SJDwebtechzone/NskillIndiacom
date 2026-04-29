@@ -28,7 +28,7 @@ export default function PlacementRegister() {
   const [loading, setLoading] = useState(false);
   const [tried, setTried] = useState(false);
   const [showPass, setShowPass] = useState(false);
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -39,7 +39,7 @@ export default function PlacementRegister() {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/placement/register", {
+      const res = await fetch(`${API}/api/placement/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

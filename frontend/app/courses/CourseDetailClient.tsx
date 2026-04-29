@@ -10,7 +10,8 @@ import {
   Medal, Rocket, HelpCircle, Plus, Minus,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+
 import { Pause, Play, Volume2, VolumeX, Maximize2, LayoutGrid, ChevronDown } from "lucide-react";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -23,192 +24,235 @@ function resolveVideoUrl(url: string): string {
   return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
 }
 // ─── Custom Video Player ───────────────────────────────────────────────────────
-function VideoPlayer({
-  src,
-  poster,
-  label,
-}: {
-  src: string;
-  poster?: string;
-  label: string;
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [hovered, setHovered] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+// function VideoPlayer({
+//   src,
+//   poster,
+//   label,
+// }: {
+//   src: string;
+//   poster?: string;
+//   label: string;
+// }) {
+//   const videoRef = useRef<HTMLVideoElement>(null);
+//   const [playing, setPlaying] = useState(false);
+//   const [muted, setMuted] = useState(false);
+//   const [progress, setProgress] = useState(0);
+//   const [hovered, setHovered] = useState(false);
+//   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.pause();
-    v.src = src;
-    v.load();
-    setPlaying(false);
-    setProgress(0);
-  }, [src]);
+//   useEffect(() => {
+//     const v = videoRef.current;
+//     if (!v) return;
+//     v.pause();
+//     v.src = src;
+//     v.load();
+//     setPlaying(false);
+//     setProgress(0);
+//   }, [src]);
 
-  // useEffect(() => {
-  //   const onChange = () => setIsFullscreen(!!document.fullscreenElement);
-  //   document.addEventListener("fullscreenchange", onChange);
-  //   return () => document.removeEventListener("fullscreenchange", onChange);
-  // }, []);
-  useEffect(() => {
-  const onChange = () => {
-    const full = !!document.fullscreenElement;
-    setIsFullscreen(full);
-    // ensure native controls off when not fullscreen
-    if (!full && videoRef.current) {
-      videoRef.current.controls = false;
-    }
-  };
-  document.addEventListener("fullscreenchange", onChange);
-  return () => document.removeEventListener("fullscreenchange", onChange);
-}, []);
+//   // useEffect(() => {
+//   //   const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+//   //   document.addEventListener("fullscreenchange", onChange);
+//   //   return () => document.removeEventListener("fullscreenchange", onChange);
+//   // }, []);
+//   useEffect(() => {
+//   const onChange = () => {
+//     const full = !!document.fullscreenElement;
+//     setIsFullscreen(full);
+//     // ensure native controls off when not fullscreen
+//     if (!full && videoRef.current) {
+//       videoRef.current.controls = false;
+//     }
+//   };
+//   document.addEventListener("fullscreenchange", onChange);
+//   return () => document.removeEventListener("fullscreenchange", onChange);
+// }, []);
 
-  const togglePlay = useCallback(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) {
-      v.play();
-      setPlaying(true);
-    } else {
-      v.pause();
-      setPlaying(false);
-    }
-  }, []);
+//   const togglePlay = useCallback(() => {
+//     const v = videoRef.current;
+//     if (!v) return;
+//     if (v.paused) {
+//       v.play();
+//       setPlaying(true);
+//     } else {
+//       v.pause();
+//       setPlaying(false);
+//     }
+//   }, []);
 
-  const toggleMute = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = !v.muted;
-    setMuted(v.muted);
-  }, []);
+//   const toggleMute = useCallback((e: React.MouseEvent) => {
+//     e.stopPropagation();
+//     const v = videoRef.current;
+//     if (!v) return;
+//     v.muted = !v.muted;
+//     setMuted(v.muted);
+//   }, []);
 
-  const handleTimeUpdate = () => {
-    const v = videoRef.current;
-    if (!v || !v.duration) return;
-    setProgress((v.currentTime / v.duration) * 100);
-  };
+//   const handleTimeUpdate = () => {
+//     const v = videoRef.current;
+//     if (!v || !v.duration) return;
+//     setProgress((v.currentTime / v.duration) * 100);
+//   };
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    const v = videoRef.current;
-    if (!v) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    v.currentTime = ((e.clientX - rect.left) / rect.width) * v.duration;
-  };
+//   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+//     e.stopPropagation();
+//     const v = videoRef.current;
+//     if (!v) return;
+//     const rect = e.currentTarget.getBoundingClientRect();
+//     v.currentTime = ((e.clientX - rect.left) / rect.width) * v.duration;
+//   };
 
- // Replace handleFullscreen with this
-const handleFullscreen = (e: React.MouseEvent) => {
-  e.stopPropagation();
-  const v = videoRef.current;
-  if (!v) return;
+//  // Replace handleFullscreen with this
+// const handleFullscreen = (e: React.MouseEvent) => {
+//   e.stopPropagation();
+//   const v = videoRef.current;
+//   if (!v) return;
 
-  // Add native controls temporarily during fullscreen
-  v.controls = true;
-  v.requestFullscreen?.().then(() => {
-    // Remove native controls when exiting fullscreen
-    const onExit = () => {
-      v.controls = false;
-      document.removeEventListener("fullscreenchange", onExit);
-    };
-    document.addEventListener("fullscreenchange", onExit);
-  }).catch(() => {
-    v.controls = false;
-  });
-};
+//   // Add native controls temporarily during fullscreen
+//   v.controls = true;
+//   v.requestFullscreen?.().then(() => {
+//     // Remove native controls when exiting fullscreen
+//     const onExit = () => {
+//       v.controls = false;
+//       document.removeEventListener("fullscreenchange", onExit);
+//     };
+//     document.addEventListener("fullscreenchange", onExit);
+//   }).catch(() => {
+//     v.controls = false;
+//   });
+// };
+
+//   return (
+//    <div
+//   className="relative rounded-2xl bg-slate-950 cursor-pointer overflow-hidden isolate"
+//   onMouseEnter={() => setHovered(true)}
+//   onMouseLeave={() => setHovered(false)}
+//   onClick={togglePlay}
+//   style={{ contain: "layout" }}
+// >
+//     <video
+//   ref={videoRef}
+//   poster={poster}
+//   className="w-full aspect-video object-cover"
+//   preload="metadata"
+//   onTimeUpdate={handleTimeUpdate}
+//   onEnded={() => setPlaying(false)}
+//   playsInline
+//   style={{ display: "block" }}
+// />
+//       <AnimatePresence>
+//         {!playing && !isFullscreen && (
+//           <motion.div
+//             initial={{ opacity: 0, scale: 0.8 }}
+//             animate={{ opacity: 1, scale: 1 }}
+//             exit={{ opacity: 0, scale: 0.8 }}
+//             transition={{ duration: 0.15 }}
+//             className="absolute inset-0 flex items-center justify-center bg-black/30"
+//           >
+//             <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+//               <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+//             </div>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//       {!isFullscreen && (
+//         <motion.div
+//           animate={{ opacity: hovered || !playing ? 1 : 0 }}
+//           transition={{ duration: 0.2 }}
+//           className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 pt-6 pb-2"
+//           onClick={(e) => e.stopPropagation()}
+//         >
+//           <div
+//             className="w-full h-1 bg-white/20 rounded-full mb-2 cursor-pointer"
+//             onClick={handleSeek}
+//           >
+//             <div
+//               className="h-full bg-blue-400 rounded-full"
+//               style={{ width: `${progress}%` }}
+//             />
+//           </div>
+//           <div className="flex items-center justify-between">
+//             <div className="flex items-center gap-2">
+//               <button
+//                 onClick={togglePlay}
+//                 className="text-white hover:text-blue-300 transition p-1"
+//               >
+//                 {playing ? (
+//                   <Pause className="w-3.5 h-3.5 fill-white" />
+//                 ) : (
+//                   <Play className="w-3.5 h-3.5 fill-white" />
+//                 )}
+//               </button>
+//               <button
+//                 onClick={toggleMute}
+//                 className="text-white hover:text-blue-300 transition p-1"
+//               >
+//                 {muted ? (
+//                   <VolumeX className="w-3.5 h-3.5" />
+//                 ) : (
+//                   <Volume2 className="w-3.5 h-3.5" />
+//                 )}
+//               </button>
+//               <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">
+//                 {label}
+//               </span>
+//             </div>
+//             <button
+//               onClick={handleFullscreen}
+//               className="text-white/60 hover:text-white transition p-1"
+//             >
+//               <Maximize2 className="w-3.5 h-3.5" />
+//             </button>
+//           </div>
+//         </motion.div>
+//       )}
+//     </div>
+//   );
+// }
+function VideoPlayer({ src, label }: { src: string; label: string }) {
+  const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-   <div
-  className="relative rounded-2xl bg-slate-950 cursor-pointer overflow-hidden isolate"
-  onMouseEnter={() => setHovered(true)}
-  onMouseLeave={() => setHovered(false)}
-  onClick={togglePlay}
-  style={{ contain: "layout" }}
->
-    <video
-  ref={videoRef}
-  poster={poster}
-  className="w-full aspect-video object-cover"
-  preload="metadata"
-  onTimeUpdate={handleTimeUpdate}
-  onEnded={() => setPlaying(false)}
-  playsInline
-  style={{ display: "block" }}
-/>
-      <AnimatePresence>
-        {!playing && !isFullscreen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.15 }}
-            className="absolute inset-0 flex items-center justify-center bg-black/30"
-          >
-            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-              <Play className="w-6 h-6 text-white fill-white ml-0.5" />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {!isFullscreen && (
-        <motion.div
-          animate={{ opacity: hovered || !playing ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 pt-6 pb-2"
-          onClick={(e) => e.stopPropagation()}
-        >
+    <div className="rounded-2xl overflow-hidden border border-white/10 bg-gray-800">
+      <div className="relative bg-black aspect-video">
+        {isPlaying ? (
+          <video
+            src={src}
+            controls
+            autoPlay
+            className="w-full h-full object-contain"
+            onEnded={() => setIsPlaying(false)}
+          />
+        ) : (
           <div
-            className="w-full h-1 bg-white/20 rounded-full mb-2 cursor-pointer"
-            onClick={handleSeek}
+            className="w-full h-full flex items-center justify-center cursor-pointer group relative"
+            onClick={() => setIsPlaying(true)}
           >
-            <div
-              className="h-full bg-blue-400 rounded-full"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={togglePlay}
-                className="text-white hover:text-blue-300 transition p-1"
-              >
-                {playing ? (
-                  <Pause className="w-3.5 h-3.5 fill-white" />
-                ) : (
-                  <Play className="w-3.5 h-3.5 fill-white" />
-                )}
-              </button>
-              <button
-                onClick={toggleMute}
-                className="text-white hover:text-blue-300 transition p-1"
-              >
-                {muted ? (
-                  <VolumeX className="w-3.5 h-3.5" />
-                ) : (
-                  <Volume2 className="w-3.5 h-3.5" />
-                )}
-              </button>
-              <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">
-                {label}
-              </span>
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all" />
+            {/* Play button */}
+            <div className="relative z-10 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/60 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/30 transition-all">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
             </div>
-            <button
-              onClick={handleFullscreen}
-              className="text-white/60 hover:text-white transition p-1"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-            </button>
+            {/* Play hint */}
+            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+              ▶ Play
+            </div>
           </div>
-        </motion.div>
-      )}
+        )}
+      </div>
+      {/* Label bar */}
+      <div className="px-4 py-2.5 flex items-center gap-2 border-t border-white/10">
+        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+        <span className="text-[11px] text-white/60 font-semibold uppercase tracking-wider truncate">
+          {label}
+        </span>
+      </div>
     </div>
   );
 }
-
 // ─── Book Demo Modal ───────────────────────────────────────────────────────────
 function BookDemoModal({
   course,
@@ -1169,67 +1213,136 @@ function ImageCarousel({ category, courseTitle, gallery, thumbnailUrl }: {
 }
 
 // ─── Video Section — Option A (main player + thumbnail strip) ─────────────────
+// function VideoSection({ videos }: { videos: any[] }) {
+//   const [activeIdx, setActiveIdx] = useState(0);
+
+//   if (!videos || videos.length === 0) return null;
+
+//   const active = videos[activeIdx];
+
+//   return (
+//     <div className="relative">
+//       <div className="absolute -inset-4 bg-blue-600/20 rounded-3xl blur-2xl pointer-events-none" />
+
+//      <div className="relative bg-slate-950 rounded-2xl border border-white/10 p-3 pt-4 space-y-3">
+
+//         {videos.length > 1 && (
+//           <div className="flex items-center gap-2 px-1">
+//             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+//             <span className="text-[11px] text-white/40 font-semibold uppercase tracking-wider">
+//               Now playing —
+//             </span>
+//             <span className="text-[11px] text-white/80 font-semibold truncate">
+//               {active.type ?? active.title ?? `Video ${activeIdx + 1}`}
+//             </span>
+//           </div>
+//         )}
+
+//         {/* ✅ FIX 1 — resolveVideoUrl added here */}
+//         <div className="rounded-xl overflow-hidden">
+//           <VideoPlayer
+//             key={activeIdx}
+//             src={resolveVideoUrl(active.url)}
+//             label={active.type ?? active.title ?? "Video"}
+//           />
+//         </div>
+
+//         {videos.length > 1 && (
+//           <div
+//             className="flex gap-2 overflow-x-auto pb-1"
+//             style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+//           >
+//             {videos.map((v: any, i: number) => (
+//               <button
+//                 key={v.id ?? i}
+//                 onClick={() => setActiveIdx(i)}
+//                 className={`relative flex-shrink-0 w-28 rounded-lg overflow-hidden border-2 transition-all duration-150 ${
+//                   i === activeIdx
+//                     ? "border-blue-500"
+//                     : "border-white/10 hover:border-white/30 opacity-60 hover:opacity-100"
+//                 }`}
+//               >
+//                 {/* ✅ FIX 2 — resolveVideoUrl added here */}
+//                 <video
+//                   src={resolveVideoUrl(v.url)}
+//                   className="w-full aspect-video object-cover bg-slate-800"
+//                   preload="metadata"
+//                   muted
+//                   playsInline
+//                   onLoadedMetadata={(e) => {
+//                     e.currentTarget.currentTime = 1;
+//                   }}
+//                 />
+
+//                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-1.5">
+//                   <p className="text-[9px] font-black uppercase tracking-wider text-blue-300 leading-none mb-0.5">
+//                     {v.type ?? "Video"}
+//                   </p>
+//                   <p className="text-[10px] font-semibold text-white leading-tight line-clamp-1">
+//                     {v.title ?? `Video ${i + 1}`}
+//                   </p>
+//                 </div>
+
+//                 {i === activeIdx && (
+//                   <div className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-blue-500 flex items-center justify-center">
+//                     <div className="w-1 h-1 rounded-full bg-white" />
+//                   </div>
+//                 )}
+
+//                 {i !== activeIdx && (
+//                   <div className="absolute inset-0 flex items-center justify-center">
+//                     <div className="w-6 h-6 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
+//                       <svg width="8" height="8" viewBox="0 0 8 8" fill="white">
+//                         <path d="M2 1l5 3-5 3z" />
+//                       </svg>
+//                     </div>
+//                   </div>
+//                 )}
+//               </button>
+//             ))}
+//           </div>
+//         )}
+
+//       </div>
+//     </div>
+//   );
+// }
 function VideoSection({ videos }: { videos: any[] }) {
   const [activeIdx, setActiveIdx] = useState(0);
-
   if (!videos || videos.length === 0) return null;
-
   const active = videos[activeIdx];
 
   return (
-    <div className="relative">
-      <div className="absolute -inset-4 bg-blue-600/20 rounded-3xl blur-2xl pointer-events-none" />
+    <div className="space-y-4">
+      {/* Main active video */}
+      <VideoPlayer
+        key={activeIdx}
+        src={resolveVideoUrl(active.url)}
+        label={active.type ?? active.title ?? "Video"}
+      />
 
-     <div className="relative bg-slate-950 rounded-2xl border border-white/10 p-3 pt-4 space-y-3">
-
-        {videos.length > 1 && (
-          <div className="flex items-center gap-2 px-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-            <span className="text-[11px] text-white/40 font-semibold uppercase tracking-wider">
-              Now playing —
-            </span>
-            <span className="text-[11px] text-white/80 font-semibold truncate">
-              {active.type ?? active.title ?? `Video ${activeIdx + 1}`}
-            </span>
-          </div>
-        )}
-
-        {/* ✅ FIX 1 — resolveVideoUrl added here */}
-        <div className="rounded-xl overflow-hidden">
-          <VideoPlayer
-            key={activeIdx}
-            src={resolveVideoUrl(active.url)}
-            label={active.type ?? active.title ?? "Video"}
-          />
-        </div>
-
-        {videos.length > 1 && (
-          <div
-            className="flex gap-2 overflow-x-auto pb-1"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
-          >
-            {videos.map((v: any, i: number) => (
-              <button
-                key={v.id ?? i}
-                onClick={() => setActiveIdx(i)}
-                className={`relative flex-shrink-0 w-28 rounded-lg overflow-hidden border-2 transition-all duration-150 ${
-                  i === activeIdx
-                    ? "border-blue-500"
-                    : "border-white/10 hover:border-white/30 opacity-60 hover:opacity-100"
-                }`}
-              >
-                {/* ✅ FIX 2 — resolveVideoUrl added here */}
+      {/* Thumbnail strip — only if multiple videos */}
+      {videos.length > 1 && (
+     <div className="grid grid-cols-3 gap-1.5 mt-2 w-full overflow-hidden">
+          {videos.map((v: any, i: number) => (
+            <button
+              key={v.id ?? i}
+              onClick={() => setActiveIdx(i)}
+              className={`rounded-xl overflow-hidden border-2 transition-all duration-150 ${
+                i === activeIdx
+                  ? "border-blue-500 opacity-100"
+                  : "border-white/10 hover:border-white/30 opacity-60 hover:opacity-100"
+              }`}
+            >
+            <div className="relative bg-black aspect-video max-h-44">
                 <video
                   src={resolveVideoUrl(v.url)}
-                  className="w-full aspect-video object-cover bg-slate-800"
+                  className="w-full h-full object-cover bg-slate-800"
                   preload="metadata"
                   muted
                   playsInline
-                  onLoadedMetadata={(e) => {
-                    e.currentTarget.currentTime = 1;
-                  }}
+                  onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
                 />
-
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-1.5">
                   <p className="text-[9px] font-black uppercase tracking-wider text-blue-300 leading-none mb-0.5">
                     {v.type ?? "Video"}
@@ -1238,13 +1351,6 @@ function VideoSection({ videos }: { videos: any[] }) {
                     {v.title ?? `Video ${i + 1}`}
                   </p>
                 </div>
-
-                {i === activeIdx && (
-                  <div className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-blue-500 flex items-center justify-center">
-                    <div className="w-1 h-1 rounded-full bg-white" />
-                  </div>
-                )}
-
                 {i !== activeIdx && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-6 h-6 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
@@ -1254,12 +1360,11 @@ function VideoSection({ videos }: { videos: any[] }) {
                     </div>
                   </div>
                 )}
-              </button>
-            ))}
-          </div>
-        )}
-
-      </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -1722,7 +1827,22 @@ export default function CourseDetailClient({
     .map((item: string) => item.replace(/^-\s*/, "").trim())
     .filter(Boolean);
 
-  const videos = course.videos ?? [];
+ const videos = course.videos ?? [];
+
+// ── Glowing particles ──
+const particles = useMemo(() =>
+  [...Array(25)].map((_, i) => ({
+    id:       i,
+    width:    Math.random() * 4 + 2,
+    height:   Math.random() * 4 + 2,
+    top:      Math.random() * 100,
+    left:     Math.random() * 100,
+    opacity:  Math.random() * 0.6 + 0.2,
+    blur:     Math.random() * 10 + 4,
+    delay:    Math.random() * 3,
+    duration: Math.random() * 3 + 2,
+  })), []
+);
 
   return (
     <>
@@ -1742,15 +1862,36 @@ export default function CourseDetailClient({
       <div className="min-h-screen bg-[#f8f9fc]">
 
         {/* ── HERO ── */}
-       <section className="relative pt-28 md:pt-32 pb-28 md:pb-36 overflow-hidden bg-slate-900">
+<section className="relative pt-24 md:pt-28 pb-24 md:pb-32 overflow-hidden bg-slate-900">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-blue-700/25 rounded-full blur-[120px]" />
             <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-600/20 rounded-full blur-[90px]" />
             <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
           </div>
+          
+
+{/* ── Glowing Particles ── */}
+<div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+  {particles.map((p) => (
+    <div
+      key={p.id}
+      className="absolute rounded-full animate-pulse"
+      style={{
+        width:    `${p.width}px`,
+        height:   `${p.height}px`,
+        top:      `${p.top}%`,
+        left:     `${p.left}%`,
+        background: `rgba(96, 165, 250, ${p.opacity})`,
+        boxShadow:  `0 0 ${p.blur}px rgba(96, 165, 250, 0.8)`,
+        animationDelay:    `${p.delay}s`,
+        animationDuration: `${p.duration}s`,
+      }}
+    />
+  ))}
+</div>
 
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+       <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:gap-12 items-center">
 
               {/* Left: Text */}
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
@@ -1801,14 +1942,15 @@ export default function CourseDetailClient({
 
               {/* Right: Video — desktop only */}
               {videos.length > 0 && (
-            <motion.div
+           // AFTER — constrained size
+<motion.div
   initial={{ opacity: 0, x: 30 }}
   animate={{ opacity: 1, x: 0 }}
   transition={{ duration: 0.55, delay: 0.15 }}
-  className="hidden lg:block mt-4"
+className="hidden lg:block w-full max-w-[400px] shrink-0 overflow-hidden"
 >
-                  <VideoSection videos={videos} />
-                </motion.div>
+  <VideoSection videos={videos} />
+</motion.div>
               )}
             </div>
 

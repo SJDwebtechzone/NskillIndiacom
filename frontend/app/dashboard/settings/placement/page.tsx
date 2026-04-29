@@ -367,10 +367,10 @@ export default function AdminJobPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const fetchJobs = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/jobs/jobs");
+      const res = await fetch(`${API}/api/jobs/jobs`);
       const data = await res.json();
       // Handle both array response and object response
       setJobs(Array.isArray(data) ? data : data.jobs || data.data || []);
@@ -395,7 +395,7 @@ export default function AdminJobPage() {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("http://localhost:5000/api/jobs/add-job", {
+      const res = await fetch(`${API}/api/jobs/add-job`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -420,7 +420,7 @@ export default function AdminJobPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to remove this job?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API}/api/jobs/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete job");
       fetchJobs();
     } catch (err) {

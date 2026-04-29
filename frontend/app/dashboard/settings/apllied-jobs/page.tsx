@@ -52,11 +52,11 @@ export default function AdminApplicationsPage() {
   const [search, setSearch] = useState("");
   const [filterJob, setFilterJob] = useState("all");
   const [downloading, setDownloading] = useState<number | null>(null);
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const fetchApplicants = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/jobs/applications");
+      const res = await fetch(`${API}/api/jobs/applications`);
       const data = await res.json();
       console.log("API response:", data); // check what comes back
       setApplicants(Array.isArray(data) ? data : data.applications || data.applicants || []);
@@ -74,7 +74,8 @@ export default function AdminApplicationsPage() {
   const handleDownload = async (applicant: Applicant) => {
     setDownloading(applicant.id);
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/resume/${applicant.id}`);
+  
+      const res = await fetch(`${API}/api/jobs/resume/${applicant.id}`);
       if (!res.ok) throw new Error("Failed to fetch resume");
 
       const blob = await res.blob();

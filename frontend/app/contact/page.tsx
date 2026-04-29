@@ -50,7 +50,7 @@ const ContactPage: React.FC = () => {
 
   const fetchLocations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/settings/locations");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings/locations`);
       const data = await res.json();
       setLocations(data);
     } catch (err) {
@@ -74,7 +74,7 @@ const ContactPage: React.FC = () => {
       return;
     }
     try {
-      await fetch("http://localhost:5000/api/settings/enquiry", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings/enquiry`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)

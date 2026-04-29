@@ -339,18 +339,18 @@ router.post("/enquiry", async (req, res) => {
       [name, email, phone, subject, message]
     );
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "pandiyanmca18@gmail.com",
-        pass: "kewb bzwc peqv gofn"
-      }
-    });
+  const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
+  }
+});
 
-    const mailOptions = {
-      from: `"N-Skill Training Enquiry" <pandiyanmca18@gmail.com>`,
-      replyTo: email,
-      to: "manithilaibalaji@gmail.com",
+const mailOptions = {
+  from: `"N-Skill Training Enquiry" <${process.env.MAIL_USER}>`,
+  replyTo: email,
+  to: process.env.ADMIN_EMAIL,
       subject: `New Enquiry - ${subject || "Course Info"}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">

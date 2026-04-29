@@ -493,7 +493,7 @@ export default function CoursesPage() {
                   ENROLL NOW
                 </Link>
                 <Link
-                  href="/login"
+                  href="/login/student"
                   className="px-10 py-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black rounded-2xl text-center transition-all active:scale-95"
                 >
                   STUDENT LOGIN

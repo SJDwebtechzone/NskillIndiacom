@@ -20,7 +20,7 @@ export default function PlacementLogin() {
   const [fpLoading, setFpLoading] = useState(false);
   const [fpError, setFpError] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -29,7 +29,7 @@ export default function PlacementLogin() {
     setTried(true);
     if (!form.email || !form.password) return;
     try {
-      const res = await fetch("http://localhost:5000/api/placement/login", {
+      const res = await fetch(`${API}/api/placement/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -49,7 +49,7 @@ export default function PlacementLogin() {
     if (!fpEmail) { setFpError("Please enter your email"); return; }
     setFpLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/placement/forgot-password", {
+      const res = await fetch(`${API}/api/placement/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: fpEmail }),
@@ -77,7 +77,7 @@ export default function PlacementLogin() {
     if (otpValue.length < 6) { setFpError("Enter the 6-digit OTP"); return; }
     setFpLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/placement/verify-otp", {
+      const res = await fetch(`${API}/api/placement/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: fpEmail, otp: otpValue }),
@@ -99,7 +99,7 @@ export default function PlacementLogin() {
     if (newPassword !== confirmPassword) { setFpError("Passwords do not match"); return; }
     setFpLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/placement/reset-password", {
+      const res = await fetch(`${API}/api/placement/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: fpEmail, newPassword }),

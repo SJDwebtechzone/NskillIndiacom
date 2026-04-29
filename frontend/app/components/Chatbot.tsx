@@ -237,7 +237,7 @@ const ChatbotContent: React.FC = () => {
 
             // If the local answer is a fallback (not a direct match), ask the AI
             if (localAnswer.includes("I'm not quite sure")) {
-                const response = await fetch("http://localhost:5000/api/chat", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/chat`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: text }),

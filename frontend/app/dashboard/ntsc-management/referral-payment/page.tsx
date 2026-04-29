@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export default function AdminReferralPaymentPage() {
     const [points, setPoints] = useState<any[]>([]);

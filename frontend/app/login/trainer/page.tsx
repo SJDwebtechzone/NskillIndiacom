@@ -52,7 +52,7 @@ const TraineeLogin = () => {
                 </div>
 
                 <h2 className="text-2xl font-black text-[#0b1f3a] text-center mb-8 uppercase tracking-tight">
-                    Trainee Login
+                    Trainer Login
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

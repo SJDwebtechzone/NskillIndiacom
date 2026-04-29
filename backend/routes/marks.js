@@ -14,7 +14,7 @@ router.get('/trainer/students', async (req, res) => {
     const trainerId = decoded.id;
     const roleName = decoded.roleName;
 
-    console.log('trainerId:', trainerId, 'roleName:', roleName);
+  
 
     let result;
     if (roleName === 'Admin' || roleName === 'Super Admin') {
@@ -29,7 +29,7 @@ router.get('/trainer/students', async (req, res) => {
         `SELECT title FROM courses WHERE trainer_id = $1`,
         [trainerId]
       );
-      console.log('Trainer courses:', coursesResult.rows);
+
 
       if (coursesResult.rows.length === 0) {
         return res.json({ students: [] });
@@ -45,7 +45,6 @@ router.get('/trainer/students', async (req, res) => {
       );
     }
 
-    console.log('Students found:', result.rows.length);
     res.json({ students: result.rows });
   } catch (err) {
     console.error('trainer/students error:', err);

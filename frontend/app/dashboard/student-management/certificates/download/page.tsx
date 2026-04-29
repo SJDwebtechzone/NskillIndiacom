@@ -65,7 +65,7 @@ export default function CertificateDownloadPage() {
   const url = bgData.image.image_url.replace(/\\/g, "/");
   const withSlash = url.startsWith("/") ? url : `/${url}`;
   const fullUrl = `${API}${withSlash}`;
-  console.log('Certificate bg URL:', fullUrl);
+ 
   setBgImageUrl(fullUrl);
 }
       } catch (err) {

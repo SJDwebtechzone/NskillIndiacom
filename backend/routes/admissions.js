@@ -178,7 +178,7 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
 // Get all admissions (filtered by role)
 router.get("/", authMiddleware, async (req, res) => {
     try {
-        console.log(`[admissions] GET request from user ID: ${req.user.id}, Role: ${req.user.roleName}`);
+       
         let query = `
             SELECT sa.*, u.name as associate_name 
             FROM student_admissions sa
@@ -217,27 +217,43 @@ router.get("/referral-points/my", authMiddleware, async (req, res) => {
 });
 
 // Get ALL referral points — Super Admin only (MUST be before /:id)
+// Must be placed BEFORE any role-check middleware
 router.get("/referral-points/all", authMiddleware, async (req, res) => {
-    try {
-        if (req.user.roleName !== "Admin" && req.user.roleName !== "Super Admin") {
-            return res.status(403).json({ error: "Access denied. Admin only." });
-        }
-        const result = await pool.query(`
-            SELECT rp.*, u.name as associate_name, u.email as associate_email, sa.admission_number, sa.enquiry_id, sa.photo_url
-            FROM associate_referral_points rp
-            LEFT JOIN users u ON u.id = rp.associate_id
-            LEFT JOIN student_admissions sa ON sa.id = rp.admission_id
-            ORDER BY rp.created_at DESC
-        `);
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ error: "Server Error" });
+  try {
+    if (
+      req.user.roleName !== "Super Admin" &&
+      req.user.roleName !== "Admin"
+    ) {
+      return res.status(403).json({ error: "Access denied" });
     }
+
+    const result = await pool.query(`
+      SELECT 
+        arp.*,
+        u.name   AS associate_name,
+        u.email  AS associate_email,
+        sa.full_name        AS student_name,
+        sa.admission_number,
+        sa.enquiry_id,
+        sa.course_fees      AS course_fee,
+        sa.photo_url,
+        sa.created_at
+      FROM associate_referral_points arp
+      LEFT JOIN users u  ON u.id  = arp.associate_id
+      LEFT JOIN student_admissions sa ON sa.id = arp.admission_id
+      ORDER BY arp.created_at DESC
+    `);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // Mark a referral point settled — Admin only (MUST be before /:id)
 router.patch("/referral-points/:id/settle", authMiddleware, async (req, res) => {
+    console.log("USER OBJECT →", req.user); // ← ADD T
     try {
         if (req.user.roleName !== "Admin" && req.user.roleName !== "Super Admin") {
             return res.status(403).json({ error: "Access denied. Admin only." });

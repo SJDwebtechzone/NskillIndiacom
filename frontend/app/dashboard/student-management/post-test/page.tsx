@@ -48,7 +48,7 @@ export default function StudentPostTestPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        console.log("Student course response:", data);
+    
         if (data.course_name) {
           setCourseName(data.course_name);
         } else {

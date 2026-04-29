@@ -1,557 +1,886 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-interface EventType {
-  id: number;
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type EventType = "batch1" | "batch2" | "both";
+type Week = "First" | "Second" | "Third" | "Fourth";
+
+interface CourseEvent {
+  id?: number;
   title: string;
   description: string;
   course_name: string;
   start_date: string;
   end_date: string;
-  event_type: string;
+  event_type: EventType;
 }
 
-type FormData = Omit<EventType, "id">;
+interface ColorPalette {
+  bgColor: string;
+  borderColor: string;
+  dotColor: string;
+  textColor: string;
+}
 
-const EMPTY_FORM: FormData = {
-  title: "",
-  description: "",
-  course_name: "",
-  start_date: "",
-  end_date: "",
-  event_type: "course",
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+// CORRECT
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api/course_events`;
+
+const MONTHS_FY: { month: string; year: number }[] = [
+  { month: "April",     year: 2026 },
+  { month: "May",       year: 2026 },
+  { month: "June",      year: 2026 },
+  { month: "July",      year: 2026 },
+  { month: "August",    year: 2026 },
+  { month: "September", year: 2026 },
+  { month: "October",   year: 2026 },
+  { month: "November",  year: 2026 },
+  { month: "December",  year: 2026 },
+  { month: "January",   year: 2027 },
+  { month: "February",  year: 2027 },
+  { month: "March",     year: 2027 },
+];
+
+const WEEK_ORDER: Week[] = ["First", "Second", "Third", "Fourth"];
+
+const WEEK_LABEL: Record<Week, string> = {
+  First:  "1st Week",
+  Second: "2nd Week",
+  Third:  "3rd Week",
+  Fourth: "4th Week",
 };
 
-const EVENT_COLORS: Record<string, string> = {
-  course: "#3B82F6",
-  exam: "#EF4444",
-  holiday: "#10B981",
-};
+const COLOR_PALETTES: ColorPalette[] = [
+  { bgColor: "rgba(30,64,175,0.18)",   borderColor: "rgba(59,130,246,0.35)",  dotColor: "#60a5fa", textColor: "#ffffff" },
+  { bgColor: "rgba(5,150,105,0.18)",   borderColor: "rgba(16,185,129,0.35)",  dotColor: "#34d399", textColor: "#ffffff" },
+  { bgColor: "rgba(180,83,9,0.18)",    borderColor: "rgba(245,158,11,0.35)",  dotColor: "#fbbf24", textColor: "#ffffff" },
+  { bgColor: "rgba(109,40,217,0.18)",  borderColor: "rgba(167,139,250,0.35)", dotColor: "#a78bfa", textColor: "#ffffff" },
+  { bgColor: "rgba(185,28,28,0.18)",   borderColor: "rgba(248,113,113,0.35)", dotColor: "#f87171", textColor: "#ffffff" },
+  { bgColor: "rgba(190,24,93,0.18)",   borderColor: "rgba(244,114,182,0.35)", dotColor: "#f472b6", textColor: "#ffffff" },
+  { bgColor: "rgba(13,148,136,0.18)",  borderColor: "rgba(45,212,191,0.35)",  dotColor: "#2dd4bf", textColor: "#ffffff" },
+  { bgColor: "rgba(194,65,12,0.18)",   borderColor: "rgba(251,146,60,0.35)",  dotColor: "#fb923c", textColor: "#ffffff" },
+];
 
-const EVENT_BG: Record<string, string> = {
-  course: "#EFF6FF",
-  exam: "#FEF2F2",
-  holiday: "#ECFDF5",
-};
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// FIX 3: API base URL from env, not hardcoded
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+function getCourseColor(courseName: string, allCourseNames: string[]): ColorPalette {
+  const idx = allCourseNames.indexOf(courseName);
+  return COLOR_PALETTES[(idx < 0 ? 0 : idx) % COLOR_PALETTES.length];
+}
 
-export default function AdminCalendar() {
-  const [events, setEvents] = useState<EventType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<FormData>(EMPTY_FORM);
-  const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
-  const [sortField, setSortField] = useState<keyof EventType>("start_date");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+function parseDayFromDateStr(dateStr: string): number {
+  return parseInt(dateStr.split("-")[2], 10);
+}
 
-  const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
-  }, []);
+function weekToDateRange(week: Week, month: string, year: number): { start: string; end: string } {
+  const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
+  const totalDays  = new Date(year, monthIndex + 1, 0).getDate();
+  const wi         = WEEK_ORDER.indexOf(week);
+  const startDay   = wi * 7 + 1;
+  const endDay     = wi === 3 ? totalDays : Math.min(startDay + 6, totalDays);
+  const pad        = (n: number) => String(n).padStart(2, "0");
+  const m          = String(monthIndex + 1).padStart(2, "0");
+  return {
+    start: `${year}-${m}-${pad(startDay)}`,
+    end:   `${year}-${m}-${pad(endDay)}`,
+  };
+}
 
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
+function dateToWeek(dateStr: string): Week {
+  const day = parseDayFromDateStr(dateStr);
+  if (day <= 7)  return "First";
+  if (day <= 14) return "Second";
+  if (day <= 21) return "Third";
+  return "Fourth";
+}
+
+function dateToMonthYear(dateStr: string): { month: string; year: number } {
+  const monthNames = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December",
+  ];
+  const parts = dateStr.split("-");
+  const year  = parseInt(parts[0], 10);
+  const month = monthNames[parseInt(parts[1], 10) - 1];
+  return { month, year };
+}
+
+// ─── API helpers ──────────────────────────────────────────────────────────────
+
+async function fetchEvents(): Promise<CourseEvent[]> {
+  const res = await fetch(API_BASE, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch events");
+  return res.json();
+}
+
+async function createEvent(ev: Omit<CourseEvent, "id">): Promise<CourseEvent> {
+  const res = await fetch(API_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ev),
+  });
+  if (!res.ok) throw new Error("Failed to create event");
+  return res.json();
+}
+
+async function updateEvent(id: number, ev: Omit<CourseEvent, "id">): Promise<CourseEvent> {
+  const res = await fetch(`${API_BASE}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ev),
+  });
+  if (!res.ok) throw new Error("Failed to update event");
+  return res.json();
+}
+
+async function deleteEvent(id: number): Promise<void> {
+  const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete event");
+}
+
+// ─── Session Modal ────────────────────────────────────────────────────────────
+
+interface SessionModalProps {
+  event:      CourseEvent | null;
+  monthIdx:   number;
+  allCourses: string[];
+  onSave:     () => void;
+  onClose:    () => void;
+}
+
+function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionModalProps) {
+  const { month, year } = MONTHS_FY[monthIdx];
+
+  const [title,       setTitle]       = useState(event?.title       ?? "");
+  const [description, setDescription] = useState(event?.description ?? "");
+  const [courseName,  setCourseName]  = useState(event?.course_name ?? (allCourses[0] ?? ""));
+  const [newCourse,   setNewCourse]   = useState("");
+  const [addingNew,   setAddingNew]   = useState(false);
+
+  const [week, setWeek] = useState<Week>(
+    event?.start_date ? dateToWeek(event.start_date) : "First"
+  );
+
+  const [eventType, setEventType] = useState<EventType>(
+    (event?.event_type as EventType) ?? "batch1"
+  );
+  const [saving, setSaving] = useState(false);
+  const [error,  setError]  = useState("");
+
+  const preview    = weekToDateRange(week, month, year);
+  const finalCourse = addingNew ? newCourse.trim() : courseName;
+  const isValid     = title.trim().length > 0 && finalCourse.length > 0;
+
+  async function handleSave() {
+    if (!isValid) return;
+    setSaving(true);
+    setError("");
     try {
-      const res = await fetch(`${API_URL}/api/course-events`);
-      // FIX 4: check response status
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data: EventType[] = await res.json();
-      setEvents(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
-      showToast("Failed to fetch events", "error");
+      const { start, end } = weekToDateRange(week, month, year);
+      const payload = {
+        title:       title.trim(),
+        description: description.trim(),
+        course_name: finalCourse,
+        start_date:  start,
+        end_date:    end,
+        event_type:  eventType,
+      };
+      if (event?.id) {
+        await updateEvent(event.id, payload);
+      } else {
+        await createEvent(payload);
+      }
+      onSave();
+    } catch (e: any) {
+      setError(e.message ?? "Something went wrong");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  /* shared input style */
+  const inputStyle = {
+    width: "100%",
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "12px",
+    padding: "10px 14px",
+    fontSize: "14px",
+    color: "#ffffff",
+    outline: "none",
+  } as React.CSSProperties;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)" }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl p-6 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(160deg, #0a1628 0%, #0d1f3c 100%)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)",
+        }}
+      >
+        {/* top gloss */}
+        <div className="absolute inset-x-0 top-0 h-[35%] pointer-events-none rounded-t-2xl"
+          style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%)" }} />
+
+        <h2 className="text-base font-bold mb-5" style={{ color: "#ffffff" }}>
+          {event ? "Edit session" : "Add new session"}
+        </h2>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-xl text-xs border"
+            style={{ background: "rgba(127,29,29,0.3)", borderColor: "rgba(248,113,113,0.3)", color: "#fca5a5" }}>
+            {error}
+          </div>
+        )}
+
+        {/* Title */}
+        <div className="mb-4">
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
+            style={{ color: "rgba(255,255,255,0.45)" }}>
+            Session title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. React Fundamentals"
+            style={inputStyle}
+          />
+        </div>
+
+        {/* Description */}
+        <div className="mb-4">
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
+            style={{ color: "rgba(255,255,255,0.45)" }}>
+            Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Brief description..."
+            rows={2}
+            style={{ ...inputStyle, resize: "none" }}
+          />
+        </div>
+
+        {/* Course */}
+        <div className="mb-4">
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
+            style={{ color: "rgba(255,255,255,0.45)" }}>
+            Course
+          </label>
+          {!addingNew ? (
+            <div className="flex gap-2">
+              <select
+                value={courseName}
+                onChange={(e) => setCourseName(e.target.value)}
+                style={{ ...inputStyle, flex: 1 }}
+              >
+                {allCourses.map((c) => <option key={c} value={c} style={{ background: "#0a1628" }}>{c}</option>)}
+                {allCourses.length === 0 && <option value="" style={{ background: "#0a1628" }}>No courses yet</option>}
+              </select>
+              <button
+                type="button"
+                onClick={() => setAddingNew(true)}
+                className="px-3 py-2 rounded-xl text-xs font-semibold transition"
+                style={{
+                  border: "1px dashed rgba(255,255,255,0.2)",
+                  color: "rgba(255,255,255,0.55)",
+                  background: "transparent",
+                }}
+              >
+                + New
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newCourse}
+                onChange={(e) => setNewCourse(e.target.value)}
+                placeholder="New course name"
+                autoFocus
+                style={{ ...inputStyle, flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={() => setAddingNew(false)}
+                className="px-3 py-2 rounded-xl text-xs font-semibold transition"
+                style={{
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "rgba(255,255,255,0.5)",
+                  background: "rgba(255,255,255,0.04)",
+                }}
+              >
+                ← Back
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Batch */}
+        <div className="mb-4">
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
+            style={{ color: "rgba(255,255,255,0.45)" }}>
+            Batch
+          </label>
+          <div className="flex gap-2">
+            {(["batch1", "batch2", "both"] as EventType[]).map((b) => {
+              const isActive = eventType === b;
+              let activeStyle = {};
+              if (isActive && b === "batch1") activeStyle = { background: "linear-gradient(135deg,#1d4ed8,#2563eb)", border: "1px solid rgba(96,165,250,0.5)", color: "#fff" };
+              else if (isActive && b === "batch2") activeStyle = { background: "linear-gradient(135deg,#5b21b6,#7c3aed)", border: "1px solid rgba(167,139,250,0.5)", color: "#fff" };
+              else if (isActive) activeStyle = { background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff" };
+              return (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => setEventType(b)}
+                  className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={isActive ? activeStyle : {
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "rgba(255,255,255,0.5)",
+                  }}
+                >
+                  {b === "batch1" ? "Batch 1" : b === "batch2" ? "Batch 2" : "Both"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Week */}
+        <div className="mb-3">
+          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
+            style={{ color: "rgba(255,255,255,0.45)" }}>
+            Week
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {WEEK_ORDER.map((w) => {
+              const isActive = week === w;
+              return (
+                <button
+                  key={w}
+                  type="button"
+                  onClick={() => setWeek(w)}
+                  className="py-2 rounded-xl text-xs font-semibold transition-all"
+                  style={isActive ? {
+                    background: "rgba(255,255,255,0.12)",
+                    border: "1px solid rgba(255,255,255,0.25)",
+                    color: "#ffffff",
+                  } : {
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.45)",
+                  }}
+                >
+                  {WEEK_LABEL[w]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Date preview */}
+        <div className="mb-6 px-3 py-2 rounded-xl text-xs"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            color: "rgba(255,255,255,0.5)",
+          }}>
+          📅 Dates:{" "}
+          <span style={{ color: "#ffffff", fontWeight: 600 }}>{preview.start}</span>
+          {" → "}
+          <span style={{ color: "#ffffff", fontWeight: 600 }}>{preview.end}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.6)",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!isValid || saving}
+            className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+            style={isValid && !saving ? {
+              background: "linear-gradient(135deg, #1d4ed8, #0ea5e9)",
+              border: "1px solid rgba(96,165,250,0.4)",
+              color: "#ffffff",
+              boxShadow: "0 4px 14px rgba(30,64,175,0.4)",
+            } : {
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(255,255,255,0.25)",
+              cursor: "not-allowed",
+            }}
+          >
+            {saving ? "Saving…" : event ? "Save changes" : "Add session"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Admin Page ──────────────────────────────────────────────────────────
+
+export default function AdminPage() {
+  const [events,         setEvents]         = useState<CourseEvent[]>([]);
+  const [loading,        setLoading]        = useState(true);
+  const [error,          setError]          = useState("");
+  const [activeMonthIdx, setActiveMonthIdx] = useState(0);
+  const [showModal,      setShowModal]      = useState(false);
+  const [editingEvent,   setEditingEvent]   = useState<CourseEvent | null>(null);
+  const [tab,            setTab]            = useState<"sessions" | "courses">("sessions");
+  const [deletingId,     setDeletingId]     = useState<number | null>(null);
+
+  const loadEvents = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await fetchEvents();
+      setEvents(data);
+    } catch (e: any) {
+      setError(e.message ?? "Failed to load");
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, []);
 
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+  useEffect(() => { loadEvents(); }, [loadEvents]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const { month, year } = MONTHS_FY[activeMonthIdx];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const monthEvents = events.filter((e) => {
+    const { month: em, year: ey } = dateToMonthYear(e.start_date);
+    return em === month && ey === year;
+  });
 
-    if (form.end_date && new Date(form.end_date) < new Date(form.start_date)) {
-      showToast("End date cannot be before start date", "error");
-      return;
-    }
+  const allCourses   = [...new Set(events.map((e) => e.course_name))].sort();
+  const monthCourses = [...new Set(monthEvents.map((e) => e.course_name))];
+  const batch1Count  = monthEvents.filter((e) => e.event_type === "batch1" || e.event_type === "both").length;
+  const batch2Count  = monthEvents.filter((e) => e.event_type === "batch2" || e.event_type === "both").length;
 
+  const courseStats = allCourses.map((c) => ({
+    name:    c,
+    total:   events.filter((e) => e.course_name === c).length,
+    batch1:  events.filter((e) => e.course_name === c && (e.event_type === "batch1" || e.event_type === "both")).length,
+    batch2:  events.filter((e) => e.course_name === c && (e.event_type === "batch2" || e.event_type === "both")).length,
+    palette: getCourseColor(c, allCourses),
+  }));
+
+  async function handleDelete(id: number) {
+    if (!window.confirm("Delete this session?")) return;
+    setDeletingId(id);
     try {
-      let res: Response;
-
-      if (editingEvent) {
-        res = await fetch(`${API_URL}/api/course-events/${editingEvent.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      } else {
-        res = await fetch(`${API_URL}/api/course-events`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      }
-
-      // FIX 4: check response status
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
-      showToast(editingEvent ? "Event updated successfully!" : "Event added successfully!");
-      setForm(EMPTY_FORM);
-      setEditingEvent(null);
-      setShowForm(false);
-      // FIX 5: fetchEvents is stable via useCallback — safe to call directly
-      fetchEvents();
-    } catch (err) {
-      console.error(err);
-      showToast("Operation failed", "error");
+      await deleteEvent(id);
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+    } catch {
+      alert("Delete failed. Please try again.");
+    } finally {
+      setDeletingId(null);
     }
-  };
+  }
 
-  const startEdit = (event: EventType) => {
-    setEditingEvent(event);
-    setForm({
-      title: event.title,
-      description: event.description ?? "",
-      course_name: event.course_name ?? "",
-      start_date: event.start_date,
-      end_date: event.end_date ?? "",
-      event_type: event.event_type,
-    });
-    setShowForm(true);
-  };
+  function handleEdit(ev: CourseEvent) { setEditingEvent(ev); setShowModal(true); }
+  function handleAdd()                  { setEditingEvent(null); setShowModal(true); }
 
-  const deleteEvent = async (id: number) => {
-    try {
-      const res = await fetch(`${API_URL}/api/course-events/${id}`, { method: "DELETE" });
-      // FIX 4: check response status
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      setConfirmDelete(null);
-      showToast("Event deleted!");
-      fetchEvents();
-    } catch (err) {
-      console.error(err);
-      showToast("Delete failed", "error");
-    }
-  };
-
-  const bulkDelete = async () => {
-    // FIX 2: capture count BEFORE clearing the set
-    const count = selectedIds.size;
-
-    try {
-      const results = await Promise.allSettled(
-        [...selectedIds].map((id) =>
-          fetch(`${API_URL}/api/course-events/${id}`, { method: "DELETE" }).then((res) => {
-            if (!res.ok) throw new Error(`Failed for id ${id}`);
-          })
-        )
-      );
-
-      const failed = results.filter((r) => r.status === "rejected").length;
-
-      setSelectedIds(new Set());
-      fetchEvents();
-
-      if (failed > 0) {
-        showToast(`${count - failed} deleted, ${failed} failed`, "error");
-      } else {
-        showToast(`${count} event${count !== 1 ? "s" : ""} deleted!`);
-      }
-    } catch (err) {
-      console.error(err);
-      showToast("Bulk delete failed", "error");
-    }
-  };
-
-  const toggleSelect = (id: number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedIds.size === filteredEvents.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filteredEvents.map((e) => e.id)));
-    }
-  };
-
-  const handleSort = (field: keyof EventType) => {
-    if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortField(field); setSortDir("asc"); }
-  };
-
-  // FIX 1: optional chaining to guard against null/undefined fields
-  const filteredEvents = events
-    .filter((e) => {
-      const term = searchTerm.toLowerCase();
-      const matchSearch =
-        (e.title?.toLowerCase() ?? "").includes(term) ||
-        (e.course_name?.toLowerCase() ?? "").includes(term);
-      const matchType = filterType === "all" || e.event_type === filterType;
-      return matchSearch && matchType;
-    })
-    .sort((a, b) => {
-      const av = a[sortField] ?? "";
-      const bv = b[sortField] ?? "";
-      return sortDir === "asc"
-        ? String(av).localeCompare(String(bv))
-        : String(bv).localeCompare(String(av));
-    });
-
-  const stats = {
-    total: events.length,
-    course: events.filter((e) => e.event_type === "course").length,
-    exam: events.filter((e) => e.event_type === "exam").length,
-    holiday: events.filter((e) => e.event_type === "holiday").length,
-  };
-
-  const SortIcon = ({ field }: { field: keyof EventType }) => (
-    <span className="ml-1 text-gray-400">
-      {sortField === field ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
-    </span>
-  );
-
-  const closeForm = () => {
-    setShowForm(false);
+  async function handleModalSave() {
+    setShowModal(false);
     setEditingEvent(null);
-    setForm(EMPTY_FORM);
-  };
+    await loadEvents();
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen" style={{
+      background: "linear-gradient(160deg, #060d1f 0%, #0a1628 30%, #0d1f3c 60%, #091628 100%)",
+      fontFamily: "'DM Sans', sans-serif",
+      color: "#ffffff",
+    }}>
 
-      {/* TOAST */}
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all ${
-            toast.type === "success" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          {toast.msg}
-        </div>
-      )}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap');
+        * { font-family: 'DM Sans', sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.25); }
+        input:focus, textarea:focus, select:focus {
+          outline: none;
+          border-color: rgba(96,165,250,0.5) !important;
+          box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+      `}</style>
 
-      {/* CONFIRM DELETE MODAL */}
-      {confirmDelete !== null && (
-        <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 shadow-xl w-80">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Confirm Delete</h3>
-            <p className="text-gray-500 mb-4">Are you sure you want to delete this event?</p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => deleteEvent(confirmDelete)}
-                className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 font-medium"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setConfirmDelete(null)}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 font-medium"
-              >
-                Cancel
-              </button>
-            </div>
+      {/* ── Ambient blobs ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(30,64,175,0.25) 0%, transparent 65%)" }} />
+        <div className="absolute top-1/2 -right-32 w-[400px] h-[400px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(14,116,144,0.18) 0%, transparent 65%)" }} />
+        <div className="absolute bottom-0 left-1/3 w-[350px] h-[350px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(30,58,138,0.22) 0%, transparent 65%)" }} />
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+            radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+            radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,0.35) 0%, transparent 100%),
+            radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+            radial-gradient(1px 1px at 25% 85%, rgba(255,255,255,0.25) 0%, transparent 100%)`
+        }} />
+      </div>
+
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-20 border-b"
+        style={{
+          background: "rgba(6,13,31,0.75)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          borderColor: "rgba(255,255,255,0.07)",
+        }}>
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold tracking-tight" style={{ color: "#ffffff" }}>⚙️ Admin Panel</h1>
+            <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+              Skill Training · FY 2026–2027 · Manage sessions
+            </p>
           </div>
+          {loading && (
+            <span className="text-xs animate-pulse" style={{ color: "rgba(255,255,255,0.35)" }}>Syncing with DB…</span>
+          )}
         </div>
-      )}
 
-      {/* FORM MODAL */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl">
-            <div className="flex items-center justify-between p-5 border-b">
-              <h2 className="text-xl font-bold text-gray-800">
-                {editingEvent ? "✏️ Edit Event" : "➕ Add New Event"}
+        {/* Month tabs */}
+        {tab === "sessions" && (
+          <div className="max-w-5xl mx-auto px-6 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
+            {MONTHS_FY.map(({ month: m, year: y }, i) => {
+              const isActive = activeMonthIdx === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setActiveMonthIdx(i)}
+                  className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative overflow-hidden"
+                  style={isActive ? {
+                    background: "linear-gradient(135deg, rgba(30,64,175,0.9) 0%, rgba(14,116,144,0.85) 50%, rgba(30,58,138,0.9) 100%)",
+                    border: "1px solid rgba(96,165,250,0.5)",
+                    color: "#ffffff",
+                    boxShadow: "0 4px 20px rgba(30,64,175,0.5), inset 0 1px 0 rgba(255,255,255,0.2)",
+                  } : {
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    color: "rgba(255,255,255,0.6)",
+                  }}
+                >
+                  {isActive && (
+                    <span className="absolute inset-x-0 top-0 h-[45%] rounded-t-xl pointer-events-none"
+                      style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 100%)" }} />
+                  )}
+                  {m.slice(0, 3)} &apos;{String(y).slice(2)}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Tab switcher */}
+        <div className="max-w-5xl mx-auto px-6 pb-3 flex gap-2 border-t pt-2 mt-1"
+          style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          {(["sessions", "courses"] as const).map((t) => {
+            const isActive = tab === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
+                style={isActive ? {
+                  background: "linear-gradient(135deg, #1d4ed8, #2563eb)",
+                  border: "1px solid rgba(96,165,250,0.4)",
+                  color: "#ffffff",
+                  boxShadow: "0 4px 14px rgba(37,99,235,0.4)",
+                } : {
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.55)",
+                }}
+              >
+                {t === "sessions" ? "📅 Sessions" : "📚 Courses"}
+              </button>
+            );
+          })}
+        </div>
+      </header>
+
+      <main className="relative z-10 max-w-5xl mx-auto px-6 py-6">
+
+        {error && (
+          <div className="mb-4 p-3 rounded-2xl text-sm border"
+            style={{ background: "rgba(127,29,29,0.3)", backdropFilter: "blur(10px)", borderColor: "rgba(248,113,113,0.3)", color: "#fca5a5" }}>
+            ⚠️ {error} —{" "}
+            <button onClick={loadEvents} className="underline font-semibold">Retry</button>
+          </div>
+        )}
+
+        {/* ── SESSIONS TAB ── */}
+        {tab === "sessions" && (
+          <>
+            {/* Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              {[
+                { label: "Total sessions",   value: monthEvents.length,  icon: "📅" },
+                { label: "Courses active",   value: monthCourses.length, icon: "📚" },
+                { label: "Batch 1 sessions", value: batch1Count,         icon: "1️⃣" },
+                { label: "Batch 2 sessions", value: batch2Count,         icon: "2️⃣" },
+              ].map((card) => (
+                <div key={card.label}
+                  className="rounded-2xl p-4 relative overflow-hidden"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.09)",
+                    backdropFilter: "blur(16px)",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
+                  }}>
+                  <div className="absolute inset-x-0 top-0 h-[40%] rounded-t-2xl pointer-events-none"
+                    style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%)" }} />
+                  <div className="text-2xl mb-1">{card.icon}</div>
+                  <div className="text-2xl font-bold" style={{ color: "#ffffff" }}>{card.value}</div>
+                  <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>{card.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Section header */}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Sessions · {month} {year}
               </h2>
               <button
-                onClick={closeForm}
-                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                onClick={handleAdd}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95"
+                style={{
+                  background: "linear-gradient(135deg, #059669, #10b981)",
+                  border: "1px solid rgba(52,211,153,0.4)",
+                  color: "#ffffff",
+                  boxShadow: "0 4px 14px rgba(5,150,105,0.4)",
+                }}
               >
-                ×
+                <span className="text-base leading-none">+</span> Add session
               </button>
             </div>
 
-            {/* NOTE: intentionally not a <form> tag to avoid default browser submit behavior in some environments */}
-            <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-                <input
-                  name="title"
-                  placeholder="Event title"
-                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={form.title}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
-                <input
-                  name="course_name"
-                  placeholder="Course name"
-                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={form.course_name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
-                <select
-                  name="event_type"
-                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={form.event_type}
-                  onChange={handleChange}
-                >
-                  <option value="course">📚 Course</option>
-                  <option value="exam">📝 Exam</option>
-                  <option value="holiday">🎉 Holiday</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
-                <input
-                  type="date"
-                  name="start_date"
-                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={form.start_date}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input
-                  type="date"
-                  name="end_date"
-                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={form.end_date}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  name="description"
-                  placeholder="Event description..."
-                  rows={3}
-                  className="w-full border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  value={form.description}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="md:col-span-2 flex gap-3">
-                <button
-                  onClick={handleSubmit}
-                  disabled={!form.title || !form.start_date}
-                  className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {editingEvent ? "Update Event" : "Add Event"}
-                </button>
-                <button
-                  onClick={closeForm}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 font-semibold transition"
-                >
-                  Cancel
-                </button>
-              </div>
+            {/* Table card */}
+            <div className="rounded-2xl overflow-hidden"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.09)",
+                backdropFilter: "blur(20px)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}>
+              {loading ? (
+                <div className="py-16 text-center text-sm animate-pulse" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  Loading sessions from database…
+                </div>
+              ) : monthEvents.length === 0 ? (
+                <div className="py-16 text-center text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
+                  No sessions for {month} {year}.{" "}
+                  <button onClick={handleAdd} className="underline font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
+                    + Add session
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.03)" }}>
+                        {["#", "Title", "Course", "Batch", "Week", "Dates", "Actions"].map((h) => (
+                          <th key={h}
+                            className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide"
+                            style={{ color: "rgba(255,255,255,0.35)" }}>
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {monthEvents.map((ev, idx) => {
+                        const palette    = getCourseColor(ev.course_name, allCourses);
+                        const week       = ev.start_date ? dateToWeek(ev.start_date) : "First";
+                        const batchLabel = ev.event_type === "both" ? "Both" : ev.event_type === "batch1" ? "Batch 1" : "Batch 2";
+                        return (
+                          <tr key={ev.id}
+                            className="border-t transition-colors"
+                            style={{
+                              borderColor: "rgba(255,255,255,0.05)",
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                          >
+                            <td className="px-4 py-3 text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{idx + 1}</td>
+                            <td className="px-4 py-3">
+                              <p className="font-semibold truncate max-w-[160px]" style={{ color: "#ffffff" }}>{ev.title}</p>
+                              {ev.description && (
+                                <p className="text-xs truncate max-w-[160px]" style={{ color: "rgba(255,255,255,0.4)" }}>{ev.description}</p>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: palette.dotColor }} />
+                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full border"
+                                  style={{
+                                    backgroundColor: palette.bgColor,
+                                    borderColor:     palette.borderColor,
+                                    color:           "#ffffff",
+                                  }}>
+                                  {ev.course_name}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+                                style={
+                                  ev.event_type === "batch1"
+                                    ? { background: "rgba(37,99,235,0.25)", border: "1px solid rgba(96,165,250,0.35)", color: "#ffffff" }
+                                    : ev.event_type === "batch2"
+                                    ? { background: "rgba(124,58,237,0.25)", border: "1px solid rgba(167,139,250,0.35)", color: "#ffffff" }
+                                    : { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff" }
+                                }>
+                                {batchLabel}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                              {WEEK_LABEL[week]}
+                            </td>
+                            <td className="px-4 py-3 text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+                              {ev.start_date} → {ev.end_date}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleEdit(ev)}
+                                  className="px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
+                                  style={{ background: "rgba(245,158,11,0.2)", border: "1px solid rgba(245,158,11,0.3)", color: "#fbbf24" }}
+                                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(245,158,11,0.3)")}
+                                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(245,158,11,0.2)")}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => ev.id && handleDelete(ev.id)}
+                                  disabled={deletingId === ev.id}
+                                  className="px-3 py-1 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                                  style={{ background: "rgba(220,38,38,0.2)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171" }}
+                                  onMouseEnter={(e) => { if (deletingId !== ev.id) e.currentTarget.style.background = "rgba(220,38,38,0.3)"; }}
+                                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.2)")}
+                                >
+                                  {deletingId === ev.id ? "…" : "Delete"}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
 
-      {/* HEADER */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">📅 Course Calendar</h1>
-          <p className="text-gray-500 text-sm mt-1">Admin Panel — Manage all events</p>
-        </div>
-        <button
-          onClick={() => { setShowForm(true); setEditingEvent(null); setForm(EMPTY_FORM); }}
-          className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 font-semibold shadow transition flex items-center gap-2"
-        >
-          + Add Event
-        </button>
-      </div>
-
-      {/* STATS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {[
-          { label: "Total Events", value: stats.total,   color: "#6366F1", bg: "#EEF2FF",        icon: "📋" },
-          { label: "Courses",      value: stats.course,  color: EVENT_COLORS.course,  bg: EVENT_BG.course,  icon: "📚" },
-          { label: "Exams",        value: stats.exam,    color: EVENT_COLORS.exam,    bg: EVENT_BG.exam,    icon: "📝" },
-          { label: "Holidays",     value: stats.holiday, color: EVENT_COLORS.holiday, bg: EVENT_BG.holiday, icon: "🎉" },
-        ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xl">{s.icon}</span>
-              <span className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</span>
+        {/* ── COURSES TAB ── */}
+        {tab === "courses" && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
+                All courses{" "}
+                <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}>({allCourses.length})</span>
+              </h2>
+              <button
+                onClick={handleAdd}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95"
+                style={{
+                  background: "linear-gradient(135deg, #059669, #10b981)",
+                  border: "1px solid rgba(52,211,153,0.4)",
+                  color: "#ffffff",
+                  boxShadow: "0 4px 14px rgba(5,150,105,0.4)",
+                }}
+              >
+                <span className="text-base leading-none">+</span> Add session
+              </button>
             </div>
-            <p className="text-sm text-gray-500 font-medium">{s.label}</p>
-          </div>
-        ))}
-      </div>
 
-      {/* SEARCH + FILTER + BULK */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4 flex flex-wrap gap-3 items-center">
-        <input
-          type="text"
-          placeholder="🔍 Search events or courses..."
-          className="flex-1 min-w-48 border border-gray-200 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+            {loading ? (
+              <div className="py-16 text-center text-sm animate-pulse" style={{ color: "rgba(255,255,255,0.35)" }}>Loading…</div>
+            ) : allCourses.length === 0 ? (
+              <div className="py-16 text-center text-sm rounded-2xl"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.3)",
+                }}>
+                No courses yet. Add a session to create a course.
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {courseStats.map((c) => (
+                  <div key={c.name}
+                    className="rounded-2xl border p-4 relative overflow-hidden"
+                    style={{
+                      backgroundColor: c.palette.bgColor,
+                      borderColor:     c.palette.borderColor,
+                      backdropFilter:  "blur(12px)",
+                      boxShadow:       "inset 0 1px 0 rgba(255,255,255,0.08)",
+                    }}>
+                    <div className="absolute inset-x-0 top-0 h-[40%] rounded-t-2xl pointer-events-none"
+                      style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%)" }} />
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: c.palette.dotColor, boxShadow: `0 0 6px ${c.palette.dotColor}80` }} />
+                      <p className="text-sm font-bold truncate" style={{ color: "#ffffff" }}>{c.name}</p>
+                    </div>
+                    <div className="h-px mb-3" style={{ background: `${c.palette.dotColor}40` }} />
+                    <div className="flex gap-4 text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <span>📅 {c.total} sessions</span>
+                      <span style={{ color: "#60a5fa" }}>B1: {c.batch1}</span>
+                      <span style={{ color: "#a78bfa" }}>B2: {c.batch2}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      {showModal && (
+        <SessionModal
+          event={editingEvent}
+          monthIdx={activeMonthIdx}
+          allCourses={allCourses}
+          onSave={handleModalSave}
+          onClose={() => { setShowModal(false); setEditingEvent(null); }}
         />
-        <select
-          className="border border-gray-200 p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-        >
-          <option value="all">All Types</option>
-          <option value="course">📚 Course</option>
-          <option value="exam">📝 Exam</option>
-          <option value="holiday">🎉 Holiday</option>
-        </select>
-        {selectedIds.size > 0 && (
-          <button
-            onClick={bulkDelete}
-            className="bg-red-500 text-white px-4 py-2.5 rounded-lg hover:bg-red-600 text-sm font-semibold flex items-center gap-1 transition"
-          >
-            🗑️ Delete {selectedIds.size} selected
-          </button>
-        )}
-        <span className="text-sm text-gray-400 ml-auto">
-          {filteredEvents.length} of {events.length} events
-        </span>
-      </div>
-
-      {/* TABLE */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        {loading ? (
-          <div className="text-center p-12">
-            <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-400 mt-3">Loading events...</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="p-3 w-10">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.size === filteredEvents.length && filteredEvents.length > 0}
-                      onChange={toggleSelectAll}
-                      className="rounded"
-                    />
-                  </th>
-                  {(
-                    [
-                      { label: "Title",      field: "title"      as keyof EventType },
-                      { label: "Course",     field: "course_name" as keyof EventType },
-                      { label: "Start Date", field: "start_date" as keyof EventType },
-                      { label: "End Date",   field: "end_date"   as keyof EventType },
-                      { label: "Type",       field: "event_type" as keyof EventType },
-                    ] as const
-                  ).map(({ label, field }) => (
-                    <th
-                      key={field}
-                      className="p-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-800 select-none"
-                      onClick={() => handleSort(field)}
-                    >
-                      {label}<SortIcon field={field} />
-                    </th>
-                  ))}
-                  <th className="p-3 text-left font-semibold text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredEvents.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center p-12 text-gray-400">
-                      <div className="text-4xl mb-2">📭</div>
-                      No events found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredEvents.map((event) => (
-                    <tr
-                      key={event.id}
-                      className={`border-b border-gray-50 hover:bg-gray-50 transition ${
-                        selectedIds.has(event.id) ? "bg-blue-50" : ""
-                      }`}
-                    >
-                      <td className="p-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(event.id)}
-                          onChange={() => toggleSelect(event.id)}
-                          className="rounded"
-                        />
-                      </td>
-                      <td className="p-3 font-medium text-gray-800">{event.title}</td>
-                      <td className="p-3 text-gray-600">{event.course_name || "—"}</td>
-                      <td className="p-3 text-gray-600">{event.start_date}</td>
-                      <td className="p-3 text-gray-600">{event.end_date || "—"}</td>
-                      <td className="p-3">
-                        <span
-                          className="px-2.5 py-1 rounded-full text-xs font-semibold capitalize"
-                          style={{
-                            color: EVENT_COLORS[event.event_type] ?? "#6B7280",
-                            background: EVENT_BG[event.event_type] ?? "#F3F4F6",
-                          }}
-                        >
-                          {event.event_type === "course"
-                            ? "📚"
-                            : event.event_type === "exam"
-                            ? "📝"
-                            : "🎉"}{" "}
-                          {event.event_type}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => startEdit(event)}
-                            className="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg hover:bg-yellow-200 text-xs font-semibold transition"
-                          >
-                            ✏️ Edit
-                          </button>
-                          <button
-                            onClick={() => setConfirmDelete(event.id)}
-                            className="bg-red-100 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-200 text-xs font-semibold transition"
-                          >
-                            🗑️ Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

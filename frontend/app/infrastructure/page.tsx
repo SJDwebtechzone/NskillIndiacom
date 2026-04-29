@@ -14,14 +14,14 @@ export default function InfrastructurePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<MediaItem | null>(null);
   const [filter, setFilter] = useState<"all" | "photo" | "video">("all");
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   useEffect(() => {
     fetchMedia();
   }, []);
 
   const fetchMedia = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/infrastructure/media");
+      const res = await fetch(`${API}/api/infrastructure/media`);
       const data = await res.json();
       if (data.success) setMedia(data.data);
     } catch (err) {

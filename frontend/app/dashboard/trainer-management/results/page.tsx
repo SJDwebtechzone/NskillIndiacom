@@ -43,7 +43,7 @@ useEffect(() => {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const decoded = JSON.parse(window.atob(base64));
-    console.log('=== TOKEN CONTENTS ===', decoded);
+   
   }
 
   const fetchStudents = async () => {
@@ -52,7 +52,7 @@ useEffect(() => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      console.log('API response:', data);
+    
       setStudents(data.students || []);
     } catch (err) {
       console.error(err);

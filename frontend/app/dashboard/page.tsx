@@ -339,18 +339,19 @@ export default function DashboardPage() {
           <p className="text-xs text-slate-400 font-semibold mb-4">Distribution across categories</p>
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie
-                data={data?.category_distribution ?? []}
-                dataKey="count"
-                nameKey="category"
-                cx="50%"
-                cy="50%"
-                outerRadius={90}
-                label={({ category, percent }) =>
-                  `${category?.split(" ")[0]} ${(percent * 100).toFixed(0)}%`
-                }
-                labelLine={false}
-              >
+             <Pie
+  data={data?.category_distribution ?? []}
+  dataKey="count"
+  nameKey="category"
+  cx="50%"
+  cy="50%"
+  outerRadius={90}
+// AFTER — cast to any to suppress Recharts type warning
+label={({ name, percent }: any) =>
+  `${name?.split(" ")[0]} ${(percent * 100).toFixed(0)}%`
+}
+  labelLine={false}
+>
                 {(data?.category_distribution ?? []).map((_: any, i: number) => (
                   <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                 ))}

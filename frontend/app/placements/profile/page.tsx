@@ -32,9 +32,9 @@ export default function PlacementPage() {
   const [location, setLocation] = useState("Chennai, Tamil Nadu");
   const [showDetail, setShowDetail] = useState(false);
   const router = useRouter();
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   useEffect(() => {
-    fetch("http://localhost:5000/api/jobs/jobs")
+    fetch(`${API}/api/jobs/jobs`)
       .then((res) => res.json())
       .then((data: Job[]) => {
         setJobs(data);

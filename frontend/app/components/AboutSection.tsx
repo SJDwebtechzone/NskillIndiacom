@@ -100,12 +100,12 @@ const AboutSection = () => {
               <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NIILE Solutions</h3>
               <div className="w-12 h-1 bg-cyan-400 rounded-full" />
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed text-justify">
               NIILE Solutions is established in 2012 in Kundrathur, Chennai to offer{" "}
               <strong className="text-blue-600">Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
               services. NIILE serves world-renowned organizations from Hydrocarbon, Power, Steel, Cement and Heavy Infrastructure industries involved in Construction, Commissioning, Operation and Maintenance activities.
             </p>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <p className="text-slate-500 text-sm leading-relaxed text-justify">
               As a strategic expansion aligning with the Skill India Mission, NIILE Solutions started{" "}
               <strong className="text-[#0b1f3a]">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
               near Kundrathur, Chennai during 2018 — to train unemployed youth, school and college finishers and dropouts in various skill-based trades for domestic and overseas employment.
@@ -134,12 +134,12 @@ const AboutSection = () => {
               <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NTSC Training</h3>
               <div className="w-12 h-1 bg-cyan-400 rounded-full" />
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed text-justify">
               NTSC training focuses on various skills like{" "}
               <strong className="text-[#0b1f3a]">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic</strong>,
               and Civil construction skills such as Carpentry, Masonry, Plumbing, Bar-Bending, and a host of other trades. NTSC also offers customized courses for corporates on Behavioural, Leadership and Technical skills.
             </p>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <p className="text-slate-500 text-sm leading-relaxed text-justify">
               NTSC's facility complies with NSDC requirements and is accredited by various State and Central Government bodies like{" "}
               <strong className="text-[#0b1f3a]">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS</strong>{" "}
               etc. The certifications help students avail opportunities for job and entrepreneurship.
@@ -237,7 +237,7 @@ const AboutSection = () => {
                 <h3 className="text-base font-black text-[#0b1f3a] uppercase tracking-tight">
                   {s.title}
                 </h3>
-                <p className="text-slate-500 text-sm leading-relaxed flex-1">{s.desc}</p>
+                <p className="text-slate-500 text-sm leading-relaxed flex-1 text-justify">{s.desc}</p>
               </div>
 
               {/* Footer */}

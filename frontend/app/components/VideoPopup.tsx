@@ -22,7 +22,7 @@ const VideoPopup: React.FC<VideoPopupProps> = ({
             setStatus('open');
             if (videoRef.current) {
                 videoRef.current.play().catch(e => {
-                    console.log("Autoplay blocked", e);
+                   
                     setIsPlaying(false);
                 });
             }

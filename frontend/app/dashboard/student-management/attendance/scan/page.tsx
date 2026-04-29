@@ -69,7 +69,7 @@ function QRScanPage() {
   const scannedRef = useRef(false);
 
   const addLog = (msg: string) => {
-    console.log("[Scan]", msg);
+
     setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()} — ${msg}`]);
   };
 

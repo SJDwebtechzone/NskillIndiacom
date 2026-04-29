@@ -13,7 +13,7 @@ interface Message {
   type: "success" | "error";
   text: string;
 }
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 export default function InfrastructureSettings() {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<PreviewItem[]>([]);
@@ -99,7 +99,7 @@ export default function InfrastructureSettings() {
 
           xhr.onerror = () => reject(new Error("Network error"));
 
-          xhr.open("POST", "http://localhost:5000/api/infrastructure/upload");
+         xhr.open("POST", `${API}/api/infrastructure/upload`);
           xhr.send(formData);
         }
       );

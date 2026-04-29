@@ -1,7 +1,7 @@
-
+require("dotenv").config();
 const express = require("express");
 const cors    = require("cors");
-require("dotenv").config();
+
 
 const authRoutes      = require("./routes/auth");
 const userRoutes      = require("./routes/users");
@@ -42,6 +42,7 @@ const otpRoutes = require("./routes/otp");
 
 const dashboardRoutes = require("./routes/dashboard");
 const classStatusRoutes = require("./routes/classStatus");
+const courseEventRoutes = require("./routes/courseEvent");
 // In index.js — add this if not already there
 const path = require('path');
 const app  = express();
@@ -100,7 +101,7 @@ app.use('/api/placement-feedback', placementFeedbackRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/background-images', bgImagesRoutes);
 // ✅ Correct — matches the actual filename
-app.use("/api/course-events", require("./routes/courseEvent"));
+app.use("/api/course_events", courseEventRoutes);
 
 app.use("/api/class-status", classStatusRoutes);
 

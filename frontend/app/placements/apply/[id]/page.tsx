@@ -40,7 +40,7 @@ export default function ApplyPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<SubmittedType | null>(null);
   const [fileError, setFileError] = useState("");
-
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setFileError("");
@@ -81,13 +81,13 @@ export default function ApplyPage() {
     formData.append("experience", form.experience);
     formData.append("resume", resumeFile);
 
-    const res = await fetch("http://localhost:5000/api/jobs/apply", {
+    const res = await fetch(`${API}/api/jobs/apply`, {
       method: "POST",
       body: formData,
     });
 
     const data = await res.json();
-    console.log("Apply response:", data); // check this in browser console
+  
 
     if (res.ok) {
       setSubmittedData({ ...form, resume_filename: resumeFile.name });

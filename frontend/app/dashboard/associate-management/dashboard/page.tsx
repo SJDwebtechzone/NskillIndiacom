@@ -11,7 +11,7 @@ import { AnimatePresence } from "framer-motion";
 import axios from "axios";
 import Link from "next/link";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export default function AssociateDashboard() {
     const [stats, setStats] = useState({

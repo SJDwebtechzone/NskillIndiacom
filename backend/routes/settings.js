@@ -5,6 +5,9 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+// ── Use env variable for backend URL ──────────────────────────────────────────
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
+
 // --- Multer Configuration ---
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -43,7 +46,7 @@ router.get("/banners", async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.error("[banners] DB error:", err.message);
-        res.json([]); // Return empty array so frontend degrades gracefully
+        res.json([]);
     }
 });
 
@@ -51,7 +54,8 @@ router.get("/banners", async (req, res) => {
 router.post("/banners", upload.single("image"), async (req, res) => {
     try {
         const { title, display_order } = req.body;
-        const image_url = req.file ? `http://localhost:5000/uploads/banners/${req.file.filename}` : "";
+        // ✅ FIXED — was hardcoded http://localhost:5000
+        const image_url = req.file ? `${BACKEND_URL}/uploads/banners/${req.file.filename}` : "";
 
         const result = await pool.query(
             "INSERT INTO banners (image_url, title, display_order) VALUES ($1, $2, $3) RETURNING *",
@@ -68,8 +72,6 @@ router.post("/banners", upload.single("image"), async (req, res) => {
 router.delete("/banners/:id", async (req, res) => {
     try {
         const { id } = req.params;
-
-        // Optional: Delete file from disk
         const banner = await pool.query("SELECT image_url FROM banners WHERE id = $1", [id]);
         if (banner.rows.length > 0 && banner.rows[0].image_url) {
             const filename = banner.rows[0].image_url.split('/').pop();
@@ -78,7 +80,6 @@ router.delete("/banners/:id", async (req, res) => {
                 fs.unlinkSync(filepath);
             }
         }
-
         await pool.query("DELETE FROM banners WHERE id = $1", [id]);
         res.json({ message: "Banner deleted" });
     } catch (err) {
@@ -103,7 +104,7 @@ router.put("/banners/:id/status", async (req, res) => {
     }
 });
 
-// --- Popups (Keep as URL for now or can also convert if needed, but the user specifically asked for Banner) ---
+// --- Popups ---
 
 // Get all popups
 router.get("/popups", async (req, res) => {
@@ -118,7 +119,7 @@ router.get("/popups", async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.error("[popups] Fetch error:", err.message);
-        res.status(200).json([]); // Return empty array so frontend degrades gracefully
+        res.status(200).json([]);
     }
 });
 
@@ -126,8 +127,9 @@ router.get("/popups", async (req, res) => {
 router.post("/popups", uploadPopup.single("video"), async (req, res) => {
     try {
         const { title, description, course_id, manual_override, placement } = req.body;
-        const video_url = req.file ? `http://localhost:5000/uploads/popups/${req.file.filename}` : "";
-        
+        // ✅ FIXED — was hardcoded http://localhost:5000
+        const video_url = req.file ? `${BACKEND_URL}/uploads/popups/${req.file.filename}` : "";
+
         const result = await pool.query(
             "INSERT INTO popups (video_url, title, description, course_id, manual_override, placement) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
             [video_url, title, description, course_id, manual_override || false, placement || "Intro"]
@@ -157,16 +159,14 @@ router.delete("/popups/:id", async (req, res) => {
     }
 });
 
-// Update popup status (only one active at a time)
+// Update popup status
 router.put("/popups/:id/status", async (req, res) => {
     try {
         const { id } = req.params;
         const { is_active } = req.body;
-
         if (is_active) {
             await pool.query("UPDATE popups SET is_active = FALSE");
         }
-
         const result = await pool.query(
             "UPDATE popups SET is_active = $1 WHERE id = $2 RETURNING *",
             [is_active, id]
@@ -178,16 +178,14 @@ router.put("/popups/:id/status", async (req, res) => {
     }
 });
 
-// Update manual override (only one override at a time)
+// Update manual override
 router.put("/popups/:id/override", async (req, res) => {
     try {
         const { id } = req.params;
         const { manual_override } = req.body;
-
         if (manual_override) {
             await pool.query("UPDATE popups SET manual_override = FALSE");
         }
-
         const result = await pool.query(
             "UPDATE popups SET manual_override = $1 WHERE id = $2 RETURNING *",
             [manual_override, id]
@@ -200,8 +198,6 @@ router.put("/popups/:id/override", async (req, res) => {
 });
 
 // --- Latest News ---
-
-// Multer for news images
 const newsStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const dir = "uploads/news/";
@@ -221,7 +217,7 @@ router.get("/news", async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.error("[news] DB error:", err.message);
-        res.json([]); // Return empty array so frontend degrades gracefully
+        res.json([]);
     }
 });
 
@@ -229,7 +225,8 @@ router.get("/news", async (req, res) => {
 router.post("/news", uploadNews.single("image"), async (req, res) => {
     try {
         const { title, content } = req.body;
-        const image_url = req.file ? `http://localhost:5000/uploads/news/${req.file.filename}` : "";
+        // ✅ FIXED — was hardcoded http://localhost:5000
+        const image_url = req.file ? `${BACKEND_URL}/uploads/news/${req.file.filename}` : "";
         const result = await pool.query(
             "INSERT INTO latest_news (title, content, image_url) VALUES ($1, $2, $3) RETURNING *",
             [title, content, image_url]
@@ -278,14 +275,15 @@ router.get("/accreditations", async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.error("[accreditations] DB error:", err.message);
-        res.json([]); // Return empty array so frontend degrades gracefully
+        res.json([]);
     }
 });
 
 router.post("/accreditations", uploadAccreditations.single("image"), async (req, res) => {
     try {
         const { title, organization } = req.body;
-        const image_url = req.file ? `http://localhost:5000/uploads/accreditations/${req.file.filename}` : "";
+        // ✅ FIXED — was hardcoded http://localhost:5000
+        const image_url = req.file ? `${BACKEND_URL}/uploads/accreditations/${req.file.filename}` : "";
         const result = await pool.query(
             "INSERT INTO accreditations (name, logo_url, organization) VALUES ($1, $2, $3) RETURNING id, name as title, logo_url as image_url, created_at",
             [title, image_url, organization || 'N/A']
@@ -316,40 +314,47 @@ router.delete("/accreditations/:id", async (req, res) => {
 
 // --- Contact Info ---
 
-// Get current contact info
 router.get("/contact-info", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM contact_info ORDER BY id LIMIT 1");
         res.json(result.rows[0] || {});
     } catch (err) {
         console.error("[contact-info] DB error:", err.message);
-        res.json({}); 
+        res.json({});
     }
 });
 
-// Update contact info 
 router.post("/contact-info", async (req, res) => {
     try {
-        const { company_name, address, primary_phone, secondary_phone, whatsapp_number, email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url } = req.body;
+        const {
+            company_name, address, primary_phone, secondary_phone,
+            whatsapp_number, email, map_embed_url,
+            facebook_url, twitter_url, instagram_url, linkedin_url
+        } = req.body;
 
         const check = await pool.query("SELECT id FROM contact_info LIMIT 1");
-        
+
         if (check.rows.length === 0) {
             await pool.query(`
                 INSERT INTO contact_info (
-                    company_name, address, primary_phone, secondary_phone, whatsapp_number, 
+                    company_name, address, primary_phone, secondary_phone, whatsapp_number,
                     email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-                [company_name, address, primary_phone, secondary_phone, whatsapp_number, email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url]
+                ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+                [company_name, address, primary_phone, secondary_phone, whatsapp_number,
+                 email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url]
             );
         } else {
             await pool.query(`
-                UPDATE contact_info SET 
-                    company_name = $1, address = $2, primary_phone = $3, secondary_phone = $4, whatsapp_number = $5,
-                    email = $6, map_embed_url = $7, facebook_url = $8, twitter_url = $9, instagram_url = $10, linkedin_url = $11,
+                UPDATE contact_info SET
+                    company_name = $1, address = $2, primary_phone = $3,
+                    secondary_phone = $4, whatsapp_number = $5, email = $6,
+                    map_embed_url = $7, facebook_url = $8, twitter_url = $9,
+                    instagram_url = $10, linkedin_url = $11,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = $12`,
-                [company_name, address, primary_phone, secondary_phone, whatsapp_number, email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url, check.rows[0].id]
+                [company_name, address, primary_phone, secondary_phone, whatsapp_number,
+                 email, map_embed_url, facebook_url, twitter_url, instagram_url,
+                 linkedin_url, check.rows[0].id]
             );
         }
         res.json({ message: "Contact info updated successfully" });

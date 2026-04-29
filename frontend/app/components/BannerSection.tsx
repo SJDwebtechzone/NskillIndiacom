@@ -32,9 +32,9 @@ export default function BannerSection() {
 
     const fetchBanners = async () => {
         try {
-            console.log("Fetching banners from:", `${API_BASE_URL}/banners`);
+           
             const res = await axios.get(`${API_BASE_URL}/banners`);
-            console.log("Banners received:", res.data);
+            
             const activeBanners = res.data.filter((b: Banner) => b.is_active);
             setBanners(activeBanners);
         } catch (err) {
