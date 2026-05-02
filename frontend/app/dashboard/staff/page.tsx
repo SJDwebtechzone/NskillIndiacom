@@ -69,7 +69,7 @@ export default function StaffPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}?role=trainer`, { headers: getAuthHeaders() });
+  const res = await fetch(`${API}?role=staff`, { headers: getAuthHeaders() });
       const json = await res.json();
       setStaff(json.data || []);
     } catch {
@@ -229,7 +229,7 @@ export default function StaffPage() {
             + Create New Staff
           </button>
           <div className="bg-purple-50 text-purple-700 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-           {staff.length} Total Trainers
+           {staff.length} Total Members
           </div>
         </div>
       </div>
@@ -292,10 +292,14 @@ export default function StaffPage() {
               </div>
 
               <div className="pt-3 mt-2 flex flex-wrap items-center gap-2">
-                <span className="flex items-center gap-1 text-[10px] font-bold bg-purple-50 text-purple-600 px-2 py-1 rounded-lg uppercase tracking-widest">
-                  <Shield className="w-3 h-3" />
-                  {member.role_name || "TRAINER"}
-                </span>
+              <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-widest ${
+  member.role_name?.toLowerCase() === 'staff'
+    ? 'bg-blue-50 text-blue-600'
+    : 'bg-purple-50 text-purple-600'
+}`}>
+  <Shield className="w-3 h-3" />
+  {member.role_name || "TRAINER"}
+</span>
                 {member.phone_number && (
                   <span className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
                     {member.phone_number}
@@ -304,15 +308,18 @@ export default function StaffPage() {
               </div>
 
               {/* Assign Courses button always visible */}
-              <div className="mt-4 pt-3 border-t border-slate-50">
-                <button
-                  onClick={() => openAssignModal(member)}
-                  className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  <BookOpen size={12} />
-                  Assign Courses
-                </button>
-              </div>
+         {/* // Only show assign courses for Trainers */}
+{member.role_name?.toLowerCase() === 'trainer' && (
+  <div className="mt-4 pt-3 border-t border-slate-50">
+    <button
+      onClick={() => openAssignModal(member)}
+      className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
+    >
+      <BookOpen size={12} />
+      Assign Courses
+    </button>
+  </div>
+)}
 
               <div className="flex justify-between items-center mt-3">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
@@ -556,7 +563,8 @@ export default function StaffPage() {
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Account Role</label>
                   <select value={formData.role_id} onChange={e => setFormData({...formData, role_id: parseInt(e.target.value)})} className="w-full bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-purple-500 transition-all text-black">
-                    <option value={1}>Trainer</option>
+                      <option value={1}>Trainer</option>
+                      <option value={2}>Staff</option>
                   </select>
                 </div>
               </div>

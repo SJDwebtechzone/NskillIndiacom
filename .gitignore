@@ -39,8 +39,8 @@ yarn-error.log*
 **/out/
 # ── ADD THESE NEW LINES ──
 # Backend uploads
-backend/uploads/
-uploads/
+backend/uploads/*
+!backend/uploads/**/.gitkeep
 
 # Backend log files
 backend/scripts/query_log.txt

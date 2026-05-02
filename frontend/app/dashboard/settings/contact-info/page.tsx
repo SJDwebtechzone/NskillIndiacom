@@ -376,8 +376,16 @@ export default function ContactSettingsPage() {
   };
 
   const handleOpenEdit = (loc: Location) => {
-    setEditingLocation(loc);
-    setModalOpen(true);
+   setEditingLocation({
+    ...loc,
+    facebook_url:  loc.facebook_url  || "",
+    twitter_url:   loc.twitter_url   || "",
+    instagram_url: loc.instagram_url || "",
+    linkedin_url:  loc.linkedin_url  || "",
+    map_embed_url: loc.map_embed_url || "",
+  });
+  setModalOpen(true);
+  
   };
 
   const handleSaveLocation = async (data: Location) => {

@@ -50,10 +50,15 @@ router.get(
       `;
       let params = [];
 
-      if (role) {
-        query += ` WHERE LOWER(r.name) = LOWER($1)`;
-        params.push(role);
-      }
+   if (role) {
+  if (role === 'staff') {
+    // fetch both trainer and staff roles
+    query += ` WHERE LOWER(r.name) IN ('trainer', 'staff')`;
+  } else {
+    query += ` WHERE LOWER(r.name) = LOWER($1)`;
+    params.push(role);
+  }
+}
 
       query += ` ORDER BY u.created_at DESC`;
 

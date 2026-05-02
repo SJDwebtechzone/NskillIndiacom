@@ -14,7 +14,13 @@ import {
 } from "lucide-react";
 import { contactInfo } from "@/data/contactInfo";
 
-// ─── Category order ───────────────────────────────────────────────────────────
+interface ContactLocation {
+  facebook_url: string;
+  twitter_url: string;
+  instagram_url: string;
+  linkedin_url: string;
+}
+
 const SKILL_CATEGORIES = [
   "HVAC & Refrigeration",
   "Electrical",
@@ -28,12 +34,25 @@ const SKILL_CATEGORIES = [
 ];
 
 function toSlug(str: string) {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return str.toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 const Footer = () => {
   const pathname    = usePathname();
   const currentYear = new Date().getFullYear();
+  const [socialLinks, setSocialLinks] = useState<ContactLocation | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings/locations`)
+      .then(r => r.json())
+      .then(data => {
+        const primary = data.find((loc: any) => loc.is_primary) || data[0];
+        if (primary) setSocialLinks(primary);
+      })
+      .catch(() => {});
+  }, []);
 
   if (pathname?.startsWith("/login") || pathname?.startsWith("/dashboard")) {
     return null;
@@ -99,12 +118,12 @@ const Footer = () => {
             </h3>
             <ul className="space-y-0">
               {[
-                { name: "Home",           href: "/"                    },
-                { name: "All Courses",    href: "/courses"             },
-                { name: "Course Calendar",href: "/course_calender"     },
-                { name: "Placements",     href: "/placements/register" },
-                { name: "Infrastructure", href: "/infrastructure"      },
-                { name: "Contact Us",     href: "/contact"             },
+                { name: "Home",            href: "/"                    },
+                { name: "All Courses",     href: "/courses"             },
+                { name: "Course Calendar", href: "/course_calender"     },
+                { name: "Placements",      href: "/placements/register" },
+                { name: "Infrastructure",  href: "/infrastructure"      },
+                { name: "Contact Us",      href: "/contact"             },
               ].map((link) => (
                 <li key={link.name} className="border-b border-dotted border-gray-600/50">
                   <Link
@@ -122,21 +141,40 @@ const Footer = () => {
 
         {/* ── Middle section ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 py-10 border-t border-gray-600/50">
+
+          {/* Social Links */}
           <div className="space-y-4">
             <h3 className="text-white font-bold text-[15px]">Connect With Us</h3>
             <div className="flex gap-2">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, idx) => (
-                <Link
-                  key={idx}
-                  href="#"
-                  className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 hover:bg-[#fe2b54] hover:text-white hover:border-[#fe2b54] transition-all"
-                >
-                  <Icon size={16} />
-                </Link>
+              {[
+                { Icon: Facebook,  url: socialLinks?.facebook_url  },
+                { Icon: Twitter,   url: socialLinks?.twitter_url   },
+                { Icon: Instagram, url: socialLinks?.instagram_url },
+                { Icon: Linkedin,  url: socialLinks?.linkedin_url  },
+              ].map(({ Icon, url }, idx) => (
+                url ? (
+                  <a
+                    key={idx}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 hover:bg-[#fe2b54] hover:text-white hover:border-[#fe2b54] transition-all"
+                  >
+                    <Icon size={16} />
+                  </a>
+                ) : (
+                  <div
+                    key={idx}
+                    className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 opacity-40 cursor-not-allowed"
+                  >
+                    <Icon size={16} />
+                  </div>
+                )
               ))}
             </div>
           </div>
 
+          {/* Subscribe */}
           <div className="space-y-4">
             <h3 className="text-white font-bold text-[15px]">Subscribe Us</h3>
             <div className="flex h-12 shadow-inner">
@@ -150,6 +188,7 @@ const Footer = () => {
               </button>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -157,7 +196,14 @@ const Footer = () => {
       <div className="bg-[#081728] py-8 text-center border-t border-gray-600/20">
         <div className="max-w-7xl mx-auto px-6 text-[14px] text-gray-500 font-medium">
           Copyright © {currentYear} All rights reserved | by{" "}
-          <span className="text-gray-400 transition-colors">DevSpectra</span>
+          <a
+            href="https://devspectra.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            DevSpectra
+          </a>
         </div>
       </div>
     </footer>

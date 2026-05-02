@@ -1,125 +1,3 @@
-// const express = require("express");
-// const router = express.Router();
-// const db = require("../config/db");
-// const nodemailer = require("nodemailer");
-
-// // ==============================
-// // ✅ GET contact info
-// // ==============================
-// router.get("/contact-info", async (req, res) => {
-//   try {
-//     const result = await db.query(
-//       "SELECT * FROM contact_info ORDER BY id DESC LIMIT 1"
-//     );
-//     res.json(result.rows[0] || {});
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch data" });
-//   }
-// });
-
-// // ==============================
-// // ✅ SAVE contact info
-// // ==============================
-// router.post("/contact-info", async (req, res) => {
-//   try {
-//     const data = req.body;
-
-//     await db.query("DELETE FROM contact_info");
-
-//     await db.query(
-//       `INSERT INTO contact_info 
-//       (company_name, address, primary_phone, secondary_phone, whatsapp_number, email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url)
-//       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-//       [
-//         data.company_name,
-//         data.address,
-//         data.primary_phone,
-//         data.secondary_phone,
-//         data.whatsapp_number,
-//         data.email,
-//         data.map_embed_url,
-//         data.facebook_url,
-//         data.twitter_url,
-//         data.instagram_url,
-//         data.linkedin_url
-//       ]
-//     );
-
-//     res.json({ message: "Saved successfully" });
-//   } catch (err) {
-//     res.status(500).json({ error: "Save failed" });
-//   }
-// });
-
-// // ==============================
-// // 🔥 ENQUIRY + EMAIL SEND
-// // ==============================
-// router.post("/enquiry", async (req, res) => {
-//   try {
-//     const { name, email, phone, subject, message } = req.body;
-
-//     // ✅ Save DB
-//     await db.query(
-//       `INSERT INTO enquiry_info (name, email, phone, subject, message)
-//        VALUES ($1,$2,$3,$4,$5)`,
-//       [name, email, phone, subject, message]
-//     );
-
-//     // ✅ Transport
-//     const transporter = nodemailer.createTransport({
-//       service: "gmail",
-//       auth: {
-//         user: "mpandiyan188@gmail.com",
-//         pass: "lblpmojrbdjbskyg"
-//       }
-//     });
-
-//     // ✅ MAIL (FINAL FIX)
-//     const mailOptions = {
-//       from: `"Course Enquiry" <devspetra@gmail.com>`, // 🔥 UI name change
-//       replyTo: email, // 👈 student email (important)
-//       to: "mpandiyan188@gmail.com", // admin mail
-//       subject: `📩 Course Enquiry from ${name}`, // 🔥 subject improve
-
-//       html: `
-//         <div style="font-family: Arial; padding: 20px">
-//           <h2 style="color:#0b1f3a">📩 Course Enquiry</h2>
-//           <hr/>
-//           <p><b>Name:</b> ${name}</p>
-//           <p><b>Email:</b> ${email}</p>
-//           <p><b>Phone:</b> ${phone || "-"}</p>
-//           <p><b>Subject:</b> ${subject || "-"}</p>
-//           <p><b>Message:</b></p>
-//           <p>${message}</p>
-//         </div>
-//       `
-//     };
-
-//     await transporter.sendMail(mailOptions);
-
-//     res.json({ message: "Enquiry saved + Email sent ✅" });
-
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed ❌" });
-//   }
-// });
-
-// // ==============================
-// // ✅ GET ALL ENQUIRIES
-// // ==============================
-// router.get("/enquiry", async (req, res) => {
-//   try {
-//     const result = await db.query(
-//       "SELECT * FROM enquiry_info ORDER BY id DESC"
-//     );
-//     res.json(result.rows);
-//   } catch (err) {
-//     res.status(500).json({ error: "Fetch failed" });
-//   }
-// });
-
-// module.exports = router;
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
@@ -140,19 +18,35 @@ const initTable = async () => {
         whatsapp_number VARCHAR(50),
         email VARCHAR(255),
         map_embed_url TEXT,
+        facebook_url TEXT,
+        twitter_url TEXT,
+        instagram_url TEXT,
+        linkedin_url TEXT,
         is_primary BOOLEAN DEFAULT false,
         sort_order INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
     `);
+
+    // Add social columns if table already exists without them
+    const alterCols = [
+      "ALTER TABLE contact_locations ADD COLUMN IF NOT EXISTS facebook_url TEXT",
+      "ALTER TABLE contact_locations ADD COLUMN IF NOT EXISTS twitter_url TEXT",
+      "ALTER TABLE contact_locations ADD COLUMN IF NOT EXISTS instagram_url TEXT",
+      "ALTER TABLE contact_locations ADD COLUMN IF NOT EXISTS linkedin_url TEXT",
+    ];
+    for (const sql of alterCols) {
+      await db.query(sql);
+    }
+
     console.log("✅ contact_locations table ready");
   } catch (err) {
     console.error("❌ Table init error:", err.message);
   }
 };
 
-initTable(); // Called automatically when this route file loads
+initTable();
 
 // ==============================
 // ✅ GET contact info (legacy)
@@ -226,13 +120,15 @@ router.get("/locations/:id", async (req, res) => {
 });
 
 // ==============================
-// 🏢 ADD NEW LOCATION
+// 🏢 ADD NEW LOCATION ✅ FIXED — includes social fields
 // ==============================
 router.post("/locations", async (req, res) => {
   try {
     const {
       location_name, address, primary_phone, secondary_phone,
-      whatsapp_number, email, map_embed_url, is_primary, sort_order
+      whatsapp_number, email, map_embed_url,
+      facebook_url, twitter_url, instagram_url, linkedin_url,
+      is_primary, sort_order
     } = req.body;
 
     if (is_primary) {
@@ -241,14 +137,19 @@ router.post("/locations", async (req, res) => {
 
     const result = await db.query(
       `INSERT INTO contact_locations 
-        (location_name, address, primary_phone, secondary_phone, whatsapp_number, email, map_embed_url, is_primary, sort_order)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        (location_name, address, primary_phone, secondary_phone, whatsapp_number,
+         email, map_embed_url, facebook_url, twitter_url, instagram_url, linkedin_url,
+         is_primary, sort_order)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        RETURNING *`,
       [
         location_name, address,
-        primary_phone || null, secondary_phone || null,
-        whatsapp_number || null, email || null,
-        map_embed_url || null, is_primary || false, sort_order || 0
+        primary_phone   || null, secondary_phone || null,
+        whatsapp_number || null, email           || null,
+        map_embed_url   || null,
+        facebook_url    || null, twitter_url     || null,
+        instagram_url   || null, linkedin_url    || null,
+        is_primary || false, sort_order || 0
       ]
     );
     res.json({ message: "Location added successfully", data: result.rows[0] });
@@ -259,14 +160,16 @@ router.post("/locations", async (req, res) => {
 });
 
 // ==============================
-// 🏢 UPDATE LOCATION
+// 🏢 UPDATE LOCATION ✅ FIXED — includes social fields
 // ==============================
 router.put("/locations/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const {
       location_name, address, primary_phone, secondary_phone,
-      whatsapp_number, email, map_embed_url, is_primary, sort_order
+      whatsapp_number, email, map_embed_url,
+      facebook_url, twitter_url, instagram_url, linkedin_url,
+      is_primary, sort_order
     } = req.body;
 
     if (is_primary) {
@@ -284,17 +187,23 @@ router.put("/locations/:id", async (req, res) => {
         whatsapp_number = $5,
         email           = $6,
         map_embed_url   = $7,
-        is_primary      = $8,
-        sort_order      = $9,
+        facebook_url    = $8,
+        twitter_url     = $9,
+        instagram_url   = $10,
+        linkedin_url    = $11,
+        is_primary      = $12,
+        sort_order      = $13,
         updated_at      = NOW()
-       WHERE id = $10
+       WHERE id = $14
        RETURNING *`,
       [
         location_name, address,
-        primary_phone || null, secondary_phone || null,
-        whatsapp_number || null, email || null,
-        map_embed_url || null, is_primary || false,
-        sort_order || 0, id
+        primary_phone   || null, secondary_phone || null,
+        whatsapp_number || null, email           || null,
+        map_embed_url   || null,
+        facebook_url    || null, twitter_url     || null,
+        instagram_url   || null, linkedin_url    || null,
+        is_primary || false, sort_order || 0, id
       ]
     );
 
@@ -339,18 +248,18 @@ router.post("/enquiry", async (req, res) => {
       [name, email, phone, subject, message]
     );
 
-  const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS
-  }
-});
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS
+      }
+    });
 
-const mailOptions = {
-  from: `"N-Skill Training Enquiry" <${process.env.MAIL_USER}>`,
-  replyTo: email,
-  to: process.env.ADMIN_EMAIL,
+    const mailOptions = {
+      from: `"N-Skill Training Enquiry" <${process.env.MAIL_USER}>`,
+      replyTo: email,
+      to: process.env.ADMIN_EMAIL,
       subject: `New Enquiry - ${subject || "Course Info"}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
@@ -410,4 +319,3 @@ router.get("/enquiry", async (req, res) => {
 });
 
 module.exports = router;
-

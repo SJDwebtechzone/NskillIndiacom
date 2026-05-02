@@ -10,7 +10,7 @@ import {
   Medal, Rocket, HelpCircle, Plus, Minus,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 import { Pause, Play, Volume2, VolumeX, Maximize2, LayoutGrid, ChevronDown } from "lucide-react";
 
@@ -1828,21 +1828,23 @@ export default function CourseDetailClient({
     .filter(Boolean);
 
  const videos = course.videos ?? [];
-
+const [particles, setParticles] = useState<any[]>([]);
 // ── Glowing particles ──
-const particles = useMemo(() =>
-  [...Array(25)].map((_, i) => ({
-    id:       i,
-    width:    Math.random() * 4 + 2,
-    height:   Math.random() * 4 + 2,
-    top:      Math.random() * 100,
-    left:     Math.random() * 100,
-    opacity:  Math.random() * 0.6 + 0.2,
-    blur:     Math.random() * 10 + 4,
-    delay:    Math.random() * 3,
-    duration: Math.random() * 3 + 2,
-  })), []
-);
+useEffect(() => {
+  setParticles(
+    [...Array(25)].map((_, i) => ({
+      id:       i,
+      width:    Math.random() * 4 + 2,
+      height:   Math.random() * 4 + 2,
+      top:      Math.random() * 100,
+      left:     Math.random() * 100,
+      opacity:  Math.random() * 0.6 + 0.2,
+      blur:     Math.random() * 10 + 4,
+      delay:    Math.random() * 3,
+      duration: Math.random() * 3 + 2,
+    }))
+  );
+}, []);
 
   return (
     <>
@@ -1891,7 +1893,7 @@ const particles = useMemo(() =>
 </div>
 
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
-       <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:gap-12 items-center">
+   <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-8 lg:gap-10 items-center">
 
               {/* Left: Text */}
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
@@ -1908,9 +1910,9 @@ const particles = useMemo(() =>
                   {course.category}
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-6 tracking-tight">
-                  {course.title}
-                </h1>
+           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-6 tracking-tight break-words">
+  {course.title}
+</h1>
 
                 <div className="flex flex-wrap gap-2 text-sm text-white/80 mb-8">
                   {[
