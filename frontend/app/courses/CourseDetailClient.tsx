@@ -458,16 +458,16 @@ function BrochureModal({
   const [countdown, setCountdown] = useState(0);
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => () => clearInterval(timerRef.current), []);
+ useEffect(() => () => clearInterval(timerRef.current ?? undefined), []);
 
   const startCountdown = (secs = 30) => {
     setCountdown(secs);
-    clearInterval(timerRef.current);
+   clearInterval(timerRef.current ?? undefined);
     timerRef.current = setInterval(() => {
       setCountdown((c) => {
-        if (c <= 1) { clearInterval(timerRef.current); return 0; }
+        if (c <= 1) { clearInterval(timerRef.current ?? undefined); return 0; }
         return c - 1;
       });
     }, 1000);
@@ -1155,12 +1155,12 @@ function ImageCarousel({ category, courseTitle, gallery, thumbnailUrl }: {
     : categorySlides;
   const [current, setCurrent] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isHovered) return;
     timerRef.current = setTimeout(() => setCurrent((c) => (c + 1) % slides.length), 3500);
-    return () => clearTimeout(timerRef.current);
+    return () => clearTimeout(timerRef.current?? undefined);
   }, [current, isHovered, slides.length]);
 
   const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
@@ -1596,8 +1596,7 @@ const DEFAULT_FAQS_TA: FAQItem[] = [
     a: "📞 தொடர்புக்கு: +91 9884209774",
   },
 ];
-
-function FAQSection({ faqs }: { faqs?: { q: string; a: string }[] }) {
+function FAQSection({ faqs }: { faqs?: FAQItem[] }) {
   const [lang, setLang]       = useState<"en" | "ta">("en");
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
