@@ -3,35 +3,37 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Mail, Linkedin, Phone } from "lucide-react";
-
 const team = [
-    {
-        name: "T.R. Sriram",
-        role: "Director",
-        image: "/images/team/sriram.jpg",
-        email: "sivasankar.vps@gmail.com",
-        linkedin: "https://linkedin.com",
-        phone: "#",
-        desc: "Electronics Engr, 32 years of experience, Consultant & Trainer for Strategic Management, LEAN, TPM, SCM, QMS, EMS, SMS",
-    },
-    {
-        name: "V.P. Sivasankar",
-        role: "Director",
-        image: "/images/team/sivasankar.jpg",
-        email: "sivasankar.vps@gmail.com",
-        linkedin: "https://linkedin.com",
-        phone: "#",
-        desc: "Mechanical Engr, 15 years of experience, Consultant & Trainer for QMS, EMS, Safety, NDT & Energy Management",
-    },
-    {
-        name: "S. Karthikeyan",
-        role: "Director",
-        image: "/images/team/karthikeyan.jpg",
-        email: "karthik@career-tree.in",
-        linkedin: "https://linkedin.com",
-        phone: "#",
-        desc: "Graduate in BusinessAdmn& PG in Social Work (PM&IR), 18 years of experience, HR Specialist & Certified Trainer in Competency Management and Balanced Score Card",
-    },
+  {
+    name: "T.R. Sriram",
+    role: "Director",
+    image: "/images/team/sriram.jpg",
+    email: "sivasankar.vps@gmail.com",
+    linkedin: "https://linkedin.com",
+    phone: "#",
+    desc: "Electronics Engr, 32 years of experience, Consultant & Trainer for Strategic Management, LEAN, TPM, SCM, QMS, EMS, SMS",
+    tags: ["Strategic Management", "LEAN", "TPM"],  // ← add
+  },
+  {
+    name: "V.P. Sivasankar",
+    role: "Director",
+    image: "/images/team/sivasankar.jpg",
+    email: "sivasankar.vps@gmail.com",
+    linkedin: "https://linkedin.com",
+    phone: "#",
+    desc: "Mechanical Engr, 15 years of experience, Consultant & Trainer for QMS, EMS, Safety, NDT & Energy Management",
+    tags: ["QMS", "Safety", "NDT"],  // ← add
+  },
+  {
+    name: "S. Karthikeyan",
+    role: "Director",
+    image: "/images/team/karthikeyan.jpg",
+    email: "karthik@career-tree.in",
+    linkedin: "https://linkedin.com",
+    phone: "#",
+    desc: "Graduate in BusinessAdmn& PG in Social Work (PM&IR), 18 years of experience, HR Specialist & Certified Trainer in Competency Management and Balanced Score Card",
+    tags: ["HR", "Competency Management"],  // ← add
+  },
 ];
 
 // const TeamSection = () => {
