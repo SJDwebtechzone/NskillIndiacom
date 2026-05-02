@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import {
   Clock,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+
 // ─── Category → Unsplash cover image mapping ──────────────────────────────────
 const CATEGORY_IMAGES: Record<string, string[]> = {
   "HVAC & Refrigeration": [
@@ -68,7 +68,6 @@ const FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
 ];
 
-// ─── Category display order ───────────────────────────────────────────────────
 const CATEGORY_ORDER = [
   "HVAC & Refrigeration",
   "Electrical",
@@ -86,7 +85,6 @@ function getCourseImage(category: string, index: number): string {
   return pool[index % pool.length];
 }
 
-// Extract first 3 syllabus items from content string
 function getDescription(content: string): string {
   if (!content) return "";
   return content
@@ -107,10 +105,10 @@ function CourseCard({
   index: number;
   category: string;
 }) {
- const imgSrc = course.thumbnail_url
-  ? course.thumbnail_url
-  : getCourseImage(category, index);
-  const desc   = getDescription(course.content ?? "");
+  const imgSrc = course.thumbnail_url
+    ? course.thumbnail_url
+    : getCourseImage(category, index);
+  const desc = getDescription(course.content ?? "");
 
   return (
     <motion.div
@@ -120,7 +118,6 @@ function CourseCard({
       transition={{ delay: index * 0.08 }}
       className="group bg-white rounded-3xl border border-slate-100 overflow-hidden hover:shadow-[0_24px_60px_-12px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-400 flex flex-col"
     >
-      {/* Image */}
       <div className="relative h-48 overflow-hidden bg-slate-100">
         <img
           src={imgSrc}
@@ -129,39 +126,27 @@ function CourseCard({
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-        {/* Duration badge */}
         <div className="absolute top-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[10px] font-black uppercase tracking-widest text-slate-700 shadow-sm">
           {course.duration ?? "N/A"}
         </div>
-
-        {/* Category pill */}
         <div className="absolute bottom-3 left-3 px-3 py-1 bg-blue-600/90 backdrop-blur-sm rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
           {category}
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex flex-col flex-1 p-6">
-        {/* Eligibility */}
         <div className="flex items-center gap-1.5 mb-3">
           <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
             {course.eligibility ?? "Open to All"}
           </span>
         </div>
-
-        {/* Title */}
         <h3 className="text-lg font-black text-slate-800 leading-snug mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
           {course.title}
         </h3>
-
-        {/* Description */}
         <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-5 flex-1">
           {desc || (course.content ?? "").substring(0, 120).replace(/[#\-]/g, "").trim()}
         </p>
-
-        {/* Footer */}
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Award className="w-4 h-4 text-amber-500" />
@@ -182,62 +167,53 @@ function CourseCard({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-export default function CoursesPage() {
+// ─── Main Content ─────────────────────────────────────────────────────────────
+function CoursesPageContent() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState("");
+  const [error, setError] = useState("");
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses`)
-      .then(r => {
+      .then((r) => {
         if (!r.ok) throw new Error(`Failed to load courses (${r.status})`);
         return r.json();
       })
-     .then(data => {
-  if (!Array.isArray(data)) throw new Error("Unexpected response");
-  setCourses(data);
- 
-})
-      .catch(err => setError(err.message))
+      .then((data) => {
+        if (!Array.isArray(data)) throw new Error("Unexpected response");
+        setCourses(data);
+      })
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
-  // Group courses by category in defined order
-const grouped: Record<string, any[]> = {};
-courses.forEach(c => {
-  const cat = c.category ?? "Other";
-  if (!grouped[cat]) grouped[cat] = [];
-  grouped[cat].push(c);
-});
+  const grouped: Record<string, any[]> = {};
+  courses.forEach((c) => {
+    const cat = c.category ?? "Other";
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(c);
+  });
 
-// AFTER — normalize both sides for comparison
-const normalizeSlug = (str: string) =>
-  str.toLowerCase()
-     .replace(/&/g, "and")
-     .replace(/[^a-z0-9]+/g, "-")
-     .replace(/^-|-$/g, "");
+  const allCategories = [
+    ...CATEGORY_ORDER.filter((cat) => grouped[cat]),
+    ...Object.keys(grouped).filter((cat) => !CATEGORY_ORDER.includes(cat)),
+  ];
 
-// REPLACE entire categories logic with this:
-const allCategories = [
-  ...CATEGORY_ORDER.filter(cat => grouped[cat]),
-  ...Object.keys(grouped).filter(cat => !CATEGORY_ORDER.includes(cat)),
-];
+  const categories = categoryParam
+    ? allCategories.filter((cat) => {
+        const a = cat.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const b = categoryParam.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return a === b;
+      })
+    : allCategories;
 
-const categories = categoryParam
-  ? allCategories.filter(cat => {
-      const a = cat.toLowerCase().replace(/[^a-z0-9]/g, "");
-      const b = categoryParam.toLowerCase().replace(/[^a-z0-9]/g, "");
-      return a === b;
-    })
-  : allCategories;
   return (
     <div className="min-h-screen bg-[#f8fafc] pt-32 pb-24">
       <div className="container mx-auto px-6">
 
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="max-w-3xl mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -272,7 +248,9 @@ const categories = categoryParam
             training in state-of-the-art labs.
           </motion.p>
         </div>
-{categoryParam && (
+
+        {/* Breadcrumb */}
+        {categoryParam && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -290,7 +268,8 @@ const categories = categoryParam
             </span>
           </motion.div>
         )}
-        {/* ── Loading ── */}
+
+        {/* Loading */}
         {loading && (
           <div className="flex items-center justify-center py-32 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin mr-3" />
@@ -298,7 +277,7 @@ const categories = categoryParam
           </div>
         )}
 
-        {/* ── Error ── */}
+        {/* Error */}
         {error && (
           <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-2xl px-6 py-4 mb-8">
             <AlertCircle className="w-5 h-5 shrink-0" />
@@ -306,14 +285,13 @@ const categories = categoryParam
           </div>
         )}
 
-        {/* ── Categories & Cards ── */}
+        {/* Categories & Cards */}
         {!loading && !error && (
           <div className="space-y-20">
             {categories.map((category) => {
               const categoryCourses = grouped[category];
               return (
                 <div key={category}>
-                  {/* Category header */}
                   <div className="flex items-center gap-6 mb-8">
                     <div>
                       <h2 className="text-2xl font-black text-slate-800 tracking-tight">
@@ -331,8 +309,6 @@ const categories = categoryParam
                       View all <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
-
-                  {/* Cards grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categoryCourses.map((course: any, index: number) => (
                       <CourseCard
@@ -347,7 +323,6 @@ const categories = categoryParam
               );
             })}
 
-            {/* Empty state */}
             {categories.length === 0 && (
               <div className="text-center py-32 text-slate-400">
                 <GraduationCap className="w-16 h-16 mx-auto mb-4 opacity-30" />
@@ -358,7 +333,7 @@ const categories = categoryParam
           </div>
         )}
 
-        {/* ── CTA Section ── */}
+        {/* CTA */}
         {!loading && !error && categories.length > 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -397,5 +372,21 @@ const categories = categoryParam
 
       </div>
     </div>
+  );
+}
+
+// ─── Default Export wrapped in Suspense ───────────────────────────────────────
+export default function CoursesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f8fafc] pt-32 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mr-3" />
+          <span className="text-slate-400 font-medium">Loading courses...</span>
+        </div>
+      }
+    >
+      <CoursesPageContent />
+    </Suspense>
   );
 }
