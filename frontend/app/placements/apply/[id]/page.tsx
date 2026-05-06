@@ -216,7 +216,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
         <div className="px-6 sm:px-8 pt-7 pb-5">
           <button
             className="bg-transparent border-none text-[#2557a7] text-[13px] cursor-pointer p-0 mb-3 block font-[inherit]"
-            onClick={() => router.push("/placements")}
+            onClick={() => router.push("/placements/profile")}
           >
             ← Back to jobs
           </button>

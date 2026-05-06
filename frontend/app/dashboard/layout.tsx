@@ -38,7 +38,6 @@ const userManagementItems = [
 const websiteSettingsItems = [
   { name: "Home",               path: "/",                                        module: "Home",               icon: Home,          tab: null             },
   { name: "Homepage Banner",    path: "/dashboard/settings?tab=banner",           module: "Homepage Banner",    icon: ImagePlay,     tab: "banner"         },
-  { name: "Feature Popup",      path: "/dashboard/settings?tab=popup",            module: "Feature Popup",      icon: Layers,        tab: "popup"          },
   { name: "Latest News",        path: "/dashboard/settings?tab=news",             module: "Latest News",        icon: Settings,      tab: "news"           },
   { name: "Accreditions",       path: "/dashboard/settings?tab=accreditations",   module: "Accreditions",       icon: Award,         tab: "accreditations" },
   { name: "Contact Info",       path: "/dashboard/settings/contact-info",         module: "Contact Info",       icon: Phone,         tab: null             },
@@ -185,13 +184,16 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
     setIsMobileSidebarOpen(false);
   }, [pathname]);
 
-  // ── Auth redirect ──────────────────────────────────────────────────────────
+  // ── FIXED: Auth redirect with proper localStorage check ──────────────────────
   useEffect(() => {
     if (loading) return;
-    if (!user) {
-      const savedUser  = localStorage.getItem("user");
-      const savedToken = localStorage.getItem("token");
-      if (!savedUser || !savedToken) router.push("/");
+    
+    const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
+    
+    // Only redirect if truly not authenticated
+    if (!user && !savedUser) {
+      router.push("/");
     }
   }, [user, loading, router]);
 
@@ -203,26 +205,28 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const hasPerm = (modName: string) =>
     isAdmin(user) || permissions?.[modName]?.view;
 
+  const isStudent = user?.role === "Student" || user?.roleName === "Student";
+  const isTrainer = user?.role === "Trainer" || user?.roleName === "Trainer";
+
   const showDashboard = isAdmin(user) || permissions?.["Dashboard"]?.view;
   const showPayments  = isAdmin(user) || permissions?.["Payments"]?.view;
 
   // ── Visible items — re-computed every render when permissions change ────────
-  const visibleUserItems      = userManagementItems.filter(i => hasPerm(i.module));
-  const visibleSettingsItems  = websiteSettingsItems.filter(i => hasPerm(i.module));
-  const visibleCourseItems    = courseManagementItems.filter(i => hasPerm(i.module));
-  const visibleAssociateItems = associateManagementItems.filter(i => hasPerm(i.module));
-  const visibleStudentItems   = studentManagementItems.filter(i => hasPerm(i.module));
-  const visibleTraineeItems   = traineeManagementItems.filter(i => hasPerm(i.module));
-  const visibleNTSCItems      = ntscManagementItems.filter(i => hasPerm(i.module));
-  const visibleBgItems        = backgroundImagesItems.filter(i => hasPerm(i.module));
+  const visibleUserItems      = isAdmin(user) ? userManagementItems.filter(i => hasPerm(i.module)) : [];
+  const visibleSettingsItems  = isAdmin(user) ? websiteSettingsItems.filter(i => hasPerm(i.module)) : [];
+  const visibleCourseItems    = isAdmin(user) ? courseManagementItems.filter(i => hasPerm(i.module)) : [];
+  const visibleAssociateItems = isAdmin(user) ? associateManagementItems.filter(i => hasPerm(i.module)) : [];
+  const visibleStudentItems   = isStudent ? studentManagementItems : (isAdmin(user) ? studentManagementItems.filter(i => hasPerm(i.module)) : []);
+  const visibleTraineeItems   = isTrainer ? traineeManagementItems : (isAdmin(user) ? traineeManagementItems.filter(i => hasPerm(i.module)) : []);
+  const visibleNTSCItems      = isAdmin(user) ? ntscManagementItems.filter(i => hasPerm(i.module)) : [];
+  const visibleBgItems        = isAdmin(user) ? backgroundImagesItems.filter(i => hasPerm(i.module)) : [];
 
   const getInitials = (name: string) =>
     name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
   const isSettingActive = (name: string): boolean => {
     if (name === "Home")            return pathname === "/";
-    if (name === "Homepage Banner") return inPath(pathname, "/dashboard/settings") && tabParam !== "popup" && tabParam !== "news" && tabParam !== "accreditations";
-    if (name === "Feature Popup")   return inPath(pathname, "/dashboard/settings") && tabParam === "popup";
+    if (name === "Homepage Banner") return inPath(pathname, "/dashboard/settings") && tabParam !== "news" && tabParam !== "accreditations";
     if (name === "Latest News")     return inPath(pathname, "/dashboard/settings") && tabParam === "news";
     if (name === "Accreditions")    return inPath(pathname, "/dashboard/settings") && tabParam === "accreditations";
     if (name === "Contact Info")    return inPath(pathname, "/dashboard/settings/contact-info");
@@ -234,6 +238,16 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
         <p className="text-blue-600 font-semibold text-sm">Loading...</p>
+      </div>
+    );
+  }
+
+  // ── Prevent rendering dashboard content if not authenticated ─────────────────
+  const savedUserExists = typeof window !== "undefined" && localStorage.getItem("user");
+  if (!user && !savedUserExists) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
+        <p className="text-blue-600 font-semibold text-sm">Redirecting to login...</p>
       </div>
     );
   }
@@ -270,7 +284,9 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
         </div>
 
         <nav className="flex-1 px-6 pb-4 overflow-y-auto">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 px-2">Admin Panel</p>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 px-2">
+            {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : "Admin Panel"}
+          </p>
 
           <ul className="space-y-1">
             {showDashboard && (

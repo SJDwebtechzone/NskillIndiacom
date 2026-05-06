@@ -154,7 +154,7 @@ export default function EditRolePage() {
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({
           permissions: perms.map(p => ({
-            module_slug: p.module_name, // Store name so it matches sidebar layout keys
+            module_slug: p.slug, // Use slug for correct backend matching
             can_view: p.can_view,
             can_add: p.can_add,
             can_edit: p.can_edit,
@@ -164,6 +164,9 @@ export default function EditRolePage() {
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.message);
+      
+      // 3. Reload permissions to confirm they were saved
+      await load();
       showToast("✅ Permissions saved successfully!");
     } catch (e: any) {
       showToast(`❌ ${e.message}`, false);
