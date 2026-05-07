@@ -46,7 +46,7 @@ export default function BannerSection() {
 
     if (loading) {
         return (
-            <div className="w-full h-[400px] md:h-[600px] bg-gray-100 animate-pulse rounded-3xl flex items-center justify-center">
+            <div className="w-full h-[400px] md:h-[600px] bg-gray-100 animate-pulse flex items-center justify-center">
                 <span className="text-gray-400 font-bold">Loading Banners...</span>
             </div>
         );
@@ -54,7 +54,7 @@ export default function BannerSection() {
 
     if (banners.length === 0) {
         return (
-            <div className="w-full h-[200px] bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl flex flex-col items-center justify-center p-6 text-center">
+            <div className="w-full h-[200px] bg-blue-50 border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-6 text-center">
                 <p className="text-blue-600 font-bold text-lg mb-2">Welcome to NSkill India</p>
                 <p className="text-gray-500">Please add and activate banners from the Dashboard Settings to see them here.</p>
             </div>
@@ -62,7 +62,7 @@ export default function BannerSection() {
     }
 
     return (
-        <div className="relative w-full overflow-hidden mb-12 rounded-3xl group shadow-2xl bg-gray-50">
+        <div className="relative w-full overflow-hidden group bg-gray-50">
             <div
                 className="flex transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${activeIndex * 100}%)` }}

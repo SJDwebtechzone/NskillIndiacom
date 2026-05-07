@@ -27,6 +27,41 @@ body {
   font-family: Cambria, Georgia, "Times New Roman", serif;
 }
 
+/* Service Card Blue Theme */
+.service-card {
+  /* Smoothly transitions all properties */
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
+              border-color 0.3s ease, 
+              box-shadow 0.4s ease;
+  
+  border: 2px solid #e0e0e0; /* Subtle light gray border for inactive state */
+  border-radius: 12px;       /* Slightly softer corners */
+  padding: 15px;
+  background-color: #ffffff;
+  cursor: pointer;
+  position: relative;        /* Necessary for z-index to work */
+  overflow: hidden;
+}
+
+.service-card:hover {
+  /* Scaling and Lift effect */
+  transform: translateY(-5px) scale(1.03); 
+  
+  /* Blue Theme Colors */
+  border-color: #007bff;     /* Primary Blue */
+  
+  /* Deep Blue Glow */
+  box-shadow: 0 12px 24px rgba(0, 123, 255, 0.15); 
+  
+  z-index: 10;               /* Brings the hovered card to the front */
+}
+
+/* Update the text color of the heading on hover */
+.service-card:hover h3 {
+  color: #0056b3;           /* Darker blue for text readability */
+  transition: color 0.3s ease;
+}
+
 /* Hide Browser Password Reveal Icon (Edge/IE) */
 input::-ms-reveal,
 input::-ms-clear {

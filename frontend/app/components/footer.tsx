@@ -6,7 +6,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Facebook,
-  Twitter,
   Instagram,
   Linkedin,
   Mail,
@@ -59,7 +58,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-[#0b1f3a] text-[#8a99af] font-sans">
+    <footer className="bg-[#0b1f3a] text-white font-sans">
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10 mb-16">
 
@@ -147,30 +146,32 @@ const Footer = () => {
             <h3 className="text-white font-bold text-[15px]">Connect With Us</h3>
             <div className="flex gap-2">
               {[
-                { Icon: Facebook,  url: socialLinks?.facebook_url  },
-                { Icon: Twitter,   url: socialLinks?.twitter_url   },
-                { Icon: Instagram, url: socialLinks?.instagram_url },
-                { Icon: Linkedin,  url: socialLinks?.linkedin_url  },
-              ].map(({ Icon, url }, idx) => (
-                url ? (
-                  <a
-                    key={idx}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 hover:bg-[#fe2b54] hover:text-white hover:border-[#fe2b54] transition-all"
-                  >
-                    <Icon size={16} />
-                  </a>
-                ) : (
-                  <div
-                    key={idx}
-                    className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 opacity-40 cursor-not-allowed"
-                  >
-                    <Icon size={16} />
-                  </div>
-                )
+                { key: "facebook",  Icon: Facebook,  url: socialLinks?.facebook_url  || "https://www.facebook.com/share/1DzjthRWd6/" },
+                { key: "instagram", Icon: Instagram, url: socialLinks?.instagram_url || "https://www.instagram.com/niile_technical_skill_25/" },
+                { key: "linkedin",  Icon: Linkedin,  url: socialLinks?.linkedin_url  || "https://www.linkedin.com/in/niile-technical-skill-and-consulting-a26245198/" },
+              ].map(({ key, Icon, url }) => (
+                <a
+                  key={key}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 hover:bg-[#fe2b54] hover:text-white hover:border-[#fe2b54] transition-all"
+                >
+                  <Icon size={16} />
+                </a>
               ))}
+
+              {/* X (Twitter) */}
+              <a
+                href={socialLinks?.twitter_url || "https://x.com/NiileSkill"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 border border-gray-600/50 flex items-center justify-center text-gray-400 hover:bg-[#fe2b54] hover:text-white hover:border-[#fe2b54] transition-all"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
             </div>
           </div>
 

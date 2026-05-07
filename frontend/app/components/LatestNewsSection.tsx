@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Calendar, ArrowRight, Newspaper } from "lucide-react";
+import { Calendar, Newspaper } from "lucide-react";
 
 interface NewsItem {
     id: number;
@@ -89,15 +89,9 @@ const LatestNewsSection = () => {
                                     <h3 className="font-heading text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors">
                                         {item.title}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm mb-4">
+                                    <p className="text-muted-foreground text-sm">
                                         {item.content}
                                     </p>
-                                    <a
-                                        href="#"
-                                        className="inline-flex items-center gap-2 text-secondary font-semibold text-sm hover:gap-3 transition-all"
-                                    >
-                                        Read More <ArrowRight className="w-4 h-4" />
-                                    </a>
                                 </div>
                             </div>
                         ))}

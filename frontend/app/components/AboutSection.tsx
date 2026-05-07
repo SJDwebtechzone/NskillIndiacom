@@ -13,6 +13,7 @@ const services = [
     icon: <GraduationCap className="w-5 h-5 text-white" />,
     bg: "from-indigo-500 to-[#0b1f3a]",
     gridColor: "#a5b4fc",
+    href: "/courses",
     desc: "Skill development has been considered one of the critical aspects for job creation in India. India has unique demographic advantage with more than 60% of the population is in young age group. But to get dividend from such large work force, employability must be improved. As per current statistics only 10% of the fresh graduates are employable and rest of the 90% lack skills required for eligible to be hired by corporate. Here at NTSC, we provide the required skill training for you to achieve the required professional skillset for any domain",
   },
   {
@@ -22,6 +23,7 @@ const services = [
     icon: <Briefcase className="w-5 h-5 text-white" />,
     bg: "from-sky-500 to-[#0b1f3a]",
     gridColor: "#7dd3fc",
+    href: "/corporate-training",
     desc: "Continuous employee training is essential. It enables your employees to advance their knowledge. Spending on your employees is very important to your company. You can improve on the basic skills gained in corporate training. This improves your business performance. When employees improve on what they learned, they can improve in their output. Your employees reflect on your business. How skilled they are is shown in your business output. Employees can bring more to the table if they know more. Invest in your employees' knowledge. In turn, they will do the same for their work. Moreover, you and your company will be the ones reaping the fruits." },
   {
     id: "consulting",
@@ -30,6 +32,7 @@ const services = [
     icon: <BarChart3 className="w-5 h-5 text-white" />,
     bg: "from-blue-700 to-[#0b1f3a]",
     gridColor: "#93c5fd",
+    href: "/consulting",
     desc: "Consultants provide a significant amount of value for an organization. They can help to develop strategies for growth or manage projects. Since consultants are not committed to a single firm, they bring experience from a variety of companies and industries, which allows them to offer creative solutions and enables 'out of the box' thinking. They can provide an objective viewpoint, which allows for more diverse ideas than could be provided solely by employees within the organization. A consultant may have a higher level of business expertise than the average employee and can provide unique solutions for businesses. Companies may want to consider the advantages of the level of expertise that can be brought by a consultant, as well as how they could benefit from having an established strategic plan.", },
 ];
 
@@ -59,7 +62,7 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex flex-col md:flex-row items-stretch border border-cyan-300 rounded-2xl bg-white overflow-hidden"
+          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-blue-50 overflow-hidden"
         >
           {/* Image panel */}
           <div
@@ -74,7 +77,7 @@ const AboutSection = () => {
               }}
             >
               <img
-                src="/images/about/skill-training.jpg"
+                src="/images/about/skill training.jpeg"
                 alt="NIILE Solutions"
                 className="w-full h-full object-cover"
               />
@@ -83,7 +86,7 @@ const AboutSection = () => {
             {/* Mobile — no clip */}
             <div className="absolute inset-0 md:hidden">
               <img
-                src="/images/about/skill-training.jpg"
+                src="/images/about/skill training.jpeg"
                 alt="NIILE Solutions"
                 className="w-full h-full object-cover"
               />
@@ -97,11 +100,11 @@ const AboutSection = () => {
               <ShieldCheck className="w-3 h-3" /> Established 2012
             </div>
             <div>
-              <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NIILE Solutions</h3>
-              <div className="w-12 h-1 bg-cyan-400 rounded-full" />
+              <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NIILE Solution</h3>
+              <div className="w-12 h-1 bg-blue-900 rounded-full" />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed text-justify">
-              NIILE Solutions is established in 2012 in Kundrathur, Chennai to offer{" "}
+              NIILE Solution is established in 2012 in Kundrathur, Chennai to offer{" "}
               <strong className="text-blue-600">Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
               services. NIILE serves world-renowned organizations from Hydrocarbon, Power, Steel, Cement and Heavy Infrastructure industries involved in Construction, Commissioning, Operation and Maintenance activities.
             </p>
@@ -110,14 +113,6 @@ const AboutSection = () => {
               <strong className="text-[#0b1f3a]">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
               near Kundrathur, Chennai during 2018 — to train unemployed youth, school and college finishers and dropouts in various skill-based trades for domestic and overseas employment.
             </p>
-            <div>
-              <a
-                href="#"
-                className="inline-block bg-[#0b1f3a] text-white text-sm font-bold px-8 py-3 rounded-md hover:bg-blue-800 transition-colors"
-              >
-                Learn More
-              </a>
-            </div>
           </div>
         </motion.div>
 
@@ -126,13 +121,13 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.35 }}
-          className="flex flex-col md:flex-row items-stretch border border-cyan-300 rounded-2xl bg-white overflow-hidden"
+          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-blue-50 overflow-hidden"
         >
           {/* Text — second on mobile, first on desktop */}
           <div className="flex flex-col justify-center px-6 md:px-12 py-10 gap-5 flex-1 order-2 md:order-1">
             <div>
               <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NTSC Training</h3>
-              <div className="w-12 h-1 bg-cyan-400 rounded-full" />
+              <div className="w-12 h-1 bg-blue-900 rounded-full" />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed text-justify">
               NTSC training focuses on various skills like{" "}
@@ -144,14 +139,6 @@ const AboutSection = () => {
               <strong className="text-[#0b1f3a]">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS</strong>{" "}
               etc. The certifications help students avail opportunities for job and entrepreneurship.
             </p>
-            <div>
-              <a
-                href="#"
-                className="inline-block bg-[#0b1f3a] text-white text-sm font-bold px-8 py-3 rounded-md hover:bg-blue-800 transition-colors"
-              >
-                Learn More
-              </a>
-            </div>
           </div>
 
           {/* Image panel — first on mobile, second on desktop */}
@@ -167,7 +154,7 @@ const AboutSection = () => {
               }}
             >
               <img
-               src="/images/vision.jpg"
+               src="/images/vision.jpeg"
                 alt="NTSC Training"
                 className="w-full h-full object-cover"
               />
@@ -176,7 +163,7 @@ const AboutSection = () => {
             {/* Mobile — no clip */}
             <div className="absolute inset-0 md:hidden">
               <img
-                src="/images/vision.jpg"
+                src="/images/vision.jpeg"
                 alt="NTSC Training"
                 className="w-full h-full object-cover"
               />
@@ -195,12 +182,11 @@ const AboutSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className="group flex flex-col bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              style={{ border: "1px solid #e2e8f0", borderBottom: "3px solid #22d3ee" }}
+              className="group service-card flex flex-col bg-white rounded-2xl overflow-hidden relative"
             >
               {/* Gradient top panel with background image */}
               <div
-                className={`relative h-48 bg-gradient-to-br ${s.bg} flex items-center justify-center overflow-hidden`}
+                className={`relative h-48 bg-gradient-to-br ${s.bg} flex items-center justify-center overflow-hidden z-10`}
               >
                 {/* Background image — subtle texture behind gradient */}
                 {s.image && (
@@ -233,7 +219,7 @@ const AboutSection = () => {
               </div>
 
               {/* Body */}
-              <div className="flex flex-col flex-1 p-6 gap-3">
+              <div className="flex flex-col flex-1 p-6 gap-3 relative z-10">
                 <h3 className="text-base font-black text-[#0b1f3a] uppercase tracking-tight">
                   {s.title}
                 </h3>
@@ -241,9 +227,9 @@ const AboutSection = () => {
               </div>
 
               {/* Footer */}
-              <div className="border-t border-slate-100 px-6 py-4 flex justify-end">
+              <div className="border-t border-blue-900 px-6 py-4 flex justify-end relative z-10">
                 <a
-                  href="#"
+                  href={s.href}
                   className="text-xs font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors"
                 >
                   Read More

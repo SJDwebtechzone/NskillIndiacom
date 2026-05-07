@@ -286,82 +286,35 @@ const WhyUsSection = () => {
             </div>
 
             {/* ================= RIGHT IMAGE ================= */}
-        
-<div className="relative h-[420px] group">
+            <div className="relative h-full min-h-[420px] overflow-hidden">
 
-  {/* SVG CLIP */}
-  <svg viewBox="0 0 500 400" className="absolute inset-0 w-full h-full">
-    <defs>
-      <clipPath id="smoothShape">
-        <path d="
-          M120,0
-          H500
-          V400
-          H0
-          C60,280 120,160 160,80
-          C180,40 200,10 120,0
-          Z
-        " />
-      </clipPath>
-    </defs>
-  </svg>
+              {/* Ken Burns Effect */}
+              <motion.img
+                src="/images/why-us.jpg"
+                alt="Why Choose Us"
+                className="absolute inset-0 w-full h-full object-cover object-center"
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              />
 
-  {/* IMAGE WITH ANIMATION */}
-  <motion.div
-    className="w-full h-full overflow-hidden"
-    style={{ clipPath: "url(#smoothShape)" }}
-  >
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-black/30" />
 
-    {/* Ken Burns Effect */}
-    <motion.img
-      src="/images/why-us.jpg"
-      className="w-full h-full object-cover"
-      animate={{
-        scale: [1, 1.1, 1],
-        x: [0, -10, 0],
-        y: [0, -10, 0],
-      }}
-      transition={{
-        duration: 12,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
+              {/* Light Sweep */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+              />
 
-    {/* Dark Overlay */}
-    <div className="absolute inset-0 bg-black/40" />
+              {/* Glow Pulse */}
+              <motion.div
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-72 h-40 bg-blue-500/20 blur-3xl rounded-full"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
 
-    {/* Light Sweep */}
-    <motion.div
-      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-      animate={{ x: ["-100%", "100%"] }}
-      transition={{
-        duration: 5,
-        repeat: Infinity,
-        ease: "linear",
-      }}
-    />
-
-    {/* Glow Pulse */}
-    <motion.div
-      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-72 h-40 bg-blue-500/20 blur-3xl rounded-full"
-      animate={{ scale: [1, 1.2, 1] }}
-      transition={{ duration: 4, repeat: Infinity }}
-    />
-
-  </motion.div>
-
-  {/* Hover Parallax Effect */}
-  <motion.div
-    className="absolute inset-0 pointer-events-none"
-    whileHover={{ scale: 1.02 }}
-    transition={{ duration: 0.4 }}
-  />
-
-  {/* Soft Border Glow */}
-  <div className="absolute inset-0 rounded-[40px] border border-white/20 pointer-events-none" />
-
-</div>
+            </div>
 
           </div>
 

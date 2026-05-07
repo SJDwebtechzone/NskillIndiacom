@@ -9,6 +9,7 @@ const tabs = [
     id: "vision",
     icon: Eye,
     label: "Vision",
+    image: "/images/vision.jpg",
     pill: "4 commitments",
     items: [
       "Align industry demand and workforce productivity with trainees' aspirations for sustainable livelihoods.",
@@ -21,6 +22,7 @@ const tabs = [
     id: "mission",
     icon: Target,
     label: "Mission",
+    image: "/images/mission.jpg",
     pill: "1 core statement",
     items: [
       "Prepare youth and companies to scale skill development with outcome-focused implementation.",
@@ -30,6 +32,7 @@ const tabs = [
     id: "values",
     icon: Heart,
     label: "Core Values",
+    image: "/images/values.jpg",
     pill: "4 principles",
     items: [
       "Continuous quality improvement.",
@@ -55,19 +58,19 @@ const VisionSection = () => {
           {/* ================= LEFT PANEL ================= */}
           <div className="relative bg-[#0b1f3a] min-h-[320px] overflow-hidden">
 
-            {/* Ken Burns Image */}
-      <motion.img
-  src="/images/vision.jpg"
-  className="absolute inset-0 w-full h-full object-cover brightness-75 contrast-125"
-  initial={{ scale: 1.05 }}
-  animate={{ scale: 1.1 }}
-  transition={{
-    duration: 12,
-    repeat: Infinity,
-    repeatType: "reverse",
-    ease: "easeInOut",
-  }}
-/>
+            {/* Tab Image with crossfade */}
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={active.id}
+                src={active.image}
+                alt={active.label}
+                className="absolute inset-0 w-full h-full object-cover brightness-75 contrast-125"
+                initial={{ opacity: 0, scale: 1.08 }}
+                animate={{ opacity: 1, scale: 1.12 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
+              />
+            </AnimatePresence>
 
             {/* Floating Particles */}
             {[...Array(10)].map((_, i) => (
@@ -81,13 +84,6 @@ const VisionSection = () => {
               />
             ))}
 
-            {/* Scan Line */}
-            <motion.div
-              className="absolute left-0 w-full h-[2px] bg-cyan-400/40"
-              animate={{ top: ["0%", "100%"] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-            />
-
             {/* Glow */}
             <motion.div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-blue-500/20 blur-3xl rounded-full"
@@ -95,13 +91,12 @@ const VisionSection = () => {
               transition={{ duration: 4, repeat: Infinity }}
             />
 
-            {/* HUD Corners */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-sky-400 animate-pulse" />
-              <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-sky-400 animate-pulse" />
-              <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-sky-400 animate-pulse" />
-              <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-sky-400 animate-pulse" />
-            </div>
+            {/* Shimmer overlay */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
+              animate={{ opacity: [0, 0.4, 0], x: ["-100%", "100%"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", repeatDelay: 2 }}
+            />
 
           </div>
 
@@ -190,16 +185,6 @@ const VisionSection = () => {
               <span className="text-xs bg-blue-50 px-3 py-1 rounded text-blue-700 font-bold">
                 {active.pill}
               </span>
-
-              <a className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-700">
-                Learn More
-                <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ repeat: Infinity, duration: 1 }}
-                >
-                  →
-                </motion.span>
-              </a>
             </div>
 
           </div>

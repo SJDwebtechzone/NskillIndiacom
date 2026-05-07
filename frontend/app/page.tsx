@@ -12,8 +12,8 @@ import VideoTestimonialsSection from "./components/VideoTestimonialsSection";
 export default function Home() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-white w-full">
-      {/* Banner Section */}
-      <div className="w-full max-w-7xl px-6 py-6 space-y-16">
+      {/* Banner Section - Full Width */}
+      <div className="w-full">
         <BannerSection />
       </div>
 
