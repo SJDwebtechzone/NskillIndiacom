@@ -40,17 +40,17 @@ const getVideoUrl = (videoUrl: string) =>
   if (loading || videos.length === 0) return null;
 
   return (
-    <section className="w-full py-16 bg-gray-900">
+    <section className="w-full py-16 bg-[#0b1f3a]">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <p className="text-purple-400 font-semibold text-sm uppercase tracking-widest mb-2">
+          <p className="text-blue-300 font-semibold text-sm uppercase tracking-widest mb-2">
             🎬 Video Testimonials
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-white">
             Hear It From Our Students
           </h2>
-          <p className="text-gray-400 mt-3 max-w-xl mx-auto text-sm">
+          <p className="text-slate-400 mt-3 max-w-xl mx-auto text-sm">
             Real video stories from students who built their careers with us
           </p>
         </div>
@@ -65,7 +65,7 @@ const getVideoUrl = (videoUrl: string) =>
             return (
               <div
                 key={v.id}
-                className="rounded-2xl overflow-hidden border border-white/10 bg-gray-800 hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-900/20"
+                className="rounded-2xl overflow-hidden border border-white/10 bg-[#0f2a4a] hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/30"
               >
                 {/* Video Player */}
                 <div className="relative bg-black aspect-video">
@@ -109,22 +109,22 @@ const getVideoUrl = (videoUrl: string) =>
                 {/* Card Info */}
                 <div className="p-4">
                   {v.description && (
-                    <p className="text-gray-300 text-sm italic mb-3 line-clamp-2">
+                    <p className="text-blue-100 text-sm italic mb-3 line-clamp-2">
                       "{v.description}"
                     </p>
                   )}
                   <div className="flex items-center gap-3">
                     {photoUrl ? (
                       <img src={photoUrl} alt={v.full_name}
-                        className="w-9 h-9 rounded-full object-cover border-2 border-purple-500/40" />
+                        className="w-9 h-9 rounded-full object-cover border-2 border-blue-500/40" />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center font-bold text-white text-sm">
+                      <div className="w-9 h-9 rounded-full bg-blue-700 flex items-center justify-center font-bold text-white text-sm">
                         {v.full_name.charAt(0)}
                       </div>
                     )}
                     <div>
                       <p className="font-semibold text-white text-sm">{v.full_name}</p>
-                      <p className="text-xs text-purple-400 font-medium">{v.course_name}</p>
+                      <p className="text-xs text-blue-300 font-medium">{v.course_name}</p>
                     </div>
                   </div>
                 </div>

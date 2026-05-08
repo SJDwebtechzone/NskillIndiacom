@@ -859,10 +859,26 @@ export default function AdminPage() {
                       <p className="text-sm font-bold truncate" style={{ color: "#ffffff" }}>{c.name}</p>
                     </div>
                     <div className="h-px mb-3" style={{ background: `${c.palette.dotColor}40` }} />
-                    <div className="flex gap-4 text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>
-                      <span>📅 {c.total} sessions</span>
-                      <span style={{ color: "#60a5fa" }}>B1: {c.batch1}</span>
-                      <span style={{ color: "#a78bfa" }}>B2: {c.batch2}</span>
+                    <div className="flex gap-4 text-xs justify-between items-center" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <div className="flex gap-4">
+                        <span>📅 {c.total} sessions</span>
+                        <span style={{ color: "#60a5fa" }}>B1: {c.batch1}</span>
+                        <span style={{ color: "#a78bfa" }}>B2: {c.batch2}</span>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (!window.confirm(`Delete all sessions for "${c.name}"?`)) return;
+                          const ids = events.filter((e) => e.course_name === c.name && e.id).map((e) => e.id!);
+                          for (const id of ids) { try { await deleteEvent(id); } catch {} }
+                          await loadEvents();
+                        }}
+                        className="px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
+                        style={{ background: "rgba(220,38,38,0.2)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.35)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.2)")}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}

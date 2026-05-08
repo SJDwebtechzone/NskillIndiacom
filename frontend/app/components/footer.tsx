@@ -58,7 +58,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-[#0b1f3a] text-white font-sans">
+    <footer className="bg-[#0b1f3a] text-white">
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10 mb-16">
 
@@ -74,7 +74,7 @@ const Footer = () => {
               />
             </Link>
 
-            <div className="space-y-4 text-[13px] leading-relaxed">
+            <div className="space-y-4 text-[15px] leading-relaxed">
               <p>{contactInfo.address}</p>
               <div className="space-y-2">
                 {contactInfo.phones.map((phone: any, idx: number) => (
@@ -93,7 +93,7 @@ const Footer = () => {
 
           {/* ── Skill Training ── */}
           <div>
-            <h3 className="text-white font-bold text-[17px] mb-8">
+            <h3 className="text-white font-bold text-[19px] mb-8">
               Skill Training
             </h3>
             <ul className="space-y-0">
@@ -101,7 +101,7 @@ const Footer = () => {
                 <li key={cat} className="border-b border-dotted border-gray-600/50">
                   <Link
                     href={`/courses?category=${toSlug(cat)}`}
-                    className="block py-3 text-[14px] hover:text-white transition-colors"
+                    className="block py-3 text-[15px] hover:text-white transition-colors"
                   >
                     {cat}
                   </Link>
@@ -112,7 +112,7 @@ const Footer = () => {
 
           {/* ── Quick Links ── */}
           <div>
-            <h3 className="text-white font-bold text-[17px] mb-8">
+            <h3 className="text-white font-bold text-[19px] mb-8">
               Quick Links
             </h3>
             <ul className="space-y-0">
@@ -127,7 +127,7 @@ const Footer = () => {
                 <li key={link.name} className="border-b border-dotted border-gray-600/50">
                   <Link
                     href={link.href}
-                    className="block py-3 text-[14px] hover:text-white transition-colors"
+                    className="block py-3 text-[15px] hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -143,7 +143,7 @@ const Footer = () => {
 
           {/* Social Links */}
           <div className="space-y-4">
-            <h3 className="text-white font-bold text-[15px]">Connect With Us</h3>
+            <h3 className="text-white font-bold text-[17px]">Connect With Us</h3>
             <div className="flex gap-2">
               {[
                 { key: "facebook",  Icon: Facebook,  url: socialLinks?.facebook_url  || "https://www.facebook.com/share/1DzjthRWd6/" },
@@ -177,7 +177,7 @@ const Footer = () => {
 
           {/* Subscribe */}
           <div className="space-y-4">
-            <h3 className="text-white font-bold text-[15px]">Subscribe Us</h3>
+            <h3 className="text-white font-bold text-[17px]">Subscribe Us</h3>
             <div className="flex h-12 shadow-inner">
               <input
                 type="email"
@@ -195,7 +195,7 @@ const Footer = () => {
 
       {/* ── Bottom bar ── */}
       <div className="bg-[#081728] py-8 text-center border-t border-gray-600/20">
-        <div className="max-w-7xl mx-auto px-6 text-[14px] text-gray-500 font-medium">
+        <div className="max-w-7xl mx-auto px-6 text-[15px] text-gray-500 font-medium">
           Copyright © {currentYear} All rights reserved | by{" "}
           <a
             href="https://devspectra.in"

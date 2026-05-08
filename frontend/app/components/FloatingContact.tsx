@@ -3,7 +3,7 @@
 import { Phone } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { contactInfo } from "@/data/contactInfo";
-
+import ScrollToTop from "./ScrollToTop";
 
 const FloatingContact = () => {
     const pathname = usePathname();
@@ -23,6 +23,8 @@ const FloatingContact = () => {
 
     return (
         <div className="fixed left-4 bottom-8 z-50 flex flex-col gap-4">
+            <ScrollToTop />
+            
             {/* WhatsApp Button */}
             <a
                 href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`}

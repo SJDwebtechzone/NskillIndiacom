@@ -125,17 +125,30 @@ const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen font-sans">
+    <div className="bg-gray-50 min-h-screen">
 
       {/* ── Page Header ── */}
-      <div className="relative h-[250px] md:h-[300px] bg-[#1a1a1a] flex flex-col items-center justify-center text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80')] bg-cover bg-center" />
-        <div className="absolute inset-0 bg-black/50" />
+      <div className="relative h-[280px] md:h-[350px] flex flex-col items-center justify-center text-white overflow-hidden">
+        <img
+          src="/images/contact/contactus.webp"
+          alt="Contact Us"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[#0b1f3a]/60" />
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-900" />
+        <motion.p
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative text-blue-300 text-xs font-bold uppercase tracking-widest mb-3 z-10"
+        >
+          Get In Touch
+        </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative text-4xl md:text-5xl font-bold mb-4 z-10"
+          className="relative text-4xl md:text-5xl font-black mb-3 z-10 uppercase tracking-tight"
         >
           Contact Us
         </motion.h1>
@@ -145,7 +158,7 @@ const ContactPage: React.FC = () => {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="relative text-slate-300 z-10 text-sm"
         >
-          We're here to help you
+          We&apos;re here to help you
         </motion.p>
       </div>
 
@@ -191,7 +204,7 @@ const ContactPage: React.FC = () => {
               animate="visible"
               variants={cardVariants}
               whileHover={{ scale: 1.02 }}
-              className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-blue-500"
+              className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
             >
               <div className="bg-blue-50 p-3 rounded-full text-blue-500 shrink-0">
                 <MapPin size={24} />
@@ -210,7 +223,7 @@ const ContactPage: React.FC = () => {
                 animate="visible"
                 variants={cardVariants}
                 whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-blue-500"
+                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
               >
                 <div className="bg-blue-50 p-3 rounded-full text-blue-500 shrink-0">
                   <Phone size={24} />
@@ -248,7 +261,7 @@ const ContactPage: React.FC = () => {
                 animate="visible"
                 variants={cardVariants}
                 whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-blue-500"
+                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
               >
                 <div className="bg-blue-50 p-3 rounded-full text-blue-500 shrink-0">
                   <Mail size={24} />
@@ -274,7 +287,7 @@ const ContactPage: React.FC = () => {
                 animate="visible"
                 variants={cardVariants}
                 whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-blue-500"
+                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
               >
                 <div className="bg-blue-50 p-3 rounded-full text-blue-500 shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -322,10 +335,10 @@ const ContactPage: React.FC = () => {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={cardVariants}
-                className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500"
+                className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-[#0b1f3a]"
               >
                 <h3 className="text-lg font-bold text-[#0b1f3a] mb-3 flex items-center gap-2">
-                  <MapPin size={18} className="text-purple-500" />
+                  <MapPin size={18} className="text-[#0b1f3a]" />
                   Our Other Locations
                 </h3>
                 <div className="space-y-2">
@@ -369,7 +382,7 @@ const ContactPage: React.FC = () => {
             viewport={{ once: true }}
             variants={cardVariants}
             custom={4}
-            className="bg-white p-8 rounded-lg shadow-md border border-gray-200 border-t-4 border-t-blue-500"
+            className="bg-white p-8 rounded-lg shadow-md border border-gray-200 border-t-4 border-t-blue-900"
           >
             <h2 className="text-3xl font-bold text-[#0b1f3a] mb-4">Send a Message</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -379,7 +392,7 @@ const ContactPage: React.FC = () => {
                   <input
                     type="text" name="name" placeholder="Enter your name"
                     value={formData.name} onChange={handleChange} required
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-blue-900 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">

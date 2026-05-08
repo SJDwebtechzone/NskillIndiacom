@@ -9,7 +9,7 @@ const tabs = [
     id: "vision",
     icon: Eye,
     label: "Vision",
-    image: "/images/vision.jpg",
+    image: "/images/about/Vision.jpeg",
     pill: "4 commitments",
     items: [
       "Align industry demand and workforce productivity with trainees' aspirations for sustainable livelihoods.",
@@ -22,7 +22,7 @@ const tabs = [
     id: "mission",
     icon: Target,
     label: "Mission",
-    image: "/images/mission.jpg",
+    image: "/images/about/Mission.jpeg",
     pill: "1 core statement",
     items: [
       "Prepare youth and companies to scale skill development with outcome-focused implementation.",
@@ -32,7 +32,7 @@ const tabs = [
     id: "values",
     icon: Heart,
     label: "Core Values",
-    image: "/images/values.jpg",
+    image: "/images/about/Core-Value.JPG",
     pill: "4 principles",
     items: [
       "Continuous quality improvement.",

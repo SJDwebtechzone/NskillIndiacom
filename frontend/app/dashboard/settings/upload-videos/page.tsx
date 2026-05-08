@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, useEffect, ChangeEvent } from "react";
 
 interface PreviewItem {
   name: string;
@@ -13,6 +13,13 @@ interface Message {
   type: "success" | "error";
   text: string;
 }
+
+interface MediaItem {
+  id: number;
+  file_name: string;
+  file_type: "photo" | "video";
+  file_url: string;
+}
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 export default function InfrastructureSettings() {
   const [files, setFiles] = useState<File[]>([]);
@@ -21,6 +28,37 @@ export default function InfrastructureSettings() {
   const [progress, setProgress] = useState<number>(0);
   const [message, setMessage] = useState<Message | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const fetchMedia = async () => {
+    setMediaLoading(true);
+    try {
+      const res = await fetch(`${API}/api/infrastructure/media`);
+      const data = await res.json();
+      if (data.success) setMedia(data.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchMedia(); }, []);
+
+  const handleDeleteMedia = async (id: number) => {
+    if (!window.confirm("Delete this file?")) return;
+    setDeletingId(id);
+    try {
+      await fetch(`${API}/api/infrastructure/media/${id}`, { method: "DELETE" });
+      setMedia((prev) => prev.filter((m) => m.id !== id));
+    } catch {
+      alert("Delete failed.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
@@ -114,6 +152,7 @@ export default function InfrastructureSettings() {
         setPreviews([]);
         if (fileInputRef.current) fileInputRef.current.value = "";
         setTimeout(() => setProgress(0), 2000);
+        fetchMedia();
       } else {
         setMessage({ type: "error", text: uploadResult.error || "Upload failed." });
         setProgress(0);
@@ -249,12 +288,6 @@ export default function InfrastructureSettings() {
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200" />
 
-                    {/* File info */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
-                      <p className="text-white text-xs truncate">{p.name}</p>
-                      <p className="text-slate-400 text-xs">{p.size}</p>
-                    </div>
-
                     {/* Type badge */}
                     <span className="absolute top-2 left-2 text-xs bg-black/60 text-white px-1.5 py-0.5 rounded-md">
                       {p.type === "video" ? "🎬" : "🖼️"}
@@ -330,6 +363,58 @@ export default function InfrastructureSettings() {
             </p>
           )}
         </div>
+      </div>
+
+      {/* ── Uploaded Media ── */}
+      <div className="max-w-5xl mx-auto mt-10">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-black text-white">Uploaded Media</h2>
+            <p className="text-slate-400 text-sm mt-1">{media.length} file(s) in the gallery</p>
+          </div>
+          <button onClick={fetchMedia} className="text-xs text-slate-400 hover:text-white border border-slate-700 px-3 py-1.5 rounded-full transition-all">
+            ↻ Refresh
+          </button>
+        </div>
+
+        {mediaLoading ? (
+          <div className="text-center py-16 text-slate-500 animate-pulse">Loading media...</div>
+        ) : media.length === 0 ? (
+          <div className="text-center py-16 border-2 border-dashed border-slate-700 rounded-2xl text-slate-500">
+            <p className="text-4xl mb-3">📂</p>
+            <p className="font-semibold">No media uploaded yet</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {media.map((item) => (
+              <div key={item.id} className="group relative rounded-xl overflow-hidden bg-slate-800 border border-slate-700 hover:border-red-500/50 transition-all" style={{ aspectRatio: "1" }}>
+                {item.file_type === "photo" ? (
+                  <img src={item.file_url} alt={item.file_name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full relative bg-slate-900 flex items-center justify-center">
+                    <video src={item.file_url} className="w-full h-full object-cover" muted />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-10 h-10 rounded-full bg-black/70 flex items-center justify-center">
+                        <span className="text-white text-sm ml-0.5">▶</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200" />
+                <span className="absolute top-2 left-2 text-xs bg-black/60 text-white px-1.5 py-0.5 rounded-md">
+                  {item.file_type === "video" ? "🎬" : "🖼️"}
+                </span>
+                <button
+                  onClick={() => handleDeleteMedia(item.id)}
+                  disabled={deletingId === item.id}
+                  className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-400 text-white rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg disabled:opacity-50"
+                >
+                  {deletingId === item.id ? "…" : "✕"}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

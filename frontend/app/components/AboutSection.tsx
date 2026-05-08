@@ -9,7 +9,7 @@ const services = [
   {
     id: "skill-training",
     title: "Skill Training",
-    image: "/images/about/skill-training.jpg",
+    image: "/images/about/skill_training.jpeg",
     icon: <GraduationCap className="w-5 h-5 text-white" />,
     bg: "from-indigo-500 to-[#0b1f3a]",
     gridColor: "#a5b4fc",
@@ -77,7 +77,7 @@ const AboutSection = () => {
               }}
             >
               <img
-                src="/images/about/skill training.jpeg"
+                src="/images/about/Nille_Solutions.jpeg"
                 alt="NIILE Solutions"
                 className="w-full h-full object-cover"
               />
@@ -86,7 +86,7 @@ const AboutSection = () => {
             {/* Mobile — no clip */}
             <div className="absolute inset-0 md:hidden">
               <img
-                src="/images/about/skill training.jpeg"
+                src="/images/about/Nille_Solutions.jpeg"
                 alt="NIILE Solutions"
                 className="w-full h-full object-cover"
               />
@@ -154,7 +154,7 @@ const AboutSection = () => {
               }}
             >
               <img
-               src="/images/vision.jpeg"
+               src="/images/about/NTSC.JPG"
                 alt="NTSC Training"
                 className="w-full h-full object-cover"
               />
@@ -163,7 +163,7 @@ const AboutSection = () => {
             {/* Mobile — no clip */}
             <div className="absolute inset-0 md:hidden">
               <img
-                src="/images/vision.jpeg"
+                src="/images/about/NTSC.JPG"
                 alt="NTSC Training"
                 className="w-full h-full object-cover"
               />
