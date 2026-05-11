@@ -1,14 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
+const jwt = require("jsonwebtoken");
+const SECRET = process.env.JWT_SECRET || "mysecret";
 
 // ✅ LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Join with 'users' table to get the correct centralized user_id
     const result = await pool.query(
-      "SELECT * FROM placement_users WHERE email=$1",
+      `SELECT pu.*, u.id AS main_user_id 
+       FROM placement_users pu
+       LEFT JOIN users u ON pu.email = u.email
+       WHERE pu.email = $1`,
       [email]
     );
 
@@ -22,10 +28,23 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Wrong password" });
     }
 
+    // ✅ Generate Token using the main_user_id (central identity)
+    const token = jwt.sign(
+      { id: user.main_user_id || user.id, name: user.name, role: 'Student' },
+      SECRET,
+      { expiresIn: "1d" }
+    );
+
     // ✅ SUCCESS
     res.json({
       message: "Login success",
-      user,
+      token,
+      user: {
+        id: user.main_user_id || user.id,
+        full_name: user.name,
+        email_id: user.email,
+        phone_number: user.phone
+      }
     });
 
   } catch (err) {

@@ -183,7 +183,7 @@ function openPrintPage(student: any) {
       <div>
         <div class="institute-name">NTSC Training Institute</div>
         <div class="institute-sub">Kovur, Chennai, Tamil Nadu | +91 98842 09774</div>
-        <div class="institute-sub">Govt. Certified · NSDC Approved Skill Training Centre</div>
+        <div class="institute-sub">Govt. Approved Certified Skill Training Centre</div>
       </div>
     </div>
     <div>

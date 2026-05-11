@@ -37,6 +37,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
       const data = await res.json();
       if (!res.ok) { alert(data.error); return; }
       localStorage.setItem("user", JSON.stringify(data.user));
+      if (data.token) localStorage.setItem("token", data.token);
       window.location.href = "/placements/profile";
     } catch (err) {
       console.error(err);

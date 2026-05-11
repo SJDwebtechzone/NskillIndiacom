@@ -39,7 +39,7 @@ interface CourseFormProps {
 // ── Constants ─────────────────────────────────────────────────────────────────
 const EMPTY: CourseFormData = {
   title: "", slug: "", category: "", duration: "", eligibility: "",
-  certification: "NSDC Approved", delivery_method: "Offline",
+  certification: "Govt. Approved Certified", delivery_method: "Offline",
   content: "", career_opportunities: [""],
   videos: [], extra_sections: [], brochure_url: "",
   thumbnail_url: "",
@@ -299,7 +299,7 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
           <Field label="Certification">
             <input
               className={inputCls}
-              placeholder="e.g. NSDC Approved"
+              placeholder="e.g. Govt. Approved Certified"
               value={form.certification}
               onChange={e => set("certification", e.target.value)}
             />

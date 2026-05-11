@@ -71,7 +71,7 @@ const course = {
   faqs:                raw.extra_sections ?? [],
   careerOpportunities: raw.career_opportunities ?? [],
   duration:            raw.duration ?? "N/A",
-  certification:       raw.certification ?? "NSDC Approved",
+  certification:       raw.certification ?? "Govt. Approved Certified",
   brochure_url:        raw.brochure_url   ?? null,
   thumbnail_url:       raw.thumbnail_url  ?? null,   // ← add
   gallery:             raw.gallery        ?? [],      // ← add

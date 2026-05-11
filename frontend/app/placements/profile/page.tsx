@@ -29,48 +29,80 @@ export default function PlacementPage() {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [search, setSearch] = useState("");
-  const [location, setLocation] = useState("Chennai, Tamil Nadu");
+  const [location, setLocation] = useState("");
   const [showDetail, setShowDetail] = useState(false);
   const router = useRouter();
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+  const [user, setUser] = useState<{ full_name?: string; email_id?: string; course_name?: string; photo_url?: string; college_name?: string } | null>(null);
+
   useEffect(() => {
     fetch(`${API}/api/jobs/jobs`)
       .then((res) => res.json())
       .then((data: Job[]) => {
-        setJobs(data);
-        setFilteredJobs(data);
-        if (data.length > 0) setSelectedJob(data[0]);
-      });
+        setJobs(data || []);
+        setFilteredJobs(data || []);
+        if (data && data.length > 0) setSelectedJob(data[0]);
+      })
+      .catch((err) => console.error("Error fetching jobs:", err));
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Error parsing stored user:", e);
+      }
+    }
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch(`${API}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => {
+          if (res.status === 404) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            return null;
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data && data.user) {
+            setUser(data.user);
+            // Sync back to localStorage for consistency
+            localStorage.setItem("user", JSON.stringify(data.user));
+          }
+        })
+        .catch(err => console.error(err));
+    } else if (!storedUser) {
+      // Mock user if not logged in and no stored user
+      setUser({ full_name: "Student Profile", email_id: "student@example.com", course_name: "HVAC Training" });
+    }
   }, []);
 
   const handleSearch = () => {
     const q = search.toLowerCase();
-    const results = q
-      ? jobs.filter(
-          (job) =>
-            job.title.toLowerCase().includes(q) ||
-            job.company.toLowerCase().includes(q)
-        )
-      : [...jobs];
+    const loc = location.toLowerCase();
+    
+    const results = jobs.filter((job) => {
+      const matchSearch = q ? (job.title.toLowerCase().includes(q) || job.company.toLowerCase().includes(q) || job.description.toLowerCase().includes(q)) : true;
+      const matchLoc = loc ? job.location.toLowerCase().includes(loc) : true;
+      return matchSearch && matchLoc;
+    });
+    
     setFilteredJobs(results);
     setSelectedJob(results.length > 0 ? results[0] : null);
   };
 
-  const handleSelectJob = (job: Job) => {
-    setSelectedJob(job);
-    setShowDetail(true);
-  };
-
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f2ee] p-4 md:p-5 gap-3.5 font-[Segoe_UI,sans-serif]">
+    <div className="flex flex-col min-h-screen bg-[#f8f9fc] p-4 md:p-6 gap-6 font-[Segoe_UI,sans-serif]">
 
       {/* ── SEARCH BAR ── */}
-      <div className="bg-white rounded-full shadow-[0_2px_14px_rgba(0,0,0,0.12)] px-4 py-2.5 flex flex-col sm:flex-row items-center gap-2 sm:gap-0">
+      <div className="bg-white rounded-[24px] md:rounded-[32px] border border-[#eff1f6] shadow-[0_8px_30px_rgba(47,85,228,0.06)] px-3 py-3 flex flex-col sm:flex-row items-center gap-4 sm:gap-0 z-20 sticky top-6 max-w-7xl mx-auto w-full mt-2">
         {/* Keyword input */}
-        <div className="flex items-center gap-2 flex-1 px-2 py-1 w-full">
-          <span className="text-base text-[#555]">🔍</span>
+        <div className="flex items-center gap-3 flex-1 px-4 py-1 w-full">
+          <span className="text-xl text-[#7c829c]">🔍</span>
           <input
-            className="border-none outline-none text-[14px] text-[#222] bg-transparent w-full font-[inherit]"
+            className="border-none outline-none text-[16px] font-semibold text-[#111827] bg-transparent w-full font-[inherit] placeholder:text-[#a0a5ba] placeholder:font-medium"
             placeholder="Job title, keywords, or company"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -79,22 +111,23 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
         </div>
 
         {/* Divider */}
-        <div className="hidden sm:block w-px h-7 bg-[#e0e0e0]" />
+        <div className="hidden sm:block w-px h-10 bg-[#eff1f6] mx-2" />
 
         {/* Location input */}
-        <div className="flex items-center gap-2 flex-1 sm:max-w-[230px] px-2 py-1 w-full">
-          <span className="text-base text-[#555]">📍</span>
+        <div className="flex items-center gap-3 flex-1 sm:max-w-[280px] px-4 py-1 w-full">
+          <span className="text-xl text-[#7c829c]">📍</span>
           <input
-            className="border-none outline-none text-[14px] text-[#222] bg-transparent w-full font-[inherit]"
+            className="border-none outline-none text-[16px] font-semibold text-[#111827] bg-transparent w-full font-[inherit] placeholder:text-[#a0a5ba] placeholder:font-medium"
             placeholder="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
         </div>
 
         {/* Button */}
         <button
-          className="bg-[#2557a7] text-white border-none rounded-full px-5 py-2.5 text-[14px] font-semibold cursor-pointer whitespace-nowrap font-[inherit] ml-0 sm:ml-2.5 w-full sm:w-auto"
+          className="bg-[#2f55e4] hover:bg-[#2242c2] text-white border-none rounded-full px-8 py-3.5 text-[16px] font-bold cursor-pointer whitespace-nowrap font-[inherit] ml-0 sm:ml-4 w-full sm:w-auto transition-colors shadow-sm"
           onClick={handleSearch}
         >
           Find jobs
@@ -102,185 +135,105 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
       </div>
 
       {/* ── CONTENT ROW ── */}
-      <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-4 min-h-[480px]">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-6 min-h-[480px] mt-2 max-w-7xl mx-auto w-full">
 
-        {/* ── JOB LIST ── */}
-        <div className={`flex flex-col ${showDetail ? "hidden md:flex" : "flex"}`}>
+        {/* ── STUDENT PROFILE (LEFT) ── */}
+        <div className="hidden lg:flex flex-col gap-3">
+          <div className="bg-white border border-[#d4d2cc] rounded-lg overflow-hidden flex flex-col sticky top-24 shadow-sm">
+            <div className="h-20 bg-gradient-to-r from-[#a0b4b7] to-[#809ba0]" />
+            <div className="px-5 pb-5 relative flex flex-col items-center text-center">
+              <div className="w-20 h-20 rounded-full bg-white p-1 -mt-10 mb-3 border border-[#ebebeb] shadow-sm">
+                {user?.photo_url ? (
+                  <img src={`${API}/${user.photo_url}`} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-[#2557a7]">
+                    {user?.full_name ? getInitials(user.full_name) : "RS"}
+                  </div>
+                )}
+              </div>
+              <h2 
+                className="text-[19px] font-bold text-[#1a1a1a] leading-tight hover:text-[#2f55e4] hover:underline cursor-pointer transition-colors"
+                onClick={() => router.push('/placements/profile/edit')}
+              >
+                {user?.full_name || "Guest Student"}
+              </h2>
+              <p className="text-[14px] font-semibold text-[#333] mt-2 leading-snug px-1">
+                {user?.course_name || "Update your degree/course"}
+              </p>
+              <p className="text-[13px] text-[#555] mt-1.5 leading-snug">
+                {user?.college_name ? `@ ${user.college_name}` : "Update your college name"}
+              </p>
+            </div>
+            <div 
+              className="border-t border-[#ebebeb] px-5 py-4 cursor-pointer hover:bg-[#f6f7fb] transition-colors flex items-center justify-between group"
+              onClick={() => router.push('/placements/profile/edit')}
+            >
+              <span className="text-[14px] font-bold text-[#2f55e4] group-hover:underline">Complete profile</span>
+              <span className="text-[#555] text-[18px] leading-none transition-transform group-hover:translate-x-1">→</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── JOB LIST (CENTER/RIGHT) ── */}
+        <div className="flex flex-col">
           <div className="px-1 py-2.5">
-            <p className="text-[20px] font-bold text-[#1a1a1a]">Jobs for you</p>
-            <p className="text-[12px] text-[#767676] mt-0.5">
+            <p className="text-[22px] font-bold text-[#1a1a1a]">Recommended Jobs</p>
+            <p className="text-[13px] font-medium text-[#767676] mt-1">
               {filteredJobs.length === 0
                 ? "No results"
                 : `Showing ${filteredJobs.length} result${filteredJobs.length > 1 ? "s" : ""}`}
             </p>
           </div>
 
-          <div className="flex flex-col overflow-y-auto max-h-[480px]">
+          <div className="flex flex-col pr-1" style={{ scrollbarWidth: 'thin' }}>
             {filteredJobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-[300px] gap-2">
-                <div className="text-[28px] opacity-20">🔍</div>
-                <p className="text-[13px] font-semibold text-[#767676]">No jobs found</p>
-                <p className="text-[12px] text-[#aaa]">Try different keywords or clear your search</p>
+              <div className="flex flex-col items-center justify-center h-[300px] gap-2 bg-white rounded-lg border border-[#d4d2cc]">
+                <div className="text-[32px] opacity-20">🔍</div>
+                <p className="text-[14px] font-semibold text-[#767676]">No jobs found</p>
+                <p className="text-[13px] text-[#aaa]">Try adjusting your search criteria</p>
               </div>
             ) : (
               filteredJobs.map((job) => (
                 <div
                   key={job.id}
-                  className={`bg-white rounded-lg p-4 cursor-pointer mb-2 relative transition-shadow duration-150 ${
-                    selectedJob?.id === job.id
-                      ? "border-2 border-[#2557a7] shadow-[0_0_0_1px_#2557a7]"
-                      : "border border-[#d4d2cc]"
-                  }`}
-                  onClick={() => handleSelectJob(job)}
+                  className={`bg-white rounded-3xl p-5 md:p-6 lg:p-7 cursor-pointer mb-5 relative transition-all duration-200 border border-[#eff1f6] hover:border-[#dce0ec] hover:shadow-xl hover:shadow-[#eff1f6]`}
+                  onClick={() => router.push(`/placements/job/${job.id}`)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      {job.openBadge && (
-                        <span className="bg-[#e3f4ec] text-[#0d5c2f] text-[12px] px-2.5 py-0.5 rounded font-medium inline-block mb-1.5">
-                          ✉ {job.openBadge}
-                        </span>
-                      )}
-                      <p className="text-[16px] font-bold text-[#2557a7] mb-0.5">{job.title}</p>
-                      <p className="text-[14px] text-[#1a1a1a] mb-0.5">{job.company}</p>
-                      <p className="text-[13px] text-[#767676] mb-2">{job.location}</p>
-                    </div>
-                    <span className="text-[16px] text-[#767676] cursor-pointer ml-2 shrink-0" title="Save">🔖</span>
+                  <h3 className="text-[22px] font-bold text-[#111827] leading-tight mb-1.5 tracking-tight">{job.title}</h3>
+                  <p className="text-[15px] font-medium text-[#7c829c] mb-6">{job.type || 'Full Time'} / {job.location}</p>
+
+                  <div className="mb-5">
+                    <p className="text-[14px] font-medium text-[#7c829c] mb-1">Avg. Salary</p>
+                    <p className="text-[17px] font-medium text-[#111827]">{job.salary || "Not disclosed"}</p>
                   </div>
 
-                  <div className="flex gap-1.5 flex-wrap mt-1.5">
-                    {job.salary && (
-                      <span className="text-[12px] px-2.5 py-0.5 rounded bg-[#e3f4ec] text-[#0d5c2f] border border-[#b6ddc8]">
-                        ✓ {job.salary}
-                      </span>
-                    )}
-                    {job.type && (
-                      <span className="text-[12px] px-2.5 py-0.5 rounded bg-[#f3f2ee] text-[#1a1a1a] border border-[#d4d2cc]">
-                        ✓ {job.type}
-                      </span>
-                    )}
+                  <div className="mb-6">
+                    <p className="text-[14px] font-medium text-[#7c829c] mb-1">Key Skills</p>
+                    <p className="text-[16px] font-medium text-[#111827] leading-relaxed line-clamp-2 pr-4">
+                      {job.description && job.description.length > 10 ? job.description.replace(/\n/g, ', ').substring(0, 150) + "..." : "User Empathy, Research, Market Research, Communication, Collaboration, Analytical Skills"}
+                    </p>
                   </div>
 
-                  <span
-                    className="absolute bottom-3.5 right-3.5 text-[16px] text-[#ccc] cursor-pointer"
-                    title="Not interested"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    👎
-                  </span>
+                  <div className="flex items-center justify-between mt-4 pt-2 border-t border-transparent">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); router.push(`/placements/apply/${job.id}`); }}
+                      className="bg-[#2f55e4] hover:bg-[#2242c2] transition-colors text-white font-bold text-[15px] px-8 py-3 rounded-full inline-flex items-center justify-center shadow-sm"
+                    >
+                      Apply Now
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); router.push(`/placements/job/${job.id}`); }}
+                      className="text-[#7c829c] hover:text-[#2f55e4] font-bold text-[14px] flex items-center gap-1.5 transition-colors group"
+                    >
+                      View details <span className="text-[16px] transition-transform group-hover:translate-x-1">→</span>
+                    </button>
+                  </div>
                 </div>
               ))
             )}
           </div>
         </div>
 
-        {/* ── JOB DETAIL ── */}
-        <div className={`bg-white border border-[#d4d2cc] rounded-lg p-6 md:p-7 overflow-y-auto max-h-[520px] ${showDetail ? "block" : "hidden md:block"}`}>
-          {/* Mobile back button */}
-          {showDetail && (
-            <button
-              className="flex items-center gap-1 text-[#2557a7] text-[13px] font-semibold mb-4 md:hidden bg-transparent border-none cursor-pointer p-0"
-              onClick={() => setShowDetail(false)}
-            >
-              ← Back to jobs
-            </button>
-          )}
-
-          {!selectedJob ? (
-            <div className="flex flex-col items-center justify-center h-[300px] gap-2">
-              <div className="text-[32px] opacity-20">📄</div>
-              <p className="text-[13px] text-[#767676]">Select a job to view details</p>
-            </div>
-          ) : (
-            <>
-              <p className="text-[24px] font-bold text-[#1a1a1a] mb-1.5">{selectedJob.title}</p>
-              <a className="text-[15px] text-[#2557a7] no-underline inline-flex items-center gap-1 mb-3.5 cursor-pointer" href="#">
-                {selectedJob.company} <span className="text-[12px]">↗</span>
-              </a>
-
-              <p className="text-[14px] text-[#1a1a1a] mb-1">
-                📍 {selectedJob.location}
-                {selectedJob.mode && ` · ${selectedJob.mode}`}
-              </p>
-
-              <p className="text-[18px] font-semibold text-[#1a1a1a] my-2.5 mb-4">
-                💰 {selectedJob.salary}
-              </p>
-
-              {/* Action Row */}
-              <div className="flex flex-wrap items-center gap-2 mb-4.5">
-                <button
-                  className="bg-[#2557a7] text-white border-none rounded-full px-6 py-2.5 text-[15px] font-semibold cursor-pointer font-[inherit]"
-                  onClick={() => router.push(`/placements/apply/${selectedJob.id}`)}
-                >
-                  Apply now
-                </button>
-                {["🔖", "💬", "👎", "↗"].map((icon, i) => (
-                  <button
-                    key={i}
-                    className="w-10 h-10 rounded-full border-[1.5px] border-[#d4d2cc] bg-white cursor-pointer flex items-center justify-center text-[16px] text-[#555]"
-                  >
-                    {icon}
-                  </button>
-                ))}
-              </div>
-
-              <hr className="border-none border-t border-[#e8e8e8] my-4" />
-
-              <p className="text-[18px] font-bold text-[#1a1a1a] mb-1.5">Job details</p>
-              <p className="text-[13px] text-[#767676] mb-3.5">
-                Here&apos;s how the job details align with your profile
-              </p>
-
-              {/* Pay Row */}
-              <div className="flex items-start gap-2.5 mb-3.5">
-                <span className="text-[20px] shrink-0 mt-0.5">💳</span>
-                <div>
-                  <p className="text-[15px] font-semibold text-[#1a1a1a] mb-1">Pay</p>
-                  <span className="inline-flex items-center gap-1 bg-[#f3f2ee] border border-[#d4d2cc] rounded px-3 py-1 text-[13px] text-[#1a1a1a] mr-1.5 mb-1">
-                    <span className="text-[#2557a7] font-bold mr-0.5">✓</span>
-                    {selectedJob.salary}
-                    <span className="text-[#767676] ml-1">▾</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Job Type Row */}
-              <div className="flex items-start gap-2.5 mb-3.5">
-                <span className="text-[20px] shrink-0 mt-0.5">💼</span>
-                <div>
-                  <p className="text-[15px] font-semibold text-[#1a1a1a] mb-1">Job type</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedJob.type && (
-                      <span className="inline-flex items-center gap-1 bg-[#f3f2ee] border border-[#d4d2cc] rounded px-3 py-1 text-[13px] text-[#1a1a1a]">
-                        <span className="text-[#2557a7] font-bold mr-0.5">✓</span>
-                        {selectedJob.type}
-                        <span className="text-[#767676] ml-1">▾</span>
-                      </span>
-                    )}
-                    {selectedJob.mode && (
-                      <span className="inline-flex items-center gap-1 bg-[#f3f2ee] border border-[#d4d2cc] rounded px-3 py-1 text-[13px] text-[#1a1a1a]">
-                        {selectedJob.mode}
-                        <span className="text-[#767676] ml-1">▾</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <hr className="border-none border-t border-[#e8e8e8] my-4" />
-
-              <p className="text-[18px] font-bold text-[#1a1a1a] mb-1.5">About this role</p>
-              <p className="text-[14px] text-[#333] leading-[1.7]">
-                {selectedJob.description.split("\n").map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
-              </p>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );

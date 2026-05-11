@@ -209,52 +209,52 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
   // ── FORM VIEW ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f3f2ee] flex items-start justify-center px-4 py-8 sm:py-10 font-[Segoe_UI,sans-serif]">
-      <div className="bg-white border border-[#d4d2cc] rounded-xl w-full max-w-[760px] overflow-hidden">
+    <div className="min-h-screen bg-[#f8f9fc] flex items-start justify-center px-4 py-8 sm:py-12 font-[Segoe_UI,sans-serif]">
+      <div className="bg-white border border-[#eff1f6] rounded-[32px] w-full max-w-3xl overflow-hidden shadow-[0_8px_30px_rgba(47,85,228,0.06)]">
 
         {/* Header */}
-        <div className="px-6 sm:px-8 pt-7 pb-5">
+        <div className="px-6 sm:px-10 pt-10 pb-6">
           <button
-            className="bg-transparent border-none text-[#2557a7] text-[13px] cursor-pointer p-0 mb-3 block font-[inherit]"
+            className="flex items-center gap-2 text-[#7c829c] hover:text-[#2f55e4] text-[15px] font-bold mb-6 bg-transparent border-none cursor-pointer p-0 transition-colors"
             onClick={() => router.push("/placements/profile")}
           >
             ← Back to jobs
           </button>
-          <h1 className="text-[22px] font-bold text-[#1a1a1a] mb-1.5">
+          <h1 className="text-[32px] font-extrabold text-[#111827] mb-2 tracking-tight">
             Apply for this position
           </h1>
-          <p className="text-sm text-[#767676]">
+          <p className="text-[16px] font-medium text-[#7c829c]">
             Fill in your details below to submit your application
           </p>
         </div>
 
-        <hr className="border-t border-[#e8e8e8]" />
+        <hr className="border-t border-[#eff1f6]" />
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 sm:px-8 pt-7 pb-8 flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="px-6 sm:px-10 pt-8 pb-10 flex flex-col gap-6">
 
           {/* Row 1 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[#1a1a1a]">
-                Full Name <span className="text-[#c40000] ml-0.5">*</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Full Name <span className="text-red-500 ml-0.5">*</span>
               </label>
               <input
-                className="h-[42px] px-3.5 border border-[#d4d2cc] rounded-md text-sm text-[#1a1a1a] bg-white outline-none font-[inherit]"
-                placeholder="e.g. Arun Kumar"
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
+                placeholder="e.g. Ragul Sankar"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[#1a1a1a]">
-                Email Address <span className="text-[#c40000] ml-0.5">*</span>
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Email Address <span className="text-red-500 ml-0.5">*</span>
               </label>
               <input
-                className="h-[42px] px-3.5 border border-[#d4d2cc] rounded-md text-sm text-[#1a1a1a] bg-white outline-none font-[inherit]"
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
                 type="email"
-                placeholder="e.g. arun@email.com"
+                placeholder="e.g. ragulsankar@email.com"
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -263,25 +263,25 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
           </div>
 
           {/* Row 2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[#1a1a1a]">
-                Location <span className="text-[#c40000] ml-0.5">*</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Location <span className="text-red-500 ml-0.5">*</span>
               </label>
               <input
-                className="h-[42px] px-3.5 border border-[#d4d2cc] rounded-md text-sm text-[#1a1a1a] bg-white outline-none font-[inherit]"
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
                 placeholder="e.g. Chennai, Tamil Nadu"
                 required
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[#1a1a1a]">
-                Qualification <span className="text-[#c40000] ml-0.5">*</span>
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Qualification <span className="text-red-500 ml-0.5">*</span>
               </label>
               <input
-                className="h-[42px] px-3.5 border border-[#d4d2cc] rounded-md text-sm text-[#1a1a1a] bg-white outline-none font-[inherit]"
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
                 placeholder="e.g. B.E Computer Science"
                 required
                 value={form.qualification}
@@ -291,25 +291,25 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
           </div>
 
           {/* Row 3 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[#1a1a1a]">
-                Skills <span className="text-[#c40000] ml-0.5">*</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Skills <span className="text-red-500 ml-0.5">*</span>
               </label>
               <input
-                className="h-[42px] px-3.5 border border-[#d4d2cc] rounded-md text-sm text-[#1a1a1a] bg-white outline-none font-[inherit]"
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
                 placeholder="e.g. React, Node.js, Python"
                 required
                 value={form.skills}
                 onChange={(e) => setForm({ ...form, skills: e.target.value })}
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-semibold text-[#1a1a1a]">
-                Experience <span className="text-[#c40000] ml-0.5">*</span>
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Experience <span className="text-red-500 ml-0.5">*</span>
               </label>
               <input
-                className="h-[42px] px-3.5 border border-[#d4d2cc] rounded-md text-sm text-[#1a1a1a] bg-white outline-none font-[inherit]"
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
                 placeholder="e.g. 2 years"
                 required
                 value={form.experience}
@@ -319,17 +319,17 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
           </div>
 
           {/* Resume Upload */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-[#1a1a1a]">
-              Resume <span className="text-[#c40000] ml-0.5">*</span>
+          <div className="flex flex-col gap-2">
+            <label className="text-[14px] font-bold text-[#4b5563]">
+              Resume <span className="text-red-500 ml-0.5">*</span>
             </label>
             <div
-              className={`border-[1.5px] border-dashed rounded-lg px-4 py-5 cursor-pointer text-center transition-all ${
+              className={`border-2 border-dashed rounded-[20px] px-6 py-8 cursor-pointer text-center transition-all ${
                 fileError
-                  ? "border-[#c40000] bg-[#fafaf8]"
+                  ? "border-red-400 bg-red-50"
                   : resumeFile
-                  ? "border-[#2557a7] bg-[#f0f5ff]"
-                  : "border-[#d4d2cc] bg-[#fafaf8]"
+                  ? "border-[#2f55e4] bg-[#e8f0fb]"
+                  : "border-[#dce0ec] bg-[#f6f7fb] hover:border-[#2f55e4] hover:bg-[#f0f5ff]"
               }`}
               onClick={() => fileInputRef.current?.click()}
             >
@@ -341,31 +341,33 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 onChange={handleFileChange}
               />
               {resumeFile ? (
-                <div className="flex items-center gap-3.5 text-left">
-                  <span className="text-[28px] flex-shrink-0">📄</span>
+                <div className="flex items-center gap-4 text-left justify-center">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl border border-[#eff1f6]">📄</div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1a1a1a] m-0">{resumeFile.name}</p>
-                    <p className="text-xs text-[#767676] m-0">
+                    <p className="text-[16px] font-bold text-[#111827] m-0">{resumeFile.name}</p>
+                    <p className="text-[14px] font-medium text-[#7c829c] m-0 mt-0.5">
                       {(resumeFile.size / 1024).toFixed(0)} KB · Click to change
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-2xl">⬆️</span>
-                  <p className="text-sm font-semibold text-[#1a1a1a] m-0">Click to upload resume</p>
-                  <p className="text-xs text-[#767676] m-0">PDF, DOC, DOCX · Max 5 MB</p>
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-2xl border border-[#eff1f6]">⬆️</div>
+                  <div>
+                    <p className="text-[16px] font-bold text-[#111827] m-0">Click to upload resume</p>
+                    <p className="text-[14px] font-medium text-[#7c829c] m-0 mt-1">PDF, DOC, DOCX · Max 5 MB</p>
+                  </div>
                 </div>
               )}
             </div>
-            {fileError && <p className="text-xs text-[#c40000] mt-1">{fileError}</p>}
+            {fileError && <p className="text-[14px] font-bold text-red-500 mt-1">{fileError}</p>}
           </div>
 
           {/* Submit Row */}
-          <div className="flex justify-end gap-3 mt-2">
+          <div className="flex justify-end gap-4 mt-6">
             <button
               type="button"
-              className="h-[42px] px-5 border-[1.5px] border-[#d4d2cc] rounded-full bg-white text-[#1a1a1a] text-sm font-semibold cursor-pointer font-[inherit]"
+              className="bg-white hover:bg-[#f6f7fb] border border-[#dce0ec] transition-colors text-[#7c829c] hover:text-[#111827] font-bold text-[16px] px-8 py-3.5 rounded-full cursor-pointer"
               onClick={() => router.push("/placements/profile")}
             >
               Cancel
@@ -373,8 +375,8 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
             <button
               type="submit"
               disabled={submitting}
-              className={`h-[42px] px-7 border-none rounded-full bg-[#2557a7] text-white text-sm font-semibold cursor-pointer font-[inherit] transition-opacity ${
-                submitting ? "opacity-70" : ""
+              className={`bg-[#2f55e4] hover:bg-[#2242c2] transition-colors text-white border-none rounded-full px-10 py-3.5 text-[16px] font-bold cursor-pointer inline-flex items-center justify-center min-w-[200px] shadow-sm ${
+                submitting ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
               {submitting ? "Submitting..." : "Submit Application"}

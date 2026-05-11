@@ -153,4 +153,107 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// ══════════════════════════════════════════════════════════════════════════════
+// GET /api/auth/me
+// ══════════════════════════════════════════════════════════════════════════════
+router.get("/me", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: "No token provided" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, SECRET);
+
+    const userResult = await pool.query(
+      `SELECT u.id, u.name AS full_name, u.email AS email_id, u.phone_number, u.dob AS date_of_birth,
+              sp.gender, sp.location, sp.country, sp.hometown, sp.college_name, sp.degree AS course_name, sp.photo_url
+       FROM users u
+       LEFT JOIN student_profiles sp ON u.id = sp.user_id
+       WHERE u.id = $1`,
+      [decoded.id]
+    );
+
+    if (userResult.rows.length === 0) return res.status(404).json({ message: "User not found" });
+
+    res.json({ user: userResult.rows[0] });
+  } catch (err) {
+    console.error("Auth me error:", err);
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PUT /api/auth/profile
+// ══════════════════════════════════════════════════════════════════════════════
+router.put("/profile", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: "No token provided" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, SECRET);
+
+    const { 
+      full_name, gender, dob, location, country, hometown, mobile,
+      skills, languages, academic_achievements, profile_summary, photo_url,
+      education 
+    } = req.body;
+
+    // Start a transaction
+    await pool.query("BEGIN");
+
+    // Update users table (basic info)
+    await pool.query(
+      "UPDATE users SET name = $1, phone_number = $2, dob = $3 WHERE id = $4",
+      [full_name, mobile, dob, decoded.id]
+    );
+
+    // Upsert student_profiles table (extended info)
+    // Map education.degree fields if present
+    const degree = education?.degree?.course || "";
+    const college = education?.degree?.college || "";
+
+    await pool.query(
+      `INSERT INTO student_profiles (
+         user_id, gender, location, country, hometown, date_of_birth, phone_number,
+         skills, languages, academic_achievements, profile_summary, photo_url,
+         degree, college_name
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+       ON CONFLICT (user_id) 
+       DO UPDATE SET 
+         gender = EXCLUDED.gender,
+         location = EXCLUDED.location,
+         country = EXCLUDED.country,
+         hometown = EXCLUDED.hometown,
+         date_of_birth = EXCLUDED.date_of_birth,
+         phone_number = EXCLUDED.phone_number,
+         skills = EXCLUDED.skills,
+         languages = EXCLUDED.languages,
+         academic_achievements = EXCLUDED.academic_achievements,
+         profile_summary = EXCLUDED.profile_summary,
+         photo_url = EXCLUDED.photo_url,
+         degree = EXCLUDED.degree,
+         college_name = EXCLUDED.college_name,
+         updated_at = CURRENT_TIMESTAMP`,
+      [
+        decoded.id, gender, location, country, hometown, dob, mobile,
+        JSON.stringify(skills || []), 
+        JSON.stringify(languages || []), 
+        JSON.stringify(academic_achievements || []),
+        profile_summary, photo_url,
+        degree, college
+      ]
+    );
+
+    await pool.query("COMMIT");
+
+    res.json({ message: "Profile updated successfully" });
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    console.error("Update profile error:", err);
+    res.status(500).json({ message: "Server error", detail: err.message });
+  }
+});
+
 module.exports = router;

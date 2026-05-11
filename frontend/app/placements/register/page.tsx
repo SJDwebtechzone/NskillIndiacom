@@ -51,6 +51,9 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
         return;
       }
       alert("Registered Successfully!");
+      // Save user and token to localStorage so profile page can pick it up
+      if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+      if (data.token) localStorage.setItem("token", data.token);
       setForm({ name: "", email: "", password: "", phone: "", status: "" });
       router.push("/placements/profile");
     } catch (err) {

@@ -22,7 +22,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   category:             raw.category            ?? "",
   duration:             raw.duration            ?? "",
   eligibility:          raw.eligibility         ?? "",
-  certification:        raw.certification       ?? "NSDC Approved",
+  certification:        raw.certification       ?? "Govt. Approved Certified",
   delivery_method:      raw.delivery_method     ?? "Offline",
   content:              raw.content             ?? "",
   career_opportunities: raw.career_opportunities ?? [""],

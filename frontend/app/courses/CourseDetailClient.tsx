@@ -1323,45 +1323,47 @@ function VideoSection({ videos }: { videos: any[] }) {
 
       {/* Thumbnail strip — only if multiple videos */}
       {videos.length > 1 && (
-     <div className="grid grid-cols-3 gap-1.5 mt-2 w-full overflow-hidden">
+        <div className="grid grid-cols-3 gap-2 mt-3 w-full">
           {videos.map((v: any, i: number) => (
-            <button
-              key={v.id ?? i}
-              onClick={() => setActiveIdx(i)}
-              className={`rounded-xl overflow-hidden border-2 transition-all duration-150 ${
-                i === activeIdx
-                  ? "border-blue-500 opacity-100"
-                  : "border-white/10 hover:border-white/30 opacity-60 hover:opacity-100"
-              }`}
-            >
-            <div className="relative bg-black aspect-video max-h-44">
-                <video
-                  src={resolveVideoUrl(v.url)}
-                  className="w-full h-full object-cover bg-slate-800"
-                  preload="metadata"
-                  muted
-                  playsInline
-                  onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-1.5">
-                  <p className="text-[9px] font-black uppercase tracking-wider text-blue-300 leading-none mb-0.5">
-                    {v.type ?? "Video"}
-                  </p>
-                  <p className="text-[10px] font-semibold text-white leading-tight line-clamp-1">
-                    {v.title ?? `Video ${i + 1}`}
-                  </p>
-                </div>
-                {i !== activeIdx && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-6 h-6 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
-                      <svg width="8" height="8" viewBox="0 0 8 8" fill="white">
-                        <path d="M2 1l5 3-5 3z" />
-                      </svg>
-                    </div>
+            <div key={v.id ?? i} className="relative group/tooltip">
+              <button
+                onClick={() => setActiveIdx(i)}
+                className={`group relative w-full rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                  i === activeIdx
+                    ? "border-blue-500 opacity-100 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                    : "border-white/10 hover:border-white/30 opacity-70 hover:opacity-100"
+                }`}
+              >
+                <div className="relative bg-slate-900 aspect-video max-h-44">
+                  <video
+                    src={resolveVideoUrl(v.url)}
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                    preload="metadata"
+                    muted
+                    playsInline
+                    onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-2 sm:p-2.5 overflow-hidden">
+                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-blue-400 leading-none mb-0.5 drop-shadow-md truncate">
+                      {v.type ?? "Video"}
+                    </p>
+                    <p className="text-xs sm:text-[13px] font-bold text-white leading-tight line-clamp-2 drop-shadow-md break-words">
+                      {v.title ?? `Video ${i + 1}`}
+                    </p>
                   </div>
-                )}
+                  {i !== activeIdx && (
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
+                  )}
+                </div>
+              </button>
+              
+              {/* Custom Tooltip */}
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-30">
+                {v.title ?? `Video ${i + 1}`}
+                {/* Tooltip Arrow */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-800" />
               </div>
-            </button>
+            </div>
           ))}
         </div>
       )}
@@ -1371,8 +1373,7 @@ function VideoSection({ videos }: { videos: any[] }) {
 // ─── Course Info Card ──────────────────────────────────────────────────────────
 function CourseInfoCard({ course }: { course: any }) {
   const certifications = [
-    { label: course.certification ?? "NSDC Approved", sub: "National Skill Development Corporation" },
-    { label: "Government of India",                   sub: "Ministry of Skill Development & Entrepreneurship" },
+    { label: course.certification ?? "Govt. Approved Certified", sub: "Government of India" },
     { label: "Industry Recognised",                   sub: "Accepted by 1000+ employers nationwide" },
   ];
 
@@ -1915,14 +1916,19 @@ useEffect(() => {
 
                 <div className="flex flex-wrap gap-2 text-sm text-white/80 mb-8">
                   {[
-                    { icon: Clock,         label: course.duration },
-                    { icon: GraduationCap, label: course.eligibility ?? "Open to All" },
-                    { icon: ShieldCheck,   label: "Govt. Certified" },
-                    { icon: Award,         label: course.certification ?? "NSDC Approved" },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-2 bg-white/8 backdrop-blur border border-white/10 px-3 py-1.5 rounded-xl text-xs">
-                      <Icon className="w-3.5 h-3.5 text-blue-400" />
+                    { icon: Clock,         label: course.duration, title: "Course Duration" },
+                    { icon: GraduationCap, label: course.eligibility ?? "Open to All", title: "Eligibility" },
+                    { icon: ShieldCheck,   label: "Govt. Approved Certified", title: "Certification" },
+                  ].map(({ icon: Icon, label, title }) => (
+                    <div key={label} className="group relative flex items-center gap-2 bg-white/8 backdrop-blur border border-white/10 hover:bg-white/15 hover:border-white/20 px-3 py-1.5 rounded-xl text-xs transition-all duration-300 cursor-default">
+                      <Icon className="w-3.5 h-3.5 text-blue-400 group-hover:text-blue-300 transition-colors" />
                       {label}
+                      {/* Custom Tooltip */}
+                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-20">
+                        {title}
+                        {/* Tooltip Arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-800" />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1968,11 +1974,11 @@ className="hidden lg:block w-full max-w-[400px] shrink-0 overflow-hidden"
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-[#f8f9fc]" />
+
         </section>
 
         {/* ── STATS BAR ── */}
-        <div className="container mx-auto px-4 sm:px-6 -mt-1 mb-6">
+        <div className="container mx-auto px-4 sm:px-6 mt-8 mb-8">
           <StatsBar course={course} />
         </div>
 
