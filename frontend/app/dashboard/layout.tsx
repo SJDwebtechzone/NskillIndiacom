@@ -285,7 +285,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
 
         <nav className="flex-1 px-6 pb-4 overflow-y-auto">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 px-2">
-            {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : "Admin Panel"}
+            {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : (user?.role === "Super Admin" || user?.role === "Admin" ? "Super Admin Dashboard" : "Admin Panel")}
           </p>
 
           <ul className="space-y-1">
@@ -514,20 +514,26 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             </button>
             <div className="h-8 w-1.5 bg-blue-600 rounded-full hidden md:block" />
             <h1 className="text-lg md:text-2xl font-black text-slate-800 tracking-tight">
-              {pathname === "/dashboard" ? "Overview" : pathname.split("/").pop()?.replace(/-/g, " ").toUpperCase()}
+              {pathname === "/dashboard" 
+                ? (user?.role === "Super Admin" || user?.role === "Admin" ? "Super Admin Dashboard" : "Overview") 
+                : pathname.split("/").pop()?.replace(/-/g, " ").toUpperCase()}
             </h1>
           </div>
           <div className="flex items-center gap-3 md:gap-6">
             <div className="flex items-center gap-2 md:gap-3 md:pl-6 md:border-l border-slate-100">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-black text-slate-800 leading-none">{user?.name ?? "Admin"}</p>
-                <p className="text-[10px] text-blue-600 font-bold mt-1 tracking-wide">{user?.email ?? user?.role ?? ""}</p>
-                {user?.admission_number && (
+                <p className="text-sm font-black text-slate-800 leading-none">
+                  {(user?.role === "Super Admin" || user?.role === "Admin") ? "Super Admin" : (user?.name ?? "Admin")}
+                </p>
+                <p className="text-[10px] text-blue-600 font-bold mt-1 tracking-wide">
+                  {(user?.role === "Super Admin" || user?.role === "Admin") ? (user?.email || "admin@example.com") : (user?.email ?? user?.role ?? "")}
+                </p>
+                {user?.admission_number && user?.role !== "Super Admin" && user?.role !== "Admin" && (
                   <p className="text-[11px] text-slate-600 font-black mt-1 uppercase tracking-wider">ADMISSION No : {user.admission_number}</p>
                 )}
               </div>
               <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-inner cursor-pointer hover:bg-blue-700 transition-colors">
-                {user?.name ? getInitials(user.name) : <UserCircle className="w-5 h-5" />}
+                {(user?.role === "Super Admin" || user?.role === "Admin") ? "SA" : (user?.name ? getInitials(user.name) : <UserCircle className="w-5 h-5" />)}
               </div>
             </div>
           </div>

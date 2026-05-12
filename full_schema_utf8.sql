@@ -1,4 +1,4 @@
--- NSKILL Database Complete Schema
+﻿-- NSKILL Database Complete Schema
 
 -- Table: modules
 CREATE TABLE IF NOT EXISTS modules (

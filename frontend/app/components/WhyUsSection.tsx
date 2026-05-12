@@ -290,15 +290,15 @@ const WhyUsSection = () => {
 
               {/* Ken Burns Effect */}
               <motion.img
-                src="/images/why-us.jpg"
+                src="/images/about/why.jpeg"
                 alt="Why Choose Us"
-                className="absolute inset-0 w-full h-full object-cover object-center"
+                className="absolute inset-0 w-full h-full object-cover object-center brightness-110"
                 animate={{ scale: [1, 1.08, 1] }}
                 transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
               />
 
-              {/* Dark Overlay */}
-              <div className="absolute inset-0 bg-black/30" />
+              {/* Dark Overlay - reduced for brightness */}
+              <div className="absolute inset-0 bg-black/10" />
 
               {/* Light Sweep */}
               <motion.div

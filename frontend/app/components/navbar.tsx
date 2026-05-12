@@ -18,8 +18,8 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface CourseMenuItem {
-  name:           string;
-  id:             string;
+  name: string;
+  id: string;
   thumbnail_url?: string | null;
 }
 interface CategoryMenu {
@@ -28,8 +28,8 @@ interface CategoryMenu {
 }
 interface HoveredCourse {
   name: string;
-  img:  string;
-  cat:  string;
+  img: string;
+  cat: string;
 }
 
 // ─── Category order ───────────────────────────────────────────────────────────
@@ -48,14 +48,14 @@ const CATEGORY_ORDER = [
 // ─── Fallback images per category ────────────────────────────────────────────
 const CATEGORY_FALLBACK: Record<string, string> = {
   "HVAC & Refrigeration": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80",
-  "Electrical":           "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
-  "Plumbing":             "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80",
-  "Welding":              "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-  "Home Appliance":       "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80",
-  "MEP":                  "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80",
-  "Quality":              "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
-  "Safety":               "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
-  "Oil & Gas":            "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+  "Electrical": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
+  "Plumbing": "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80",
+  "Welding": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+  "Home Appliance": "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80",
+  "MEP": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80",
+  "Quality": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
+  "Safety": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+  "Oil & Gas": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
 };
 const DEFAULT_FALLBACK = "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80";
 
@@ -67,22 +67,22 @@ function CourseLink({
   onHover,
   onHoverEnd,
 }: {
-  course:     CourseMenuItem;
-  category:   string;
-  onClose:    () => void;
-  onHover:    (data: HoveredCourse) => void;
+  course: CourseMenuItem;
+  category: string;
+  onClose: () => void;
+  onHover: (data: HoveredCourse) => void;
   onHoverEnd: () => void;
 }) {
   const imgSrc = course.thumbnail_url
     || CATEGORY_FALLBACK[category]
     || DEFAULT_FALLBACK;
 
-const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-const handleMouseEnter = () => {
-  if (timerRef.current) clearTimeout(timerRef.current);
-  onHover({ name: course.name, img: imgSrc, cat: category });
-};
+  const handleMouseEnter = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    onHover({ name: course.name, img: imgSrc, cat: category });
+  };
 
   const handleMouseLeave = () => {
     // Small delay so image doesn't flash when moving between course items
@@ -106,7 +106,7 @@ const handleMouseEnter = () => {
           className="opacity-0 group-hover/item:opacity-100 transition-opacity shrink-0 text-blue-500"
           stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
         >
-          <path d="M2 8L8 2M4 2h4v4"/>
+          <path d="M2 8L8 2M4 2h4v4" />
         </svg>
       </Link>
     </li>
@@ -116,12 +116,12 @@ const handleMouseEnter = () => {
 // ─── Main Navbar ──────────────────────────────────────────────────────────────
 const Navbar = () => {
   const pathname = usePathname();
-  const [isLoginMenuOpen,   setIsLoginMenuOpen]   = useState(false);
-  const [isMenuOpen,        setIsMenuOpen]        = useState(false);
+  const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCoursesMenuOpen, setIsCoursesMenuOpen] = useState(false);
   const [skillTrainingMenu, setSkillTrainingMenu] = useState<CategoryMenu[]>([]);
-  const [menuLoading,       setMenuLoading]       = useState(true);
-  const [hoveredCourse,     setHoveredCourse]     = useState<HoveredCourse | null>(null);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [hoveredCourse, setHoveredCourse] = useState<HoveredCourse | null>(null);
   const coursesMenuRef = useRef<HTMLDivElement>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
@@ -141,8 +141,8 @@ const Navbar = () => {
             const cat = course.category ?? "Other";
             if (!acc[cat]) acc[cat] = [];
             acc[cat].push({
-              name:          course.title,
-              id:            course.slug,
+              name: course.title,
+              id: course.slug,
               thumbnail_url: course.thumbnail_url ?? null,
             });
             return acc;
@@ -191,111 +191,110 @@ const Navbar = () => {
   }
 
   const menuItems = [
-    { name: "Home",                href: "/"                    },
-    { name: "Skill Training",      href: "/courses", dropdown: true },
-   // AFTER — disabled until pages are built
-{ name: "Corporate Training",  href: "/corporate-training"  },
-{ name: "Consulting Services", href: "/consulting"           },
-    { name: "Course Calendar",     href: "/course_calender"     },
-    { name: "Placements",          href: "/placements/register" },
-    { name: "Infrastructure",      href: "/infrastructure"      },
-    { name: "Contact Us",          href: "/contact"             },
+    { name: "Home", href: "/" },
+    { name: "Skill Training", href: "/courses", dropdown: true },
+    // AFTER — disabled until pages are built
+    { name: "Corporate Training", href: "/corporate-training" },
+    { name: "Consulting Services", href: "/consulting" },
+    { name: "Course Calendar", href: "/course_calender" },
+    { name: "Placements", href: "/placements/register" },
+    { name: "Infrastructure", href: "/infrastructure" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   return (
     <header className="w-full relative shadow-sm">
 
       {/* ── Top Bar ── */}
-      
-{/* ── Top Bar ── */}
-{/* ── Top Bar ── */}
-<div className="bg-[#0b1f3a] text-white py-2 px-4 md:px-6 text-[10px] sm:text-xs font-medium">
-  <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1">
-    {/* Left side — hours + contact */}
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {/* Business hours — always visible */}
-      <span className="flex items-center gap-1.5 whitespace-nowrap">
-        <Clock size={12} className="text-blue-400 shrink-0" />
-        Business Hours : 9.30 am to 7.00 pm
-      </span>
 
-      <span className="text-white/20 hidden sm:inline">|</span>
+      {/* ── Top Bar ── */}
+      {/* ── Top Bar ── */}
+      <div className="bg-[#0b1f3a] text-white py-2 px-4 md:px-6 text-[10px] sm:text-xs font-medium">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1">
+          {/* Left side — hours + contact */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {/* Business hours — always visible */}
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <Clock size={12} className="text-blue-400 shrink-0" />
+              Business Hours : 9.30 am to 7.00 pm
+            </span>
 
-      {/* Phone numbers — hidden on xs, show on sm+ */}
-      <span className="hidden sm:flex items-center gap-1.5 whitespace-nowrap">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-          stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-        </svg>
-        <a href="tel:09884209774" className="hover:text-blue-300 transition-colors">
-          +91 98842 09774
-        </a>
-        <span className="text-white/20">|</span>
-        <a href="tel:08056063023" className="hover:text-blue-300 transition-colors">
-          +91 80560 63023
-        </a>
-      </span>
+            <span className="text-white/20 hidden sm:inline">|</span>
 
-      <span className="text-white/20 hidden md:inline">|</span>
+            {/* Phone numbers — hidden on xs, show on sm+ */}
+            <span className="hidden sm:flex items-center gap-1.5 whitespace-nowrap">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              <a href="tel:09884209774" className="hover:text-blue-300 transition-colors">
+                +91 98842 09774
+              </a>
+              <span className="text-white/20">|</span>
+              <a href="tel:08056063023" className="hover:text-blue-300 transition-colors">
+                +91 80560 63023
+              </a>
+            </span>
 
-      {/* Email — hidden on xs+sm, show on md+ */}
-      <span className="hidden md:flex items-center gap-1.5 whitespace-nowrap">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-          stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
-        <a href="mailto:nskilltraining@gmail.com" className="hover:text-blue-300 transition-colors">
-          nskilltraining@gmail.com
-        </a>
-      </span>
-    </div>
+            <span className="text-white/20 hidden md:inline">|</span>
 
-    {/* Right side — Login Access */}
-    <div className="flex items-center">
-      <div
-        className="relative py-1"
-        onMouseEnter={() => setIsLoginMenuOpen(true)}
-        onMouseLeave={() => setIsLoginMenuOpen(false)}
-      >
-        <button className="flex items-center gap-1.5 text-white hover:text-blue-300 transition-colors uppercase tracking-wider text-[10px] md:text-xs whitespace-nowrap">
-          <Lock size={13} />
-          Login Access
-        </button>
-
-        <div
-          className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${
-            isLoginMenuOpen
-              ? "opacity-100 translate-y-0 visible"
-              : "opacity-0 -translate-y-2 invisible"
-          }`}
-        >
-          <div className="p-2">
-            {[
-              { href: "/login/admin",    icon: <User size={16}/>,          bg: "bg-blue-100",   text: "text-blue-600",   label: "Admin"     },
-              { href: "/login/associate",icon: <Users size={16}/>,         bg: "bg-green-100",  text: "text-green-600",  label: "Associate" },
-              { href: "/login/student",  icon: <GraduationCap size={16}/>, bg: "bg-purple-100", text: "text-purple-600", label: "Student"   },
-              { href: "/login/trainer",  icon: <Briefcase size={16}/>,     bg: "bg-orange-100", text: "text-orange-600", label: "Trainer"   },
-            ].map(({ href, icon, bg, text, label }) => (
-              <Link
-                key={label}
-                href={href}
-                className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
-                onClick={() => setIsLoginMenuOpen(false)}
-              >
-                <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center ${text}`}>
-                  {icon}
-                </div>
-                <span className="font-semibold text-sm">{label}</span>
-              </Link>
-            ))}
+            {/* Email — hidden on xs+sm, show on md+ */}
+            <span className="hidden md:flex items-center gap-1.5 whitespace-nowrap">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <a href="mailto:nskilltraining@gmail.com" className="hover:text-blue-300 transition-colors">
+                nskilltraining@gmail.com
+              </a>
+            </span>
           </div>
+
+          {/* Right side — Login Access */}
+          <div className="flex items-center">
+            <div
+              className="relative py-1"
+              onMouseEnter={() => setIsLoginMenuOpen(true)}
+              onMouseLeave={() => setIsLoginMenuOpen(false)}
+            >
+              <button className="flex items-center gap-1.5 text-white hover:text-blue-300 transition-colors uppercase tracking-wider text-[10px] md:text-xs whitespace-nowrap">
+                <Lock size={13} />
+                Login Access
+              </button>
+
+              <div
+                className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${isLoginMenuOpen
+                    ? "opacity-100 translate-y-0 visible"
+                    : "opacity-0 -translate-y-2 invisible"
+                  }`}
+              >
+                <div className="p-2">
+                  {[
+                    { href: "/login/admin", icon: <User size={16} />, bg: "bg-blue-100", text: "text-blue-600", label: "Admin" },
+                    { href: "/login/associate", icon: <Users size={16} />, bg: "bg-green-100", text: "text-green-600", label: "Associate" },
+                    { href: "/login/student", icon: <GraduationCap size={16} />, bg: "bg-purple-100", text: "text-purple-600", label: "Student" },
+                    { href: "/login/trainer", icon: <Briefcase size={16} />, bg: "bg-orange-100", text: "text-orange-600", label: "Trainer" },
+                  ].map(({ href, icon, bg, text, label }) => (
+                    <Link
+                      key={label}
+                      href={href}
+                      className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
+                      onClick={() => setIsLoginMenuOpen(false)}
+                    >
+                      <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center ${text}`}>
+                        {icon}
+                      </div>
+                      <span className="font-semibold text-sm">{label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
-
-  </div>
-</div>
       {/* ── Main Navbar ── */}
       <nav className="bg-white px-4 md:px-6 py-3 sticky top-0 z-40 border-b">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 relative">
@@ -304,9 +303,10 @@ const Navbar = () => {
             <Image
               src="/logo.png"
               alt="NSKILL Logo"
-              width={180}
-              height={50}
-              className="object-contain h-8 md:h-11 w-auto"
+              width={210}
+              height={48}
+              className="object-contain h-[48px] w-auto -ml-6 scale-125"
+              style={{ width: 'auto', height: '48px' }}
               priority
             />
           </Link>
@@ -322,11 +322,10 @@ const Navbar = () => {
                         setIsCoursesMenuOpen(!isCoursesMenuOpen);
                         setHoveredCourse(null);
                       }}
-                      className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap ${
-                        isCoursesMenuOpen
+                      className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap ${isCoursesMenuOpen
                           ? "text-blue-600"
                           : "text-[#0b1f3a] hover:text-blue-600"
-                      }`}
+                        }`}
                     >
                       {item.name}
                       <ChevronDown
@@ -337,25 +336,23 @@ const Navbar = () => {
 
                     {/* ── Mega Menu ── */}
                     <div
-                      className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[95vw] max-w-5xl bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.18)] z-50 border border-slate-100 overflow-hidden transition-all duration-300 origin-top ${
-                        isCoursesMenuOpen
+                      className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[95vw] max-w-5xl bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.18)] z-50 border border-slate-100 overflow-hidden transition-all duration-300 origin-top ${isCoursesMenuOpen
                           ? "opacity-100 scale-100 visible"
                           : "opacity-0 scale-95 invisible"
-                      }`}
+                        }`}
                     >
                       {/* ── Course list — fades out when course is hovered ── */}
-                   <div
-  className={`transition-opacity duration-200 ${
-    hoveredCourse ? "opacity-0" : "opacity-100"
-  }`}
->
+                      <div
+                        className={`transition-opacity duration-200 ${hoveredCourse ? "opacity-0" : "opacity-100"
+                          }`}
+                      >
                         <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
 
                           {menuLoading ? (
                             <div className="flex items-center justify-center py-12 text-slate-400">
                               <svg className="animate-spin w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                               </svg>
                               Loading courses...
                             </div>
@@ -407,11 +404,11 @@ const Navbar = () => {
                       </div>
 
                       {/* ── Image preview inside mega menu — shown on hover ── */}
-                    {/* ── Image preview inside mega menu — shown on hover ── */}
-{hoveredCourse && (
-  <div
-    className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none"
-  >
+                      {/* ── Image preview inside mega menu — shown on hover ── */}
+                      {hoveredCourse && (
+                        <div
+                          className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none"
+                        >
                           <img
                             src={hoveredCourse.img}
                             alt={hoveredCourse.name}
@@ -475,9 +472,8 @@ const Navbar = () => {
 
       {/* ── Mobile Menu Panel ── */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 flex flex-col lg:hidden transform transition-transform duration-300 ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 flex flex-col lg:hidden transform transition-transform duration-300 ${isMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center p-6 mb-4">
           <Link href="/" onClick={() => setIsMenuOpen(false)}>

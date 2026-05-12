@@ -51,683 +51,541 @@ export default function ProfileEditPage() {
     projects: [{
       name: "", from_month: "", from_year: "", to_month: "", to_year: "", description: "", skills: "", url: ""
     }],
-    summary: "",
+    profile_summary: "",
+    photo_url: "",
+    resume_url: "",
     certifications: [{
       name: "", id: "", url: "", from_month: "", from_year: "", to_month: "", to_year: "", expires: true
     }],
-    exams: [{
-      name: "", score: ""
-    }],
-    employment: {
+    employments: [{
       total_years: "0", total_months: "0", company: "", designation: "", from_month: "", from_year: "", to_month: "", to_year: "", current: false, description: ""
+    }],
+    preferences: {
+      job_type: "Full Time",
+      availability: "Immediately",
+      location: ""
     },
-    academic_achievements: []
+    academic_achievements: ""
   });
 
-  const [expandedSection, setExpandedSection] = useState<string | null>("Education");
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [skillInput, setSkillInput] = useState("");
+  const [langInput, setLangInput] = useState("");
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        setUser(parsed);
-        setFormData(prev => ({
-          ...prev,
-          full_name: parsed.full_name || "",
-          mobile: parsed.phone_number || "",
-          location: parsed.location || "",
-          hometown: parsed.hometown || "",
-          gender: parsed.gender || "",
-          dob: parsed.date_of_birth || ""
-        }));
-      } catch (e) {
-        console.error("Error parsing stored user:", e);
-      }
-    }
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetch(`${API}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => {
-          if (res.status === 404) {
-             localStorage.removeItem("token");
-             localStorage.removeItem("user");
-             router.push("/placements/login");
-             return null;
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (data && data.user) {
-            setUser(data.user);
-            setFormData(prev => ({
-              ...prev,
-              full_name: data.user.full_name || prev.full_name,
-              gender: data.user.gender || prev.gender,
-              dob: data.user.date_of_birth || prev.dob,
-              location: data.user.location || prev.location,
-              country: data.user.country || prev.country,
-              hometown: data.user.hometown || prev.hometown,
-              mobile: data.user.phone_number || prev.mobile,
-              profile_summary: data.user.profile_summary || prev.profile_summary,
-              photo_url: data.user.photo_url || prev.photo_url
-            }));
-            // Sync to localStorage
-            localStorage.setItem("user", JSON.stringify(data.user));
-          }
-          setLoading(false);
-        })
-        .catch(err => {
-          console.error(err);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [API, router]);
-
-  const navLinks = [
-    "Preferences", "Education", "Key skills", "Languages", 
-    "Internships", "Projects", "Profile summary", "Accomplishments", 
-    "Employment", "Resume"
-  ];
-
-  const handleSave = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login first");
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API}/api/auth/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert("Profile updated successfully!");
-        router.refresh();
-      } else {
-        alert(data.message || "Error updating profile");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error. Please try again.");
+  const addSkill = () => {
+    if (skillInput.trim() && !formData.skills.includes(skillInput.trim() as never)) {
+      setFormData(prev => ({ ...prev, skills: [...prev.skills, skillInput.trim()] as any }));
+      setSkillInput("");
     }
   };
 
+  const removeSkill = (skill: string) => {
+    setFormData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+  };
+
+  const addLanguage = (lang?: string) => {
+    const language = lang || langInput;
+    if (language && !formData.languages.includes(language as never)) {
+      setFormData(prev => ({ ...prev, languages: [...prev.languages, language] as any }));
+      setLangInput("");
+    }
+  };
+
+  const addInternship = () => setFormData(prev => ({ ...prev, internships: [...prev.internships, { company: "", from_month: "", from_year: "", to_month: "", to_year: "", project: "", description: "", skills: "", url: "" }] }));
+  const updateInternship = (index: number, field: string, value: any) => {
+    setFormData(prev => {
+      const newInternships = [...prev.internships];
+      newInternships[index] = { ...newInternships[index], [field]: value };
+      return { ...prev, internships: newInternships };
+    });
+  };
+
+  const addProject = () => setFormData(prev => ({ ...prev, projects: [...prev.projects, { name: "", from_month: "", from_year: "", to_month: "", to_year: "", description: "", skills: "", url: "" }] }));
+  const updateProject = (index: number, field: string, value: any) => {
+    setFormData(prev => {
+      const newProjects = [...prev.projects];
+      newProjects[index] = { ...newProjects[index], [field]: value };
+      return { ...prev, projects: newProjects };
+    });
+  };
+
+  const addCertification = () => setFormData(prev => ({ ...prev, certifications: [...prev.certifications, { name: "", id: "", url: "", from_month: "", from_year: "", to_month: "", to_year: "", expires: true }] }));
+  const updateCertification = (index: number, field: string, value: any) => {
+    setFormData(prev => {
+      const newCerts = [...prev.certifications];
+      newCerts[index] = { ...newCerts[index], [field]: value };
+      return { ...prev, certifications: newCerts };
+    });
+  };
+
+  const addEmployment = () => setFormData(prev => ({ ...prev, employments: [...prev.employments, { total_years: "0", total_months: "0", company: "", designation: "", from_month: "", from_year: "", to_month: "", to_year: "", current: false, description: "" }] }));
+  const updateEmployment = (index: number, field: string, value: any) => {
+    setFormData(prev => {
+      const newEmps = [...prev.employments];
+      newEmps[index] = { ...newEmps[index], [field]: value };
+      return { ...prev, employments: newEmps };
+    });
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch(`${API}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.user) {
+            setUser(data.user);
+            const user = data.user;
+            setFormData(prev => {
+              const dbEducation = typeof user.education_history === 'string' ? JSON.parse(user.education_history) : (user.education_history || {});
+              return {
+                ...prev,
+                full_name: user.full_name || prev.full_name,
+                gender: user.gender || prev.gender,
+                dob: user.date_of_birth || prev.dob,
+                location: user.location || prev.location,
+                country: user.country || prev.country,
+                hometown: user.hometown || prev.hometown,
+                mobile: user.phone_number || prev.mobile,
+                skills: typeof user.skills === 'string' ? JSON.parse(user.skills) : (user.skills || prev.skills),
+                languages: typeof user.languages === 'string' ? JSON.parse(user.languages) : (user.languages || prev.languages),
+                internships: typeof user.internships === 'string' ? JSON.parse(user.internships) : (user.internships || prev.internships),
+                projects: typeof user.projects === 'string' ? JSON.parse(user.projects) : (user.projects || prev.projects),
+                employments: typeof user.employment_history === 'string' ? JSON.parse(user.employment_history) : (user.employment_history || prev.employments),
+                certifications: typeof user.certifications === 'string' ? JSON.parse(user.certifications) : (user.certifications || prev.certifications),
+                profile_summary: user.profile_summary || prev.profile_summary,
+                photo_url: user.photo_url || prev.photo_url,
+                resume_url: user.resume_url || prev.resume_url,
+                education: {
+                  ...prev.education,
+                  ...dbEducation,
+                  degree: {
+                    ...prev.education.degree,
+                    ...(dbEducation.degree || {}),
+                    course: user.course_name || dbEducation.degree?.course || prev.education.degree.course,
+                    college: user.college_name || dbEducation.degree?.college || prev.education.degree.college
+                  }
+                },
+                preferences: {
+                  job_type: user.preferred_job_type || prev.preferences.job_type,
+                  availability: user.availability || prev.preferences.availability,
+                  location: user.preferred_location || prev.preferences.location
+                }
+              };
+            });
+          }
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, [API]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'assessment') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const token = localStorage.getItem("token");
+    const fd = new FormData();
+    fd.append(type === 'image' ? 'image' : 'file', file);
+    try {
+      const res = await fetch(`${API}/api/upload/${type}`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const data = await res.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, [type === 'image' ? 'photo_url' : 'resume_url']: data.url || data.file_url }));
+        alert("Uploaded successfully!");
+      }
+    } catch (err) { alert("Upload failed"); }
+  };
+
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${API}/api/auth/profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(formData)
+      });
+      if (res.ok) { alert("Profile saved!"); setEditingSection(null); }
+    } catch (err) { alert("Error saving profile"); }
+  };
+
+  const getPhotoUrl = (url: string | undefined) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return `${API}${cleanUrl}`;
+  };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 font-bold">Loading...</div>;
+
   return (
-    <div className="min-h-screen bg-[#f8f9fc] p-4 md:p-8 font-[Segoe_UI,sans-serif]">
-      <div className="max-w-[1200px] mx-auto flex flex-col gap-6 lg:gap-8">
-        
-        {/* ── TOP: Back Button & Header Profile Card ── */}
-        <div className="flex flex-col gap-4">
-          <button
-            className="flex items-center gap-2 text-[#7c829c] hover:text-[#2f55e4] text-[15px] font-bold bg-transparent border-none cursor-pointer p-0 transition-colors w-max"
+    <div className="min-h-screen bg-[#f8fafc] pb-20 font-[Segoe_UI,sans-serif]">
+      {/* ── Top Header Section ── */}
+      <div className="bg-white border-b border-[#eff1f6] pt-10 pb-16">
+        <div className="max-w-7xl mx-auto px-4 md:px-10">
+          <button 
             onClick={() => router.push("/placements/profile")}
+            className="flex items-center gap-2 text-[#7c829c] hover:text-[#2f55e4] font-bold text-[15px] mb-8 transition-colors group"
           >
-            ← Back to jobs
+            <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to profile
           </button>
-
-          <div className="bg-white border border-[#eff1f6] rounded-[32px] p-6 md:p-10 shadow-[0_4px_20px_rgba(47,85,228,0.04)] relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-[#d9e2f8] to-[#f6f7fb]"></div>
-            
-            <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start mt-10">
-              <div className="relative w-32 h-32 shrink-0 group cursor-pointer">
-                <div className="w-full h-full rounded-full border-4 border-white shadow-sm flex items-center justify-center bg-[#e8f0fb] overflow-hidden">
-                  {user?.photo_url ? (
-                    <img src={`${API}/${user.photo_url}`} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-4xl font-black text-[#2f55e4]">
-                      {formData.full_name ? formData.full_name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() : "RS"}
-                    </span>
-                  )}
-                </div>
-                <div className="absolute inset-0 border-4 border-transparent rounded-full flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200">
-                  <span className="text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 drop-shadow-md">📷</span>
-                </div>
+          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center">
+            <div className="relative group">
+              <div className="w-40 h-40 rounded-[48px] bg-[#f6f7fb] border-4 border-white shadow-xl overflow-hidden relative">
+                {formData.photo_url ? (
+                  <img src={getPhotoUrl(formData.photo_url) || ""} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-4xl text-[#7c829c]">👤</div>
+                )}
+                <button onClick={() => document.getElementById('photo-input')?.click()} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold text-sm">Change</button>
               </div>
+              <input type="file" id="photo-input" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} />
+            </div>
 
-              <div className="flex-1 w-full">
-                <h2 className="text-[24px] font-bold text-[#111827] mb-6">All about you</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Full Name */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Full name</label>
-                    <input 
-                      type="text"
-                      className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all"
-                      placeholder="What’s your good name?"
-                      value={formData.full_name}
-                      onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                    />
-                  </div>
-
-                  {/* Gender */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Gender</label>
-                    <div className="flex gap-4">
-                      {["Male", "Female", "Transgender"].map((g) => (
-                        <label key={g} className="flex items-center gap-2 cursor-pointer">
-                          <input 
-                            type="radio" 
-                            name="gender" 
-                            value={g} 
-                            checked={formData.gender === g}
-                            onChange={(e) => setFormData({...formData, gender: e.target.value})}
-                            className="w-4 h-4 text-[#2f55e4] focus:ring-[#2f55e4]" 
-                          />
-                          <span className="text-[15px] font-medium text-[#111827]">{g}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* DOB */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Date of birth (DD/MM/YYYY)</label>
-                    <input 
-                      type="text"
-                      className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all"
-                      placeholder="DD/MM/YYYY"
-                      value={formData.dob}
-                      onChange={(e) => setFormData({...formData, dob: e.target.value})}
-                    />
-                  </div>
-
-                  {/* Current Location */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Current location</label>
-                    <div className="flex items-center gap-2 mb-1">
-                      <input type="checkbox" id="residing-india" checked={formData.country === "India"} onChange={() => {}} className="w-4 h-4" />
-                      <label htmlFor="residing-india" className="text-[13px] font-medium text-[#7c829c]">Currently residing in India</label>
-                    </div>
-                    <input 
-                      type="text"
-                      className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all"
-                      placeholder="Enter your current location"
-                      value={formData.location}
-                      onChange={(e) => setFormData({...formData, location: e.target.value})}
-                    />
-                  </div>
-
-                  {/* Country */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Country</label>
-                    <select 
-                      className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all appearance-none"
-                      value={formData.country}
-                      onChange={(e) => setFormData({...formData, country: e.target.value})}
-                    >
-                      <option value="India">India</option>
-                      <option value="USA">USA</option>
-                      <option value="UK">UK</option>
-                    </select>
-                  </div>
-
-                  {/* Hometown */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Hometown</label>
-                    <input 
-                      type="text"
-                      className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all"
-                      placeholder="Enter your current hometown"
-                      value={formData.hometown}
-                      onChange={(e) => setFormData({...formData, hometown: e.target.value})}
-                    />
-                  </div>
-
-                  {/* Mobile Number */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[14px] font-bold text-[#4b5563]">Mobile number</label>
-                    <div className="flex gap-2">
-                      <div className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] flex items-center">+91</div>
-                      <input 
-                        type="text"
-                        className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all flex-1"
-                        placeholder="Mobile number"
-                        value={formData.mobile}
-                        onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex justify-end">
-                  <button 
-                    onClick={handleSave}
-                    className="bg-[#2f55e4] hover:bg-[#2242c2] text-white font-bold px-10 py-3 rounded-full transition-all shadow-md"
-                  >
-                    Save
+            <div className="flex-1 space-y-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-4">
+                  <h1 className="text-[32px] md:text-[40px] font-black text-[#111827] tracking-tight">{formData.full_name || "Enter Your Name"}</h1>
+                  <button onClick={() => setEditingSection(editingSection === 'basic' ? null : 'basic')} className="text-[#7c829c] hover:text-[#2f55e4] transition-colors p-2 hover:bg-[#f6f7fb] rounded-xl" title="Edit Basic Info">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   </button>
                 </div>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                  <p className="text-[18px] font-bold text-[#4b5563] flex items-center gap-2">🎓 {formData.education.degree.course || "No degree"}</p>
+                  <p className="text-[18px] font-bold text-[#7c829c] flex items-center gap-2">🏛️ {formData.education.degree.college || "No college"}</p>
+                </div>
               </div>
+
+              {editingSection === 'basic' ? (
+                <div className="bg-[#f6f7fb] p-6 rounded-[32px] border border-[#eff1f6] animate-fadeIn grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1"><label className="text-[12px] font-bold text-[#7c829c] uppercase">Full Name</label><input type="text" className="h-10 px-4 border rounded-xl" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} /></div>
+                  <div className="flex flex-col gap-1"><label className="text-[12px] font-bold text-[#7c829c] uppercase">Location</label><input type="text" className="h-10 px-4 border rounded-xl" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} /></div>
+                  <div className="flex flex-col gap-1"><label className="text-[12px] font-bold text-[#7c829c] uppercase">Gender</label><select className="h-10 px-4 border rounded-xl" value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})}><option>Male</option><option>Female</option><option>Other</option></select></div>
+                  <div className="flex flex-col gap-1"><label className="text-[12px] font-bold text-[#7c829c] uppercase">Birth Date</label><input type="text" className="h-10 px-4 border rounded-xl" value={formData.dob} onChange={e => setFormData({...formData, dob: e.target.value})} /></div>
+                  <div className="flex flex-col gap-1"><label className="text-[12px] font-bold text-[#7c829c] uppercase">Mobile</label><input type="text" className="h-10 px-4 border rounded-xl" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} /></div>
+                  <div className="flex items-end gap-3 md:col-span-2 pt-2">
+                    <button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-6 py-2 rounded-xl text-sm">Save Changes</button>
+                    <button onClick={() => setEditingSection(null)} className="text-[#7c829c] font-bold px-4 text-sm">Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[#f6f7fb] rounded-xl border border-[#eff1f6] text-[14px] font-bold text-[#4b5563]">📍 {formData.location || "Location"}</div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[#f6f7fb] rounded-xl border border-[#eff1f6] text-[14px] font-bold text-[#4b5563]">👤 {formData.gender || "Gender"}</div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[#f6f7fb] rounded-xl border border-[#eff1f6] text-[14px] font-bold text-[#4b5563]">🎂 {formData.dob || "Birth Date"}</div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[#f6f7fb] rounded-xl border border-[#eff1f6] text-[14px] font-bold text-[#4b5563]">📞 {formData.mobile || "Phone"}</div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[#f0fdf4] rounded-xl border border-[#dcfce7] text-[14px] font-bold text-green-600">✉️ {user?.email_id || "Email"} ✔️</div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button onClick={() => setEditingSection(editingSection === 'all' ? null : 'all')} className="bg-[#2f55e4] hover:bg-[#2242c2] text-white font-bold px-8 py-4 rounded-3xl transition-all shadow-lg text-[16px] min-w-[200px]">
+                ✎ {editingSection === 'all' ? 'View Profile' : 'View & Edit All'}
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* ── BOTTOM: 2-Column Layout ── */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          
-          {/* LEFT SIDEBAR - Quick Links */}
-          <div className="hidden lg:block w-[280px] shrink-0">
-            <div className="bg-white border border-[#eff1f6] rounded-3xl p-6 sticky top-8 shadow-[0_4px_20px_rgba(47,85,228,0.04)]">
-              <h3 className="text-[18px] font-bold text-[#111827] mb-4">Quick links</h3>
-              <ul className="flex flex-col gap-1.5">
-                {navLinks.map((link) => (
-                  <li key={link}>
-                    <a 
-                      href={`#${link.toLowerCase().replace(/ /g, '-')}`}
-                      className="block px-4 py-2.5 rounded-xl text-[14px] font-semibold text-[#7c829c] hover:bg-[#f6f7fb] hover:text-[#2f55e4] transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
+      <div className="max-w-7xl mx-auto px-4 md:px-10 mt-[-40px]">
+        <div className="flex flex-col lg:flex-row gap-10">
+          <div className="w-full lg:w-[280px] shrink-0">
+            <div className="bg-white border border-[#eff1f6] rounded-[32px] p-6 shadow-xl sticky top-24">
+              <h3 className="text-[12px] font-black text-[#7c829c] uppercase tracking-[2px] mb-6 px-2">Quick Links</h3>
+              <ul className="space-y-1">
+                {["Preferences", "Education", "Key skills", "Languages", "Internships", "Projects", "Profile summary", "Employment", "Resume"].map(l => (
+                  <li key={l}><a href={`#${l.toLowerCase().replace(/ /g, '-')}`} className="flex items-center justify-between px-4 py-3 rounded-2xl text-[15px] font-bold text-[#4b5563] hover:bg-[#f6f7fb] hover:text-[#2f55e4] transition-all"> {l} <span>→</span></a></li>
                 ))}
               </ul>
             </div>
           </div>
 
-          {/* RIGHT CONTENT - Sections */}
-          <div className="flex-1 flex flex-col gap-6 min-w-0">
-            
-          {/* 2. Preferences */}
-          <SectionCard id="preferences" title="Your career preferences">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <PreferenceItem label="Preferred job type" value="" />
-              <PreferenceItem label="Availability to work" value="" />
-              <PreferenceItem label="Preferred location" value="" />
-            </div>
-          </SectionCard>
+          <div className="flex-1 flex flex-col gap-8 min-w-0">
+            {/* Preferences */}
+            <SectionCard id="preferences" title="Your career preferences" onEdit={() => setEditingSection('preferences')} isEditing={editingSection === 'preferences' || editingSection === 'all'}>
+              {editingSection === 'preferences' || editingSection === 'all' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Preferred job type</label><select className="h-12 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.preferences.job_type} onChange={e => setFormData({...formData, preferences: {...formData.preferences, job_type: e.target.value}})}><option>Full Time</option><option>Part Time</option></select></div>
+                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Availability</label><select className="h-12 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.preferences.availability} onChange={e => setFormData({...formData, preferences: {...formData.preferences, availability: e.target.value}})}><option>Immediately</option><option>1 Month</option></select></div>
+                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Preferred Location</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.preferences.location} onChange={e => setFormData({...formData, preferences: {...formData.preferences, location: e.target.value}})} /></div>
+                  <div className="flex justify-end md:col-span-2"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full">Save</button></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <PreferenceItem label="Job Type" value={formData.preferences.job_type} />
+                  <PreferenceItem label="Availability" value={formData.preferences.availability} />
+                  <PreferenceItem label="Location" value={formData.preferences.location} />
+                </div>
+              )}
+            </SectionCard>
 
-          {/* 3. Education */}
-          <SectionCard id="education" title="Education">
-            <p className="text-[14px] font-medium text-[#7c829c] mb-6">Adding your educational details help recruiters know your value as a potential candidate</p>
-            
-            <div className="flex flex-col gap-4">
-              
-              {/* Higher Education */}
-              <div className="border border-[#eff1f6] rounded-2xl overflow-hidden bg-white shadow-sm">
-                <button 
-                  onClick={() => setExpandedSection(expandedSection === "Higher Education" ? null : "Higher Education")}
-                  className="w-full px-6 py-4 flex items-center justify-between bg-[#f6f7fb] hover:bg-[#eff1f6] transition-all border-none cursor-pointer"
-                >
-                  <h4 className="text-[17px] font-bold text-[#111827]">Higher Education</h4>
-                  <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "Higher Education" ? "rotate-180" : ""}`}>▼</span>
-                </button>
-                
-                {expandedSection === "Higher Education" && (
-                  <div className="p-6 flex flex-col gap-8 animate-fadeIn">
+            {/* Education */}
+            <SectionCard id="education" title="Education" onEdit={() => setEditingSection('education')} isEditing={editingSection === 'education' || editingSection === 'all'}>
+              {editingSection === 'education' || editingSection === 'all' ? (
+                <div className="space-y-10">
+                  {/* Higher Education */}
+                  <div className="space-y-6">
+                    <h3 className="text-[16px] font-black text-[#111827] border-l-4 border-[#2f55e4] pl-4">Higher Education</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Degree</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.degree.course} onChange={e => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, course: e.target.value}}})} /></div>
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">College</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.degree.college} onChange={e => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, college: e.target.value}}})} /></div>
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Graduating Year</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.degree.to_year} onChange={e => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, to_year: e.target.value}}})} /></div>
+                    </div>
+                  </div>
+
+                  {/* Class XII */}
+                  <div className="space-y-6 pt-6 border-t border-[#f6f7fb]">
+                    <h3 className="text-[16px] font-black text-[#111827] border-l-4 border-[#2f55e4] pl-4">Class XII</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col gap-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Course name</label>
-                        <input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] transition-all" value={formData.education.degree.course} onChange={(e) => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, course: e.target.value}}})} />
+                        <label className="text-[13px] font-bold text-[#7c829c]">Board</label>
+                        <select className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.class12.board} onChange={e => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, board: e.target.value}}})}>
+                          <option value="">Select Board</option>
+                          <option value="State Board">State Board</option>
+                          <option value="Matric">Matric</option>
+                          <option value="CBSE">CBSE</option>
+                        </select>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Specialization</label>
-                        <input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] transition-all" value={formData.education.degree.specialization} onChange={(e) => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, specialization: e.target.value}}})} />
-                      </div>
-                      <div className="flex flex-col gap-2 md:col-span-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">College name</label>
-                        <input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] transition-all" value={formData.education.degree.college} onChange={(e) => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, college: e.target.value}}})} />
-                      </div>
-                      <div className="flex flex-col gap-3 md:col-span-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Grading system</label>
-                        <div className="flex flex-wrap gap-x-6 gap-y-3">
-                          {["Scale 10 Grading System", "Scale 4 Grading System", "% Marks of 100 Maximum", "Course Requires a Pass"].map((g) => (
-                            <label key={g} className="flex items-center gap-2 cursor-pointer">
-                              <input type="radio" name="grading" checked={formData.education.degree.grading === g} onChange={() => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, grading: g}}})} className="w-4 h-4 text-[#2f55e4]" />
-                              <span className="text-[15px] font-medium text-[#111827]">{g}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Course duration</label>
-                        <div className="flex items-center gap-4">
-                          <div className="relative flex-1">
-                            <input type="text" className="w-full h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] transition-all" placeholder="From (YYYY)" value={formData.education.degree.from_year} onChange={(e) => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, from_year: e.target.value}}})} />
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#7c829c]">START</div>
-                          </div>
-                          <div className="relative flex-1">
-                            <input type="text" className="w-full h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] transition-all" placeholder="To (YYYY)" value={formData.education.degree.to_year} onChange={(e) => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, to_year: e.target.value}}})} />
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#7c829c]">END</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Course type</label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {["Full Time", "Part Time", "Correspondence"].map((t) => (
-                            <button key={t} type="button" onClick={() => setFormData({...formData, education: {...formData.education, degree: {...formData.education.degree, type: t}}})} className={`h-10 rounded-lg text-[12px] font-bold transition-all border ${formData.education.degree.type === t ? "bg-[#2f55e4] border-[#2f55e4] text-white" : "bg-white border-[#eff1f6] text-[#4b5563]"}`}>{t}</button>
-                          ))}
-                        </div>
-                      </div>
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Percentage (%)</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.class12.percentage} onChange={e => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, percentage: e.target.value}}})} /></div>
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Passing Year</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.class12.passing_year} onChange={e => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, passing_year: e.target.value}}})} /></div>
                     </div>
-                    <button onClick={handleSave} className="self-end bg-[#2f55e4] hover:bg-[#2242c2] text-white font-bold px-8 py-2.5 rounded-full transition-all text-[14px]">Save</button>
                   </div>
-                )}
-              </div>
 
-              {/* Class XII */}
-              <div className="border border-[#eff1f6] rounded-2xl overflow-hidden bg-white shadow-sm">
-                <button 
-                  onClick={() => setExpandedSection(expandedSection === "Class XII" ? null : "Class XII")}
-                  className="w-full px-6 py-4 flex items-center justify-between bg-[#f6f7fb] hover:bg-[#eff1f6] transition-all border-none cursor-pointer"
-                >
-                  <h4 className="text-[17px] font-bold text-[#111827]">Class XII</h4>
-                  <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "Class XII" ? "rotate-180" : ""}`}>▼</span>
-                </button>
-                {expandedSection === "Class XII" && (
-                  <div className="p-6 flex flex-col gap-8 animate-fadeIn">
+                  {/* Class X */}
+                  <div className="space-y-6 pt-6 border-t border-[#f6f7fb]">
+                    <h3 className="text-[16px] font-black text-[#111827] border-l-4 border-[#2f55e4] pl-4">Class X</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col gap-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Examination board</label>
-                        <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" value={formData.education.class12.board} onChange={(e) => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, board: e.target.value}}})}><option value="">Select Board Name</option><option value="CBSE">CBSE</option><option value="State Board">State Board</option></select>
+                        <label className="text-[13px] font-bold text-[#7c829c]">Board</label>
+                        <select className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.class10.board} onChange={e => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, board: e.target.value}}})}>
+                          <option value="">Select Board</option>
+                          <option value="State Board">State Board</option>
+                          <option value="Matric">Matric</option>
+                          <option value="CBSE">CBSE</option>
+                        </select>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Medium of study</label>
-                        <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" value={formData.education.class12.medium} onChange={(e) => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, medium: e.target.value}}})}><option value="">Select Medium</option><option value="English">English</option><option value="Hindi">Hindi</option></select>
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Percentage (%)</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.class10.percentage} onChange={e => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, percentage: e.target.value}}})} /></div>
+                      <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Passing Year</label><input type="text" className="h-11 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={formData.education.class10.passing_year} onChange={e => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, passing_year: e.target.value}}})} /></div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-6 border-t border-[#f6f7fb]"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-10 py-3 rounded-full shadow-lg transition-all hover:bg-[#2242c2]">Save Education Details</button></div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <TimelineItem title={`${formData.education.degree.course} from ${formData.education.degree.college}`} detail={`Graduating in ${formData.education.degree.to_year}`} />
+                  {formData.education.class12.passing_year && <TimelineItem title="Class XII" detail={`Scored ${formData.education.class12.percentage}% in ${formData.education.class12.passing_year}`} />}
+                  {formData.education.class10.passing_year && <TimelineItem title="Class X" detail={`Scored ${formData.education.class10.percentage}% in ${formData.education.class10.passing_year}`} />}
+                </div>
+              )}
+            </SectionCard>
+
+            {/* Skills */}
+            <SectionCard id="key-skills" title="Key Skills" onEdit={() => setEditingSection('skills')} isEditing={editingSection === 'skills' || editingSection === 'all'}>
+               {editingSection === 'skills' || editingSection === 'all' ? (
+                 <div className="space-y-6">
+                    <div className="flex flex-wrap gap-2">{formData.skills.map(s => <span key={s} className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-bold">{s} <button onClick={() => removeSkill(s)}>×</button></span>)}</div>
+                    <div className="flex gap-2"><input type="text" className="flex-1 h-12 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={skillInput} onChange={e => setSkillInput(e.target.value)} /><button onClick={addSkill} className="bg-blue-600 text-white px-6 rounded-xl font-bold">Add</button></div>
+                 </div>
+               ) : (
+                 <div className="flex flex-wrap gap-3">{formData.skills.map(s => <span key={s} className="bg-[#f6f7fb] text-[#111827] px-5 py-2.5 rounded-2xl font-bold border border-[#eff1f6]">{s}</span>)}</div>
+               )}
+            </SectionCard>
+
+            {/* Profile Summary */}
+            <SectionCard id="profile-summary" title="Profile Summary" onEdit={() => setEditingSection('summary')} isEditing={editingSection === 'summary' || editingSection === 'all'}>
+               {editingSection === 'summary' || editingSection === 'all' ? (
+                 <div className="space-y-4"><textarea className="w-full p-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb] min-h-[120px]" value={formData.profile_summary} onChange={e => setFormData({...formData, profile_summary: e.target.value})} /><button onClick={handleSave} className="bg-blue-600 text-white px-8 py-2 rounded-full font-bold">Save</button></div>
+               ) : (
+                 <p className="text-[#4b5563] leading-relaxed font-medium">{formData.profile_summary || "No summary added."}</p>
+               )}
+            </SectionCard>
+
+            {/* Internships */}
+            <SectionCard id="internships" title="Internships" hasAdd={true} onAdd={addInternship} onEdit={() => setEditingSection('internships')} isEditing={editingSection === 'internships' || editingSection === 'all'}>
+              {editingSection === 'internships' || editingSection === 'all' ? (
+                <div className="space-y-6">
+                  {formData.internships.map((it, i) => (
+                    <div key={i} className="p-6 border border-[#eff1f6] rounded-[24px] bg-white shadow-sm relative">
+                      <button onClick={() => setFormData(prev => ({...prev, internships: prev.internships.filter((_, idx) => idx !== i)}))} className="absolute top-4 right-4 text-red-500 font-bold">×</button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Company</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={it.company} onChange={e => updateInternship(i, 'company', e.target.value)} /></div>
+                        <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Project Name</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={it.project} onChange={e => updateInternship(i, 'project', e.target.value)} /></div>
+                        <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[13px] font-bold text-[#7c829c]">Description</label><textarea className="p-4 border rounded-xl font-semibold min-h-[100px]" value={it.description} onChange={e => updateInternship(i, 'description', e.target.value)} /></div>
                       </div>
-                      <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Percentage</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="e.g. 95" value={formData.education.class12.percentage} onChange={(e) => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, percentage: e.target.value}}})} /></div>
-                      <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Passing year</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="YYYY" value={formData.education.class12.passing_year} onChange={(e) => setFormData({...formData, education: {...formData.education, class12: {...formData.education.class12, passing_year: e.target.value}}})} /></div>
                     </div>
-                    <button onClick={handleSave} className="self-end bg-[#2f55e4] hover:bg-[#2242c2] text-white font-bold px-8 py-2.5 rounded-full transition-all text-[14px]">Save</button>
-                  </div>
-                )}
-              </div>
+                  ))}
+                  <div className="flex justify-end"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-10 py-3 rounded-full shadow-md">Save Internships</button></div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {formData.internships.length > 0 ? formData.internships.map((it, i) => (
+                    <TimelineItem key={i} title={it.company} subtitle={it.project} description={it.description} />
+                  )) : <p className="text-[#7c829c] italic">No internships listed.</p>}
+                </div>
+              )}
+            </SectionCard>
 
-              {/* Class X */}
-              <div className="border border-[#eff1f6] rounded-2xl overflow-hidden bg-white shadow-sm">
-                <button 
-                  onClick={() => setExpandedSection(expandedSection === "Class X" ? null : "Class X")}
-                  className="w-full px-6 py-4 flex items-center justify-between bg-[#f6f7fb] hover:bg-[#eff1f6] transition-all border-none cursor-pointer"
-                >
-                  <h4 className="text-[17px] font-bold text-[#111827]">Class X</h4>
-                  <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "Class X" ? "rotate-180" : ""}`}>▼</span>
-                </button>
-                {expandedSection === "Class X" && (
-                  <div className="p-6 flex flex-col gap-8 animate-fadeIn">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Examination board</label>
-                        <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" value={formData.education.class10.board} onChange={(e) => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, board: e.target.value}}})}><option value="">Select Board Name</option><option value="CBSE">CBSE</option><option value="State Board">State Board</option></select>
+            {/* Projects */}
+            <SectionCard id="projects" title="Projects" hasAdd={true} onAdd={addProject} onEdit={() => setEditingSection('projects')} isEditing={editingSection === 'projects' || editingSection === 'all'}>
+              {editingSection === 'projects' || editingSection === 'all' ? (
+                <div className="space-y-6">
+                  {formData.projects.map((p, i) => (
+                    <div key={i} className="p-6 border border-[#eff1f6] rounded-[24px] bg-white shadow-sm relative">
+                      <button onClick={() => setFormData(prev => ({...prev, projects: prev.projects.filter((_, idx) => idx !== i)}))} className="absolute top-4 right-4 text-red-500 font-bold hover:bg-red-50 p-2 rounded-full transition-colors">×</button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Project Title</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={p.name} onChange={e => updateProject(i, 'name', e.target.value)} /></div>
+                        <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">URL</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={p.url} onChange={e => updateProject(i, 'url', e.target.value)} /></div>
+                        <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[13px] font-bold text-[#7c829c]">Description</label><textarea className="p-4 border rounded-xl font-semibold min-h-[100px]" value={p.description} onChange={e => updateProject(i, 'description', e.target.value)} /></div>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[14px] font-bold text-[#4b5563]">Medium of study</label>
-                        <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" value={formData.education.class10.medium} onChange={(e) => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, medium: e.target.value}}})}><option value="">Select Medium</option><option value="English">English</option><option value="Hindi">Hindi</option></select>
+                    </div>
+                  ))}
+                  <div className="flex justify-end"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-10 py-3 rounded-full transition-all shadow-md">Save Projects</button></div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {formData.projects.length > 0 ? formData.projects.map((p, i) => (
+                    <TimelineItem key={i} title={p.name} detail={p.url ? "Link Available" : "Self Project"} description={p.description} />
+                  )) : <p className="text-[#7c829c] italic">No projects showcased yet.</p>}
+                </div>
+              )}
+            </SectionCard>
+
+            {/* Accomplishments */}
+            <SectionCard id="accomplishments" title="Accomplishments" hasAdd={true} onAdd={addCertification} onEdit={() => setEditingSection('certs')} isEditing={editingSection === 'certs' || editingSection === 'all'}>
+               {editingSection === 'certs' || editingSection === 'all' ? (
+                 <div className="space-y-6">
+                    {formData.certifications.map((c, i) => (
+                      <div key={i} className="p-6 border border-[#eff1f6] rounded-[24px] bg-white shadow-sm relative">
+                        <button onClick={() => setFormData(prev => ({...prev, certifications: prev.certifications.filter((_, idx) => idx !== i)}))} className="absolute top-4 right-4 text-red-500 font-bold">×</button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[13px] font-bold text-[#7c829c]">Certification Name</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={c.name} onChange={e => updateCertification(i, 'name', e.target.value)} /></div>
+                          <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">ID</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={c.id} onChange={e => updateCertification(i, 'id', e.target.value)} /></div>
+                          <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">URL</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={c.url} onChange={e => updateCertification(i, 'url', e.target.value)} /></div>
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Percentage</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="e.g. 95" value={formData.education.class10.percentage} onChange={(e) => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, percentage: e.target.value}}})} /></div>
-                      <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Passing year</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="YYYY" value={formData.education.class10.passing_year} onChange={(e) => setFormData({...formData, education: {...formData.education, class10: {...formData.education.class10, passing_year: e.target.value}}})} /></div>
-                    </div>
-                    <button onClick={handleSave} className="self-end bg-[#2f55e4] hover:bg-[#2242c2] text-white font-bold px-8 py-2.5 rounded-full transition-all text-[14px]">Save</button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </SectionCard>
-
-          {/* 4. Key Skills */}
-          <SectionCard id="key-skills" title="Key skills">
-            <button onClick={() => setExpandedSection(expandedSection === "skills" ? null : "skills")} className="w-full flex items-center justify-between mb-4 border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Recruiters look for candidates with specific keyskills. Add them here to appear in searches.</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "skills" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "skills" && (
-              <div className="flex flex-col gap-4 animate-fadeIn">
-                <input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] transition-all" placeholder="Enter your key skills" />
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 5. Languages */}
-          <SectionCard id="languages" title="Languages known">
-            <button onClick={() => setExpandedSection(expandedSection === "languages" ? null : "languages")} className="w-full flex items-center justify-between mb-4 border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Strengthen your resume by letting recruiters know you can communicate in multiple languages</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "languages" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "languages" && (
-              <div className="flex flex-col gap-6 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Language</label><select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Select Language</option><option>English</option><option>Hindi</option></select></div>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 6. Internships */}
-          <SectionCard id="internships" title="Internships">
-            <button onClick={() => setExpandedSection(expandedSection === "internships" ? null : "internships")} className="w-full flex items-center justify-between mb-4 border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Show your professional learnings</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "internships" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "internships" && (
-              <div className="flex flex-col gap-8 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Company name</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter the name of the company" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Internship duration</label>
-                    <div className="grid grid-cols-2 md:grid-cols-5 items-center gap-2">
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                      <span className="text-center font-bold text-[#7c829c]">to</span>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Project name</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter the name of the project" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Describe what you did at internship</label><textarea className="p-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none min-h-[120px]" placeholder="Enter responsibilities..."></textarea><div className="text-right text-[12px] text-[#7c829c]">0/1000</div></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Key skills (optional)</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter skills used" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Project URL (optional)</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter project link" /></div>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 7. Projects */}
-          <SectionCard id="projects" title="Projects">
-            <button onClick={() => setExpandedSection(expandedSection === "projects" ? null : "projects")} className="w-full flex items-center justify-between mb-4 border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Showcase your talent with the best projects you have worked on during college and work</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "projects" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "projects" && (
-              <div className="flex flex-col gap-8 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Project name</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter the name of the project" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Project duration</label>
-                    <div className="grid grid-cols-2 md:grid-cols-5 items-center gap-2">
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                      <span className="text-center font-bold text-[#7c829c]">to</span>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Describe what the project was about</label><textarea className="p-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none min-h-[120px]" placeholder="Enter project description..."></textarea><div className="text-right text-[12px] text-[#7c829c]">0/1000</div></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Key skills used in the project (optional)</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter keyskills" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Project URL (optional)</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter project link" /></div>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 8. Profile Summary */}
-          <SectionCard id="profile-summary" title="Profile summary">
-            <button onClick={() => setExpandedSection(expandedSection === "summary" ? null : "summary")} className="w-full flex items-center justify-between mb-4 border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Highlights of your career and education, interests, and what kind of career you are looking for.</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "summary" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "summary" && (
-              <div className="flex flex-col gap-4 animate-fadeIn">
-                <textarea className="p-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none min-h-[150px]" placeholder="Type here..."></textarea>
-                <div className="flex items-center justify-between text-[12px] text-[#7c829c]"><span>Min 50 characters</span><span>0/1000</span></div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 9. Accomplishments */}
-          <SectionCard id="accomplishments" title="Accomplishments">
-            <button onClick={() => setExpandedSection(expandedSection === "accomplishments" ? null : "accomplishments")} className="w-full flex items-center justify-between border-none bg-transparent cursor-pointer text-left group">
-              <div className="flex flex-col"><h5 className="text-[16px] font-bold text-[#111827]">Certification</h5><p className="text-[14px] text-[#7c829c]">Add details of your certification. You can add up to 10.</p></div>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "accomplishments" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "accomplishments" && (
-              <div className="flex flex-col gap-8 mt-6 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Certification name</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter certification name" /></div>
-                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Certification completion ID</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter completion ID" /></div>
-                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Certification URL</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter URL" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Certification validity</label>
-                    <div className="grid grid-cols-2 md:grid-cols-5 items-center gap-2">
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                      <span className="text-center font-bold text-[#7c829c]">to</span>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                    </div>
-                  </div>
-                  <label className="flex items-center gap-2 cursor-pointer md:col-span-2"><input type="checkbox" className="w-4 h-4 text-[#2f55e4]" /><span className="text-[14px] font-medium text-[#4b5563]">This certification does not expire</span></label>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 10. Employment Details */}
-          <SectionCard id="employment" title="Employment details">
-            <button onClick={() => setExpandedSection(expandedSection === "employment" ? null : "employment")} className="w-full flex items-center justify-between border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Adding roles & companies you have worked with help employers understand your background.</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "employment" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "employment" && (
-              <div className="flex flex-col gap-8 mt-6 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Total work experience</label><div className="flex gap-4"><select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] flex-1 outline-none"><option>Years</option></select><select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] flex-1 outline-none"><option>Months</option></select></div></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Company name</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter the name of the company" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Designation</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Enter designation" /></div>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Working since</label>
-                    <div className="grid grid-cols-2 md:grid-cols-5 items-center gap-2">
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                      <span className="text-center font-bold text-[#7c829c]">to</span>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Month</option>{MONTHS.map(m => <option key={m}>{m}</option>)}</select>
-                      <select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Year</option>{YEARS.map(y => <option key={y}>{y}</option>)}</select>
-                    </div>
-                  </div>
-                  <label className="flex items-center gap-2 cursor-pointer md:col-span-2"><input type="checkbox" className="w-4 h-4 text-[#2f55e4]" /><span className="text-[14px] font-medium text-[#4b5563]">I currently work here</span></label>
-                  <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[14px] font-bold text-[#4b5563]">Describe what you did at work</label><textarea className="p-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none min-h-[120px]" placeholder="Enter responsibilities..."></textarea><div className="text-right text-[12px] text-[#7c829c]">0/4000</div></div>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 11. Competitive Exams */}
-          <SectionCard id="exams" title="Competitive exams">
-            <button onClick={() => setExpandedSection(expandedSection === "exams" ? null : "exams")} className="w-full flex items-center justify-between border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Add details of competitive exams you have taken to enhance your profile.</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "exams" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "exams" && (
-              <div className="flex flex-col gap-6 mt-6 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Competitive exam</label><select className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none"><option>Select Exam</option><option>TOEFL</option><option>GMAT</option><option>GRE</option><option>SAT</option><option>IELTS</option></select></div>
-                  <div className="flex flex-col gap-2"><label className="text-[14px] font-bold text-[#4b5563]">Score</label><input type="text" className="h-12 px-4 border border-[#eff1f6] rounded-xl bg-[#f6f7fb] outline-none" placeholder="Score" /></div>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
-
-          {/* 12. Academic Achievements */}
-          <SectionCard id="academic" title="Academic achievements">
-            <button onClick={() => setExpandedSection(expandedSection === "academic" ? null : "academic")} className="w-full flex items-center justify-between border-none bg-transparent cursor-pointer text-left group">
-              <p className="text-[14px] text-[#7c829c] group-hover:text-[#111827] transition-colors">Adding your achievements to help recruiters know your value as a potential candidate.</p>
-              <span className={`text-[#2f55e4] transition-transform duration-300 ${expandedSection === "academic" ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {expandedSection === "academic" && (
-              <div className="flex flex-col gap-6 mt-6 animate-fadeIn">
-                <div className="flex flex-col gap-4">
-                  <h6 className="text-[14px] font-bold text-[#111827]">Achievements</h6>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {["College topper", "Department topper", "Top 3 in class", "Top 10 in class", "Gold medalist", "Received scholarship", "All rounder", "Other"].map(a => (
-                      <label key={a} className="flex items-center gap-2 cursor-pointer"><input type="checkbox" className="w-4 h-4 text-[#2f55e4]" /><span className="text-[13px] font-medium">{a}</span></label>
                     ))}
-                  </div>
-                </div>
-                <button onClick={handleSave} className="self-end bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full text-[14px] hover:bg-[#2242c2] transition-colors">Save</button>
-              </div>
-            )}
-          </SectionCard>
+                    <div className="flex justify-end"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-10 py-3 rounded-full shadow-md">Save Accomplishments</button></div>
+                 </div>
+               ) : (
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {formData.certifications.length > 0 ? formData.certifications.map((c, i) => (
+                      <div key={i} className="p-4 bg-[#f6f7fb] rounded-2xl border border-[#eff1f6] flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500 text-xl">🏆</div>
+                        <div>
+                          <p className="font-black text-[#111827]">{c.name}</p>
+                          <p className="text-[12px] font-bold text-[#7c829c] uppercase tracking-wider">{c.id || "Verified Skill"}</p>
+                        </div>
+                      </div>
+                    )) : <p className="text-[#7c829c] italic">No certifications added yet.</p>}
+                 </div>
+               )}
+            </SectionCard>
 
-          {/* 13. Resume */}
-          <SectionCard id="resume" title="Resume">
-            <p className="text-[14px] text-[#7c829c] mb-6 leading-relaxed">Your resume is the first impression you make on potential employers. Craft it carefully.</p>
-            <div className="border-2 border-dashed border-[#eff1f6] rounded-[24px] p-10 flex flex-col items-center justify-center gap-4 bg-[#f6f7fb] hover:bg-white hover:border-[#2f55e4] transition-all cursor-pointer group">
-              <div className="w-14 h-14 rounded-full bg-[#e8f0fb] flex items-center justify-center text-[#2f55e4] text-[24px] group-hover:scale-110 transition-transform">⬆️</div>
-              <div className="text-center">
-                <p className="text-[16px] font-bold text-[#111827]">Upload resume</p>
-                <p className="text-[12px] text-[#7c829c]">Supported formats: doc, docx, rtf, pdf, up to 2MB</p>
+            {/* Employment */}
+            <SectionCard id="employment" title="Employment" hasAdd={true} onAdd={addEmployment} onEdit={() => setEditingSection('employment')} isEditing={editingSection === 'employment' || editingSection === 'all'}>
+               {editingSection === 'employment' || editingSection === 'all' ? (
+                 <div className="space-y-6">
+                    {formData.employments.map((e, i) => (
+                      <div key={i} className="p-6 border border-[#eff1f6] rounded-[24px] bg-white shadow-sm relative">
+                        <button onClick={() => setFormData(prev => ({...prev, employments: prev.employments.filter((_, idx) => idx !== i)}))} className="absolute top-4 right-4 text-red-500 font-bold">×</button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Company</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={e.company} onChange={v => updateEmployment(i, 'company', v.target.value)} /></div>
+                          <div className="flex flex-col gap-2"><label className="text-[13px] font-bold text-[#7c829c]">Designation</label><input type="text" className="h-11 px-4 border rounded-xl font-semibold" value={e.designation} onChange={v => updateEmployment(i, 'designation', v.target.value)} /></div>
+                          <div className="flex flex-col gap-2 md:col-span-2"><label className="text-[13px] font-bold text-[#7c829c]">Role Summary</label><textarea className="p-4 border rounded-xl font-semibold" value={e.description} onChange={v => updateEmployment(i, 'description', v.target.value)} /></div>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="flex justify-end"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-10 py-3 rounded-full shadow-md">Save Employment</button></div>
+                 </div>
+               ) : (
+                 <div className="space-y-6">
+                    {formData.employments.length > 0 ? formData.employments.map((e, i) => (
+                      <TimelineItem key={i} title={e.company} subtitle={e.designation} description={e.description} detail={`${e.total_years || 0} Years`} />
+                    )) : <p className="text-[#7c829c] italic">No work experience listed.</p>}
+                 </div>
+               )}
+            </SectionCard>
+
+            {/* Resume */}
+            <SectionCard id="resume" title="Resume">
+              <div className="space-y-6">
+                <p className="text-[15px] font-bold text-[#7c829c] leading-relaxed max-w-2xl">
+                  Your resume is the first impression you make on potential employers. Craft it carefully to secure your desired job or internship.
+                </p>
+                
+                {formData.resume_url ? (
+                  <div className="bg-[#f6f7fb] border border-[#eff1f6] rounded-[24px] p-6 flex items-center justify-between group hover:border-[#2f55e4] transition-all">
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 rounded-2xl bg-white border border-[#eff1f6] flex items-center justify-center text-2xl shadow-sm">📄</div>
+                      <div>
+                        <p className="font-black text-[#111827] text-[16px] group-hover:text-[#2f55e4] transition-colors">
+                          {formData.resume_url.split('/').pop() || "Ragul_S.pdf"}
+                        </p>
+                        <p className="text-[13px] font-bold text-[#7c829c] mt-0.5">Uploaded on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => document.getElementById('resume-input')?.click()}
+                      className="bg-white border border-[#eff1f6] hover:border-[#2f55e4] hover:text-[#2f55e4] text-[#4b5563] px-6 py-2.5 rounded-xl text-[14px] font-black transition-all shadow-sm"
+                    >
+                      Update resume
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-6 p-10 border-2 border-dashed border-[#eff1f6] rounded-[32px] bg-[#f6f7fb] hover:border-[#2f55e4]/50 transition-all cursor-pointer" onClick={() => document.getElementById('resume-input')?.click()}>
+                    <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-3xl">📤</div>
+                    <div className="text-center">
+                      <p className="text-lg font-black text-[#111827]">Upload your resume</p>
+                      <p className="text-[14px] font-bold text-[#7c829c] mt-1">Get noticed by top recruiters today</p>
+                    </div>
+                  </div>
+                )}
+                
+                <p className="text-[12px] font-bold text-[#7c829c] text-center sm:text-left">
+                  Supported formats: doc, docx, rtf, pdf, up to 2MB
+                </p>
+                <input type="file" id="resume-input" className="hidden" accept=".pdf,.doc,.docx,.rtf" onChange={e => handleFileUpload(e, 'assessment')} />
               </div>
-            </div>
-          </SectionCard>
-          
+            </SectionCard>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 }
 
-// ── Helpers ──
-
-function SectionCard({ id, title, children, hasAdd }: { id: string, title: string, children: React.ReactNode, hasAdd?: boolean }) {
+function SectionCard({ id, title, children, hasAdd, onAdd, onEdit, isEditing }: any) {
   return (
-    <div id={id} className="bg-white border border-[#eff1f6] rounded-[32px] p-6 md:p-10 shadow-[0_4px_20px_rgba(47,85,228,0.04)] scroll-mt-24">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b border-[#eff1f6] pb-4">
-        <h2 className="text-[24px] font-bold text-[#111827] tracking-tight">{title}</h2>
-        <div className="flex gap-3">
-          {hasAdd && <button className="text-[#2f55e4] bg-[#f6f7fb] px-4 py-2 rounded-full font-bold text-[14px] hover:bg-[#e8f0fb] transition-colors">+ Add</button>}
-          <button className="text-[#7c829c] bg-[#f6f7fb] px-4 py-2 rounded-full hover:text-[#111827] font-bold text-[14px] transition-colors">✎ Edit</button>
-        </div>
+    <div id={id} className={`bg-white border ${isEditing ? 'border-blue-600 ring-4 ring-blue-50' : 'border-[#eff1f6]'} rounded-[32px] p-8 shadow-sm transition-all`}>
+      <div className="flex items-center justify-between mb-8 border-b pb-4">
+        <h2 className="text-2xl font-black text-[#111827] flex items-center gap-3">{title} {!isEditing && onEdit && <button onClick={onEdit} className="text-gray-400 hover:text-blue-600 transition-colors">✎</button>}</h2>
+        {hasAdd && <button onClick={onAdd} className="text-blue-600 bg-blue-50 px-4 py-2 rounded-full font-bold">+ Add</button>}
       </div>
       {children}
     </div>
   );
 }
 
-function PreferenceItem({ label, value }: { label: string, value: string }) {
+function PreferenceItem({ label, value }: any) {
   return (
     <div className="bg-[#f6f7fb] p-5 rounded-2xl border border-[#eff1f6]">
       <p className="text-[14px] font-bold text-[#7c829c] mb-1">{label}</p>
-      <p className="text-[16px] font-bold text-[#111827]">{value}</p>
+      <p className="text-[16px] font-black text-[#111827]">{value || "Not set"}</p>
     </div>
   );
 }
 
-function TimelineItem({ title, subtitle, detail, extra, description }: { title: string, subtitle?: string, detail?: string, extra?: string, description?: string }) {
+function TimelineItem({ title, subtitle, detail, description }: any) {
   return (
-    <div className="relative pl-8 py-2 border-l-[3px] border-[#eff1f6] last:border-transparent pb-8 last:pb-2">
-      <div className="absolute w-4 h-4 bg-[#2f55e4] rounded-full -left-[9.5px] top-[14px] border-4 border-white shadow-sm"></div>
-      <h3 className="font-extrabold text-[#111827] text-[18px] mb-1.5">{title}</h3>
-      {subtitle && <p className="text-[16px] font-bold text-[#4b5563] mb-1">{subtitle}</p>}
-      {detail && <p className="text-[14px] font-bold text-[#7c829c] mb-3 bg-[#f6f7fb] inline-block px-3 py-1 rounded-lg border border-[#eff1f6]">{detail}</p>}
-      {extra && <p className="text-[15px] font-medium italic text-[#4b5563] mt-2">{extra}</p>}
-      {description && <p className="text-[15px] font-medium text-[#4b5563] mt-3 leading-[1.8]">{description}</p>}
+    <div className="relative pl-8 py-2 border-l-2 border-[#eff1f6] last:border-transparent pb-8 last:pb-0">
+      <div className="absolute w-4 h-4 bg-blue-600 rounded-full -left-[9px] top-[14px] border-4 border-white shadow-sm"></div>
+      <h3 className="font-black text-[#111827] text-lg mb-1">{title}</h3>
+      {subtitle && <p className="font-bold text-[#4b5563] mb-1">{subtitle}</p>}
+      {detail && <p className="text-sm font-bold text-[#7c829c] bg-[#f6f7fb] inline-block px-3 py-1 rounded-lg border border-[#eff1f6] mb-3">{detail}</p>}
+      {description && <p className="text-[#4b5563] mt-2 leading-relaxed font-medium">{description}</p>}
     </div>
   );
 }

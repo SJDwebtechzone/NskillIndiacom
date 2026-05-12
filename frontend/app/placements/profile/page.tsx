@@ -27,12 +27,10 @@ function getInitials(name: string) {
 export default function PlacementPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
-  const [showDetail, setShowDetail] = useState(false);
   const router = useRouter();
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+  const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const [user, setUser] = useState<{ full_name?: string; email_id?: string; course_name?: string; photo_url?: string; college_name?: string } | null>(null);
 
   useEffect(() => {
@@ -41,7 +39,6 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
       .then((data: Job[]) => {
         setJobs(data || []);
         setFilteredJobs(data || []);
-        if (data && data.length > 0) setSelectedJob(data[0]);
       })
       .catch((err) => console.error("Error fetching jobs:", err));
 
@@ -57,185 +54,219 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
     const token = localStorage.getItem("token");
     if (token) {
       fetch(`${API}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => {
-          if (res.status === 404) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            return null;
-          }
-          return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
           if (data && data.user) {
             setUser(data.user);
-            // Sync back to localStorage for consistency
             localStorage.setItem("user", JSON.stringify(data.user));
           }
         })
         .catch(err => console.error(err));
-    } else if (!storedUser) {
-      // Mock user if not logged in and no stored user
-      setUser({ full_name: "Student Profile", email_id: "student@example.com", course_name: "HVAC Training" });
     }
-  }, []);
+  }, [API]);
 
   const handleSearch = () => {
     const q = search.toLowerCase();
     const loc = location.toLowerCase();
-    
     const results = jobs.filter((job) => {
       const matchSearch = q ? (job.title.toLowerCase().includes(q) || job.company.toLowerCase().includes(q) || job.description.toLowerCase().includes(q)) : true;
       const matchLoc = loc ? job.location.toLowerCase().includes(loc) : true;
       return matchSearch && matchLoc;
     });
-    
     setFilteredJobs(results);
-    setSelectedJob(results.length > 0 ? results[0] : null);
+  };
+
+  const getPhotoUrl = (url: string | undefined) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return `${API}${cleanUrl}`;
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8f9fc] p-4 md:p-6 gap-6 font-[Segoe_UI,sans-serif]">
+    <div className="flex flex-col min-h-screen bg-[#f8fafc] pb-20 font-[Segoe_UI,sans-serif]">
+      
+      {/* ── SEARCH HEADER ── */}
+      <div className="bg-white border-b border-[#eff1f6] pt-12 pb-24 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#2f55e4]/5 rounded-full blur-3xl -mr-40 -mt-40"></div>
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-orange-500/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 md:px-10 relative z-10">
+          <div className="mb-10 text-center sm:text-left">
+            <h1 className="text-[32px] md:text-[48px] font-black text-[#111827] tracking-tight mb-4">Find your dream career</h1>
+            <p className="text-[16px] md:text-[18px] font-bold text-[#7c829c] max-w-2xl">Connect with top employers and explore opportunities tailored to your skills and preferences.</p>
+          </div>
 
-      {/* ── SEARCH BAR ── */}
-      <div className="bg-white rounded-[24px] md:rounded-[32px] border border-[#eff1f6] shadow-[0_8px_30px_rgba(47,85,228,0.06)] px-3 py-3 flex flex-col sm:flex-row items-center gap-4 sm:gap-0 z-20 sticky top-6 max-w-7xl mx-auto w-full mt-2">
-        {/* Keyword input */}
-        <div className="flex items-center gap-3 flex-1 px-4 py-1 w-full">
-          <span className="text-xl text-[#7c829c]">🔍</span>
-          <input
-            className="border-none outline-none text-[16px] font-semibold text-[#111827] bg-transparent w-full font-[inherit] placeholder:text-[#a0a5ba] placeholder:font-medium"
-            placeholder="Job title, keywords, or company"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
+          <div className="bg-white rounded-[32px] border border-[#eff1f6] shadow-2xl shadow-[#2f55e4]/10 p-3 flex flex-col sm:flex-row items-center gap-3 max-w-4xl transition-all hover:shadow-[#2f55e4]/20">
+            <div className="flex items-center gap-4 flex-1 px-5 py-2 w-full group">
+              <span className="text-[20px] transition-transform group-focus-within:scale-110">🔍</span>
+              <input
+                className="border-none outline-none text-[16px] font-black text-[#111827] bg-transparent w-full placeholder:text-[#a0a5ba] placeholder:font-bold"
+                placeholder="Job title, keywords, or company"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+            </div>
+            <div className="hidden sm:block w-px h-10 bg-[#eff1f6]" />
+            <div className="flex items-center gap-4 flex-1 sm:max-w-[280px] px-5 py-2 w-full group">
+              <span className="text-[20px] transition-transform group-focus-within:scale-110">📍</span>
+              <input
+                className="border-none outline-none text-[16px] font-black text-[#111827] bg-transparent w-full placeholder:text-[#a0a5ba] placeholder:font-bold"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+            </div>
+            <button
+              className="bg-[#2f55e4] hover:bg-[#2242c2] text-white rounded-2xl px-10 py-4 text-[16px] font-black cursor-pointer w-full sm:w-auto transition-all shadow-lg hover:shadow-[#2f55e4]/30 active:scale-95"
+              onClick={handleSearch}
+            >
+              Find jobs
+            </button>
+          </div>
         </div>
-
-        {/* Divider */}
-        <div className="hidden sm:block w-px h-10 bg-[#eff1f6] mx-2" />
-
-        {/* Location input */}
-        <div className="flex items-center gap-3 flex-1 sm:max-w-[280px] px-4 py-1 w-full">
-          <span className="text-xl text-[#7c829c]">📍</span>
-          <input
-            className="border-none outline-none text-[16px] font-semibold text-[#111827] bg-transparent w-full font-[inherit] placeholder:text-[#a0a5ba] placeholder:font-medium"
-            placeholder="Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
-        </div>
-
-        {/* Button */}
-        <button
-          className="bg-[#2f55e4] hover:bg-[#2242c2] text-white border-none rounded-full px-8 py-3.5 text-[16px] font-bold cursor-pointer whitespace-nowrap font-[inherit] ml-0 sm:ml-4 w-full sm:w-auto transition-colors shadow-sm"
-          onClick={handleSearch}
-        >
-          Find jobs
-        </button>
       </div>
 
       {/* ── CONTENT ROW ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-6 min-h-[480px] mt-2 max-w-7xl mx-auto w-full">
+      <div className="max-w-7xl mx-auto px-4 md:px-10 mt-[-40px] relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-10">
 
-        {/* ── STUDENT PROFILE (LEFT) ── */}
-        <div className="hidden lg:flex flex-col gap-3">
-          <div className="bg-white border border-[#d4d2cc] rounded-lg overflow-hidden flex flex-col sticky top-24 shadow-sm">
-            <div className="h-20 bg-gradient-to-r from-[#a0b4b7] to-[#809ba0]" />
-            <div className="px-5 pb-5 relative flex flex-col items-center text-center">
-              <div className="w-20 h-20 rounded-full bg-white p-1 -mt-10 mb-3 border border-[#ebebeb] shadow-sm">
-                {user?.photo_url ? (
-                  <img src={`${API}/${user.photo_url}`} alt="Profile" className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-[#2557a7]">
-                    {user?.full_name ? getInitials(user.full_name) : "RS"}
-                  </div>
-                )}
+          {/* ── STUDENT PROFILE (LEFT) ── */}
+          <div className="hidden lg:flex flex-col gap-6">
+            <div className="bg-white border border-[#eff1f6] rounded-[40px] overflow-hidden flex flex-col sticky top-24 shadow-2xl shadow-[#eff1f6]">
+              <div className="h-28 bg-gradient-to-br from-[#2f55e4] to-[#7c9bff] relative">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
               </div>
-              <h2 
-                className="text-[19px] font-bold text-[#1a1a1a] leading-tight hover:text-[#2f55e4] hover:underline cursor-pointer transition-colors"
-                onClick={() => router.push('/placements/profile/edit')}
-              >
-                {user?.full_name || "Guest Student"}
-              </h2>
-              <p className="text-[14px] font-semibold text-[#333] mt-2 leading-snug px-1">
-                {user?.course_name || "Update your degree/course"}
-              </p>
-              <p className="text-[13px] text-[#555] mt-1.5 leading-snug">
-                {user?.college_name ? `@ ${user.college_name}` : "Update your college name"}
-              </p>
-            </div>
-            <div 
-              className="border-t border-[#ebebeb] px-5 py-4 cursor-pointer hover:bg-[#f6f7fb] transition-colors flex items-center justify-between group"
-              onClick={() => router.push('/placements/profile/edit')}
-            >
-              <span className="text-[14px] font-bold text-[#2f55e4] group-hover:underline">Complete profile</span>
-              <span className="text-[#555] text-[18px] leading-none transition-transform group-hover:translate-x-1">→</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── JOB LIST (CENTER/RIGHT) ── */}
-        <div className="flex flex-col">
-          <div className="px-1 py-2.5">
-            <p className="text-[22px] font-bold text-[#1a1a1a]">Recommended Jobs</p>
-            <p className="text-[13px] font-medium text-[#767676] mt-1">
-              {filteredJobs.length === 0
-                ? "No results"
-                : `Showing ${filteredJobs.length} result${filteredJobs.length > 1 ? "s" : ""}`}
-            </p>
-          </div>
-
-          <div className="flex flex-col pr-1" style={{ scrollbarWidth: 'thin' }}>
-            {filteredJobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-[300px] gap-2 bg-white rounded-lg border border-[#d4d2cc]">
-                <div className="text-[32px] opacity-20">🔍</div>
-                <p className="text-[14px] font-semibold text-[#767676]">No jobs found</p>
-                <p className="text-[13px] text-[#aaa]">Try adjusting your search criteria</p>
-              </div>
-            ) : (
-              filteredJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className={`bg-white rounded-3xl p-5 md:p-6 lg:p-7 cursor-pointer mb-5 relative transition-all duration-200 border border-[#eff1f6] hover:border-[#dce0ec] hover:shadow-xl hover:shadow-[#eff1f6]`}
-                  onClick={() => router.push(`/placements/job/${job.id}`)}
+              <div className="px-8 pb-8 relative flex flex-col items-center text-center">
+                <div className="w-32 h-32 rounded-[40px] bg-white p-2 -mt-16 mb-6 shadow-2xl relative border border-[#eff1f6]">
+                  {user?.photo_url ? (
+                    <img src={getPhotoUrl(user.photo_url) || ""} alt="Profile" className="w-full h-full rounded-[32px] object-cover" />
+                  ) : (
+                    <div className="w-full h-full rounded-[32px] bg-[#e8f0fb] flex items-center justify-center text-3xl font-black text-[#2f55e4]">
+                      {user?.full_name ? getInitials(user.full_name) : "RS"}
+                    </div>
+                  )}
+                  <div className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-green-500 border-4 border-white flex items-center justify-center text-white text-[12px] shadow-sm">✔</div>
+                </div>
+                
+                <h2 
+                  className="text-[22px] font-black text-[#111827] leading-tight hover:text-[#2f55e4] transition-colors cursor-pointer"
+                  onClick={() => router.push('/placements/profile/edit')}
                 >
-                  <h3 className="text-[22px] font-bold text-[#111827] leading-tight mb-1.5 tracking-tight">{job.title}</h3>
-                  <p className="text-[15px] font-medium text-[#7c829c] mb-6">{job.type || 'Full Time'} / {job.location}</p>
-
-                  <div className="mb-5">
-                    <p className="text-[14px] font-medium text-[#7c829c] mb-1">Avg. Salary</p>
-                    <p className="text-[17px] font-medium text-[#111827]">{job.salary || "Not disclosed"}</p>
+                  {user?.full_name || "Guest Student"}
+                </h2>
+                
+                <div className="mt-4 space-y-2 w-full text-left">
+                  <div className="bg-[#f6f7fb] p-4 rounded-2xl border border-[#eff1f6]">
+                    <p className="text-[11px] font-black text-[#7c829c] uppercase tracking-wider mb-1">Current Course</p>
+                    <p className="text-[14px] font-bold text-[#111827] leading-snug">{user?.course_name || "Update your degree"}</p>
                   </div>
-
-                  <div className="mb-6">
-                    <p className="text-[14px] font-medium text-[#7c829c] mb-1">Key Skills</p>
-                    <p className="text-[16px] font-medium text-[#111827] leading-relaxed line-clamp-2 pr-4">
-                      {job.description && job.description.length > 10 ? job.description.replace(/\n/g, ', ').substring(0, 150) + "..." : "User Empathy, Research, Market Research, Communication, Collaboration, Analytical Skills"}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-4 pt-2 border-t border-transparent">
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); router.push(`/placements/apply/${job.id}`); }}
-                      className="bg-[#2f55e4] hover:bg-[#2242c2] transition-colors text-white font-bold text-[15px] px-8 py-3 rounded-full inline-flex items-center justify-center shadow-sm"
-                    >
-                      Apply Now
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); router.push(`/placements/job/${job.id}`); }}
-                      className="text-[#7c829c] hover:text-[#2f55e4] font-bold text-[14px] flex items-center gap-1.5 transition-colors group"
-                    >
-                      View details <span className="text-[16px] transition-transform group-hover:translate-x-1">→</span>
-                    </button>
+                  <div className="bg-[#f6f7fb] p-4 rounded-2xl border border-[#eff1f6]">
+                    <p className="text-[11px] font-black text-[#7c829c] uppercase tracking-wider mb-1">University / College</p>
+                    <p className="text-[14px] font-bold text-[#111827] leading-snug">{user?.college_name || "Update college name"}</p>
                   </div>
                 </div>
-              ))
-            )}
+
+                <button 
+                  onClick={() => router.push('/placements/profile/edit')}
+                  className="mt-6 w-full py-4 rounded-2xl bg-[#2f55e4] text-white font-black text-[14px] shadow-lg shadow-[#2f55e4]/20 hover:bg-[#2242c2] transition-all group flex items-center justify-center gap-2"
+                >
+                  Complete profile
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ── JOB LIST (RIGHT) ── */}
+          <div className="flex flex-col">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 px-2">
+              <div>
+                <h2 className="text-[32px] font-black text-[#111827] tracking-tight">Recommended Jobs</h2>
+                <p className="text-[14px] font-bold text-[#7c829c] mt-1 uppercase tracking-[2px]">
+                  {filteredJobs.length === 0 ? "No results found" : `Showing ${filteredJobs.length} active opportunities`}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6">
+              {filteredJobs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-[400px] gap-4 bg-white rounded-[40px] border border-[#eff1f6] shadow-xl shadow-[#eff1f6]">
+                  <div className="w-20 h-20 rounded-full bg-[#f6f7fb] flex items-center justify-center text-3xl opacity-50">🔍</div>
+                  <div className="text-center">
+                    <p className="text-[18px] font-black text-[#111827]">No jobs found</p>
+                    <p className="text-[14px] font-bold text-[#7c829c] mt-1">Try adjusting your search filters or keywords.</p>
+                  </div>
+                </div>
+              ) : (
+                filteredJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="group bg-white rounded-[40px] p-6 md:p-10 transition-all duration-300 border border-[#eff1f6] hover:border-[#2f55e4] hover:shadow-2xl hover:shadow-[#2f55e4]/10 cursor-pointer relative flex flex-col gap-6"
+                    onClick={() => router.push(`/placements/job/${job.id}`)}
+                  >
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                      <div className="flex gap-6">
+                        <div className="w-20 h-20 rounded-[28px] bg-[#f6f7fb] flex items-center justify-center text-[28px] font-black text-[#2f55e4] border border-[#eff1f6] group-hover:bg-[#2f55e4] group-hover:text-white transition-all duration-500 shadow-sm">
+                          {job.company[0]}
+                        </div>
+                        <div>
+                          <h3 className="text-[24px] font-black text-[#111827] group-hover:text-[#2f55e4] transition-colors leading-tight mb-2">{job.title}</h3>
+                          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                            <span className="text-[16px] font-bold text-[#4b5563] flex items-center gap-2">🏢 {job.company}</span>
+                            <span className="text-[16px] font-bold text-[#7c829c] flex items-center gap-2">📍 {job.location}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-3 shrink-0">
+                         <div className="bg-orange-50 text-orange-600 px-5 py-2.5 rounded-2xl text-[15px] font-black border border-orange-100 uppercase tracking-wider">
+                           {job.salary}
+                         </div>
+                         <span className="bg-[#f6f7fb] text-[#4b5563] px-4 py-1.5 rounded-xl text-[13px] font-bold uppercase border border-[#eff1f6]">{job.type || "Full Time"}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <p className="text-[16px] font-medium text-[#4b5563] line-clamp-3 leading-relaxed border-l-4 border-[#eff1f6] pl-6 group-hover:border-[#2f55e4] transition-all">
+                        {job.description}
+                      </p>
+                      
+                      <div>
+                        <p className="text-[12px] font-black text-[#7c829c] uppercase tracking-wider mb-3">Key Skills</p>
+                        <div className="flex flex-wrap gap-2">
+                          {(job.skills ? job.skills.split(/[,|/]+/) : (job.description.split(/[,.]/)[0].split(' ').filter(w => w.length > 3))).slice(0, 6).map((skill, idx) => (
+                            <span key={idx} className="bg-[#e8f0fb] text-[#2f55e4] px-4 py-2 rounded-xl text-[13px] font-black border border-[#d9e2f8] transition-colors group-hover:bg-white group-hover:shadow-md">
+                              {skill.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-[#f6f7fb] gap-4">
+                      <div className="flex items-center gap-3 text-[14px] font-bold text-[#7c829c]">
+                         <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                         Posted 2 days ago • Actively hiring
+                      </div>
+                      <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <button className="flex-1 sm:flex-none px-8 py-4 rounded-2xl text-[15px] font-black text-[#4b5563] hover:bg-[#f6f7fb] transition-all">View details</button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); router.push(`/placements/apply/${job.id}`); }}
+                          className="flex-1 sm:flex-none bg-[#2f55e4] text-white px-10 py-4 rounded-2xl text-[15px] font-black shadow-xl shadow-[#2f55e4]/20 hover:shadow-[#2f55e4]/40 hover:-translate-y-1 transition-all active:translate-y-0"
+                        >
+                          Apply Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   );
 }
-

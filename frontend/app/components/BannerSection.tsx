@@ -62,7 +62,7 @@ export default function BannerSection() {
     }
 
     return (
-        <div className="relative w-full overflow-hidden group bg-gray-50">
+        <div className="relative w-full overflow-hidden group bg-white border-b-[6px] border-[#2f55e4] shadow-sm">
             <div
                 className="flex transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -72,7 +72,7 @@ export default function BannerSection() {
                         <img
                             src={banner.image_url}
                             alt={banner.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-fill"
                             onError={(e) => {
                                 console.error("Image failed to load:", banner.image_url);
                                 (e.target as HTMLImageElement).src = "https://via.placeholder.com/1920x1080?text=Banner+Image+Not+Found";

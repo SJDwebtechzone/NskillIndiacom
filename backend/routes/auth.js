@@ -166,7 +166,8 @@ router.get("/me", async (req, res) => {
 
     const userResult = await pool.query(
       `SELECT u.id, u.name AS full_name, u.email AS email_id, u.phone_number, u.dob AS date_of_birth,
-              sp.gender, sp.location, sp.country, sp.hometown, sp.college_name, sp.degree AS course_name, sp.photo_url
+              sp.gender, sp.location, sp.country, sp.hometown, sp.college_name, sp.degree AS course_name, sp.photo_url, sp.resume_url,
+              sp.internships, sp.projects, sp.employment_history, sp.certifications, sp.preferred_job_type, sp.availability, sp.preferred_location, sp.education_history
        FROM users u
        LEFT JOIN student_profiles sp ON u.id = sp.user_id
        WHERE u.id = $1`,
@@ -195,8 +196,8 @@ router.put("/profile", async (req, res) => {
 
     const { 
       full_name, gender, dob, location, country, hometown, mobile,
-      skills, languages, academic_achievements, profile_summary, photo_url,
-      education 
+      skills, languages, academic_achievements, profile_summary, photo_url, resume_url,
+      education, internships, projects, employments, certifications, preferences
     } = req.body;
 
     // Start a transaction
@@ -216,10 +217,10 @@ router.put("/profile", async (req, res) => {
     await pool.query(
       `INSERT INTO student_profiles (
          user_id, gender, location, country, hometown, date_of_birth, phone_number,
-         skills, languages, academic_achievements, profile_summary, photo_url,
-         degree, college_name
+         skills, languages, academic_achievements, profile_summary, photo_url, resume_url,
+         degree, college_name, internships, projects, employment_history, certifications, preferred_job_type, availability, preferred_location, education_history
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
        ON CONFLICT (user_id) 
        DO UPDATE SET 
          gender = EXCLUDED.gender,
@@ -233,16 +234,33 @@ router.put("/profile", async (req, res) => {
          academic_achievements = EXCLUDED.academic_achievements,
          profile_summary = EXCLUDED.profile_summary,
          photo_url = EXCLUDED.photo_url,
+          resume_url = EXCLUDED.resume_url,
          degree = EXCLUDED.degree,
          college_name = EXCLUDED.college_name,
+          internships = EXCLUDED.internships,
+          projects = EXCLUDED.projects,
+          employment_history = EXCLUDED.employment_history,
+          certifications = EXCLUDED.certifications,
+          preferred_job_type = EXCLUDED.preferred_job_type,
+          availability = EXCLUDED.availability,
+          preferred_location = EXCLUDED.preferred_location,
+          education_history = EXCLUDED.education_history,
          updated_at = CURRENT_TIMESTAMP`,
       [
         decoded.id, gender, location, country, hometown, dob, mobile,
         JSON.stringify(skills || []), 
         JSON.stringify(languages || []), 
         JSON.stringify(academic_achievements || []),
-        profile_summary, photo_url,
-        degree, college
+        profile_summary, photo_url, resume_url,
+        degree, college,
+        JSON.stringify(internships || []),
+        JSON.stringify(projects || []),
+        JSON.stringify(employments || []),
+        JSON.stringify(certifications || []),
+        preferences?.job_type || "Full Time",
+        preferences?.availability || "Immediately",
+        preferences?.location || "",
+        JSON.stringify(education || {})
       ]
     );
 

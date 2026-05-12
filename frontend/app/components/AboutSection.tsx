@@ -19,7 +19,7 @@ const services = [
   {
     id: "corporate-training",
     title: "Corporate Training",
-    image: "/images/about/skill-training.jpg",
+    image: "/images/about/corporate.jpeg",
     icon: <Briefcase className="w-5 h-5 text-white" />,
     bg: "from-sky-500 to-[#0b1f3a]",
     gridColor: "#7dd3fc",
@@ -28,7 +28,7 @@ const services = [
   {
     id: "consulting",
     title: "Consulting Services",
-    image: "/images/about/skill-training.jpg",
+    image: "/images/about/consulting.jpeg",
     icon: <BarChart3 className="w-5 h-5 text-white" />,
     bg: "from-blue-700 to-[#0b1f3a]",
     gridColor: "#93c5fd",

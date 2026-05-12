@@ -130,7 +130,7 @@ const ContactPage: React.FC = () => {
       {/* ── Page Header ── */}
       <div className="relative h-[280px] md:h-[350px] flex flex-col items-center justify-center text-white overflow-hidden">
         <img
-          src="/images/contact/contactus.webp"
+          src="/images/contact/contactus.jpg"
           alt="Contact Us"
           className="absolute inset-0 w-full h-full object-cover"
         />
