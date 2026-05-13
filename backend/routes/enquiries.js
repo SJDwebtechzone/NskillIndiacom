@@ -17,7 +17,7 @@ router.post("/", authMiddleware, async (req, res) => {
         const userId = req.user.id; // From authMiddleware
 
         // Helper to convert empty strings to null for DB-safe insertion
-        const toDate = v => (v && v.trim() !== "" ? v : null);
+        const toDate = v => (v && typeof v === 'string' && v.trim() !== "" ? v : null);
         const toStr  = v => (v !== undefined && v !== null ? v.toString() : null);
 
         // Validation
@@ -53,11 +53,11 @@ router.post("/", authMiddleware, async (req, res) => {
                 $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
                 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
                 $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
-                $41, $42, $43, $44, $45, $46, $47, $48, $49
+                $41, $42, $43, $44, $45, $46, $47, $48, $49, $50
             ) RETURNING *`;
 
         const values = [
-            enquiry_id, toDate(data.enquiry_date) || new Date(), toStr(data.mode_of_enquiry),
+            enquiry_id, toDate(data.enquiry_date) || new Date(), toStr(data.mode_of_enquiry) || 'Web Enquiry',
             toStr(data.student_name), toStr(data.gender), toStr(data.age), toDate(data.dob), toStr(data.mobile_number), toStr(data.whatsapp_number), toStr(data.email_id),
             toStr(data.perm_address), toStr(data.perm_city), toStr(data.perm_state), toStr(data.perm_pin),
             toStr(data.curr_address), toStr(data.curr_city), toStr(data.curr_state), toStr(data.curr_pin),
@@ -76,6 +76,44 @@ router.post("/", authMiddleware, async (req, res) => {
     } catch (err) {
         console.error("Enquiry submission error:", err.message);
         res.status(500).json({ error: "Server Error", details: err.message });
+    }
+});
+
+// Create public enquiry (No auth required)
+router.post("/public", async (req, res) => {
+    try {
+        const data = req.body;
+        const toStr  = v => (v !== undefined && v !== null ? v.toString() : null);
+
+        if (!data.student_name || !data.email_id || !data.mobile_number) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const enquiry_id = await generateEnquiryId();
+
+        const query = `
+            INSERT INTO student_enquiries (
+                enquiry_id, enquiry_date, mode_of_enquiry,
+                student_name, email_id, mobile_number, whatsapp_number,
+                course_interested, created_at
+            ) VALUES ($1, NOW(), $2, $3, $4, $5, $6, $7, NOW())
+            RETURNING *`;
+
+        const values = [
+            enquiry_id,
+            'Public Web',
+            toStr(data.student_name),
+            toStr(data.email_id),
+            toStr(data.mobile_number),
+            toStr(data.mobile_number), // Default WhatsApp to mobile
+            toStr(data.course_interested)
+        ];
+
+        const result = await pool.query(query, values);
+        res.status(201).json({ success: true, enquiry_id: result.rows[0].enquiry_id });
+    } catch (err) {
+        console.error("Public enquiry error:", err.message);
+        res.status(500).json({ error: "Server Error" });
     }
 });
 

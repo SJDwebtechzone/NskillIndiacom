@@ -16,9 +16,7 @@ type SubmittedType = FormType & {
   resume_filename: string;
 };
 
-function getInitials(name: string) {
-  return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-}
+
 
 export default function ApplyPage() {
   const params = useParams();
@@ -104,98 +102,24 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 };
   // ── SUCCESS VIEW ────────────────────────────────────────────────────────────
   if (submitted && submittedData) {
-    const skillList = submittedData.skills
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
     return (
-      <div className="min-h-screen bg-[#f3f2ee] flex items-start justify-center px-4 py-8 sm:py-12 font-[Segoe_UI,sans-serif]">
-        <div className="w-full max-w-[720px] flex flex-col gap-4">
+      <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center px-4 py-8 sm:py-12 font-[Segoe_UI,sans-serif]">
+        <div className="w-full max-w-[500px] flex flex-col gap-6 text-center">
 
-          {/* Success Banner */}
-          <div className="bg-[#e3f4ec] border border-[#b6ddc8] rounded-xl px-5 py-4 flex items-start gap-4">
-            <span className="text-xl flex-shrink-0 mt-0.5">✅</span>
-            <div>
-              <p className="text-[15px] font-bold text-[#0d5c2f] mb-1">
-                Application submitted successfully!
-              </p>
-              <p className="text-[13px] text-[#1a6b3a]">
-                Your application for Job #{id} has been received. We&apos;ll get back to you soon.
-              </p>
+          {/* Success Card */}
+          <div className="bg-white border border-[#eff1f6] rounded-[40px] p-10 shadow-2xl shadow-blue-900/5">
+            <div className="w-20 h-20 rounded-full bg-[#e3f4ec] flex items-center justify-center text-3xl mx-auto mb-8 border border-[#b6ddc8]">
+              ✅
             </div>
-          </div>
-
-          {/* Profile Card */}
-          <div className="bg-white border border-[#d4d2cc] rounded-xl overflow-hidden">
-
-            {/* Card Header */}
-            <div className="px-6 sm:px-7 pt-7 pb-5 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-              <div className="w-16 h-16 rounded-full bg-[#e8f0fb] border-2 border-[#b3c9ef] flex items-center justify-center text-[22px] font-bold text-[#2557a7] flex-shrink-0">
-                {getInitials(submittedData.name)}
-              </div>
-              <div>
-                <h1 className="text-[22px] font-bold text-[#1a1a1a] mb-1">
-                  {submittedData.name}
-                </h1>
-                <p className="text-sm text-[#555] mb-0.5">📧 {submittedData.email}</p>
-                <p className="text-sm text-[#767676]">📍 {submittedData.location}</p>
-              </div>
-            </div>
-
-            <hr className="border-t border-[#e8e8e8]" />
-
-            {/* Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#e8e8e8]">
-              {[
-                { label: "🎓 Qualification", value: submittedData.qualification },
-                { label: "💼 Experience", value: submittedData.experience },
-                { label: "🆔 Job Applied", value: `Job #${id}` },
-                {
-                  label: "📄 Resume",
-                  value: `✓ ${submittedData.resume_filename}`,
-                  blue: true,
-                },
-              ].map((item, i) => (
-                <div key={i} className="bg-white px-5 sm:px-6 py-[18px]">
-                  <p className="text-[11px] font-semibold text-[#767676] uppercase tracking-[0.06em] mb-1.5">
-                    {item.label}
-                  </p>
-                  <p className={`text-sm font-semibold ${item.blue ? "text-[#2557a7]" : "text-[#1a1a1a]"}`}>
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <hr className="border-t border-[#e8e8e8]" />
-
-            {/* Skills */}
-            <div className="px-5 sm:px-6 py-5">
-              <p className="text-[11px] font-semibold text-[#767676] uppercase tracking-[0.06em] mb-3">
-                🛠 Skills
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {skillList.length > 0 ? (
-                  skillList.map((skill, i) => (
-                    <span
-                      key={i}
-                      className="bg-[#e8f0fb] text-[#2557a7] border border-[#b3c9ef] rounded-full px-3.5 py-1 text-[13px] font-medium"
-                    >
-                      {skill}
-                    </span>
-                  ))
-                ) : (
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{submittedData.skills}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Action Row */}
-          <div className="flex justify-between gap-3">
+            <h2 className="text-2xl font-black text-[#111827] mb-4 tracking-tight">
+              Application submitted successfully!
+            </h2>
+            <p className="text-[#7c829c] font-bold leading-relaxed mb-10">
+              Your application for <span className="text-blue-600">Job #{id}</span> has been received. We&apos;ll get back to you soon.
+            </p>
+            
             <button
-              className="h-[42px] px-5 border-[1.5px] border-[#d4d2cc] rounded-full bg-white text-[#1a1a1a] text-sm font-semibold cursor-pointer"
+              className="w-full bg-[#2f55e4] hover:bg-[#2242c2] text-white rounded-2xl py-4 text-[16px] font-black transition-all shadow-xl shadow-blue-900/20 active:scale-95"
               onClick={() => router.push("/placements/profile")}
             >
               ← Browse more jobs

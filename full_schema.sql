@@ -1,10 +1,10 @@
--- NSKILL Database Complete Schema
+ÿþ-- NSKILL Database Complete Schema
 
 -- Table: modules
 CREATE TABLE IF NOT EXISTS modules (
   id INTEGER NOT NULL DEFAULT nextval('modules_id_seq'::regclass),
   name CHARACTER VARYING(100) NOT NULL,
-  slug CHARACTER VARYING(100) NOT NULL
+  slug CHARACTER VARYING(100NOT NULL
 );
 
 -- Table: roles
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS roles (
 CREATE TABLE IF NOT EXISTS permissions (
   id INTEGER NOT NULL DEFAULT nextval('permissions_id_seq'::regclass),
   role_id INTEGER NOT NULL,
-  module CHARACTER VARYING(100) NOT NULL,
+  module CHARACTER VARYING(100NOT NULL,
   can_view BOOLEAN DEFAULT false,
   can_add BOOLEAN DEFAULT false,
   can_edit BOOLEAN DEFAULT false,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS permissions (
 CREATE TABLE IF NOT EXISTS accreditations (
   id INTEGER NOT NULL DEFAULT nextval('accreditations_id_seq'::regclass),
   name CHARACTER VARYING(255) NOT NULL,
-  organization CHARACTER VARYING(255) NOT NULL,
+  organization CHARACTER VARYING(255NOT NULL,
   logo_url CHARACTER VARYING(500),
   description TEXT,
   is_active BOOLEAN DEFAULT true,
@@ -41,8 +41,8 @@ CREATE TABLE IF NOT EXISTS accreditations (
 -- Table: banners
 CREATE TABLE IF NOT EXISTS banners (
   id INTEGER NOT NULL DEFAULT nextval('banners_id_seq'::regclass),
-  title CHARACTER VARYING(255) NOT NULL,
-  image_url CHARACTER VARYING(500) NOT NULL,
+  title CHARACTER VARYING(255NOT NULL,
+  image_url CHARACTER VARYING(500NOT NULL,
   link_url CHARACTER VARYING(500),
   is_active BOOLEAN DEFAULT true,
   display_order INTEGER DEFAULT 0,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS chat_logs (
   id INTEGER NOT NULL DEFAULT nextval('chat_logs_id_seq'::regclass),
   user_id INTEGER,
   message TEXT NOT NULL,
-  sender_type CHARACTER VARYING(50) NOT NULL,
+  sender_type CHARACTER VARYING(50NOT NULL,
   session_id CHARACTER VARYING(255),
   ip_address CHARACTER VARYING(45),
   created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -104,10 +104,10 @@ CREATE TABLE IF NOT EXISTS chat_logs (
 -- Table: student_enquiries
 CREATE TABLE IF NOT EXISTS student_enquiries (
   id INTEGER NOT NULL DEFAULT nextval('student_enquiries_id_seq'::regclass),
-  enquiry_id CHARACTER VARYING(20) NOT NULL,
+  enquiry_id CHARACTER VARYING(20NOT NULL,
   enquiry_date DATE DEFAULT CURRENT_DATE,
   mode_of_enquiry CHARACTER VARYING(50),
-  student_name CHARACTER VARYING(255) NOT NULL,
+  student_name CHARACTER VARYING(255NOT NULL,
   gender CHARACTER VARYING(20),
   age CHARACTER VARYING(10),
   dob DATE,
@@ -161,30 +161,30 @@ CREATE TABLE IF NOT EXISTS student_admissions (
   id INTEGER NOT NULL DEFAULT nextval('student_admissions_id_seq'::regclass),
   enquiry_id CHARACTER VARYING(20),
   admission_date DATE DEFAULT CURRENT_DATE,
-  full_name CHARACTER VARYING(255) NOT NULL,
-  gender CHARACTER VARYING(20) NOT NULL,
+  full_name CHARACTER VARYING(255NOT NULL,
+  gender CHARACTER VARYING(20NOT NULL,
   dob DATE NOT NULL,
   age CHARACTER VARYING(10) NOT NULL,
   aadhaar_number CHARACTER VARYING(20) NOT NULL,
   passport_number CHARACTER VARYING(50),
   passport_validity DATE,
   photo_url TEXT,
-  mobile_number CHARACTER VARYING(20) NOT NULL,
+  mobile_number CHARACTER VARYING(20NOT NULL,
   alt_mobile_number CHARACTER VARYING(20),
   whatsapp_number CHARACTER VARYING(20) NOT NULL,
-  email_id CHARACTER VARYING(255) NOT NULL,
+  email_id CHARACTER VARYING(255NOT NULL,
   residential_address TEXT NOT NULL,
   city CHARACTER VARYING(100) NOT NULL,
   state CHARACTER VARYING(100) NOT NULL,
   pin_code CHARACTER VARYING(10) NOT NULL,
   parent_name CHARACTER VARYING(255) NOT NULL,
-  relationship CHARACTER VARYING(100) NOT NULL,
+  relationship CHARACTER VARYING(100NOT NULL,
   parent_mobile CHARACTER VARYING(20) NOT NULL,
-  occupation CHARACTER VARYING(100) NOT NULL,
+  occupation CHARACTER VARYING(100NOT NULL,
   annual_income CHARACTER VARYING(50),
-  highest_qualification CHARACTER VARYING(100) NOT NULL,
+  highest_qualification CHARACTER VARYING(100NOT NULL,
   year_of_passing CHARACTER VARYING(50) NOT NULL,
-  institution_name CHARACTER VARYING(255) NOT NULL,
+  institution_name CHARACTER VARYING(255NOT NULL,
   board_university CHARACTER VARYING(255) NOT NULL,
   medium_of_study CHARACTER VARYING(100) NOT NULL,
   technical_background TEXT,
@@ -196,19 +196,19 @@ CREATE TABLE IF NOT EXISTS student_admissions (
   mode_of_training CHARACTER VARYING(50) NOT NULL,
   batch_preference CHARACTER VARYING(100),
   training_location CHARACTER VARYING(255),
-  career_goal CHARACTER VARYING(100) NOT NULL,
+  career_goal CHARACTER VARYING(100NOT NULL,
   preferred_country CHARACTER VARYING(100),
   expected_salary CHARACTER VARYING(50),
-  willing_to_relocate CHARACTER VARYING(10) NOT NULL,
-  counsellor_name CHARACTER VARYING(255) NOT NULL,
+  willing_to_relocate CHARACTER VARYING(10NOT NULL,
+  counsellor_name CHARACTER VARYING(255NOT NULL,
   counsellor_code CHARACTER VARYING(50) NOT NULL,
   referral_source CHARACTER VARYING(100) NOT NULL,
   counselling_date DATE NOT NULL,
-  course_name CHARACTER VARYING(255) NOT NULL,
+  course_name CHARACTER VARYING(255NOT NULL,
   course_fees NUMERIC NOT NULL DEFAULT 0,
   total_fees NUMERIC NOT NULL DEFAULT 0,
   paid_fees NUMERIC NOT NULL DEFAULT 0,
-  payment_mode CHARACTER VARYING(50) NOT NULL,
+  payment_mode CHARACTER VARYING(50NOT NULL,
   payment_ref_no CHARACTER VARYING(100),
   payment_date DATE NOT NULL,
   instalment_1 NUMERIC DEFAULT 0,
@@ -229,14 +229,14 @@ CREATE TABLE IF NOT EXISTS student_admissions (
   refund_policy_ack BOOLEAN NOT NULL DEFAULT false,
   data_privacy_ack BOOLEAN NOT NULL DEFAULT false,
   final_undertaking BOOLEAN NOT NULL DEFAULT false,
-  emergency_contact_name CHARACTER VARYING(255) NOT NULL,
-  emergency_contact_number CHARACTER VARYING(20) NOT NULL,
+  emergency_contact_name CHARACTER VARYING(255NOT NULL,
+  emergency_contact_number CHARACTER VARYING(20NOT NULL,
   emergency_authorized BOOLEAN NOT NULL DEFAULT false,
   admission_number CHARACTER VARYING(100),
   batch_allotted CHARACTER VARYING(100),
   verified_by CHARACTER VARYING(255),
   authorized_signature_by CHARACTER VARYING(255),
-  status CHARACTER VARYING(50) DEFAULT 'Approved'::character varying,
+  status CHARACTER VARYING(50DEFAULT 'Approved'::character varying,
   created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   created_by_id INTEGER
 );
@@ -251,10 +251,10 @@ CREATE TABLE IF NOT EXISTS career_counsellors (
   mobile_whatsapp CHARACTER VARYING(15),
   email CHARACTER VARYING(255) NOT NULL,
   residential_address TEXT NOT NULL,
-  city CHARACTER VARYING(100) NOT NULL,
+  city CHARACTER VARYING(100NOT NULL,
   district CHARACTER VARYING(100) NOT NULL,
   state CHARACTER VARYING(100) NOT NULL,
-  pincode CHARACTER VARYING(10) NOT NULL,
+  pincode CHARACTER VARYING(10NOT NULL,
   legislative_assembly CHARACTER VARYING(150),
   current_profession CHARACTER VARYING(100) NOT NULL,
   profession_other_specify CHARACTER VARYING(255),
@@ -354,12 +354,12 @@ CREATE TABLE IF NOT EXISTS contact_info (
 -- Table: users
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER NOT NULL DEFAULT nextval('users_id_seq'::regclass),
-  name CHARACTER VARYING(100) NOT NULL,
-  email CHARACTER VARYING(150) NOT NULL,
+  name CHARACTER VARYING(100NOT NULL,
+  email CHARACTER VARYING(150NOT NULL,
   password TEXT NOT NULL,
   created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   role_id INTEGER,
-  status CHARACTER VARYING(20) DEFAULT 'Active'::character varying,
+  status CHARACTER VARYING(20DEFAULT 'Active'::character varying,
   phone_number CHARACTER VARYING(20),
   dob DATE
 );
@@ -380,7 +380,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Layer 2: Extended Student Profile
 CREATE TABLE IF NOT EXISTS student_profiles (
-    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER PRIMARY KEY REFERENCES users(idON DELETE CASCADE,
     
     -- Personal Information
     gender CHARACTER VARYING(20),                   -- Male/Female/Transgender

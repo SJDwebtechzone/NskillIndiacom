@@ -8,7 +8,11 @@ import {
   X, Menu, BadgeCheck, Briefcase, TrendingUp, CalendarDays,
   MapPin, Phone, Mail, User,
   Medal, Rocket, HelpCircle, Plus, Minus,
+  Send,
+  Loader2,
+  MessageSquare,
 } from "lucide-react";
+import EnquiryModal from "../components/EnquiryModal";
 import Link from "next/link";
 import { useState, useRef, useCallback, useEffect } from "react";
 
@@ -272,169 +276,190 @@ function BookDemoModal({
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!form.name || !form.email || !form.phone || !form.date || !form.time)
       return;
     setLoading(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, course_id: course.id }),
       });
-    } catch {}
-    setLoading(false);
-    setSubmitted(true);
+      if (res.ok) setSubmitted(true);
+    } catch (err) {
+      console.error("Booking error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const timeSlots = [
-    "09:00 AM","10:00 AM","11:00 AM","12:00 PM",
-    "02:00 PM","03:00 PM","04:00 PM","05:00 PM",
+    "10:00 AM","12:00 PM","02:00 PM","04:00 PM",
   ];
   const today = new Date().toISOString().split("T")[0];
-  const fields = [
-    { label: "Full Name",     key: "name",    type: "text",  placeholder: "Your full name",      required: true,  icon: User    },
-    { label: "Address",       key: "address", type: "text",  placeholder: "City / Area",         required: false, icon: MapPin  },
-    { label: "Email Address", key: "email",   type: "email", placeholder: "you@example.com",     required: true,  icon: Mail    },
-    { label: "Phone Number",  key: "phone",   type: "tel",   placeholder: "+91 XXXXX XXXXX",     required: true,  icon: Phone   },
-  ];
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
       <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 60 }}
-        transition={{ type: "spring", stiffness: 350, damping: 32 }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col"
+        className="bg-white rounded-[40px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto scrollbar-hide shadow-2xl relative"
       >
-        <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-blue-500 to-indigo-500 shrink-0" />
-        <div className="flex justify-center pt-3 pb-1 sm:hidden shrink-0">
-          <div className="w-10 h-1 bg-slate-200 rounded-full" />
-        </div>
-        <div className="overflow-y-auto flex-1 p-6 sm:p-8">
-          {!submitted ? (
-            <>
-              <div className="flex items-start justify-between mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-200">
-                    <CalendarDays className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-slate-900">Book Your Free Demo</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Reserve a slot with our expert counsellor</p>
-                  </div>
+        {!submitted ? (
+          <>
+            {/* Modal Header */}
+            <div className="p-8 pb-4 flex items-center justify-between sticky top-0 bg-white z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-blue-600/30">
+                  <CalendarDays className="w-7 h-7" />
                 </div>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition shrink-0"
-                >
-                  <X className="w-4 h-4 text-slate-500" />
-                </button>
-              </div>
-              <div className="bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 mb-5 flex items-center gap-3">
-                <BookOpen className="w-4 h-4 text-violet-500 shrink-0" />
-                <span className="text-sm font-semibold text-violet-700 truncate">{course.title}</span>
-              </div>
-              <div className="space-y-3 mb-4">
-                {fields.map(({ label, key, type, placeholder, required, icon: Icon }) => (
-                  <div key={key}>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                      <Icon className="w-3 h-3" /> {label}{" "}
-                      {required && <span className="text-red-400">*</span>}
-                    </label>
-                    <input
-                      type={type}
-                      placeholder={placeholder}
-                      value={(form as any)[key]}
-                      onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent focus:bg-white transition-all"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-2 gap-3 mb-5">
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <CalendarDays className="w-3 h-3" /> Date{" "}
-                    <span className="text-red-400">*</span>
+                  <h2 className="text-[22px] font-black text-[#111827] leading-tight">Book Your Free Demo</h2>
+                  <p className="text-[13px] font-bold text-[#7c829c]">Reserve a slot with our expert counsellor</p>
+                </div>
+              </div>
+              <button 
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-[#f6f7fb] flex items-center justify-center text-[#7c829c] hover:bg-[#eff1f6] hover:text-[#111827] transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-8 pt-0 space-y-6">
+              {/* Selected Course Display */}
+              <div className="bg-[#f5f3ff] p-4 rounded-2xl border border-[#ede9fe] flex items-center gap-3">
+                <span className="text-xl">📖</span>
+                <span className="text-[14px] font-black text-[#7c3aed] uppercase tracking-wide truncate">
+                  {course.title}
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                    <User className="w-3.5 h-3.5" /> Full Name <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="date"
-                    min={today}
-                    value={form.date}
-                    onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent focus:bg-white transition-all"
+                  <input 
+                    required
+                    type="text"
+                    placeholder="Your full name"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    value={form.name}
+                    onChange={e => setForm({...form, name: e.target.value})}
                   />
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Time{" "}
-                    <span className="text-red-400">*</span>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5" /> Address
                   </label>
-                  <select
-                    value={form.time}
-                    onChange={(e) => setForm((f) => ({ ...f, time: e.target.value }))}
-                    className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent focus:bg-white transition-all appearance-none"
-                  >
-                    <option value="">Select slot</option>
-                    {timeSlots.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
+                  <input 
+                    type="text"
+                    placeholder="City / Area"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    value={form.address}
+                    onChange={e => setForm({...form, address: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5" /> Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <input 
+                    required
+                    type="email"
+                    placeholder="you@example.com"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    value={form.email}
+                    onChange={e => setForm({...form, email: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                    <Phone className="w-3.5 h-3.5" /> Phone Number <span className="text-red-500">*</span>
+                  </label>
+                  <input 
+                    required
+                    type="tel"
+                    placeholder="+91 XXXXX XXXXX"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    value={form.phone}
+                    onChange={e => setForm({...form, phone: e.target.value})}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                      <CalendarDays className="w-3.5 h-3.5" /> Date <span className="text-red-500">*</span>
+                    </label>
+                    <input 
+                      required
+                      type="date"
+                      min={today}
+                      className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                      value={form.date}
+                      onChange={e => setForm({...form, date: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5" /> Time <span className="text-red-500">*</span>
+                    </label>
+                    <select 
+                      required
+                      className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold appearance-none"
+                      value={form.time}
+                      onChange={e => setForm({...form, time: e.target.value})}
+                    >
+                      <option value="">Select slot</option>
+                      {timeSlots.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
                 </div>
               </div>
-              <button
-                onClick={handleSubmit}
-                disabled={!form.name || !form.email || !form.phone || !form.date || !form.time || loading}
-                className="w-full bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-violet-200 disabled:shadow-none"
+
+              <button 
+                disabled={loading}
+                className="w-full py-5 bg-[#0b1f3a] text-white rounded-[24px] font-black text-[17px] shadow-xl hover:bg-[#1a3a63] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
               >
                 {loading ? (
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <CalendarDays className="w-4 h-4" />
+                  <CalendarDays className="w-5 h-5" />
                 )}
-                {loading ? "Booking…" : "Confirm My Demo Slot"}
+                {loading ? "Confirming..." : "Confirm My Demo Slot"}
               </button>
-              <p className="text-center text-[11px] text-slate-300 mt-3">Free session · No commitment required</p>
-            </>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-6"
+            </form>
+          </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-12 text-center"
+          >
+            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-100">
+              <CheckCircle2 className="w-12 h-12" />
+            </div>
+            <h3 className="text-[28px] font-black text-[#111827] mb-2 leading-tight">Done! 🎉</h3>
+            <p className="text-[15px] font-medium text-[#7c829c] mb-8">
+              Your free demo for <span className="text-blue-600 font-bold">{course.title}</span> is booked. We'll contact you shortly!
+            </p>
+            <button
+              onClick={onClose}
+              className="w-full py-4 bg-[#0b1f3a] text-white rounded-2xl font-black text-[16px] hover:bg-[#1a3a63] transition-all"
             >
-              <div className="w-20 h-20 bg-gradient-to-br from-violet-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-violet-200">
-                <CheckCircle2 className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-black text-slate-900 mb-2">Demo Booked! 🎉</h3>
-              <p className="text-slate-500 text-sm mb-1">
-                Your slot on{" "}
-                <span className="font-semibold text-slate-700">{form.date}</span> at{" "}
-                <span className="font-semibold text-slate-700">{form.time}</span> is confirmed.
-              </p>
-              <p className="text-slate-400 text-xs mb-6">
-                We'll reach you at{" "}
-                <span className="font-semibold text-slate-600">{form.email}</span> or{" "}
-                <span className="font-semibold text-slate-600">{form.phone}</span>.
-              </p>
-              <button
-                onClick={onClose}
-                className="bg-slate-900 text-white px-8 py-3 rounded-xl font-semibold hover:bg-slate-700 transition"
-              >
-                Close
-              </button>
-            </motion.div>
-          )}
-        </div>
+              Close
+            </button>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );
@@ -1597,8 +1622,8 @@ const DEFAULT_FAQS_TA: FAQItem[] = [
     a: "📞 தொடர்புக்கு: +91 9884209774",
   },
 ];
-function FAQSection({ faqs }: { faqs?: FAQItem[] }) {
-  const [lang, setLang]       = useState<"en" | "ta">("en");
+function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQItem[], lang?: "en" | "ta", onEnquire?: () => void }) {
+  const [lang, setLang]       = useState<"en" | "ta">(initialLang);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   const courseSpecific = faqs && faqs.length > 0 ? faqs : [];
@@ -1795,12 +1820,12 @@ function FAQSection({ faqs }: { faqs?: FAQItem[] }) {
       <div className="px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/50">
         <p className="text-sm text-slate-500 text-center">
           {lang === "en" ? "Still have questions?" : "இன்னும் கேள்விகள் உள்ளதா?"}{" "}
-          <Link
-            href="/contact"
+          <button
+            onClick={onEnquire}
             className="font-bold text-purple-600 hover:text-purple-700 transition"
           >
             {lang === "en" ? "Talk to our counsellors →" : "எங்கள் ஆலோசகரை தொடர்பு கொள்ளுங்கள் →"}
-          </Link>
+          </button>
         </p>
       </div>
     </motion.div>
@@ -1817,8 +1842,9 @@ export default function CourseDetailClient({
   allCourses: { id: string; title: string; category: string }[];
   currentSlug: string;
 }) {
-  const [showBrochure,    setShowBrochure]    = useState(false);
-  const [showBookDemo,    setShowBookDemo]    = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [showEnquiryModal, setShowEnquiryModal] = useState(false);
+  const [showBrochureModal, setShowBrochureModal] = useState(false);
   const [showMobileSheet, setShowMobileSheet] = useState(false);
 
   const syllabusItems = (course.content[0] ?? "")
@@ -1849,8 +1875,8 @@ useEffect(() => {
   return (
     <>
       <AnimatePresence>
-        {showBrochure    && <BrochureModal    course={course} onClose={() => setShowBrochure(false)}    />}
-        {showBookDemo    && <BookDemoModal    course={course} onClose={() => setShowBookDemo(false)}    />}
+        {showBrochureModal && <BrochureModal course={course} onClose={() => setShowBrochureModal(false)} />}
+        {showDemoModal    && <BookDemoModal    course={course} onClose={() => setShowDemoModal(false)}    />}
         {showMobileSheet && (
           <MobileCourseSheet
             currentId={currentSlug}
@@ -1862,6 +1888,13 @@ useEffect(() => {
       </AnimatePresence>
 
       <div className="min-h-screen bg-[#f8f9fc]">
+
+        {/* ── Enquiry Modal ── */}
+      <EnquiryModal 
+        isOpen={showEnquiryModal} 
+        onClose={() => setShowEnquiryModal(false)} 
+        defaultCourse={course.title}
+      />
 
         {/* ── HERO ── */}
 <section className="relative pt-24 md:pt-28 pb-24 md:pb-32 overflow-hidden bg-slate-900">
@@ -1934,10 +1967,16 @@ useEffect(() => {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Link href="/contact" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 text-sm">
+                  <button 
+                    onClick={() => setShowEnquiryModal(true)}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 text-sm"
+                  >
                     Enquire Now
-                  </Link>
-                  <button onClick={() => setShowBookDemo(true)} className="flex items-center gap-2 bg-white text-slate-900 hover:bg-blue-50 font-bold px-5 py-3 rounded-xl transition-all duration-200 shadow-lg text-sm border border-white/20">
+                  </button>
+                  <button 
+                    onClick={() => setShowDemoModal(true)}
+                    className="flex items-center gap-2 bg-white text-slate-900 hover:bg-blue-50 font-bold px-5 py-3 rounded-xl transition-all duration-200 shadow-lg text-sm border border-white/20"
+                  >
                     <CalendarDays className="w-4 h-4 text-blue-600" />
                     Book a Free Demo
                   </button>
@@ -2065,7 +2104,7 @@ className="hidden lg:block w-full max-w-[400px] shrink-0 overflow-hidden"
                       <p className="text-blue-100 text-sm">Get the full brochure — detailed syllabus, fee structure & career outcomes</p>
                     </div>
                     <button
-                      onClick={() => setShowBrochure(true)}
+                      onClick={() => setShowBrochureModal(true)}
                       className="shrink-0 flex items-center gap-2 bg-white text-blue-700 font-bold px-5 py-3 rounded-xl hover:bg-blue-50 transition shadow-lg text-sm"
                     >
                       <Rocket className="w-4 h-4" /> Download Brochure
@@ -2074,7 +2113,10 @@ className="hidden lg:block w-full max-w-[400px] shrink-0 overflow-hidden"
                 </motion.div>
 
                 {/* FAQ */}
-                <FAQSection faqs={course.faqs} />
+                <FAQSection 
+                  faqs={course.faqs} 
+                  onEnquire={() => setShowEnquiryModal(true)}
+                />
               </main>
 
               {/* Right Sidebar */}
@@ -2083,17 +2125,17 @@ className="hidden lg:block w-full max-w-[400px] shrink-0 overflow-hidden"
                   <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
                     <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Quick Actions</h3>
                     <button
-                      onClick={() => setShowBookDemo(true)}
+                      onClick={() => setShowDemoModal(true)}
                       className="w-full flex items-center gap-3 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-violet-200"
                     >
                       <CalendarDays className="w-4 h-4" /> Book a Free Demo
                     </button>
-                    <Link
-                      href="/contact"
+                    <button
+                      onClick={() => setShowEnquiryModal(true)}
                       className="w-full flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-blue-200"
                     >
                       <Users className="w-4 h-4" /> Talk to Counsellor
-                    </Link>
+                    </button>
                   </div>
 
                   <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">

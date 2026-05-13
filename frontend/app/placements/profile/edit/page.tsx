@@ -22,7 +22,7 @@ export default function ProfileEditPage() {
     mobile: "",
     education: {
       degree: {
-        course: "B.Tech / B.E.",
+        course: "",
         specialization: "",
         college: "",
         grading: "% Marks of 100 Maximum",
@@ -210,6 +210,12 @@ export default function ProfileEditPage() {
     } catch (err) { alert("Error saving profile"); }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/placements/login");
+  };
+
   const getPhotoUrl = (url: string | undefined) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
@@ -283,6 +289,13 @@ export default function ProfileEditPage() {
             <div className="flex flex-col gap-3">
               <button onClick={() => setEditingSection(editingSection === 'all' ? null : 'all')} className="bg-[#2f55e4] hover:bg-[#2242c2] text-white font-bold px-8 py-4 rounded-3xl transition-all shadow-lg text-[16px] min-w-[200px]">
                 ✎ {editingSection === 'all' ? 'View Profile' : 'View & Edit All'}
+              </button>
+              <button 
+                onClick={handleLogout} 
+                className="bg-white text-red-600 hover:bg-red-50 font-black px-8 py-3.5 rounded-3xl transition-all border-2 border-red-50 flex items-center justify-center gap-2 text-[15px] shadow-sm hover:shadow-md active:scale-95"
+              >
+                Logout
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
               </button>
             </div>
           </div>

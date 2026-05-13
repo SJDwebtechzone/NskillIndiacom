@@ -157,10 +157,11 @@ const Footer = () => {
                 { name: "Home", href: "/" },
                 { name: "All Courses", href: "/courses" },
                 { name: "Course Calendar", href: "/course_calender" },
-                { name: "Placements", href: "/placements/register" },
+                { name: "Placements", href: "/placements/profile" },
+                { name: "Recommended jobs", href: "/placements/recommended-jobs" },
                 { name: "Infrastructure", href: "/infrastructure" },
                 { name: "Contact Us", href: "/contact" },
-                { name: "Blog", href: "/blog" },
+                { name: "Blogs", href: "/blog" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link

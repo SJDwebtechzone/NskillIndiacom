@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { SearchX, RotateCcw } from "lucide-react";
 
 interface Job {
   id: number;
@@ -31,7 +32,7 @@ export default function PlacementPage() {
   const [location, setLocation] = useState("");
   const router = useRouter();
   const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
-  const [user, setUser] = useState<{ full_name?: string; email_id?: string; course_name?: string; photo_url?: string; college_name?: string } | null>(null);
+  const [user, setUser] = useState<{ full_name?: string; email_id?: string; course_name?: string; photo_url?: string; college_name?: string; preferred_job_type?: string; availability?: string; preferred_location?: string } | null>(null);
 
   useEffect(() => {
     fetch(`${API}/api/jobs/jobs`)
@@ -76,11 +77,23 @@ export default function PlacementPage() {
     setFilteredJobs(results);
   };
 
+  const resetFilters = () => {
+    setSearch("");
+    setLocation("");
+    setFilteredJobs(jobs);
+  };
+
   const getPhotoUrl = (url: string | undefined) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
     return `${API}${cleanUrl}`;
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/placements/login");
   };
 
   return (
@@ -169,12 +182,59 @@ export default function PlacementPage() {
                   </div>
                 </div>
 
+                {/* ── CAREER PREFERENCES ── */}
+                <div className="mt-8 pt-6 border-t border-[#eff1f6] w-full text-left">
+                  <div className="flex items-center justify-between mb-4 px-1">
+                    <p className="text-[11px] font-black text-[#7c829c] uppercase tracking-wider">Career Preferences</p>
+                    <button 
+                      onClick={() => router.push('/placements/profile/edit')}
+                      className="text-[#2f55e4] hover:bg-[#f0f4ff] p-2 rounded-xl transition-all"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                  </div>
+                  
+                  <div className="bg-[#f6f7fb] p-5 rounded-[28px] border border-[#eff1f6] flex flex-col gap-5 shadow-sm">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white border border-[#eff1f6] flex items-center justify-center text-lg shadow-sm">💼</div>
+                      <div>
+                        <p className="text-[10px] font-black text-[#7c829c] uppercase tracking-widest mb-0.5">Job Type</p>
+                        <p className="text-[14px] font-black text-[#111827]">{user?.preferred_job_type || "Full Time"}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white border border-[#eff1f6] flex items-center justify-center text-lg shadow-sm">📅</div>
+                      <div>
+                        <p className="text-[10px] font-black text-[#7c829c] uppercase tracking-widest mb-0.5">Availability</p>
+                        <p className="text-[14px] font-black text-[#111827]">{user?.availability || "Immediately"}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white border border-[#eff1f6] flex items-center justify-center text-lg shadow-sm">📍</div>
+                      <div>
+                        <p className="text-[10px] font-black text-[#7c829c] uppercase tracking-widest mb-0.5">Location</p>
+                        <p className="text-[14px] font-black text-[#111827]">{user?.preferred_location || "Chennai"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <button 
                   onClick={() => router.push('/placements/profile/edit')}
                   className="mt-6 w-full py-4 rounded-2xl bg-[#2f55e4] text-white font-black text-[14px] shadow-lg shadow-[#2f55e4]/20 hover:bg-[#2242c2] transition-all group flex items-center justify-center gap-2"
                 >
                   Complete profile
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+
+                <button 
+                  onClick={handleLogout}
+                  className="mt-3 w-full py-3 rounded-2xl bg-white text-red-600 font-black text-[13px] border-2 border-red-50 hover:bg-red-50 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm"
+                >
+                  Logout
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 </button>
               </div>
             </div>
@@ -193,12 +253,23 @@ export default function PlacementPage() {
 
             <div className="grid grid-cols-1 gap-6">
               {filteredJobs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-[400px] gap-4 bg-white rounded-[40px] border border-[#eff1f6] shadow-xl shadow-[#eff1f6]">
-                  <div className="w-20 h-20 rounded-full bg-[#f6f7fb] flex items-center justify-center text-3xl opacity-50">🔍</div>
-                  <div className="text-center">
-                    <p className="text-[18px] font-black text-[#111827]">No jobs found</p>
-                    <p className="text-[14px] font-bold text-[#7c829c] mt-1">Try adjusting your search filters or keywords.</p>
+                <div className="flex flex-col items-center justify-center min-h-[450px] p-10 bg-white rounded-[40px] border border-[#eff1f6] shadow-2xl shadow-blue-900/5 text-center">
+                  <div className="w-24 h-24 rounded-3xl bg-slate-50 flex items-center justify-center mb-8 border border-slate-100 shadow-sm">
+                    <SearchX className="w-12 h-12 text-slate-300" />
                   </div>
+                  <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">
+                    No matching jobs found
+                  </h3>
+                  <p className="text-slate-500 font-bold max-w-sm mb-10 leading-relaxed">
+                    We couldn't find any positions matching your current filters. Try adjusting your keywords or location.
+                  </p>
+                  <button 
+                    onClick={resetFilters}
+                    className="flex items-center gap-3 px-10 py-4 bg-[#2f55e4] text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-900/20 hover:bg-[#2242c2] transition-all active:scale-95"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Reset Search Filters
+                  </button>
                 </div>
               ) : (
                 filteredJobs.map((job) => (
@@ -248,7 +319,7 @@ export default function PlacementPage() {
                     <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-[#f6f7fb] gap-4">
                       <div className="flex items-center gap-3 text-[14px] font-bold text-[#7c829c]">
                          <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                         Posted 2 days ago • Actively hiring
+                         Actively hiring
                       </div>
                       <div className="flex items-center gap-4 w-full sm:w-auto">
                         <button className="flex-1 sm:flex-none px-8 py-4 rounded-2xl text-[15px] font-black text-[#4b5563] hover:bg-[#f6f7fb] transition-all">View details</button>

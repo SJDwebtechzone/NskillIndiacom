@@ -8,7 +8,7 @@ export default function BlogPage() {
       <section className="bg-[#0b1f3a] pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tight">
-            Our <span className="text-[#fe2b54]">Blog</span>
+            Our <span className="text-[#fe2b54]">Blogs</span>
           </h1>
           <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto font-medium">
             Stay updated with the latest industry trends, technical insights, and success stories from NSKILL India.
