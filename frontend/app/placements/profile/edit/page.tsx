@@ -156,6 +156,7 @@ export default function ProfileEditPage() {
                 profile_summary: user.profile_summary || prev.profile_summary,
                 photo_url: user.photo_url || prev.photo_url,
                 resume_url: user.resume_url || prev.resume_url,
+                academic_achievements: typeof user.academic_achievements === 'string' ? JSON.parse(user.academic_achievements) : (user.academic_achievements || prev.academic_achievements),
                 education: {
                   ...prev.education,
                   ...dbEducation,
@@ -206,8 +207,15 @@ export default function ProfileEditPage() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(formData)
       });
-      if (res.ok) { alert("Profile saved!"); setEditingSection(null); }
-    } catch (err) { alert("Error saving profile"); }
+      if (res.ok) {
+        alert("Your profile has been saved successfully!");
+        setEditingSection(null);
+      } else {
+        alert("Failed to save profile. Please try again.");
+      }
+    } catch (err) {
+      alert("Error: Could not connect to server");
+    }
   };
 
   const handleLogout = () => {
@@ -308,7 +316,7 @@ export default function ProfileEditPage() {
             <div className="bg-white border border-[#eff1f6] rounded-[32px] p-6 shadow-xl sticky top-24">
               <h3 className="text-[12px] font-black text-[#7c829c] uppercase tracking-[2px] mb-6 px-2">Quick Links</h3>
               <ul className="space-y-1">
-                {["Preferences", "Education", "Key skills", "Languages", "Internships", "Projects", "Profile summary", "Employment", "Resume"].map(l => (
+                {["Preferences", "Education", "Key skills", "Internships", "Projects", "Profile summary", "Employment", "Resume"].map(l => (
                   <li key={l}><a href={`#${l.toLowerCase().replace(/ /g, '-')}`} className="flex items-center justify-between px-4 py-3 rounded-2xl text-[15px] font-bold text-[#4b5563] hover:bg-[#f6f7fb] hover:text-[#2f55e4] transition-all"> {l} <span>→</span></a></li>
                 ))}
               </ul>
@@ -400,8 +408,9 @@ export default function ProfileEditPage() {
                {editingSection === 'skills' || editingSection === 'all' ? (
                  <div className="space-y-6">
                     <div className="flex flex-wrap gap-2">{formData.skills.map(s => <span key={s} className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-bold">{s} <button onClick={() => removeSkill(s)}>×</button></span>)}</div>
-                    <div className="flex gap-2"><input type="text" className="flex-1 h-12 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={skillInput} onChange={e => setSkillInput(e.target.value)} /><button onClick={addSkill} className="bg-blue-600 text-white px-6 rounded-xl font-bold">Add</button></div>
-                 </div>
+                     <div className="flex gap-2"><input type="text" className="flex-1 h-12 px-4 border border-[#eff1f6] rounded-xl font-semibold bg-[#f6f7fb]" value={skillInput} onChange={e => setSkillInput(e.target.value)} /><button onClick={addSkill} className="bg-blue-600 text-white px-6 rounded-xl font-bold">Add</button></div>
+                     <div className="flex justify-end pt-4"><button onClick={handleSave} className="bg-[#2f55e4] text-white font-bold px-8 py-2 rounded-full shadow-sm hover:bg-[#2242c2]">Save Skills</button></div>
+                  </div>
                ) : (
                  <div className="flex flex-wrap gap-3">{formData.skills.map(s => <span key={s} className="bg-[#f6f7fb] text-[#111827] px-5 py-2.5 rounded-2xl font-bold border border-[#eff1f6]">{s}</span>)}</div>
                )}
@@ -563,6 +572,18 @@ export default function ProfileEditPage() {
                 <input type="file" id="resume-input" className="hidden" accept=".pdf,.doc,.docx,.rtf" onChange={e => handleFileUpload(e, 'assessment')} />
               </div>
             </SectionCard>
+
+            {/* Global Save Button */}
+            <div className="mt-12 mb-20 flex justify-center">
+              <button 
+                onClick={handleSave}
+                className="group relative flex items-center gap-3 bg-[#2f55e4] hover:bg-[#2242c2] text-white font-black px-12 py-5 rounded-[32px] transition-all shadow-2xl shadow-blue-200 active:scale-95 text-lg"
+              >
+                <div className="absolute inset-0 rounded-[32px] bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="relative"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <span className="relative">Save All Profile Changes</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

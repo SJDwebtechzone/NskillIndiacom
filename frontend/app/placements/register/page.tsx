@@ -7,6 +7,7 @@
 
 import { useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type FormType = {
   name: string;
@@ -82,15 +83,15 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
         <div className="w-full md:w-[42%] bg-gradient-to-br from-[#7c3aed] via-[#4f46e5] to-[#2563eb] p-8 md:p-10 flex flex-col gap-6 justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-white inline-block" />
-            <span className="text-white text-lg font-semibold tracking-widest">placement</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-white inline-block shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            <span className="text-white text-xl font-black tracking-widest uppercase">Placement</span>
           </div>
 
           <div>
-            <h2 className="text-[22px] font-semibold text-white leading-snug mb-2">
-              Start your career<br />journey today.
+            <h2 className="text-[26px] font-black text-white leading-tight mb-3 tracking-tight">
+              Start your own career<br />journey today.
             </h2>
-            <p className="text-[13px] text-white/70 leading-relaxed">
+            <p className="text-[14px] text-white/80 leading-relaxed font-medium">
               Build your profile once and apply to thousands of jobs with a single click.
             </p>
           </div>
@@ -117,12 +118,35 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
           <p className="text-[13px] text-white/70">
             Already have an account?{" "}
             <span
-              className="text-white font-semibold cursor-pointer"
+              className="text-white font-semibold cursor-pointer hover:underline"
               onClick={() => router.push("/placements/login")}
             >
               Login →
             </span>
           </p>
+
+          {/* QR Code Section */}
+          <div className="mt-4 pt-6 border-t border-white/10">
+            <div className="flex items-center gap-4 mb-3">
+              <div className="bg-white p-2 rounded-2xl shadow-xl">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent("https://nskillindia.com/placements/recommended-jobs")}`} 
+                  alt="QR Code" 
+                  className="w-16 h-16"
+                />
+              </div>
+              <div>
+                <p className="text-[11px] font-black text-white uppercase tracking-wider mb-1">Recommended Jobs</p>
+                <p className="text-[10px] text-white/60 leading-tight">Scan this QR to view<br />jobs curated for you</p>
+              </div>
+            </div>
+            <Link 
+              href="/placements/recommended-jobs"
+              className="text-[11px] text-white/50 hover:text-white transition-colors font-bold flex items-center gap-1 mt-1 underline underline-offset-4 decoration-white/20"
+            >
+              Link --&gt;
+            </Link>
+          </div>
         </div>
 
         {/* RIGHT PANEL */}

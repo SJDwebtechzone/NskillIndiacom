@@ -1,23 +1,51 @@
 const twilio = require("twilio");
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+let client;
 
-const FROM  = process.env.TWILIO_WHATSAPP_FROM;
+function getTwilioClient() {
+  if (!client) {
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+      throw new Error("Twilio credentials missing in .env");
+    }
+    client = twilio(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+  }
+  return client;
+}
+
 const ADMIN = process.env.ADMIN_WHATSAPP;
 
 async function sendWhatsApp(to, message) {
   try {
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+      console.error("❌ Twilio credentials missing in .env");
+      return false;
+    }
+    
+    const sender = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
     const toNumber   = to.startsWith("whatsapp:")   ? to   : `whatsapp:${to}`;
-    const fromNumber = FROM.startsWith("whatsapp:") ? FROM : `whatsapp:${FROM}`;
-    console.log("Sending FROM:", fromNumber, "TO:", toNumber);
-    await client.messages.create({ from: fromNumber, to: toNumber, body: message });
+    const fromNumber = sender.startsWith("whatsapp:") ? sender : `whatsapp:${sender}`;
+    
+    console.log("Twilio Attempt:", { from: fromNumber, to: toNumber });
+
+    const twilioClient = getTwilioClient();
+    await twilioClient.messages.create({ 
+      from: fromNumber, 
+      to: toNumber, 
+      body: message 
+    });
+    
     console.log(`✅ WhatsApp sent to ${toNumber}`);
     return true;
   } catch (err) {
-    console.error("❌ WhatsApp send failed:", err.message);
+    console.error("❌ WhatsApp send failed!");
+    console.error("Error Code:", err.code);
+    console.error("Error Message:", err.message);
+    if (err.code === 21608) {
+      console.error("Tip: The sandbox number requires the recipient to join first, or the number is not verified.");
+    }
     return false;
   }
 }

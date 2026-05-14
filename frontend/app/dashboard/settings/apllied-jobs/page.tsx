@@ -1,6 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { 
+  Search, 
+  Filter, 
+  Download, 
+  RefreshCcw, 
+  Users, 
+  Briefcase, 
+  MapPin, 
+  GraduationCap, 
+  Calendar,
+  FileText,
+  Clock,
+  MoreHorizontal,
+  Mail,
+  User,
+  Trash2
+} from "lucide-react";
 
 interface Applicant {
   id: number;
@@ -14,6 +31,7 @@ interface Applicant {
   resume_filename: string;
   resume_mimetype: string;
   applied_at: string;
+  job_title?: string;
 }
 
 function getInitials(name: string) {
@@ -29,36 +47,20 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-const DownloadIcon = () => (
-  <svg
-    width="13"
-    height="13"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="7 10 12 15 17 10" />
-    <line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
-
 export default function AdminApplicationsPage() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterJob, setFilterJob] = useState("all");
   const [downloading, setDownloading] = useState<number | null>(null);
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+  
+  const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
   const fetchApplicants = async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/jobs/applications`);
       const data = await res.json();
-      console.log("API response:", data); // check what comes back
       setApplicants(Array.isArray(data) ? data : data.applications || data.applicants || []);
     } catch (err) {
       console.error("Failed to fetch applicants", err);
@@ -74,7 +76,6 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   const handleDownload = async (applicant: Applicant) => {
     setDownloading(applicant.id);
     try {
-  
       const res = await fetch(`${API}/api/jobs/resume/${applicant.id}`);
       if (!res.ok) throw new Error("Failed to fetch resume");
 
@@ -94,181 +95,248 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
     setDownloading(null);
   };
 
-const jobIds = Array.from(new Set((applicants || []).map((a) => a.job_id))).sort();
+  const handleDeleteApplication = async (id: number) => {
+    if (!confirm("Are you sure you want to permanently delete this application?")) return;
+    try {
+      const res = await fetch(`${API}/api/jobs/application/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      fetchApplicants();
+    } catch (err) {
+      console.error("Delete application error:", err);
+      alert("Failed to delete application. Please try again.");
+    }
+  };
+
+  const jobIds = Array.from(new Set((applicants || []).map((a) => a.job_id))).sort();
 
   const filtered = applicants.filter((a) => {
     const matchSearch =
       a.name.toLowerCase().includes(search.toLowerCase()) ||
       a.email.toLowerCase().includes(search.toLowerCase()) ||
-      a.skills.toLowerCase().includes(search.toLowerCase());
+      a.skills.toLowerCase().includes(search.toLowerCase()) ||
+      (a.job_title || "").toLowerCase().includes(search.toLowerCase());
     const matchJob = filterJob === "all" || a.job_id === Number(filterJob);
     return matchSearch && matchJob;
   });
 
   return (
-    <div className="bg-[#f3f2ee] min-h-screen font-sans">
-
-      {/* TOP BAR */}
-      <div className="bg-white border-b border-[#e4e2e0] px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="bg-[#2557a7] text-white font-bold text-[13px] px-2.5 py-1 rounded">
-            indeed
-          </span>
-          <span className="text-[13px] text-[#767676]">Admin Console</span>
-        </div>
-        <span className="bg-[#e8f0fe] text-[#1a3f7a] text-[11px] font-semibold px-2.5 py-1 rounded-full">
-          Applications
-        </span>
-      </div>
-
-      {/* MAIN */}
-      <div className="max-w-4xl mx-auto px-4 py-7">
-
-        {/* PAGE HEADER */}
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <h1 className="text-[22px] font-bold text-[#1a1a1a] mb-1">All Applications</h1>
-            <p className="text-[13px] text-[#767676]">
-              {applicants.length} total · {filtered.length} shown
-            </p>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      
+      {/* ── Header ── */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-indigo-600 rounded-md flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-lg font-bold tracking-tight text-slate-900">Admin Console</h1>
+            <span className="hidden sm:inline-block w-px h-6 bg-slate-200 mx-2" />
+            <p className="text-sm font-medium text-slate-500">Applications Management</p>
           </div>
-          <button
-            className="bg-white border border-[#d4d2cc] rounded-lg px-4 py-2 text-[13px] text-[#1a1a1a] cursor-pointer font-sans hover:bg-gray-50 transition-colors"
-            onClick={fetchApplicants}
-          >
-            ↻ Refresh
-          </button>
+          
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={fetchApplicants}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-md transition-colors"
+            >
+              <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Sync Data
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        
+        {/* ── Summary Stats ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {[
+            { label: "Total Candidates", value: applicants.length, icon: Users },
+            { label: "New Applied", value: filtered.length, icon: Clock },
+            { label: "Jobs Active", value: jobIds.length, icon: Briefcase },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <stat.icon className="w-5 h-5 text-slate-400" />
+                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase">Live</span>
+              </div>
+              <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+              <p className="text-xs font-medium text-slate-500">{stat.label}</p>
+            </div>
+          ))}
         </div>
 
-        {/* FILTERS */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <input
-            className="flex-1 h-10 px-3.5 border border-[#d4d2cc] rounded-lg text-[13px] text-[#1a1a1a] bg-white outline-none font-sans"
-            placeholder="Search by name, email or skill…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <select
-            className="h-10 px-3 border border-[#d4d2cc] rounded-lg text-[13px] text-[#1a1a1a] bg-white outline-none font-sans cursor-pointer"
-            value={filterJob}
-            onChange={(e) => setFilterJob(e.target.value)}
-          >
-            <option value="all">All Jobs</option>
-            {jobIds.map((jid) => (
-              <option key={jid} value={jid}>
-                Job #{jid}
-              </option>
-            ))}
-          </select>
+        {/* ── Filters Bar ── */}
+        <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, or skills..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 pl-10 pr-4 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <select
+                value={filterJob}
+                onChange={(e) => setFilterJob(e.target.value)}
+                className="h-10 pl-10 pr-8 text-sm font-semibold border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-white appearance-none cursor-pointer"
+              >
+                <option value="all">All Jobs</option>
+                {jobIds.map((jid) => (
+                  <option key={jid} value={jid}>Job #{jid}</option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
-        {/* TABLE PANEL */}
-        <div className="bg-white border border-[#e4e2e0] rounded-xl overflow-hidden">
-
-          {loading ? (
-            <div className="text-center py-12 text-[#767676]">
-              <p className="text-[14px]">Loading applications…</p>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-12 text-[#767676]">
-              <p className="text-[28px] opacity-40 mb-2">📭</p>
-              <p className="text-[14px]">No applications found</p>
-            </div>
-          ) : (
-            filtered.map((applicant) => {
-              const skills = applicant.skills
-                ? applicant.skills.split(",").map((s) => s.trim()).filter(Boolean)
-                : [];
-
-              return (
-                <div
-                  key={applicant.id}
-                  className="grid grid-cols-1 sm:grid-cols-[200px_1fr] lg:grid-cols-[220px_1fr_160px] gap-4 px-5 py-4 border-b border-[#e4e2e0] items-start lg:items-center"
-                >
-
-                  {/* LEFT — Avatar + Name */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#e8f0fe] border border-[#b3c9ef] flex items-center justify-center font-bold text-[13px] text-[#2557a7] shrink-0">
-                      {getInitials(applicant.name)}
-                    </div>
-                    <div>
-                      <p className="text-[14px] font-semibold text-[#1a1a1a] mb-0.5">
-                        {applicant.name}
-                      </p>
-                      <p className="text-[12px] text-[#767676]">{applicant.email}</p>
-                    </div>
-                  </div>
-
-                  {/* MIDDLE — Details */}
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-wrap gap-1.5">
-                      {applicant.location && (
-                        <span className="text-[11px] text-[#555] bg-[#f3f2ee] px-2 py-0.5 rounded-full">
-                          📍 {applicant.location}
-                        </span>
-                      )}
-                      {applicant.experience && (
-                        <span className="text-[11px] text-[#555] bg-[#f3f2ee] px-2 py-0.5 rounded-full">
-                          💼 {applicant.experience}
-                        </span>
-                      )}
-                      {applicant.qualification && (
-                        <span className="text-[11px] text-[#555] bg-[#f3f2ee] px-2 py-0.5 rounded-full">
-                          🎓 {applicant.qualification}
-                        </span>
-                      )}
-                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#e8f0fe] text-[#1a3f7a]">
-                        Job #{applicant.job_id}
-                      </span>
-                    </div>
-
-                    {skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {skills.slice(0, 4).map((sk, i) => (
-                          <span
-                            key={i}
-                            className="text-[11px] text-[#555] bg-[#f3f2ee] px-2 py-0.5 rounded-full border border-[#e4e2e0]"
-                          >
-                            {sk}
-                          </span>
-                        ))}
-                        {skills.length > 4 && (
-                          <span className="text-[11px] text-[#555] bg-[#f3f2ee] px-2 py-0.5 rounded-full border border-[#e4e2e0]">
-                            +{skills.length - 4}
-                          </span>
-                        )}
+        {/* ── Content Table Area ── */}
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Candidate</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider hidden md:table-cell">Details</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider hidden lg:table-cell">Skills</th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Status & Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="py-20 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <RefreshCcw className="w-6 h-6 text-indigo-600 animate-spin" />
+                        <p className="text-sm text-slate-500 font-medium">Fetching records...</p>
                       </div>
-                    )}
-                  </div>
+                    </td>
+                  </tr>
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-20 text-center text-slate-400">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center">
+                          <Search className="w-6 h-6 text-slate-300" />
+                        </div>
+                        <p className="text-sm font-medium">No results found matching your criteria</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((applicant) => (
+                    <tr key={applicant.id} className="hover:bg-slate-50/80 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0">
+                            {getInitials(applicant.name)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-slate-900 truncate">{applicant.name}</p>
+                            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                              <Mail className="w-3 h-3" />
+                              <span className="truncate">{applicant.email}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4 hidden md:table-cell">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
+                            <MapPin className="w-3 h-3" /> {applicant.location || "N/A"}
+                          </div>
+                          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
+                            <GraduationCap className="w-3 h-3" /> {applicant.qualification || "N/A"}
+                          </div>
+                        </div>
+                      </td>
 
-                  {/* RIGHT — Time + Download */}
-                  <div className="flex flex-row lg:flex-col items-center lg:items-end gap-2 lg:gap-2">
-                    <p className="text-[11px] text-[#767676]">{timeAgo(applicant.applied_at)}</p>
+                      <td className="px-6 py-4 hidden lg:table-cell">
+                        <div className="flex flex-wrap gap-1.5 max-w-[240px]">
+                          {applicant.skills.split(",").slice(0, 3).map((s, i) => (
+                            <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-200">
+                              {s.trim()}
+                            </span>
+                          ))}
+                          {applicant.skills.split(",").length > 3 && (
+                            <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] font-bold rounded border border-indigo-100">
+                              +{applicant.skills.split(",").length - 3}
+                            </span>
+                          )}
+                        </div>
+                      </td>
 
-                    <button
-                      className={`flex items-center gap-1.5 bg-[#2557a7] text-white border-none rounded-lg px-3.5 py-2 text-[12px] font-semibold cursor-pointer font-sans transition-opacity ${
-                        downloading === applicant.id ? "opacity-60 cursor-not-allowed" : "opacity-100"
-                      }`}
-                      disabled={downloading === applicant.id}
-                      onClick={() => handleDownload(applicant)}
-                    >
-                      <DownloadIcon />
-                      {downloading === applicant.id ? "Downloading…" : "Resume"}
-                    </button>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{timeAgo(applicant.applied_at)}</span>
+                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-tighter text-right max-w-[120px] truncate">
+                              {applicant.job_title || `Job #${applicant.job_id}`}
+                            </span>
+                          </div>
+                          
+                          <button
+                            onClick={() => handleDownload(applicant)}
+                            disabled={downloading === applicant.id}
+                            className={`flex items-center gap-2 h-9 px-4 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all border ${
+                              downloading === applicant.id
+                                ? "bg-slate-50 text-slate-400 border-slate-200"
+                                : "bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600"
+                            }`}
+                          >
+                            {downloading === applicant.id ? (
+                              <RefreshCcw className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Download className="w-3 h-3" />
+                            )}
+                            Resume
+                          </button>
 
-                    {applicant.resume_filename && (
-                      <p className="text-[11px] text-[#767676] max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap">
-                        📄 {applicant.resume_filename}
-                      </p>
-                    )}
-                  </div>
+                          <button
+                            onClick={() => handleDeleteApplication(applicant.id)}
+                            className="flex items-center justify-center w-9 h-9 rounded-md border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-100 hover:bg-red-50 transition-all"
+                            title="Delete Application"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        {applicant.resume_filename && (
+                          <div className="mt-1.5 text-[10px] text-slate-400 flex items-center gap-1">
+                            <FileText className="w-3 h-3" />
+                            <span className="truncate max-w-[120px]">{applicant.resume_filename}</span>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* ── Footer Info ── */}
+          <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+            <p className="text-xs font-medium text-slate-500">
+              Showing <span className="font-bold text-slate-900">{filtered.length}</span> candidates out of <span className="font-bold text-slate-900">{applicants.length}</span> total
+            </p>
+            <div className="flex gap-2">
+              <button className="px-3 py-1.5 text-xs font-bold text-slate-400 cursor-not-allowed">Previous</button>
+              <button className="px-3 py-1.5 text-xs font-bold text-slate-400 cursor-not-allowed">Next</button>
+            </div>
+          </div>
 
-                </div>
-              );
-            })
-          )}
         </div>
-      </div>
+      </main>
+
     </div>
   );
 }
+
+

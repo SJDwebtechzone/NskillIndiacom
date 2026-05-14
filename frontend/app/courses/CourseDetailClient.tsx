@@ -241,16 +241,16 @@ function VideoPlayer({ src, label }: { src: string; label: string }) {
               </svg>
             </div>
             {/* Play hint */}
-            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+            <div className="absolute bottom-3 right-3 bg-black/70 text-white text-sm font-bold px-3 py-1 rounded-lg backdrop-blur-md border border-white/10">
               ▶ Play
             </div>
           </div>
         )}
       </div>
       {/* Label bar */}
-      <div className="px-4 py-2.5 flex items-center gap-2 border-t border-white/10">
-        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-        <span className="text-[11px] text-white/60 font-semibold uppercase tracking-wider truncate">
+      <div className="px-5 py-4 flex items-center gap-3 border-t border-white/10 bg-slate-900/50">
+        <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+        <span className="text-[14px] text-white font-black uppercase tracking-[0.15em] truncate">
           {label}
         </span>
       </div>
@@ -1368,11 +1368,11 @@ function VideoSection({ videos }: { videos: any[] }) {
                     playsInline
                     onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-2 sm:p-2.5 overflow-hidden">
-                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-blue-400 leading-none mb-0.5 drop-shadow-md truncate">
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent flex flex-col justify-end p-3 sm:p-4 overflow-hidden">
+                    <p className="text-xs sm:text-sm font-black uppercase tracking-widest text-blue-400 leading-none mb-1.5 drop-shadow-lg truncate">
                       {v.type ?? "Video"}
                     </p>
-                    <p className="text-xs sm:text-[13px] font-bold text-white leading-tight line-clamp-2 drop-shadow-md break-words">
+                    <p className="text-sm sm:text-base font-black text-white leading-tight line-clamp-2 drop-shadow-lg break-words">
                       {v.title ?? `Video ${i + 1}`}
                     </p>
                   </div>
@@ -1897,23 +1897,37 @@ useEffect(() => {
       />
 
         {/* ── HERO ── */}
-<section className="relative pt-24 md:pt-28 pb-24 md:pb-32 overflow-hidden bg-slate-900">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-blue-700/25 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-600/20 rounded-full blur-[90px]" />
-            <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+<section className="relative pt-24 md:pt-32 pb-12 md:pb-16 overflow-hidden bg-slate-950">
+          {/* ── Background Image & Overlays ── */}
+          <div className="absolute inset-0 z-0">
+            {course.thumbnail_url ? (
+              <img 
+                src={course.thumbnail_url} 
+                alt="Course Background" 
+                className="w-full h-full object-cover opacity-25 scale-105"
+              />
+            ) : (
+              <div className="w-full h-full bg-slate-900" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/80 to-slate-950" />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent" />
           </div>
-          
+
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-1">
+            <div className="absolute -top-32 -left-32 w-[800px] h-[800px] bg-blue-700/20 rounded-full blur-[140px]" />
+            <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[110px]" />
+            <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+          </div>
 
 {/* ── Glowing Particles ── */}
-<div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+<div className="absolute inset-0 overflow-hidden pointer-events-none z-2">
   {particles.map((p) => (
     <div
       key={p.id}
       className="absolute rounded-full animate-pulse"
       style={{
-        width:    `${p.width}px`,
-        height:   `${p.height}px`,
+        width:    `${p.width * 1.5}px`,
+        height:   `${p.height * 1.5}px`,
         top:      `${p.top}%`,
         left:     `${p.left}%`,
         background: `rgba(96, 165, 250, ${p.opacity})`,
@@ -1926,38 +1940,38 @@ useEffect(() => {
 </div>
 
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
-   <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-8 lg:gap-10 items-center">
+   <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,1.1fr)] gap-12 lg:gap-16 items-center">
 
               {/* Left: Text */}
-              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
-                <div className="flex items-center gap-1.5 mb-5 text-blue-400 text-xs font-semibold uppercase tracking-widest flex-wrap">
+              <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.65 }}>
+                <div className="flex items-center gap-2 mb-6 text-blue-400 text-sm font-bold uppercase tracking-[0.2em] flex-wrap">
                   <Link href="/" className="hover:text-white transition">Home</Link>
-                  <ChevronRight className="w-3 h-3" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                   <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-white transition truncate max-w-[140px]">{course.category}</Link>
-                  <ChevronRight className="w-3 h-3" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                   <span className="text-white/40 truncate max-w-[180px]">{course.title}</span>
                 </div>
 
-                <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
-                  <BookOpen className="w-3 h-3" />
+                <div className="inline-flex items-center gap-2.5 bg-blue-600/30 border border-blue-400/40 text-blue-100 text-[11px] font-black uppercase tracking-[0.25em] px-5 py-2 rounded-full mb-6 backdrop-blur-md">
+                  <BookOpen className="w-4 h-4" />
                   {course.category}
                 </div>
 
-           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-6 tracking-tight break-words">
-  {course.title}
-</h1>
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.1] mb-8 tracking-tighter drop-shadow-2xl break-words">
+                  {course.title}
+                </h1>
 
-                <div className="flex flex-wrap gap-2 text-sm text-white/80 mb-8">
+                <div className="flex flex-wrap gap-3 text-sm text-white/90 mb-10">
                   {[
                     { icon: Clock,         label: course.duration, title: "Course Duration" },
                     { icon: GraduationCap, label: course.eligibility ?? "Open to All", title: "Eligibility" },
                     { icon: ShieldCheck,   label: "Govt. Approved Certified", title: "Certification" },
                   ].map(({ icon: Icon, label, title }) => (
-                    <div key={label} className="group relative flex items-center gap-2 bg-white/8 backdrop-blur border border-white/10 hover:bg-white/15 hover:border-white/20 px-3 py-1.5 rounded-xl text-xs transition-all duration-300 cursor-default">
-                      <Icon className="w-3.5 h-3.5 text-blue-400 group-hover:text-blue-300 transition-colors" />
+                    <div key={label} className="group relative flex items-center gap-2.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/15 hover:border-white/20 px-4 py-2 rounded-2xl text-[13px] font-bold transition-all duration-300 cursor-default">
+                      <Icon className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" />
                       {label}
                       {/* Custom Tooltip */}
-                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-20">
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-2xl z-20">
                         {title}
                         {/* Tooltip Arrow */}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-800" />
@@ -1966,37 +1980,40 @@ useEffect(() => {
                   ))}
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-4">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 text-sm"
+                    className="flex items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl shadow-blue-900/50 text-[15px] uppercase tracking-wider"
                   >
                     Enquire Now
                   </button>
                   <button 
                     onClick={() => setShowDemoModal(true)}
-                    className="flex items-center gap-2 bg-white text-slate-900 hover:bg-blue-50 font-bold px-5 py-3 rounded-xl transition-all duration-200 shadow-lg text-sm border border-white/20"
+                    className="flex items-center gap-3 bg-white text-slate-900 hover:bg-blue-50 font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl text-[15px] border border-white/20 uppercase tracking-wider"
                   >
-                    <CalendarDays className="w-4 h-4 text-blue-600" />
+                    <CalendarDays className="w-5 h-5 text-blue-600" />
                     Book a Free Demo
                   </button>
-                  <button onClick={() => setShowMobileSheet(true)} className="lg:hidden flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-5 py-3 rounded-xl border border-white/15 transition-all duration-200 text-sm">
-                    <Menu className="w-4 h-4" /> Browse Courses
+                  <button onClick={() => setShowMobileSheet(true)} className="lg:hidden flex items-center gap-3 bg-white/10 hover:bg-white/20 text-white font-bold px-8 py-4 rounded-2xl border border-white/15 transition-all duration-300 text-[15px] uppercase tracking-wider">
+                    <Menu className="w-5 h-5" /> Browse Courses
                   </button>
                 </div>
               </motion.div>
 
               {/* Right: Video — desktop only */}
               {videos.length > 0 && (
-           // AFTER — constrained size
-<motion.div
-  initial={{ opacity: 0, x: 30 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.55, delay: 0.15 }}
-className="hidden lg:block w-full max-w-[400px] shrink-0 overflow-hidden"
->
-  <VideoSection videos={videos} />
-</motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, x: 40 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  transition={{ duration: 0.65, delay: 0.2 }}
+                  className="hidden lg:block w-full max-w-[650px] shrink-0 overflow-hidden ml-auto"
+                >
+                  <div className="relative group">
+                    {/* Glowing effect behind video */}
+                    <div className="absolute -inset-4 bg-blue-600/30 rounded-[40px] blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-500" />
+                    <VideoSection videos={videos} />
+                  </div>
+                </motion.div>
               )}
             </div>
 

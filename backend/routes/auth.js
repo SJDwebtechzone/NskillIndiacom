@@ -167,7 +167,8 @@ router.get("/me", async (req, res) => {
     const userResult = await pool.query(
       `SELECT u.id, u.name AS full_name, u.email AS email_id, u.phone_number, u.dob AS date_of_birth,
               sp.gender, sp.location, sp.country, sp.hometown, sp.college_name, sp.degree AS course_name, sp.photo_url, sp.resume_url,
-              sp.internships, sp.projects, sp.employment_history, sp.certifications, sp.preferred_job_type, sp.availability, sp.preferred_location, sp.education_history
+              sp.internships, sp.projects, sp.employment_history, sp.certifications, sp.preferred_job_type, sp.availability, sp.preferred_location, sp.education_history,
+              sp.skills, sp.languages, sp.profile_summary, sp.academic_achievements
        FROM users u
        LEFT JOIN student_profiles sp ON u.id = sp.user_id
        WHERE u.id = $1`,

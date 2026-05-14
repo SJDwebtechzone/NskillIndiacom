@@ -90,9 +90,11 @@ router.post("/apply", upload.single("resume"), async (req, res) => {
 router.get("/applications", async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, job_id, name, email, location, qualification, skills, experience, 
-              resume_filename, resume_mimetype, applied_at 
-       FROM job_applications ORDER BY applied_at DESC`
+      `SELECT ja.id, ja.job_id, ja.name, ja.email, ja.location, ja.qualification, ja.skills, ja.experience, 
+              ja.resume_filename, ja.resume_mimetype, ja.applied_at, j.title as job_title
+       FROM job_applications ja
+       LEFT JOIN jobs j ON ja.job_id = j.id
+       ORDER BY ja.applied_at DESC`
     );
     res.json(result.rows);
   } catch (err) {
@@ -120,6 +122,18 @@ router.get("/resume/:id", async (req, res) => {
     res.send(resume_data);
   } catch (err) {
     console.error("GET /resume/:id error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ DELETE APPLICATION
+router.delete("/application/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM job_applications WHERE id = $1", [id]);
+    res.json({ message: "Application deleted" });
+  } catch (err) {
+    console.error("DELETE /application/:id error:", err);
     res.status(500).json({ error: err.message });
   }
 });

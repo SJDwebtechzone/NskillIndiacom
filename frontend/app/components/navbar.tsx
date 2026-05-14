@@ -26,11 +26,6 @@ interface CategoryMenu {
   title: string;
   items: CourseMenuItem[];
 }
-interface HoveredCourse {
-  name: string;
-  img: string;
-  cat: string;
-}
 
 // ─── Category order ───────────────────────────────────────────────────────────
 const CATEGORY_ORDER = [
@@ -45,58 +40,22 @@ const CATEGORY_ORDER = [
   "Oil & Gas",
 ];
 
-// ─── Fallback images per category ────────────────────────────────────────────
-const CATEGORY_FALLBACK: Record<string, string> = {
-  "HVAC & Refrigeration": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80",
-  "Electrical": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80",
-  "Plumbing": "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80",
-  "Welding": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-  "Home Appliance": "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=80",
-  "MEP": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=80",
-  "Quality": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
-  "Safety": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
-  "Oil & Gas": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-};
-const DEFAULT_FALLBACK = "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80";
+
 
 // ─── Course link ──────────────────────────────────────────────────────────────
 function CourseLink({
   course,
-  category,
   onClose,
-  onHover,
-  onHoverEnd,
 }: {
   course: CourseMenuItem;
-  category: string;
   onClose: () => void;
-  onHover: (data: HoveredCourse) => void;
-  onHoverEnd: () => void;
 }) {
-  const imgSrc = course.thumbnail_url
-    || CATEGORY_FALLBACK[category]
-    || DEFAULT_FALLBACK;
-
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleMouseEnter = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    onHover({ name: course.name, img: imgSrc, cat: category });
-  };
-
-  const handleMouseLeave = () => {
-    // Small delay so image doesn't flash when moving between course items
-    timerRef.current = setTimeout(onHoverEnd, 150);
-  };
-
   return (
     <li>
       <Link
         href={`/courses/${course.id}`}
         className="flex items-center gap-2 p-1 px-3 rounded-md hover:bg-slate-50 text-[#0b1f3a] hover:text-blue-700 transition-all group/item"
         onClick={onClose}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
       >
         <span className="text-sm font-medium uppercase tracking-tight block flex-1">
           {course.name}
@@ -121,7 +80,6 @@ const Navbar = () => {
   const [isCoursesMenuOpen, setIsCoursesMenuOpen] = useState(false);
   const [skillTrainingMenu, setSkillTrainingMenu] = useState<CategoryMenu[]>([]);
   const [menuLoading, setMenuLoading] = useState(true);
-  const [hoveredCourse, setHoveredCourse] = useState<HoveredCourse | null>(null);
   const coursesMenuRef = useRef<HTMLDivElement>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
@@ -174,7 +132,6 @@ const Navbar = () => {
         !coursesMenuRef.current.contains(event.target as Node)
       ) {
         setIsCoursesMenuOpen(false);
-        setHoveredCourse(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -183,7 +140,6 @@ const Navbar = () => {
 
   const closeMegaMenu = () => {
     setIsCoursesMenuOpen(false);
-    setHoveredCourse(null);
   };
 
   if (pathname?.startsWith("/login") || pathname?.startsWith("/dashboard")) {
@@ -209,21 +165,21 @@ const Navbar = () => {
 
       {/* ── Top Bar ── */}
       {/* ── Top Bar ── */}
-      <div className="bg-[#0b1f3a] text-white py-2 px-4 md:px-6 text-[10px] sm:text-xs font-medium">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1">
+      <div className="bg-[#0b1f3a] text-white py-3 px-4 md:px-6 text-xs sm:text-sm font-medium">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
           {/* Left side — hours + contact */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
             {/* Business hours — always visible */}
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
-              <Clock size={12} className="text-blue-400 shrink-0" />
+            <span className="flex items-center gap-2 whitespace-nowrap">
+              <Clock size={14} className="text-blue-400 shrink-0" />
               Business Hours : 9.30 am to 7.00 pm
             </span>
 
             <span className="text-white/20 hidden sm:inline">|</span>
 
             {/* Phone numbers — hidden on xs, show on sm+ */}
-            <span className="hidden sm:flex items-center gap-1.5 whitespace-nowrap">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+            <span className="hidden sm:flex items-center gap-2 whitespace-nowrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                 stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
               </svg>
@@ -239,8 +195,8 @@ const Navbar = () => {
             <span className="text-white/20 hidden md:inline">|</span>
 
             {/* Email — hidden on xs+sm, show on md+ */}
-            <span className="hidden md:flex items-center gap-1.5 whitespace-nowrap">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+            <span className="hidden md:flex items-center gap-2 whitespace-nowrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                 stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
@@ -258,8 +214,8 @@ const Navbar = () => {
               onMouseEnter={() => setIsLoginMenuOpen(true)}
               onMouseLeave={() => setIsLoginMenuOpen(false)}
             >
-              <button className="flex items-center gap-1.5 text-white hover:text-blue-300 transition-colors uppercase tracking-wider text-[10px] md:text-xs whitespace-nowrap">
-                <Lock size={13} />
+              <button className="flex items-center gap-1.5 text-white hover:text-blue-300 transition-colors uppercase tracking-widest text-xs md:text-sm whitespace-nowrap font-bold">
+                <Lock size={15} />
                 Login Access
               </button>
 
@@ -305,8 +261,8 @@ const Navbar = () => {
               alt="NSKILL Logo"
               width={210}
               height={48}
-              className="object-contain h-[48px] w-auto -ml-6 scale-125"
-              style={{ width: 'auto', height: '48px' }}
+              className="object-contain h-[40px] md:h-[48px] w-auto md:-ml-6 scale-110 md:scale-125"
+              style={{ width: 'auto' }}
               priority
             />
           </Link>
@@ -320,7 +276,6 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         setIsCoursesMenuOpen(!isCoursesMenuOpen);
-                        setHoveredCourse(null);
                       }}
                       className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap ${isCoursesMenuOpen
                           ? "text-blue-600"
@@ -341,11 +296,8 @@ const Navbar = () => {
                           : "opacity-0 scale-95 invisible"
                         }`}
                     >
-                      {/* ── Course list — fades out when course is hovered ── */}
-                      <div
-                        className={`transition-opacity duration-200 ${hoveredCourse ? "opacity-0" : "opacity-100"
-                          }`}
-                      >
+                      {/* ── Course list ── */}
+                      <div>
                         <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
 
                           {menuLoading ? (
@@ -361,7 +313,7 @@ const Navbar = () => {
                               No courses available
                             </div>
                           ) : (
-                            <div className="grid grid-cols-3 gap-6 max-h-[400px] overflow-y-auto pr-2">
+                            <div className="grid grid-cols-3 gap-x-10 gap-y-12 py-4">
                               {skillTrainingMenu.map((section, index) => (
                                 <div key={index} className="space-y-2">
                                   <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
@@ -375,10 +327,7 @@ const Navbar = () => {
                                       <CourseLink
                                         key={i}
                                         course={course}
-                                        category={section.title}
                                         onClose={closeMegaMenu}
-                                        onHover={setHoveredCourse}
-                                        onHoverEnd={() => setHoveredCourse(null)}
                                       />
                                     ))}
                                   </ul>
@@ -402,40 +351,6 @@ const Navbar = () => {
                           </div>
                         </div>
                       </div>
-
-                      {/* ── Image preview inside mega menu — shown on hover ── */}
-                      {/* ── Image preview inside mega menu — shown on hover ── */}
-                      {hoveredCourse && (
-                        <div
-                          className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none"
-                        >
-                          <img
-                            src={hoveredCourse.img}
-                            alt={hoveredCourse.name}
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Gradient overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                          {/* Text at bottom */}
-                          <div className="absolute bottom-0 left-0 right-0 px-8 py-8">
-                            <p className="text-[11px] font-black uppercase tracking-widest text-blue-300 mb-2">
-                              {hoveredCourse.cat}
-                            </p>
-                            <p className="text-white font-black text-2xl leading-snug mb-2">
-                              {hoveredCourse.name}
-                            </p>
-                            <p className="text-white/60 text-sm font-medium">
-                              Click to view full course details →
-                            </p>
-                          </div>
-                          {/* Category badge top right */}
-                          <div className="absolute top-5 right-5">
-                            <span className="bg-blue-600/80 backdrop-blur text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
-                              {hoveredCourse.cat}
-                            </span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
                 ) : (
@@ -476,13 +391,14 @@ const Navbar = () => {
           }`}
       >
         <div className="flex justify-between items-center p-6 mb-4">
-          <Link href="/" onClick={() => setIsMenuOpen(false)}>
+          <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center">
             <Image
               src="/logo.png"
               alt="NSKILL Logo"
-              width={200}
-              height={60}
-              className="object-contain"
+              width={180}
+              height={40}
+              className="object-contain h-[40px] w-auto"
+              style={{ width: 'auto' }}
             />
           </Link>
           <button

@@ -158,7 +158,7 @@ const Footer = () => {
                 { name: "All Courses", href: "/courses" },
                 { name: "Course Calendar", href: "/course_calender" },
                 { name: "Placements", href: "/placements/profile" },
-                { name: "Recommended jobs", href: "/placements/recommended-jobs" },
+                { name: "Recommended Jobs", href: "/placements/recommended-jobs" },
                 { name: "Infrastructure", href: "/infrastructure" },
                 { name: "Contact Us", href: "/contact" },
                 { name: "Blogs", href: "/blog" },
