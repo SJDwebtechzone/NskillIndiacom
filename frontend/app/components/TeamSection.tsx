@@ -200,10 +200,10 @@ const TeamSection = () => {
   return (
     <section
       ref={ref}
-      className="py-28 bg-gradient-to-b from-white to-slate-100 relative overflow-hidden"
+      className="pt-12 pb-28 bg-gradient-to-b from-blue-50 via-white to-blue-50 relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 w-96 h-96 bg-violet-400/10 blur-[140px] rounded-full -mr-40 -mt-40 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400/10 blur-[140px] rounded-full -ml-40 -mb-40 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 blur-[140px] rounded-full -mr-40 -mt-40 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-sky-400/10 blur-[140px] rounded-full -ml-40 -mb-40 pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
 
@@ -223,10 +223,10 @@ const TeamSection = () => {
           </div>
 
           <h2
-            className="text-4xl md:text-5xl font-black text-[#0b1f3a] mb-5 leading-tight"
+            className="text-4xl md:text-5xl font-black mb-5 leading-tight uppercase tracking-tighter"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Our Team
+            <span className="text-blue-600">Our</span> <span className="text-red-600">Team</span>
           </h2>
 
           <p className="text-slate-500 max-w-xl mx-auto text-base font-light leading-relaxed">
@@ -235,7 +235,7 @@ const TeamSection = () => {
         </motion.div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {team.map((member, i) => (
             <motion.div
               key={member.name}
@@ -244,14 +244,14 @@ const TeamSection = () => {
               transition={{ duration: 0.7, delay: i * 0.15 }}
               className="group"
             >
-              <div className="relative flex flex-col bg-white rounded-3xl p-7 border border-slate-100 shadow-sm hover:-translate-y-2 hover:shadow-lg transition-all duration-300 h-full overflow-hidden">
+              <div className="relative flex flex-col bg-white rounded-[40px] p-10 border border-blue-50 shadow-sm hover:-translate-y-4 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 h-full overflow-hidden group/card">
 
                 {/* Hover accent bar */}
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-violet-500 to-sky-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl" />
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-red-600 to-blue-600 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 rounded-t-[40px]" />
 
                 {/* Avatar */}
-                <div className="flex justify-center mb-5">
-                  <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-white shadow-md">
+                <div className="flex justify-center mb-8">
+                  <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-blue-600 shadow-lg group-hover/card:ring-red-600 group-hover/card:scale-110 transition-all duration-500">
                     <img
                       src={member.image}
                       alt={member.name}
@@ -262,8 +262,8 @@ const TeamSection = () => {
                         target.style.display = "none";
                         const parent = target.parentElement!;
                         parent.classList.add(
-                          "bg-violet-100", "flex", "items-center",
-                          "justify-center", "text-violet-700",
+                          "bg-blue-100", "flex", "items-center",
+                          "justify-center", "text-blue-700",
                           "text-2xl", "font-bold"
                         );
                         parent.innerText = member.name

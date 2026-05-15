@@ -278,8 +278,8 @@ const Navbar = () => {
                         setIsCoursesMenuOpen(!isCoursesMenuOpen);
                       }}
                       className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap ${isCoursesMenuOpen
-                          ? "text-blue-600"
-                          : "text-[#0b1f3a] hover:text-blue-600"
+                          ? "text-red-600"
+                          : "text-blue-600 hover:text-red-600"
                         }`}
                     >
                       {item.name}
@@ -291,7 +291,7 @@ const Navbar = () => {
 
                     {/* ── Mega Menu ── */}
                     <div
-                      className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[95vw] max-w-5xl bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.18)] z-50 border border-slate-100 overflow-hidden transition-all duration-300 origin-top ${isCoursesMenuOpen
+                      className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[98vw] max-w-7xl bg-white rounded-[40px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] z-50 border border-slate-100 overflow-hidden transition-all duration-500 origin-top ${isCoursesMenuOpen
                           ? "opacity-100 scale-100 visible"
                           : "opacity-0 scale-95 invisible"
                         }`}
@@ -313,12 +313,12 @@ const Navbar = () => {
                               No courses available
                             </div>
                           ) : (
-                            <div className="grid grid-cols-3 gap-x-10 gap-y-12 py-4">
+                            <div className="grid grid-cols-4 gap-x-8 gap-y-12 py-6">
                               {skillTrainingMenu.map((section, index) => (
                                 <div key={index} className="space-y-2">
                                   <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
                                     <div className="w-1 h-4 bg-blue-600 rounded-full" />
-                                    <h4 className="text-base font-bold text-slate-800 tracking-wide uppercase">
+                                    <h4 className="text-base font-black tracking-wide uppercase text-blue-600 hover:text-red-600 transition-colors cursor-default">
                                       {section.title}
                                     </h4>
                                   </div>
@@ -356,7 +356,7 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
-                    className="px-2 xl:px-3 py-2 font-semibold text-[#0b1f3a] hover:text-blue-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
+                    className="px-2 xl:px-3 py-2 font-semibold text-blue-600 hover:text-red-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
@@ -415,7 +415,7 @@ const Navbar = () => {
               <Link
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-4 py-3 text-lg font-bold text-[#0b1f3a] hover:bg-blue-50 hover:text-blue-600 rounded-xl transition"
+                className="block px-4 py-3 text-lg font-bold text-blue-600 hover:bg-red-50 hover:text-red-600 rounded-xl transition"
               >
                 {item.name}
               </Link>

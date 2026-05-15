@@ -51,8 +51,8 @@ const AboutSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <h2 className="text-3xl md:text-4xl font-black text-[#0b1f3a] mb-4 tracking-tight uppercase">
-            About Us
+          <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight uppercase">
+            <span className="text-blue-600">About</span> <span className="text-red-600">Us</span>
           </h2>
           <div className="w-16 h-1 bg-blue-600 mx-auto rounded-full" />
         </motion.div>
@@ -100,7 +100,9 @@ const AboutSection = () => {
               <ShieldCheck className="w-3 h-3" /> Established 2012
             </div>
             <div>
-              <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NIILE Solution</h3>
+              <h3 className="text-2xl font-black mb-2">
+                <span className="text-blue-600">NIILE</span> <span className="text-red-600">Solution</span>
+              </h3>
               <div className="w-12 h-1 bg-blue-900 rounded-full" />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed text-justify">
@@ -126,7 +128,9 @@ const AboutSection = () => {
           {/* Text — second on mobile, first on desktop */}
           <div className="flex flex-col justify-center px-6 md:px-12 py-10 gap-5 flex-1 order-2 md:order-1">
             <div>
-              <h3 className="text-2xl font-black text-[#0b1f3a] mb-2">NTSC Training</h3>
+              <h3 className="text-2xl font-black mb-2">
+                <span className="text-blue-600">NTSC</span> <span className="text-red-600">Training</span>
+              </h3>
               <div className="w-12 h-1 bg-blue-900 rounded-full" />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed text-justify">
@@ -220,8 +224,9 @@ const AboutSection = () => {
 
               {/* Body */}
               <div className="flex flex-col flex-1 p-6 gap-3 relative z-10">
-                <h3 className="text-base font-black text-[#0b1f3a] uppercase tracking-tight">
-                  {s.title}
+                <h3 className="text-base font-black uppercase tracking-tight">
+                  <span className="text-blue-600">{s.title.split(' ')[0]}</span>{' '}
+                  <span className="text-red-600">{s.title.split(' ').slice(1).join(' ')}</span>
                 </h3>
                 <p className="text-slate-500 text-sm leading-relaxed flex-1 text-justify">{s.desc}</p>
               </div>

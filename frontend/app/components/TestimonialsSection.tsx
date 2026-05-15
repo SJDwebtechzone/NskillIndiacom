@@ -74,8 +74,8 @@ export default function TestimonialsSection() {
           <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">
             Success Stories
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-            What Our Students Say
+          <h2 className="text-3xl md:text-4xl font-black mb-6 tracking-tight uppercase">
+            <span className="text-blue-600">What Our</span> <span className="text-red-600">Students Say</span>
           </h2>
           <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
             Real experiences from students who transformed their careers with us

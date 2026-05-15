@@ -1853,7 +1853,12 @@ export default function CourseDetailClient({
     .map((item: string) => item.replace(/^-\s*/, "").trim())
     .filter(Boolean);
 
- const videos = course.videos ?? [];
+  const videos = [...(course.videos ?? [])].sort((a: any, b: any) => {
+    const order = ["Intro", "Demo", "Full", "Testimonial"];
+    const idxA = order.indexOf(a.type);
+    const idxB = order.indexOf(b.type);
+    return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+  });
 const [particles, setParticles] = useState<any[]>([]);
 // ── Glowing particles ──
 useEffect(() => {
@@ -1944,15 +1949,15 @@ useEffect(() => {
 
               {/* Left: Text */}
               <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.65 }}>
-                <div className="flex items-center gap-2 mb-6 text-blue-400 text-sm font-bold uppercase tracking-[0.2em] flex-wrap">
-                  <Link href="/" className="hover:text-white transition">Home</Link>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                  <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-white transition truncate max-w-[140px]">{course.category}</Link>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                  <span className="text-white/40 truncate max-w-[180px]">{course.title}</span>
+                <div className="flex items-center gap-2 mb-6 text-white text-sm font-bold uppercase tracking-[0.2em] flex-wrap">
+                  <Link href="/" className="hover:text-blue-400 transition">Home</Link>
+                  <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+                  <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-blue-400 transition truncate max-w-[140px]">{course.category}</Link>
+                  <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+                  <span className="opacity-40 truncate max-w-[180px]">{course.title}</span>
                 </div>
 
-                <div className="inline-flex items-center gap-2.5 bg-blue-600/30 border border-blue-400/40 text-blue-100 text-[11px] font-black uppercase tracking-[0.25em] px-5 py-2 rounded-full mb-6 backdrop-blur-md">
+                <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 text-white text-[11px] font-black uppercase tracking-[0.25em] px-5 py-2 rounded-full mb-6 backdrop-blur-md">
                   <BookOpen className="w-4 h-4" />
                   {course.category}
                 </div>

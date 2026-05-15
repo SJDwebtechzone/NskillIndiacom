@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, FormEvent, useRef } from "react";
+import { useState, FormEvent, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Briefcase, MapPin, ArrowRight, Loader2 } from "lucide-react";
 
 type FormType = {
   name: string;
   email: string;
+  mobile_number: string;
   location: string;
   qualification: string;
   skills: string;
@@ -15,6 +17,16 @@ type FormType = {
 type SubmittedType = FormType & {
   resume_filename: string;
 };
+
+interface Job {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  job_type?: string;
+  description: string;
+}
 
 
 
@@ -27,6 +39,7 @@ export default function ApplyPage() {
   const [form, setForm] = useState<FormType>({
     name: "",
     email: "",
+    mobile_number: "",
     location: "",
     qualification: "",
     skills: "",
@@ -38,7 +51,22 @@ export default function ApplyPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<SubmittedType | null>(null);
   const [fileError, setFileError] = useState("");
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+  const [recommendedJobs, setRecommendedJobs] = useState<Job[]>([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+
+  const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
+  useEffect(() => {
+    fetch(`${API}/api/jobs/jobs`)
+      .then(res => res.json())
+      .then(data => {
+        // Filter out current job and limit to 4
+        const others = (data || []).filter((j: Job) => String(j.id) !== id).slice(0, 4);
+        setRecommendedJobs(others);
+      })
+      .catch(err => console.error("Error fetching jobs:", err))
+      .finally(() => setLoadingJobs(false));
+  }, [id, API]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setFileError("");
@@ -73,6 +101,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
     formData.append("job_id", id);
     formData.append("name", form.name);
     formData.append("email", form.email);
+    formData.append("mobile_number", form.mobile_number);
     formData.append("location", form.location);
     formData.append("qualification", form.qualification);
     formData.append("skills", form.skills);
@@ -133,8 +162,11 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
   // ── FORM VIEW ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f8f9fc] flex items-start justify-center px-4 py-8 sm:py-12 font-[Segoe_UI,sans-serif]">
-      <div className="bg-white border border-[#eff1f6] rounded-[32px] w-full max-w-3xl overflow-hidden shadow-[0_8px_30px_rgba(47,85,228,0.06)]">
+    <div className="min-h-screen bg-[#f8f9fc] px-4 py-8 sm:py-12 font-[Segoe_UI,sans-serif]">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        
+        {/* Left: Application Form */}
+        <div className="bg-white border border-[#eff1f6] rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgba(47,85,228,0.06)]">
 
         {/* Header */}
         <div className="px-6 sm:px-10 pt-10 pb-6">
@@ -158,7 +190,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
         <form onSubmit={handleSubmit} className="px-6 sm:px-10 pt-8 pb-10 flex flex-col gap-6">
 
           {/* Row 1 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="flex flex-col gap-2">
               <label className="text-[14px] font-bold text-[#4b5563]">
                 Full Name <span className="text-red-500 ml-0.5">*</span>
@@ -182,6 +214,19 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[14px] font-bold text-[#4b5563]">
+                Mobile Number <span className="text-red-500 ml-0.5">*</span>
+              </label>
+              <input
+                className="h-12 px-4 border border-[#eff1f6] rounded-xl text-[15px] font-semibold text-[#111827] bg-[#f6f7fb] outline-none focus:bg-white focus:border-[#2f55e4] focus:ring-2 focus:ring-[#e8f0fb] transition-all placeholder:text-[#a0a5ba] placeholder:font-medium"
+                type="tel"
+                placeholder="e.g. +91 98765 43210"
+                required
+                value={form.mobile_number}
+                onChange={(e) => setForm({ ...form, mobile_number: e.target.value })}
               />
             </div>
           </div>
@@ -309,6 +354,83 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
         </form>
       </div>
+
+      {/* Right: Recommended Jobs Sidebar */}
+      <aside className="flex flex-col gap-6 sticky top-8">
+        <div className="flex items-center justify-between px-2">
+          <h2 className="text-[20px] font-black text-[#111827] tracking-tight">Recommended Jobs</h2>
+          <button 
+            onClick={() => router.push('/placements/profile')}
+            className="text-[13px] font-bold text-[#2f55e4] hover:underline"
+          >
+            View all
+          </button>
+        </div>
+
+        {loadingJobs ? (
+          <div className="bg-white border border-[#eff1f6] rounded-[28px] p-12 flex flex-col items-center justify-center gap-3">
+            <Loader2 className="w-6 h-6 text-[#2f55e4] animate-spin" />
+            <p className="text-[13px] font-bold text-[#7c829c]">Loading opportunities...</p>
+          </div>
+        ) : recommendedJobs.length === 0 ? (
+          <div className="bg-white border border-[#eff1f6] rounded-[28px] p-10 text-center">
+            <p className="text-[14px] font-bold text-[#7c829c]">No other matching jobs at the moment.</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {recommendedJobs.map((job) => (
+              <div 
+                key={job.id}
+                onClick={() => router.push(`/placements/job/${job.id}`)}
+                className="group bg-white border border-[#eff1f6] rounded-[28px] p-6 hover:border-[#2f55e4] hover:shadow-xl hover:shadow-[#2f55e4]/5 transition-all cursor-pointer"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#f6f7fb] flex items-center justify-center text-[18px] font-black text-[#2f55e4] group-hover:bg-[#2f55e4] group-hover:text-white transition-colors">
+                    {job.company[0]}
+                  </div>
+                  <div className="bg-[#e3f4ec] text-[#059669] px-3 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider">
+                    {job.job_type || "Full Time"}
+                  </div>
+                </div>
+                
+                <h3 className="text-[17px] font-black text-[#111827] group-hover:text-[#2f55e4] transition-colors mb-1 line-clamp-1">
+                  {job.title}
+                </h3>
+                <p className="text-[14px] font-bold text-[#7c829c] mb-4">{job.company}</p>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-[#f6f7fb]">
+                  <div className="flex items-center gap-2 text-[13px] font-bold text-[#4b5563]">
+                    <MapPin className="w-3.5 h-3.5 text-[#a0a5ba]" />
+                    {job.location}
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-[#f6f7fb] flex items-center justify-center group-hover:bg-[#2f55e4] group-hover:text-white transition-all">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Promotion Card */}
+        <div className="bg-gradient-to-br from-[#2f55e4] to-[#7c9bff] rounded-[32px] p-8 text-white relative overflow-hidden shadow-xl shadow-[#2f55e4]/20">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+          <div className="relative z-10">
+            <h4 className="text-[20px] font-black mb-2 tracking-tight">Need help?</h4>
+            <p className="text-[14px] font-medium text-white/80 mb-6 leading-relaxed">
+              Our career experts are here to help you find the perfect role.
+            </p>
+            <button 
+              onClick={() => router.push('/contact')}
+              className="bg-white text-[#2f55e4] px-6 py-2.5 rounded-xl text-[13px] font-black hover:bg-white/90 transition-all active:scale-95"
+            >
+              Get Guidance
+            </button>
+          </div>
+        </div>
+      </aside>
+
     </div>
-  );
+  </div>
+);
 }

@@ -210,7 +210,7 @@ function CoursesPageContent() {
     : allCategories;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pt-32 pb-24">
+    <div className="min-h-screen bg-[#f8fafc] pt-16 pb-24">
       <div className="container mx-auto px-6">
 
         {/* Header */}
@@ -230,12 +230,10 @@ function CoursesPageContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl font-black text-slate-900 leading-tight mb-8 tracking-tight"
+            className="text-5xl md:text-6xl font-black leading-tight mb-8 tracking-tight"
           >
-            Master New Skills <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-              Shape Your Future
-            </span>
+            <span className="text-blue-600">Master New Skills</span> <br />
+            <span className="text-red-600">Shape Your Future</span>
           </motion.h1>
 
           <motion.p
@@ -294,8 +292,8 @@ function CoursesPageContent() {
                 <div key={category}>
                   <div className="flex items-center gap-6 mb-8">
                     <div>
-                      <h2 className="text-2xl font-black text-slate-800 tracking-tight">
-                        {category} Courses
+                      <h2 className="text-2xl font-black tracking-tight">
+                        <span className="text-blue-600">{category}</span> <span className="text-red-600">Courses</span>
                       </h2>
                       <p className="text-sm text-slate-400 font-medium mt-0.5">
                         {categoryCourses.length} programs available

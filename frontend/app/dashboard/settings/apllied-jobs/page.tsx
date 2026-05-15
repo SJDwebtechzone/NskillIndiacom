@@ -16,7 +16,8 @@ import {
   MoreHorizontal,
   Mail,
   User,
-  Trash2
+  Trash2,
+  Phone
 } from "lucide-react";
 
 interface Applicant {
@@ -24,6 +25,7 @@ interface Applicant {
   job_id: number;
   name: string;
   email: string;
+  mobile_number: string;
   location: string;
   qualification: string;
   skills: string;
@@ -113,6 +115,7 @@ export default function AdminApplicationsPage() {
     const matchSearch =
       a.name.toLowerCase().includes(search.toLowerCase()) ||
       a.email.toLowerCase().includes(search.toLowerCase()) ||
+      (a.mobile_number || "").toLowerCase().includes(search.toLowerCase()) ||
       a.skills.toLowerCase().includes(search.toLowerCase()) ||
       (a.job_title || "").toLowerCase().includes(search.toLowerCase());
     const matchJob = filterJob === "all" || a.job_id === Number(filterJob);
@@ -232,28 +235,54 @@ export default function AdminApplicationsPage() {
                 ) : (
                   filtered.map((applicant) => (
                     <tr key={applicant.id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0">
-                            {getInitials(applicant.name)}
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center font-black text-indigo-600 shrink-0 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                              {getInitials(applicant.name)}
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                              <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                            </div>
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-slate-900 truncate">{applicant.name}</p>
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                              <Mail className="w-3 h-3" />
-                              <span className="truncate">{applicant.email}</span>
+                            <p className="text-[15px] font-black text-slate-900 truncate mb-1.5 leading-none">
+                              {applicant.name}
+                            </p>
+                            <div className="flex flex-col gap-1.5">
+                              <a 
+                                href={`mailto:${applicant.email}`} 
+                                className="flex items-center gap-2 text-[12px] font-bold text-slate-500 hover:text-indigo-600 transition-colors"
+                              >
+                                <Mail className="w-3.5 h-3.5 text-slate-400" />
+                                <span className="truncate">{applicant.email}</span>
+                              </a>
+                              <a 
+                                href={applicant.mobile_number ? `tel:${applicant.mobile_number}` : "#"} 
+                                className={`flex items-center gap-2 text-[12px] font-bold transition-colors ${
+                                  applicant.mobile_number 
+                                    ? 'text-slate-500 hover:text-indigo-600' 
+                                    : 'text-slate-300 italic pointer-events-none'
+                                }`}
+                              >
+                                <Phone className={`w-3.5 h-3.5 ${applicant.mobile_number ? 'text-slate-400' : 'text-slate-200'}`} />
+                                <span className="truncate">{applicant.mobile_number || "Phone not provided"}</span>
+                              </a>
                             </div>
                           </div>
                         </div>
                       </td>
                       
-                      <td className="px-6 py-4 hidden md:table-cell">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
-                            <MapPin className="w-3 h-3" /> {applicant.location || "N/A"}
+                      <td className="px-6 py-5 hidden md:table-cell">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2 text-[12px] font-bold text-slate-600">
+                            <MapPin className="w-3.5 h-3.5 text-slate-400" /> {applicant.location || "Location N/A"}
                           </div>
-                          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
-                            <GraduationCap className="w-3 h-3" /> {applicant.qualification || "N/A"}
+                          <div className="flex items-center gap-2 text-[12px] font-bold text-slate-600">
+                            <GraduationCap className="w-3.5 h-3.5 text-slate-400" /> {applicant.qualification || "Qualification N/A"}
+                          </div>
+                          <div className="flex items-center gap-2 text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded w-fit uppercase tracking-wider">
+                            <Briefcase className="w-3 h-3" /> {applicant.experience || "Freshers"}
                           </div>
                         </div>
                       </td>
@@ -273,11 +302,14 @@ export default function AdminApplicationsPage() {
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{timeAgo(applicant.applied_at)}</span>
-                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-tighter text-right max-w-[120px] truncate">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center justify-between gap-6">
+                          <div className="flex flex-col items-end shrink-0">
+                            <div className="flex items-center gap-1 text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                              <Clock className="w-3 h-3" />
+                              {timeAgo(applicant.applied_at)}
+                            </div>
+                            <span className="text-[12px] font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 max-w-[140px] truncate shadow-sm">
                               {applicant.job_title || `Job #${applicant.job_id}`}
                             </span>
                           </div>

@@ -40,17 +40,17 @@ const getVideoUrl = (videoUrl: string) =>
   if (loading || videos.length === 0) return null;
 
   return (
-    <section className="w-full py-16 bg-[#0b1f3a]">
+    <section className="w-full py-16 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <p className="text-blue-300 font-semibold text-sm uppercase tracking-widest mb-2">
+          <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">
             🎬 Video Testimonials
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Hear It From Our Students
+          <h2 className="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tight">
+            <span className="text-blue-600">Hear It From</span> <span className="text-red-600">Our Students</span>
           </h2>
-          <p className="text-slate-400 mt-3 max-w-xl mx-auto text-sm">
+          <p className="text-slate-500 mt-3 max-w-xl mx-auto text-sm">
             Real video stories from students who built their careers with us
           </p>
         </div>
@@ -65,7 +65,7 @@ const getVideoUrl = (videoUrl: string) =>
             return (
               <div
                 key={v.id}
-                className="rounded-2xl overflow-hidden border border-white/10 bg-[#0f2a4a] hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/30"
+                className="rounded-2xl overflow-hidden border border-slate-100 bg-white shadow-sm hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/10"
               >
                 {/* Video Player */}
                 <div className="relative bg-black aspect-video">
@@ -109,7 +109,7 @@ const getVideoUrl = (videoUrl: string) =>
                 {/* Card Info */}
                 <div className="p-4">
                   {v.description && (
-                    <p className="text-blue-100 text-sm italic mb-3 line-clamp-2">
+                    <p className="text-slate-600 text-sm italic mb-3 line-clamp-2">
                       "{v.description}"
                     </p>
                   )}
@@ -123,8 +123,8 @@ const getVideoUrl = (videoUrl: string) =>
                       </div>
                     )}
                     <div>
-                      <p className="font-semibold text-white text-sm">{v.full_name}</p>
-                      <p className="text-xs text-blue-300 font-medium">{v.course_name}</p>
+                      <p className="font-semibold text-slate-900 text-sm">{v.full_name}</p>
+                      <p className="text-xs text-blue-600 font-medium">{v.course_name}</p>
                     </div>
                   </div>
                 </div>

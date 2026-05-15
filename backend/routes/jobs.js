@@ -61,7 +61,7 @@ router.delete("/:id", async (req, res) => {
 // ✅ APPLY FOR JOB
 router.post("/apply", upload.single("resume"), async (req, res) => {
   try {
-    const { job_id, name, email, location, qualification, skills, experience } = req.body;
+    const { job_id, name, email, mobile_number, location, qualification, skills, experience } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: "Resume file is required" });
@@ -69,10 +69,10 @@ router.post("/apply", upload.single("resume"), async (req, res) => {
 
     await pool.query(
       `INSERT INTO job_applications 
-        (job_id, name, email, location, qualification, skills, experience, resume_filename, resume_data, resume_mimetype)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        (job_id, name, email, mobile_number, location, qualification, skills, experience, resume_filename, resume_data, resume_mimetype)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
-        job_id, name, email, location, qualification, skills, experience,
+        job_id, name, email, mobile_number, location, qualification, skills, experience,
         req.file.originalname,
         req.file.buffer,
         req.file.mimetype,
@@ -90,7 +90,7 @@ router.post("/apply", upload.single("resume"), async (req, res) => {
 router.get("/applications", async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT ja.id, ja.job_id, ja.name, ja.email, ja.location, ja.qualification, ja.skills, ja.experience, 
+      `SELECT ja.id, ja.job_id, ja.name, ja.email, ja.mobile_number, ja.location, ja.qualification, ja.skills, ja.experience, 
               ja.resume_filename, ja.resume_mimetype, ja.applied_at, j.title as job_title
        FROM job_applications ja
        LEFT JOIN jobs j ON ja.job_id = j.id
