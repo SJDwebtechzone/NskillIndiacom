@@ -62,7 +62,7 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-blue-50 overflow-hidden"
+          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-white overflow-hidden"
         >
           {/* Image panel */}
           <div
@@ -112,7 +112,7 @@ const AboutSection = () => {
             </p>
             <p className="text-slate-500 text-sm leading-relaxed text-justify">
               As a strategic expansion aligning with the Skill India Mission, NIILE Solutions started{" "}
-              <strong className="text-[#0b1f3a]">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
+              <strong className="text-[#0b1f3a] whitespace-nowrap">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
               near Kundrathur, Chennai during 2018 — to train unemployed youth, school and college finishers and dropouts in various skill-based trades for domestic and overseas employment.
             </p>
           </div>
@@ -123,7 +123,7 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.35 }}
-          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-blue-50 overflow-hidden"
+          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-white overflow-hidden"
         >
           {/* Text — second on mobile, first on desktop */}
           <div className="flex flex-col justify-center px-6 md:px-12 py-10 gap-5 flex-1 order-2 md:order-1">

@@ -5,9 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     User, GraduationCap, Users, Send, ChevronRight, ChevronLeft, CheckCircle2,
     Database, Award, Sparkles, BookOpen, FileText, Search, List, PlusCircle,
-    X, Eye, Edit, Trash2, Download, Calendar
+    X, Eye, Edit, Trash2, Download, Calendar, UserCheck
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api`;
@@ -42,6 +43,7 @@ const emptyForm = {
 };
 
 export default function StudentEnquiryForm() {
+    const router = useRouter();
     const [viewMode,          setViewMode]          = useState<"form"|"list">("form");
     const [enquiries,         setEnquiries]         = useState<any[]>([]);
     const [isLoadingList,     setIsLoadingList]     = useState(false);
@@ -480,6 +482,10 @@ export default function StudentEnquiryForm() {
                                                         <button onClick={() => setSelectedEnquiry(enq)}
                                                             className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="View">
                                                             <Eye size={16}/>
+                                                        </button>
+                                                        <button onClick={() => router.push(`/dashboard/associate-management/admission?enquiry_id=${enq.enquiry_id}`)}
+                                                            className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all" title="Create Admission">
+                                                            <UserCheck size={16}/>
                                                         </button>
                                                         {can("Associate Management","edit") && user?.role !== "Associate" && (
                                                             <button onClick={() => handleEdit(enq)}

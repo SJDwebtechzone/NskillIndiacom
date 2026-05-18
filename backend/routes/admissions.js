@@ -299,7 +299,7 @@ router.get("/no-credential", authMiddleware, async (req, res) => {
         const result = await pool.query(`
             SELECT id, full_name, email_id, mobile_number, course_interested 
             FROM student_admissions 
-            WHERE email_id NOT IN (SELECT email FROM users)
+            WHERE email_id NOT IN (SELECT email FROM users WHERE email IS NOT NULL)
             ORDER BY created_at DESC
         `);
         res.json(result.rows);

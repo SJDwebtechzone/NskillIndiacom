@@ -133,18 +133,8 @@ const VisionSection = () => {
                   <active.icon className="text-blue-700 w-5 h-5" />
                 </motion.div>
 
-                <h3 className="font-black text-xl">
-                  {active.label.includes(' ') ? (
-                    <>
-                      <span className="text-blue-600">{active.label.split(' ')[0]}</span>{' '}
-                      <span className="text-red-600">{active.label.split(' ').slice(1).join(' ')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-blue-600">{active.label.slice(0, Math.ceil(active.label.length / 2))}</span>
-                      <span className="text-red-600">{active.label.slice(Math.ceil(active.label.length / 2))}</span>
-                    </>
-                  )}
+                <h3 className="font-black text-xl text-red-600">
+                  {active.label}
                 </h3>
               </div>
 

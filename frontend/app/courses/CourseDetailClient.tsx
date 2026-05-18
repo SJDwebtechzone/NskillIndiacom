@@ -1988,7 +1988,7 @@ useEffect(() => {
                 <div className="flex flex-wrap gap-4">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="flex items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl shadow-blue-900/50 text-[15px] uppercase tracking-wider"
+                    className="flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl shadow-orange-500/20 text-[15px] uppercase tracking-wider"
                   >
                     Enquire Now
                   </button>

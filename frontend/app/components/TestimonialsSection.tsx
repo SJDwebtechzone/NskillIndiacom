@@ -121,7 +121,7 @@ export default function TestimonialsSection() {
                   onClick={() => goTo(index)}
                   className={`flex-shrink-0 w-[300px] md:w-[340px] cursor-pointer rounded-2xl p-6 border transition-all duration-500 ${
                     isActive
-                      ? "bg-[#163d6c] border-blue-500 shadow-xl shadow-blue-900/40 scale-105"
+                      ? "bg-blue-800 border-blue-500 shadow-xl shadow-blue-900/40 scale-105"
                       : "bg-[#ffffff] border-white/10 shadow-sm scale-95 opacity-60 hover:opacity-80"
                   }`}
                 >

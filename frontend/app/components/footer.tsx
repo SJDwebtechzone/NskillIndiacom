@@ -64,31 +64,31 @@ const Footer = () => {
 
           {/* ── Column 1: Company & Social ── */}
           <div className="space-y-8">
-            <Link href="/" className="inline-block">
+            <Link href="/" className="inline-flex bg-white px-6 py-3 rounded-[20px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] hover:scale-105 transition-transform">
               <Image
-                src="/footer-logo.png"
+                src="/logo.png"
                 alt="Niile Logo"
                 width={266}
-                height={48}
-                className="object-contain h-[48px] w-auto"
-                style={{ width: 'auto', height: '48px' }}
+                height={60}
+                className="object-contain h-[54px] w-auto"
+                style={{ width: 'auto', height: '54px' }}
               />
             </Link>
 
-            <div className="space-y-4 text-[14px] text-white/90 leading-relaxed">
+            <div className="space-y-4 text-lg text-white/90 leading-relaxed">
               <p className="text-gray-100">{contactInfo.address}</p>
               <div className="space-y-3">
                 {contactInfo.phones.map((phone: any, idx: number) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[#fe2b54]">
-                      <Phone size={14} />
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-orange-500">
+                      <Phone size={16} />
                     </div>
                     <span className="text-white font-medium">{phone.value}</span>
                   </div>
                 ))}
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[#fe2b54]">
-                    <Mail size={14} />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-orange-500">
+                    <Mail size={16} />
                   </div>
                   <span className="text-white font-medium">{contactInfo.email}</span>
                 </div>
@@ -107,7 +107,7 @@ const Footer = () => {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#fe2b54] transition-all duration-300"
+                  className="w-11 h-11 bg-orange-500 border border-orange-500 rounded-xl flex items-center justify-center text-white hover:bg-gray-600 hover:border-gray-600 hover:-translate-y-1 shadow-lg transition-all duration-300"
                 >
                   <Icon size={18} />
                 </a>
@@ -116,7 +116,7 @@ const Footer = () => {
                 href={socialLinks?.twitter_url || "https://x.com/NiileSkill"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#fe2b54] transition-all duration-300"
+                className="w-11 h-11 bg-orange-500 border border-orange-500 rounded-xl flex items-center justify-center text-white hover:bg-gray-600 hover:border-gray-600 hover:-translate-y-1 shadow-lg transition-all duration-300"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -127,18 +127,18 @@ const Footer = () => {
 
           {/* ── Column 2: Skill Training ── */}
           <div>
-            <h3 className="text-white font-bold text-[18px] mb-8 relative inline-block">
+            <h3 className="text-white font-bold text-2xl mb-8 relative inline-block">
               Skill Training
-              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-[#fe2b54] rounded-full"></span>
+              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-orange-500 rounded-full"></span>
             </h3>
             <ul className="space-y-4">
               {SKILL_CATEGORIES.map((cat) => (
                 <li key={cat}>
                   <Link
                     href={`/courses?category=${toSlug(cat)}`}
-                    className="text-[14px] text-white hover:text-[#fe2b54] transition-colors flex items-center gap-2 group font-medium"
+                    className="text-lg text-white hover:text-orange-500 transition-colors flex items-center gap-2 group font-medium"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-[#fe2b54] transition-colors"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-orange-500 transition-colors"></span>
                     {cat}
                   </Link>
                 </li>
@@ -148,9 +148,9 @@ const Footer = () => {
 
           {/* ── Column 3: Quick Links ── */}
           <div>
-            <h3 className="text-white font-bold text-[18px] mb-8 relative inline-block">
+            <h3 className="text-white font-bold text-2xl mb-8 relative inline-block">
               Quick Links
-              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-[#fe2b54] rounded-full"></span>
+              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-orange-500 rounded-full"></span>
             </h3>
             <ul className="space-y-4">
               {[
@@ -166,9 +166,9 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-[14px] text-white hover:text-[#fe2b54] transition-colors flex items-center gap-2 group font-medium"
+                    className="text-lg text-white hover:text-orange-500 transition-colors flex items-center gap-2 group font-medium"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-[#fe2b54] transition-colors"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-orange-500 transition-colors"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -179,11 +179,11 @@ const Footer = () => {
           {/* ── Column 4: Newsletter ── */}
           <div className="space-y-8">
             <div>
-              <h3 className="text-white font-bold text-[18px] mb-8 relative inline-block">
+              <h3 className="text-white font-bold text-2xl mb-8 relative inline-block">
                 Newsletter
-                <span className="absolute -bottom-2 left-0 w-8 h-1 bg-[#fe2b54] rounded-full"></span>
+                <span className="absolute -bottom-2 left-0 w-8 h-1 bg-orange-500 rounded-full"></span>
               </h3>
-              <p className="text-[14px] text-white mb-6 leading-relaxed font-medium">
+              <p className="text-lg text-white mb-6 leading-relaxed font-medium">
                 Stay updated with our latest courses and industrial training insights.
               </p>
               <div className="space-y-3">
@@ -191,10 +191,10 @@ const Footer = () => {
                   <input
                     type="email"
                     placeholder="Your Email"
-                    className="w-full h-14 bg-white/10 border border-white/20 rounded-xl px-5 text-white text-[14px] focus:outline-none focus:border-[#fe2b54]/50 transition-all placeholder:text-white/40"
+                    className="w-full h-14 bg-white/10 border border-white/20 rounded-xl px-5 text-white text-base focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-white/40"
                   />
                 </div>
-                <button className="w-full h-12 bg-[#fe2b54] hover:bg-[#e0244a] text-white rounded-xl font-black text-[12px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-[#fe2b54]/10">
+                <button className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black text-[12px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-orange-500/20">
                   Join Now
                 </button>
               </div>
@@ -204,13 +204,13 @@ const Footer = () => {
         </div>
 
         {/* ── Bottom bar ── */}
-        <div className="py-8 border-t border-white/10 text-center text-[14px] text-white font-medium">
+        <div className="py-8 border-t border-white/10 text-center text-lg text-white font-medium">
           Copyright © {currentYear} All rights reserved | by{" "}
           <a
             href="https://devspectra.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-400 hover:text-[#fe2b54] transition-colors"
+            className="text-white hover:text-orange-500 transition-colors font-bold"
           >
             DevSpectra
           </a>

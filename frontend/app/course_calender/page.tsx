@@ -210,9 +210,9 @@ export default function StudentCalendar() {
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <p className="text-blue-300 text-xs font-bold uppercase tracking-widest mb-2">FY 2026–2027</p>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">Course Calendar</h1>
-              <p className="text-slate-400 text-sm mt-2">Skill Training Schedule · Student View</p>
+              <p className="text-white/90 text-sm md:text-base font-bold uppercase tracking-widest mb-2">FY 2026–2027</p>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase">Course Calendar</h1>
+              <p className="text-white text-base md:text-lg mt-2 font-medium">Skill Training Schedule · Student View</p>
             </div>
             {/* Month Navigator */}
             <div className="flex items-center gap-4 bg-white/10 rounded-2xl px-5 py-3 border border-white/20">
@@ -236,10 +236,10 @@ export default function StudentCalendar() {
               <button
                 key={i}
                 onClick={() => setMonthIdx(i)}
-                className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm md:text-base font-bold transition-all ${
                   monthIdx === i
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                    : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
+                    ? "bg-white text-[#0b1f3a] shadow-lg shadow-black/10"
+                    : "bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
                 }`}
               >
                 {m.slice(0, 3)} '{String(y).slice(2)}
@@ -284,7 +284,7 @@ export default function StudentCalendar() {
                   onClick={() => setFilterBatch(b)}
                   className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
                     filterBatch === b
-                      ? b === "batch1" ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                      ? b === "batch1" ? "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
                       : b === "batch2" ? "bg-violet-600 text-white border-violet-600 shadow-md"
                       : "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
                       : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
@@ -329,22 +329,22 @@ export default function StudentCalendar() {
           </div>
 
           <div className="w-full lg:w-[340px] flex flex-col gap-4">
-            <div className="flex-1 bg-gradient-to-br from-[#0b1f3a] to-[#1e3a8a] rounded-2xl p-8 text-white relative overflow-hidden shadow-xl border border-white/10 group">
-              <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
+            <div className="flex-1 bg-white rounded-2xl p-8 text-slate-900 relative overflow-hidden shadow-sm border border-slate-200 group">
+              <div className="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
               <div className="relative z-10">
                 <h3 className="text-xl font-black mb-2">Join a Batch</h3>
-                <p className="text-slate-400 text-sm mb-6 font-medium leading-relaxed">Have questions about our schedule or courses? Reach out to our team today.</p>
+                <p className="text-slate-500 text-sm mb-6 font-medium leading-relaxed">Have questions about our schedule or courses? Reach out to our team today.</p>
                 <div className="flex flex-col gap-3">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-blue-900/20 active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-orange-500/20 active:scale-95 flex items-center justify-center gap-2"
                   >
                     Enquire Now
                     <span>→</span>
                   </button>
                   <button 
                     onClick={() => setShowDemoModal(true)}
-                    className="w-full py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black text-sm transition-all border border-white/10 active:scale-95"
+                    className="w-full py-4 bg-white hover:bg-slate-50 text-slate-700 rounded-xl font-black text-sm transition-all border border-slate-200 active:scale-95"
                   >
                     Book a Free Demo
                   </button>
@@ -364,7 +364,7 @@ export default function StudentCalendar() {
                   {/* Modal Header */}
                   <div className="p-8 pb-4 flex items-center justify-between sticky top-0 bg-white z-10">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-blue-600/30">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0b1f3a] to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-[#0b1f3a]/30">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                       </div>
                       <div>
@@ -398,7 +398,7 @@ export default function StudentCalendar() {
                           required
                           type="text"
                           placeholder="Your full name"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
                           value={demoForm.name}
                           onChange={e => setDemoForm({...demoForm, name: e.target.value})}
                         />
@@ -411,7 +411,7 @@ export default function StudentCalendar() {
                         <input 
                           type="text"
                           placeholder="City / Area"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
                           value={demoForm.address}
                           onChange={e => setDemoForm({...demoForm, address: e.target.value})}
                         />
@@ -425,7 +425,7 @@ export default function StudentCalendar() {
                           required
                           type="email"
                           placeholder="you@example.com"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
                           value={demoForm.email}
                           onChange={e => setDemoForm({...demoForm, email: e.target.value})}
                         />
@@ -439,7 +439,7 @@ export default function StudentCalendar() {
                           required
                           type="tel"
                           placeholder="+91 XXXXX XXXXX"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
                           value={demoForm.phone}
                           onChange={e => setDemoForm({...demoForm, phone: e.target.value})}
                         />
@@ -453,7 +453,7 @@ export default function StudentCalendar() {
                           <input 
                             required
                             type="date"
-                            className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                            className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
                             value={demoForm.date}
                             onChange={e => setDemoForm({...demoForm, date: e.target.value})}
                           />
@@ -464,7 +464,7 @@ export default function StudentCalendar() {
                           </label>
                           <select 
                             required
-                            className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold appearance-none"
+                            className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold appearance-none"
                             value={demoForm.time}
                             onChange={e => setDemoForm({...demoForm, time: e.target.value})}
                           >
@@ -480,7 +480,7 @@ export default function StudentCalendar() {
 
                     <button 
                       disabled={isSubmitting}
-                      className="w-full py-5 bg-[#0b1f3a] text-white rounded-[24px] font-black text-[17px] shadow-xl hover:bg-[#1a3a63] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                      className="w-full py-5 bg-[#0b1f3a] hover:bg-[#071527] text-white rounded-[24px] font-black text-[17px] shadow-xl transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                       {isSubmitting ? "Confirming..." : "Confirm My Demo Slot"}
@@ -498,7 +498,7 @@ export default function StudentCalendar() {
                   </p>
                   <button
                     onClick={closeDemoModal}
-                    className="w-full py-4 bg-[#0b1f3a] text-white rounded-2xl font-black text-[16px] hover:bg-[#1a3a63] transition-all"
+                    className="w-full py-4 bg-[#0b1f3a] hover:bg-[#071527] text-white rounded-2xl font-black text-[16px] transition-all"
                   >
                     Close
                   </button>
@@ -520,7 +520,7 @@ export default function StudentCalendar() {
           {/* Day headers */}
           <div className="grid grid-cols-7 bg-[#0b1f3a]">
             {WEEK_DAYS.map((d) => (
-              <div key={d} className="py-4 text-center text-sm font-bold uppercase tracking-widest text-white/70">{d}</div>
+              <div key={d} className="py-4 text-center text-base font-bold uppercase tracking-widest text-white">{d}</div>
             ))}
           </div>
 

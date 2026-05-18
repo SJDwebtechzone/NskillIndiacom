@@ -93,6 +93,17 @@ export default function StudentAdmissionForm() {
     }, [viewMode]);
 
     useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const enqId = urlParams.get("enquiry_id");
+        if (enqId && viewMode === "form") {
+            setSearchId(enqId);
+            handleSearch(enqId);
+            // Clean up the URL so it doesn't re-trigger on reload
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, []);
+
+    useEffect(() => {
         if (user?.role === "Super Admin") return;
         const total   = parseFloat(formData.total_fees)   || 0;
         const paid    = parseFloat(formData.paid_fees)    || 0;
@@ -197,11 +208,12 @@ export default function StudentAdmissionForm() {
         URL.revokeObjectURL(url);
     };
 
-    const handleSearch = async () => {
-        if (!searchId) return;
+    const handleSearch = async (idToSearchOverride?: string) => {
+        const targetId = typeof idToSearchOverride === "string" ? idToSearchOverride : searchId;
+        if (!targetId) return;
         setIsSearching(true);
         try {
-            const res  = await axios.get(`${API_BASE}/enquiries/${searchId}`, { headers: getAuthHeaders() });
+            const res  = await axios.get(`${API_BASE}/enquiries/${targetId}`, { headers: getAuthHeaders() });
             const data = res.data;
             setFormData((prev: any) => ({
                 ...prev,

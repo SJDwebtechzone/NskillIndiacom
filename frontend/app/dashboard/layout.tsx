@@ -167,6 +167,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const [isClassStatusOpen,       setIsClassStatusOpen]       = useState(() => inPath(pathname, "/class-status"));
   const [isBackgroundImagesOpen,  setIsBackgroundImagesOpen]  = useState(() => inPath(pathname, "/background-images"));
   const [isMobileSidebarOpen,     setIsMobileSidebarOpen]     = useState(false);
+  const [isProfileMenuOpen,       setIsProfileMenuOpen]       = useState(false);
 
   // ── Update sidebar states when pathname changes ────────────────────────────
   useEffect(() => {
@@ -207,15 +208,16 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
 
   const isStudent = user?.role === "Student" || user?.roleName === "Student";
   const isTrainer = user?.role === "Trainer" || user?.roleName === "Trainer";
+  const isAssociate = user?.role === "Associate" || user?.roleName === "Associate";
 
-  const showDashboard = isAdmin(user) || permissions?.["Dashboard"]?.view;
+  const showDashboard = isAdmin(user) || permissions?.["Dashboard"]?.view || isStudent || isTrainer || isAssociate;
   const showPayments  = isAdmin(user) || permissions?.["Payments"]?.view;
 
   // ── Visible items — re-computed every render when permissions change ────────
   const visibleUserItems      = isAdmin(user) ? userManagementItems.filter(i => hasPerm(i.module)) : [];
   const visibleSettingsItems  = isAdmin(user) ? websiteSettingsItems.filter(i => hasPerm(i.module)) : [];
   const visibleCourseItems    = isAdmin(user) ? courseManagementItems.filter(i => hasPerm(i.module)) : [];
-  const visibleAssociateItems = isAdmin(user) ? associateManagementItems.filter(i => hasPerm(i.module)) : [];
+  const visibleAssociateItems = isAssociate ? associateManagementItems : (isAdmin(user) ? associateManagementItems.filter(i => hasPerm(i.module)) : []);
   const visibleStudentItems   = isStudent ? studentManagementItems : (isAdmin(user) ? studentManagementItems.filter(i => hasPerm(i.module)) : []);
   const visibleTraineeItems   = isTrainer ? traineeManagementItems : (isAdmin(user) ? traineeManagementItems.filter(i => hasPerm(i.module)) : []);
   const visibleNTSCItems      = isAdmin(user) ? ntscManagementItems.filter(i => hasPerm(i.module)) : [];
@@ -285,7 +287,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
 
         <nav className="flex-1 px-6 pb-4 overflow-y-auto">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 px-2">
-            {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : (user?.role === "Super Admin" || user?.role === "Admin" ? "Super Admin Dashboard" : "Admin Panel")}
+            {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : isAssociate ? "Associate Panel" : (user?.role === "Super Admin" || user?.role === "Admin" ? "Super Admin Dashboard" : "Admin Panel")}
           </p>
 
           <ul className="space-y-1">
@@ -494,14 +496,6 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
           )}
         </nav>
 
-        {/* Logout */}
-        <div className="p-6">
-          <div className="h-px bg-white/10 mb-4" />
-          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-400/5 transition-all duration-300 group">
-            <LogOut className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-            <span className="font-medium">Logout</span>
-          </button>
-        </div>
       </aside>
 
       {/* Main Area */}
@@ -520,21 +514,46 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             </h1>
           </div>
           <div className="flex items-center gap-3 md:gap-6">
-            <div className="flex items-center gap-2 md:gap-3 md:pl-6 md:border-l border-slate-100">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-black text-slate-800 leading-none">
-                  {(user?.role === "Super Admin" || user?.role === "Admin") ? "Super Admin" : (user?.name ?? "Admin")}
-                </p>
-                <p className="text-[10px] text-blue-600 font-bold mt-1 tracking-wide">
-                  {(user?.role === "Super Admin" || user?.role === "Admin") ? (user?.email || "admin@example.com") : (user?.email ?? user?.role ?? "")}
-                </p>
-                {user?.admission_number && user?.role !== "Super Admin" && user?.role !== "Admin" && (
-                  <p className="text-[11px] text-slate-600 font-black mt-1 uppercase tracking-wider">ADMISSION No : {user.admission_number}</p>
-                )}
+            <div className="relative">
+              <div 
+                className="flex items-center gap-2 md:gap-3 md:pl-6 md:border-l border-slate-100 cursor-pointer group"
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              >
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-black text-slate-800 leading-none group-hover:text-blue-600 transition-colors">
+                    {(user?.role === "Super Admin" || user?.role === "Admin") ? "Super Admin" : (user?.name ?? "Admin")}
+                  </p>
+                  <p className="text-[10px] text-blue-600 font-bold mt-1 tracking-wide">
+                    {(user?.role === "Super Admin" || user?.role === "Admin") ? (user?.email || "admin@example.com") : (user?.email ?? user?.role ?? "")}
+                  </p>
+                  {user?.admission_number && user?.role !== "Super Admin" && user?.role !== "Admin" && (
+                    <p className="text-[11px] text-slate-600 font-black mt-1 uppercase tracking-wider">ADMISSION No : {user.admission_number}</p>
+                  )}
+                </div>
+                <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-inner group-hover:bg-blue-700 transition-colors">
+                  {(user?.role === "Super Admin" || user?.role === "Admin") ? "SA" : (user?.name ? getInitials(user.name) : <UserCircle className="w-5 h-5" />)}
+                </div>
               </div>
-              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-inner cursor-pointer hover:bg-blue-700 transition-colors">
-                {(user?.role === "Super Admin" || user?.role === "Admin") ? "SA" : (user?.name ? getInitials(user.name) : <UserCircle className="w-5 h-5" />)}
-              </div>
+
+              {/* Profile Dropdown Menu */}
+              {isProfileMenuOpen && (
+                <>
+                  {/* Invisible backdrop to close the menu when clicking outside */}
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setIsProfileMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-slate-100 py-2 z-50">
+                    <button 
+                      onClick={logout} 
+                      className="w-full px-5 py-3 text-left flex items-center gap-3 text-red-600 hover:bg-red-50 hover:text-red-700 font-black text-sm transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>
