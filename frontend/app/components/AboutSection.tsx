@@ -135,12 +135,12 @@ const AboutSection = () => {
             </div>
             <p className="text-slate-600 text-sm leading-relaxed text-justify">
               NTSC training focuses on various skills like{" "}
-              <strong className="text-[#0b1f3a]">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic</strong>,
+              <strong className="text-[#0b1f3a]">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
               and Civil construction skills such as Carpentry, Masonry, Plumbing, Bar-Bending, and a host of other trades. NTSC also offers customized courses for corporates on Behavioural, Leadership and Technical skills.
             </p>
             <p className="text-slate-500 text-sm leading-relaxed text-justify">
               NTSC's facility complies with NSDC requirements and is accredited by various State and Central Government bodies like{" "}
-              <strong className="text-[#0b1f3a]">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS</strong>{" "}
+              <strong className="text-[#0b1f3a]">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
               etc. The certifications help students avail opportunities for job and entrepreneurship.
             </p>
           </div>

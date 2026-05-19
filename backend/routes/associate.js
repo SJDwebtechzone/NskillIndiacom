@@ -376,6 +376,7 @@ router.post(
            VALUES ($1, $2, $3, $4, 'Active')
            ON CONFLICT (email)
            DO UPDATE SET
+             name     = EXCLUDED.name,
              password = EXCLUDED.password,
              role_id  = EXCLUDED.role_id,
              status   = 'Active'`,

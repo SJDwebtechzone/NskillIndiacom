@@ -171,7 +171,7 @@ const Navbar = () => {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
             {/* Business hours — always visible */}
             <span className="flex items-center gap-2 whitespace-nowrap">
-              <Clock size={14} className="text-orange-500 shrink-0" />
+              <Clock size={14} strokeWidth={3} className="text-orange-400 shrink-0" />
               Business Hours : 9.30 am to 7.00 pm
             </span>
 
@@ -180,7 +180,7 @@ const Navbar = () => {
             {/* Phone numbers — hidden on xs, show on sm+ */}
             <span className="hidden sm:flex items-center gap-2 whitespace-nowrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                stroke="#fb923c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
               </svg>
               <a href="tel:09884209774" className="hover:text-orange-500 transition-colors">
@@ -197,7 +197,7 @@ const Navbar = () => {
             {/* Email — hidden on xs+sm, show on md+ */}
             <span className="hidden md:flex items-center gap-2 whitespace-nowrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                stroke="#fb923c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
               </svg>
@@ -215,7 +215,7 @@ const Navbar = () => {
               onMouseLeave={() => setIsLoginMenuOpen(false)}
             >
               <button className="flex items-center gap-1.5 text-white hover:text-orange-500 transition-colors uppercase tracking-widest text-xs md:text-sm whitespace-nowrap font-bold">
-                <Lock size={15} className="text-orange-500" />
+                <Lock size={15} strokeWidth={3} className="text-orange-400" />
                 Login Access
               </button>
 
@@ -340,7 +340,7 @@ const Navbar = () => {
                           <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
                             <Link
                               href="/courses"
-                              className="group flex items-center gap-2 px-6 py-2 bg-[#0b1f3a] text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-blue-600 transition-all shadow-lg active:scale-95"
+                              className="group flex items-center gap-2 px-6 py-2 bg-orange-500 text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-orange-600 transition-all shadow-lg active:scale-95"
                               onClick={closeMegaMenu}
                             >
                               Explore Full Catalog

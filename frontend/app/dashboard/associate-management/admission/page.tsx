@@ -65,9 +65,11 @@ export default function StudentAdmissionForm() {
         enquiry_date: new Date().toISOString().split("T")[0],
         course_name: "", course_fees: "0", total_fees: "0", paid_fees: "0",
         payment_mode: "Cash", payment_ref_no: "", payment_date: "",
-        // ── UPDATED: Instalments with separate refs ──
+        // ── UPDATED: Installments with separate refs ──
         instalment_1: "0", instalment_1_ref: "",
         instalment_2: "0", instalment_2_ref: "",
+        instalment_3: "0", instalment_3_ref: "",
+        instalment_4: "0", instalment_4_ref: "",
         balance_amount: "0",
         has_aadhaar_file: null, has_edu_certs_file: null, has_passport_file: null,
         has_resume_file: null, has_address_proof_file: null, has_photos_file: null,
@@ -105,12 +107,18 @@ export default function StudentAdmissionForm() {
 
     useEffect(() => {
         if (user?.role === "Super Admin") return;
-        const total   = parseFloat(formData.total_fees)   || 0;
-        const paid    = parseFloat(formData.paid_fees)    || 0;
-        const inst1   = parseFloat(formData.instalment_1) || 0;
-        const inst2   = parseFloat(formData.instalment_2) || 0;
-        setFormData((prev: any) => ({ ...prev, balance_amount: (total - (paid + inst1 + inst2)).toString() }));
-    }, [formData.total_fees, formData.paid_fees, formData.instalment_1, formData.instalment_2, user]);
+        const total   = parseFloat(formData.total_fees)    || 0;
+        const inst1   = parseFloat(formData.instalment_1)  || 0;
+        const inst2   = parseFloat(formData.instalment_2)  || 0;
+        const inst3   = parseFloat(formData.instalment_3)  || 0;
+        const inst4   = parseFloat(formData.instalment_4)  || 0;
+        const totalPaid = inst1 + inst2 + inst3 + inst4;
+        const bal       = total - totalPaid;
+        setFormData((prev: any) => {
+            if (prev.paid_fees === totalPaid.toString() && prev.balance_amount === bal.toString()) return prev;
+            return { ...prev, paid_fees: totalPaid.toString(), balance_amount: bal.toString() };
+        });
+    }, [formData.total_fees, formData.instalment_1, formData.instalment_2, formData.instalment_3, formData.instalment_4, user]);
 
     const fetchAdmissions = async () => {
         setIsLoadingList(true);
@@ -133,8 +141,10 @@ export default function StudentAdmissionForm() {
             "Counsellor Name","Counsellor Code","Referral Source",
             "Enquiry Date","Admission Date","Counselling Date",
             "Course Fees","Total Fees","Paid Fees",
-            "Instalment 1","Instalment 1 Ref",
-            "Instalment 2","Instalment 2 Ref",
+            "Installment 1","Installment 1 Ref",
+            "Installment 2","Installment 2 Ref",
+            "Installment 3","Installment 3 Ref",
+            "Installment 4","Installment 4 Ref",
             "Balance Amount","Payment Mode","Payment Ref No","Payment Date",
             "Associate Name","Status","Verified Status",
             "Aadhaar Number","Passport Number",
@@ -180,6 +190,10 @@ export default function StudentAdmissionForm() {
             adm.instalment_1_ref || "",
             adm.instalment_2 || 0,
             adm.instalment_2_ref || "",
+            adm.instalment_3 || 0,
+            adm.instalment_3_ref || "",
+            adm.instalment_4 || 0,
+            adm.instalment_4_ref || "",
             adm.balance_amount || 0,
             adm.payment_mode || "",
             adm.payment_ref_no || "",
@@ -336,6 +350,12 @@ export default function StudentAdmissionForm() {
             if (!formData.payment_date)     newErrors.payment_date     = "Required";
         }
         if (stepId === "KLM") {
+            if (!formData.has_aadhaar_file)       newErrors.has_aadhaar_file       = "Required";
+            if (!formData.has_edu_certs_file)     newErrors.has_edu_certs_file     = "Required";
+            if (!formData.has_resume_file)        newErrors.has_resume_file        = "Required";
+            if (!formData.has_address_proof_file) newErrors.has_address_proof_file = "Required";
+            if (!formData.has_photos_file)        newErrors.has_photos_file        = "Required";
+
             if (!formData.student_declaration) newErrors.student_declaration = "Compulsory";
             if (!formData.parent_declaration)  newErrors.parent_declaration  = "Compulsory";
             if (!formData.placement_ack)       newErrors.placement_ack       = "Compulsory";
@@ -561,10 +581,13 @@ export default function StudentAdmissionForm() {
                         </div>
 
                         <InputField label="48. Course Name" name="course_name" value={formData.course_name} onChange={handleChange} compulsory error={errors.course_name} />
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <InputField label="49. Course Fees"  name="course_fees"  type="number" value={formData.course_fees}  onChange={handleChange} compulsory />
                             <InputField label="50. Total Fees"   name="total_fees"   type="number" value={formData.total_fees}   onChange={handleChange} compulsory />
-                            <InputField label="51. Paid Fees"    name="paid_fees"    type="number" value={formData.paid_fees}    onChange={handleChange} compulsory />
+                        </div>
+                        <div className="mt-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl flex justify-between items-center">
+                            <span className="text-emerald-700 font-bold text-xs uppercase tracking-widest">51. Paid Fees (Auto)</span>
+                            <span className="text-emerald-700 text-xl font-black">₹{parseFloat(formData.paid_fees||0).toLocaleString("en-IN")}</span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <SelectField label="52. Payment Mode" name="payment_mode" value={formData.payment_mode}
@@ -575,31 +598,43 @@ export default function StudentAdmissionForm() {
                             <InputField label="54. Payment Date" name="payment_date" type="date" value={formData.payment_date} onChange={handleChange} compulsory error={errors.payment_date} />
                         </div>
 
-                        {/* ── Instalments with Payment Reference ── UPDATED ── */}
+                        {/* ── Installments with Payment Reference ── UPDATED ── */}
                         <div className="mt-6 pt-6 border-t border-blue-200">
-                            <h5 className="font-bold text-blue-800 mb-4 text-xs uppercase tracking-widest">Instalments</h5>
+                            <h5 className="font-bold text-blue-800 mb-4 text-xs uppercase tracking-widest">Installments</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Instalment 1 */}
+                                {/* Installment 1 */}
                                 <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">55. Instalment - 1</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">55. Installment - 1</p>
                                     <InputField label="Amount"           name="instalment_1"     type="number" value={formData.instalment_1}     onChange={handleChange} />
                                     <InputField label="Payment Reference" name="instalment_1_ref"             value={formData.instalment_1_ref} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
-                                {/* Instalment 2 */}
+                                {/* Installment 2 */}
                                 <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">56. Instalment - 2</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">56. Installment - 2</p>
                                     <InputField label="Amount"           name="instalment_2"     type="number" value={formData.instalment_2}     onChange={handleChange} />
                                     <InputField label="Payment Reference" name="instalment_2_ref"             value={formData.instalment_2_ref} onChange={handleChange} placeholder="UTR / Ref No" />
+                                </div>
+                                {/* Installment 3 */}
+                                <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">57. Installment - 3</p>
+                                    <InputField label="Amount"           name="instalment_3"     type="number" value={formData.instalment_3}     onChange={handleChange} />
+                                    <InputField label="Payment Reference" name="instalment_3_ref"             value={formData.instalment_3_ref} onChange={handleChange} placeholder="UTR / Ref No" />
+                                </div>
+                                {/* Installment 4 */}
+                                <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">58. Installment - 4</p>
+                                    <InputField label="Amount"           name="instalment_4"     type="number" value={formData.instalment_4}     onChange={handleChange} />
+                                    <InputField label="Payment Reference" name="instalment_4_ref"             value={formData.instalment_4_ref} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                             </div>
 
                             <div className="mt-4 p-4 bg-[#0b1f3a] rounded-xl flex justify-between items-center shadow-lg">
-                                <span className="text-blue-200 font-bold uppercase text-xs tracking-widest">57. Balance Payable Amount</span>
+                                <span className="text-blue-200 font-bold uppercase text-xs tracking-widest">59. Balance Payable Amount</span>
                                 {can("Associate Management","edit") ? (
                                     <input name="balance_amount" value={formData.balance_amount} onChange={handleChange}
                                         className="bg-white/10 text-white text-2xl font-black w-32 outline-none text-right border-b border-white/20" />
                                 ) : (
-                                    <span className="text-white text-2xl font-black">₹ {formData.balance_amount}</span>
+                                    <span className="text-white text-2xl font-black">₹ {parseFloat(formData.balance_amount||0).toLocaleString("en-IN")}</span>
                                 )}
                             </div>
                             <p className="text-[10px] text-blue-600 font-bold mt-2 flex items-center gap-1"><AlertTriangle size={12}/> Auto-points (10%) added once balance is 0.</p>
@@ -613,12 +648,12 @@ export default function StudentAdmissionForm() {
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><FileText className="text-blue-600" size={18}/> K. Documents Checklist</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileField label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} />
-                            <FileField label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} />
+                            <FileField label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
+                            <FileField label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
                             <FileField label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} />
-                            <FileField label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} />
-                            <FileField label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} />
-                            <FileField label="Passport Size Photos"      name="has_photos_file"        value={formData.has_photos_file}        onChange={handleChange} />
+                            <FileField label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} />
+                            <FileField label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} />
+                            <FileField label="Passport Size Photos"      name="has_photos_file"        value={formData.has_photos_file}        onChange={handleChange} compulsory error={errors.has_photos_file} />
                         </div>
                     </div>
 
@@ -693,10 +728,12 @@ export default function StudentAdmissionForm() {
                     <List size={24}/> Recent Admissions
                     <span className="text-sm font-bold text-slate-400">({admissions.length})</span>
                 </h3>
-                <button onClick={() => exportToExcel(admissions)} disabled={admissions.length === 0}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-emerald-200">
-                    <Download size={16}/> Export Excel
-                </button>
+                {user?.role === "Admin" && (
+                    <button onClick={() => exportToExcel(admissions)} disabled={admissions.length === 0}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-emerald-200">
+                        <Download size={16}/> Export Excel
+                    </button>
+                )}
             </div>
 
             {isLoadingList ? (
@@ -746,7 +783,9 @@ export default function StudentAdmissionForm() {
                                     </td>
                                     <td className="py-5 px-4">
                                         <div className="flex gap-2 justify-center">
-                                            <button onClick={() => setSelectedAdmission(adm)} className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="View"><Eye size={18}/></button>
+                                            {user?.role === "Admin" && (
+                                                <button onClick={() => setSelectedAdmission(adm)} className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="View"><Eye size={18}/></button>
+                                            )}
                                             {can("Associate Management","edit") && user?.role !== "Associate" && (
                                                 <button onClick={() => handleEdit(adm)} className="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all" title="Edit"><Edit size={18}/></button>
                                             )}
@@ -908,31 +947,81 @@ export default function StudentAdmissionForm() {
                                     <Section title="Personal">
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                                             <DetailRow label="Gender"        value={selectedAdmission.gender} />
+                                            <DetailRow label="Age"           value={selectedAdmission.age} />
                                             <DetailRow label="DOB"           value={selectedAdmission.dob ? new Date(selectedAdmission.dob).toLocaleDateString("en-IN") : "—"} />
-                                            <DetailRow label="Admission Date" value={selectedAdmission.admission_date ? new Date(selectedAdmission.admission_date).toLocaleDateString("en-IN") : selectedAdmission.created_at ? new Date(selectedAdmission.created_at).toLocaleDateString("en-IN") : "—"} />
                                             <DetailRow label="Aadhaar"       value={selectedAdmission.aadhaar_number} />
+                                            <DetailRow label="Passport"      value={selectedAdmission.passport_number} />
+                                            <DetailRow label="Passport Validity" value={selectedAdmission.passport_validity ? new Date(selectedAdmission.passport_validity).toLocaleDateString("en-IN") : "—"} />
+                                            <DetailRow label="Admission Date" value={selectedAdmission.admission_date ? new Date(selectedAdmission.admission_date).toLocaleDateString("en-IN") : selectedAdmission.created_at ? new Date(selectedAdmission.created_at).toLocaleDateString("en-IN") : "—"} />
+                                            <DetailRow label="Verified By"   value={selectedAdmission.verified_by} />
                                         </div>
                                     </Section>
 
                                     <Section title="Contact">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                            <DetailRow label="Mobile"        value={selectedAdmission.mobile_number}  fontMono />
+                                            <DetailRow label="Alt Mobile"    value={selectedAdmission.alt_mobile_number} fontMono />
+                                            <DetailRow label="WhatsApp"      value={selectedAdmission.whatsapp_number} fontMono />
+                                            <DetailRow label="Email"         value={selectedAdmission.email_id} />
+                                            <DetailRow label="City"          value={selectedAdmission.city} />
+                                            <DetailRow label="State"         value={selectedAdmission.state} />
+                                            <DetailRow label="PIN Code"      value={selectedAdmission.pin_code} />
+                                            <DetailRow label="Residential Address" value={selectedAdmission.residential_address} className="col-span-full" />
+                                        </div>
+                                    </Section>
+
+                                    <Section title="Parent / Guardian">
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                                            <DetailRow label="Mobile"   value={selectedAdmission.mobile_number}  fontMono />
-                                            <DetailRow label="Email"    value={selectedAdmission.email_id} />
-                                            <DetailRow label="City"     value={selectedAdmission.city} />
-                                            <DetailRow label="Guardian" value={selectedAdmission.parent_name} />
-                                            <DetailRow label="Relation" value={selectedAdmission.relationship} />
-                                            <DetailRow label="Guardian Mobile" value={selectedAdmission.parent_mobile} fontMono />
+                                            <DetailRow label="Guardian Name" value={selectedAdmission.parent_name} />
+                                            <DetailRow label="Relation"      value={selectedAdmission.relationship} />
+                                            <DetailRow label="Mobile"        value={selectedAdmission.parent_mobile} fontMono />
+                                            <DetailRow label="Occupation"    value={selectedAdmission.occupation} />
+                                            <DetailRow label="Annual Income" value={selectedAdmission.annual_income} />
+                                        </div>
+                                    </Section>
+
+                                    <Section title="Education">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                            <DetailRow label="Qualification"    value={selectedAdmission.highest_qualification} />
+                                            <DetailRow label="Year of Passing"  value={selectedAdmission.year_of_passing} />
+                                            <DetailRow label="Institution Name" value={selectedAdmission.institution_name} className="col-span-2" />
+                                            <DetailRow label="Board / University" value={selectedAdmission.board_university} className="col-span-2" />
+                                            <DetailRow label="Medium of Study"  value={selectedAdmission.medium_of_study} />
+                                        </div>
+                                    </Section>
+
+                                    <Section title="Skill & Experience">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                            <DetailRow label="Total Experience"    value={selectedAdmission.total_experience} />
+                                            <DetailRow label="Industry Experience" value={selectedAdmission.industry_experience} />
+                                            <DetailRow label="Technical Background" value={selectedAdmission.technical_background} className="col-span-full" />
+                                            <DetailRow label="Skills Known"        value={selectedAdmission.skills_known} className="col-span-full" />
                                         </div>
                                     </Section>
 
                                     <Section title="Course & Career">
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                                            <DetailRow label="Course"       value={selectedAdmission.course_name||selectedAdmission.course_interested} bold />
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                            <DetailRow label="Course Interested" value={selectedAdmission.course_interested} />
+                                            <DetailRow label="Course"       value={selectedAdmission.course_name} bold />
                                             <DetailRow label="Level"        value={selectedAdmission.course_level} />
                                             <DetailRow label="Mode"         value={selectedAdmission.mode_of_training} />
-                                            <DetailRow label="Batch"        value={selectedAdmission.batch_allotted||"Not assigned"} />
+                                            <DetailRow label="Batch Pref"   value={selectedAdmission.batch_preference} />
+                                            <DetailRow label="Batch Allotted" value={selectedAdmission.batch_allotted||"Not assigned"} />
+                                            <DetailRow label="Training Location" value={selectedAdmission.training_location} />
                                             <DetailRow label="Enquiry Date" value={selectedAdmission.enquiry_date ? new Date(selectedAdmission.enquiry_date).toLocaleDateString("en-IN") : "—"} />
                                             <DetailRow label="Career Goal"  value={selectedAdmission.career_goal} />
+                                            <DetailRow label="Preferred Country" value={selectedAdmission.preferred_country} />
+                                            <DetailRow label="Expected Salary" value={selectedAdmission.expected_salary} />
+                                            <DetailRow label="Willing to Relocate" value={selectedAdmission.willing_to_relocate} />
+                                        </div>
+                                    </Section>
+
+                                    <Section title="Counsellor & Referral">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                            <DetailRow label="Counsellor Name" value={selectedAdmission.counsellor_name} />
+                                            <DetailRow label="Counsellor Code" value={selectedAdmission.counsellor_code} />
+                                            <DetailRow label="Referral Source" value={selectedAdmission.referral_source} />
+                                            <DetailRow label="Counselling Date" value={selectedAdmission.counselling_date ? new Date(selectedAdmission.counselling_date).toLocaleDateString("en-IN") : "—"} />
                                         </div>
                                     </Section>
 
@@ -945,13 +1034,18 @@ export default function StudentAdmissionForm() {
                                             <DetailRow label="Balance"     value={`₹${parseFloat(selectedAdmission.balance_amount||0).toLocaleString("en-IN")}`} color="text-red-400" bold />
                                             <DetailRow label="Mode"        value={selectedAdmission.payment_mode}  light />
                                             <DetailRow label="Date"        value={selectedAdmission.payment_date ? new Date(selectedAdmission.payment_date).toLocaleDateString("en-IN") : "—"} light />
+                                            <DetailRow label="Payment Ref No" value={selectedAdmission.payment_ref_no} light className="col-span-full" />
                                         </div>
-                                        {(selectedAdmission.instalment_1 > 0 || selectedAdmission.instalment_2 > 0) && (
-                                            <div className="grid grid-cols-2 gap-5 mt-5 pt-5 border-t border-white/10">
-                                                <DetailRow label="Instalment 1"     value={`₹${parseFloat(selectedAdmission.instalment_1||0).toLocaleString("en-IN")}`} light />
+                                        {(selectedAdmission.instalment_1 > 0 || selectedAdmission.instalment_2 > 0 || selectedAdmission.instalment_3 > 0 || selectedAdmission.instalment_4 > 0) && (
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-5 pt-5 border-t border-white/10">
+                                                <DetailRow label="Installment 1"     value={`₹${parseFloat(selectedAdmission.instalment_1||0).toLocaleString("en-IN")}`} light />
                                                 <DetailRow label="Inst 1 Ref"       value={selectedAdmission.instalment_1_ref||"—"} light />
-                                                <DetailRow label="Instalment 2"     value={`₹${parseFloat(selectedAdmission.instalment_2||0).toLocaleString("en-IN")}`} light />
+                                                <DetailRow label="Installment 2"     value={`₹${parseFloat(selectedAdmission.instalment_2||0).toLocaleString("en-IN")}`} light />
                                                 <DetailRow label="Inst 2 Ref"       value={selectedAdmission.instalment_2_ref||"—"} light />
+                                                <DetailRow label="Installment 3"     value={`₹${parseFloat(selectedAdmission.instalment_3||0).toLocaleString("en-IN")}`} light />
+                                                <DetailRow label="Inst 3 Ref"       value={selectedAdmission.instalment_3_ref||"—"} light />
+                                                <DetailRow label="Installment 4"     value={`₹${parseFloat(selectedAdmission.instalment_4||0).toLocaleString("en-IN")}`} light />
+                                                <DetailRow label="Inst 4 Ref"       value={selectedAdmission.instalment_4_ref||"—"} light />
                                             </div>
                                         )}
                                     </div>
@@ -961,6 +1055,20 @@ export default function StudentAdmissionForm() {
                                             <DetailRow label="Name"         value={selectedAdmission.emergency_contact_name}         color="text-red-800" />
                                             <DetailRow label="Relationship" value={selectedAdmission.emergency_contact_relationship} color="text-red-800" />
                                             <DetailRow label="Mobile"       value={selectedAdmission.emergency_contact_number}       color="text-red-800" fontMono />
+                                            <DetailRow label="Authorized"   value={selectedAdmission.emergency_authorized ? "Yes" : "No"} color="text-red-800" />
+                                        </div>
+                                    </Section>
+                                    
+                                    <Section title="Documents Check & Undertakings">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                            <DetailRow label="Aadhaar File"        value={selectedAdmission.has_aadhaar_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_aadhaar_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Edu Certs"           value={selectedAdmission.has_edu_certs_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_edu_certs_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Passport File"       value={selectedAdmission.has_passport_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_passport_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Resume File"         value={selectedAdmission.has_resume_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_resume_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Address Proof"       value={selectedAdmission.has_address_proof_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_address_proof_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Photos"              value={selectedAdmission.has_photos_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_photos_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Student Declaration" value={selectedAdmission.student_declaration ? "Signed" : "—"} color="text-emerald-600" />
+                                            <DetailRow label="Parent Declaration"  value={selectedAdmission.parent_declaration ? "Signed" : "—"} color="text-emerald-600" />
                                         </div>
                                     </Section>
                                 </div>
@@ -1011,8 +1119,8 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 );
 
 // ── Helper components ──────────────────────────────────────────────────────────
-const DetailRow = ({ label, value, color="text-slate-700", bold=false, fontMono=false, light=false }: any) => (
-    <div className={`flex flex-col gap-1 ${light?"":"border-b border-slate-100"} pb-3`}>
+const DetailRow = ({ label, value, color="text-slate-700", bold=false, fontMono=false, light=false, className="" }: any) => (
+    <div className={`flex flex-col gap-1 ${light?"":"border-b border-slate-100"} pb-3 ${className}`}>
         <span className={`text-[10px] font-black uppercase tracking-widest ${light?"text-blue-300/80":"text-slate-400"}`}>{label}</span>
         <span className={`text-sm ${bold?"font-black":"font-bold"} ${fontMono?"font-mono":""} ${color} ${light&&color==="text-slate-700"?"text-white":""}`}>
             {value||"—"}

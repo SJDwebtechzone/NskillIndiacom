@@ -160,6 +160,8 @@ export default function StudentEnquiryForm() {
             if (!formData.dob)                                    newErrors.dob             = "Required";
             if (!formData.perm_address)                           newErrors.perm_address    = "Required";
             if (!formData.perm_city)                              newErrors.perm_city       = "Required";
+            if (!formData.perm_state)                             newErrors.perm_state      = "Required";
+            if (!formData.perm_pin)                               newErrors.perm_pin        = "Required";
         }
         if (stepId === "B") {
             if (!formData.highest_qualification) newErrors.highest_qualification = "Required";
@@ -239,8 +241,8 @@ export default function StudentEnquiryForm() {
                         <TextAreaField label="Address" name="perm_address" value={formData.perm_address} onChange={handleChange} error={errors.perm_address} compulsory />
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
                             <InputField label="City"  name="perm_city"  value={formData.perm_city}  onChange={handleChange} error={errors.perm_city} compulsory />
-                            <InputField label="State" name="perm_state" value={formData.perm_state} onChange={handleChange} />
-                            <InputField label="PIN"   name="perm_pin"   value={formData.perm_pin}   onChange={handleChange} />
+                            <InputField label="State" name="perm_state" value={formData.perm_state} onChange={handleChange} error={errors.perm_state} compulsory />
+                            <InputField label="PIN"   name="perm_pin"   value={formData.perm_pin}   onChange={handleChange} error={errors.perm_pin} compulsory />
                         </div>
                     </div>
                 </div>
@@ -407,10 +409,12 @@ export default function StudentEnquiryForm() {
                                 <Database size={24}/> My Enquiries
                                 <span className="text-sm font-bold text-slate-400">({enquiries.length})</span>
                             </h3>
-                            <button onClick={() => exportToExcel(enquiries)} disabled={enquiries.length===0}
-                                className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-emerald-200">
-                                <Download size={16}/> Export Excel
-                            </button>
+                            {user?.role === "Admin" && (
+                                <button onClick={() => exportToExcel(enquiries)} disabled={enquiries.length===0}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-emerald-200">
+                                    <Download size={16}/> Export Excel
+                                </button>
+                            )}
                         </div>
 
                         {isLoadingList ? (
@@ -479,10 +483,12 @@ export default function StudentEnquiryForm() {
                                                 </td>
                                                 <td className="py-4 px-3">
                                                     <div className="flex gap-2">
-                                                        <button onClick={() => setSelectedEnquiry(enq)}
-                                                            className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="View">
-                                                            <Eye size={16}/>
-                                                        </button>
+                                                        {user?.role === "Admin" && (
+                                                            <button onClick={() => setSelectedEnquiry(enq)}
+                                                                className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="View">
+                                                                <Eye size={16}/>
+                                                            </button>
+                                                        )}
                                                         <button onClick={() => router.push(`/dashboard/associate-management/admission?enquiry_id=${enq.enquiry_id}`)}
                                                             className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all" title="Create Admission">
                                                             <UserCheck size={16}/>
@@ -558,8 +564,36 @@ export default function StudentEnquiryForm() {
                                             <DetailItem label="Age"     value={selectedEnquiry.age} />
                                             <DetailItem label="DOB"     value={selectedEnquiry.dob ? fmtDate(selectedEnquiry.dob) : "—"} />
                                             <DetailItem label="Mobile"  value={selectedEnquiry.mobile_number} />
+                                            <DetailItem label="WhatsApp" value={selectedEnquiry.whatsapp_number} />
                                             <DetailItem label="Email"   value={selectedEnquiry.email_id} />
                                             <DetailItem label="City"    value={selectedEnquiry.perm_city} />
+                                            <DetailItem label="State"   value={selectedEnquiry.perm_state} />
+                                            <DetailItem label="PIN Code" value={selectedEnquiry.perm_pin} />
+                                            <DetailItem label="Permanent Address" value={selectedEnquiry.perm_address} className="col-span-full" />
+                                        </div>
+                                    </DetailSection>
+
+                                    <DetailSection title="Education & Career">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                                            <DetailItem label="Highest Qualification" value={selectedEnquiry.highest_qualification} />
+                                            <DetailItem label="Year of Passing"       value={selectedEnquiry.year_of_passing} />
+                                            <DetailItem label="Institution Name"      value={selectedEnquiry.institution_name} className="col-span-2 md:col-span-1" />
+                                            <DetailItem label="Career Objective"      value={selectedEnquiry.career_objective} />
+                                            <DetailItem label="Preferred Country"     value={selectedEnquiry.preferred_country} />
+                                            <DetailItem label="Work Experience"       value={selectedEnquiry.work_experience} />
+                                            <DetailItem label="Skills / Trade"        value={selectedEnquiry.skills_trade} className="col-span-full" />
+                                        </div>
+                                    </DetailSection>
+
+                                    <DetailSection title="Family & Referral">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                                            <DetailItem label="Father's Name"   value={selectedEnquiry.father_name} />
+                                            <DetailItem label="Mother's Name"   value={selectedEnquiry.mother_name} />
+                                            <DetailItem label="Parent Contact"  value={selectedEnquiry.parent_contact} />
+                                            <DetailItem label="Parent Occupation" value={selectedEnquiry.parent_occupation} />
+                                            <DetailItem label="Referred By"     value={selectedEnquiry.referred_by||"—"} />
+                                            <DetailItem label="Counsellor Name" value={selectedEnquiry.counsellor_name||"—"} />
+                                            <DetailItem label="Counsellor Code" value={selectedEnquiry.counsellor_code||"—"} />
                                         </div>
                                     </DetailSection>
 
@@ -568,10 +602,9 @@ export default function StudentEnquiryForm() {
                                             <DetailItem label="Course Interested" value={selectedEnquiry.course_interested} />
                                             <DetailItem label="Level"             value={selectedEnquiry.level_of_course} />
                                             <DetailItem label="Training Mode"     value={selectedEnquiry.training_mode} />
-                                            <DetailItem label="Counsellor"        value={selectedEnquiry.counsellor_name||"—"} />
-                                            {/* ── Enquiry Date in modal ── */}
+                                            <DetailItem label="Batch Timing"      value={selectedEnquiry.batch_timing} />
+                                            <DetailItem label="Will Attend Test?" value={selectedEnquiry.will_attend_test} />
                                             <DetailItem label="Enquiry Date"      value={selectedEnquiry.enquiry_date ? fmtDate(selectedEnquiry.enquiry_date) : fmtDate(selectedEnquiry.created_at)} />
-                                            {/* ── Follow Up Date in modal ── */}
                                             <DetailItem label="Follow Up Date"    value={selectedEnquiry.follow_up_date ? fmtDate(selectedEnquiry.follow_up_date) : "Not set"} />
                                             <DetailItem label="Counselling Date"  value={selectedEnquiry.counselling_date ? fmtDate(selectedEnquiry.counselling_date) : "—"} />
                                         </div>
@@ -581,14 +614,6 @@ export default function StudentEnquiryForm() {
                                                 <p className="text-sm text-slate-600 font-medium">{selectedEnquiry.remarks}</p>
                                             </div>
                                         )}
-                                    </DetailSection>
-
-                                    <DetailSection title="Family & Referral">
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                                            <DetailItem label="Father's Name"   value={selectedEnquiry.father_name} />
-                                            <DetailItem label="Parent Contact"  value={selectedEnquiry.parent_contact} />
-                                            <DetailItem label="Referred By"     value={selectedEnquiry.referred_by||"—"} />
-                                        </div>
                                     </DetailSection>
                                 </div>
 
@@ -641,8 +666,8 @@ const DetailSection = ({ title, children }: { title: string; children: React.Rea
     </div>
 );
 
-const DetailItem = ({ label, value }: any) => (
-    <div className="flex flex-col gap-1 border-b border-slate-50 pb-3">
+const DetailItem = ({ label, value, className = "" }: any) => (
+    <div className={`flex flex-col gap-1 border-b border-slate-50 pb-3 ${className}`}>
         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
         <span className="text-sm font-bold text-slate-700">{value||"—"}</span>
     </div>

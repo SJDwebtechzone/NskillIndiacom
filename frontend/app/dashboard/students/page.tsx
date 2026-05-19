@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { GraduationCap, Search, Mail, Calendar, Hash, Plus, X, Copy, CheckCircle2, UserPlus, Phone, BookOpen, Eye, Pencil, Key, Trash2, ShieldCheck, AlertCircle } from "lucide-react";
+import { GraduationCap, Search, Mail, Calendar, Hash, Plus, X, Copy, CheckCircle2, UserPlus, Phone, BookOpen, Eye, Pencil, Key, Trash2, ShieldCheck, AlertCircle, ChevronDown } from "lucide-react";
 
 interface Student {
   id: number;
@@ -19,10 +19,11 @@ interface Admission {
   email_id: string;
   mobile_number: string;
   course_interested: string;
+  has_credential?: boolean;
 }
 
-const API_USERS = `${process.env.NEXT_PUBLIC_API_URL}/api/users`;
-const API_ADMISSIONS = `${process.env.NEXT_PUBLIC_API_URL}/api/admissions`;
+const API_USERS = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users`;
+const API_ADMISSIONS = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admissions`;
 
 function getAuthHeaders(): Record<string, string> {
   const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
@@ -398,19 +399,27 @@ export default function StudentsPage() {
                       <select
                         value={selectedAdmId}
                         onChange={(e) => setSelectedAdmId(e.target.value)}
-                        className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all appearance-none cursor-pointer"
+                        className="w-full p-4 pr-12 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all appearance-none cursor-pointer"
                       >
                         <option value="">Choose a student from admissions...</option>
                         {admissions.map(adm => (
                           <option key={adm.id} value={adm.id}>
-                            {adm.full_name} ({adm.email_id})
+                            {adm.full_name} ({adm.email_id}) {adm.has_credential ? "• Credentials Exist" : "⏳ Pending"}
                           </option>
                         ))}
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 font-bold"> ↓ </div>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                     </div>
                     {loadingAdmissions && <p className="text-xs text-emerald-600 font-bold animate-pulse mt-2 ml-1">Loading admissions...</p>}
-                    {!loadingAdmissions && admissions.length === 0 && <p className="text-xs text-amber-600 font-bold mt-2 ml-1 flex items-center gap-1"> <AlertCircle className="w-3 h-3" /> No pending admissions found. </p>}
+                    {!loadingAdmissions && admissions.length === 0 && <p className="text-xs text-amber-600 font-bold mt-2 ml-1 flex items-center gap-1"> <AlertCircle className="w-3 h-3" /> No admissions found. </p>}
+                    {selectedAdmId && admissions.find(adm => String(adm.id) === selectedAdmId)?.has_credential && (
+                      <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-3">
+                        <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
+                        <p className="text-xs text-amber-700 font-bold">
+                          Warning: Credentials already exist for this email. Generating again will overwrite their password.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <button

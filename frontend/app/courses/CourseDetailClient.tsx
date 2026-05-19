@@ -2145,16 +2145,16 @@ useEffect(() => {
               <aside className="lg:col-span-3">
                 <div className="sticky top-28 space-y-5">
                   <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Quick Actions</h3>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-orange-500 mb-1">Quick Actions</h3>
                     <button
                       onClick={() => setShowDemoModal(true)}
-                      className="w-full flex items-center gap-3 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-violet-200"
+                      className="w-full flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-orange-200"
                     >
                       <CalendarDays className="w-4 h-4" /> Book a Free Demo
                     </button>
                     <button
                       onClick={() => setShowEnquiryModal(true)}
-                      className="w-full flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-blue-200"
+                      className="w-full flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-orange-200"
                     >
                       <Users className="w-4 h-4" /> Talk to Counsellor
                     </button>

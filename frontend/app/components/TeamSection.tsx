@@ -4,6 +4,16 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Mail, Linkedin, Phone } from "lucide-react";
 const team = [
+    {
+    name: "V.P. Sivasankar",
+    role: "Director",
+    image: "/images/team/sivasankar.jpg",
+    email: "sivasankar.vps@gmail.com",
+    linkedin: "https://www.linkedin.com/in/sivasankar-v-p-593a7a44/",
+    phone: "#",
+    desc: "Mechanical Engr, 15 years of experience, Consultant & Trainer for QMS, EMS, Safety, NDT & Energy Management",
+    tags: ["QMS", "Safety", "NDT"],  // ← add
+  },
   {
     name: "T.R. Sriram",
     role: "Director",
@@ -13,16 +23,6 @@ const team = [
     phone: "#",
     desc: "Electronics Engr, 32 years of experience, Consultant & Trainer for Strategic Management, LEAN, TPM, SCM, QMS, EMS, SMS",
     tags: ["Strategic Management", "LEAN", "TPM"],  // ← add
-  },
-  {
-    name: "V.P. Sivasankar",
-    role: "Director",
-    image: "/images/team/sivasankar.jpg",
-    email: "sivasankar.vps@gmail.com",
-    linkedin: "https://www.linkedin.com/in/sivasankar-v-p-593a7a44/",
-    phone: "#",
-    desc: "Mechanical Engr, 15 years of experience, Consultant & Trainer for QMS, EMS, Safety, NDT & Energy Management",
-    tags: ["QMS", "Safety", "NDT"],  // ← add
   },
   {
     name: "S. Karthikeyan",

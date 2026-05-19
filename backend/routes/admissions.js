@@ -120,9 +120,9 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
                 technical_background, total_experience, industry_experience, skills_known,
                 course_interested, course_level, mode_of_training, batch_preference, training_location,
                 career_goal, preferred_country, expected_salary, willing_to_relocate,
-                counsellor_name, counsellor_code, referral_source, counselling_date,
+                counsellor_name, counsellor_code, referral_source, counselling_date, enquiry_date,
                 course_name, course_fees, total_fees, paid_fees, payment_mode, payment_ref_no, payment_date,
-                instalment_1, instalment_2, balance_amount,
+                instalment_1, instalment_1_ref, instalment_2, instalment_2_ref, instalment_3, instalment_3_ref, instalment_4, instalment_4_ref, balance_amount,
                 has_aadhaar_file, has_edu_certs_file, has_passport_file, has_resume_file, has_address_proof_file, has_photos_file,
                 student_declaration, parent_declaration, placement_ack, overseas_disclaimer,
                 discipline_ack, photo_consent, refund_policy_ack, data_privacy_ack, final_undertaking,
@@ -130,14 +130,22 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
                 admission_number, batch_allotted, verified_by, authorized_signature_by,
                 created_by_id
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-                $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
-                $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
-                $41, $42, $43, $44, $45, $46, $47, $48, $49, $50,
-                $51, $52, $53, $54, $55, $56, $57, $58, $59, $60,
-                $61, $62, $63, $64, $65, $66, $67, $68, $69, $70,
-                $71, $72, $73, $74, $75, $76, $77
+                $1, $2, $3, $4, $5, $6, $7, $8, $9,
+                $10, $11, $12, $13, $14, $15, $16, $17,
+                $18, $19, $20, $21, $22,
+                $23, $24, $25, $26, $27,
+                $28, $29, $30, $31,
+                $32, $33, $34, $35, $36,
+                $37, $38, $39, $40,
+                $41, $42, $43, $44, $45,
+                $46, $47, $48, $49, $50, $51, $52,
+                $53, $54, $55, $56, $57, $58, $59, $60, $61,
+                $62, $63, $64, $65, $66, $67,
+                $68, $69, $70, $71,
+                $72, $73, $74, $75, $76,
+                $77, $78, $79,
+                $80, $81, $82, $83,
+                $84
             ) RETURNING *`;
 
         const values = [
@@ -148,9 +156,9 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
             toStr(data.technical_background), toStr(data.total_experience), toStr(data.industry_experience), toStr(data.skills_known),
             data.course_interested, data.course_level || "Basic", data.mode_of_training || "Classroom", toStr(data.batch_preference), toStr(data.training_location),
             data.career_goal, toStr(data.preferred_country), toStr(data.expected_salary), data.willing_to_relocate || "Yes",
-            data.counsellor_name, data.counsellor_code, data.referral_source || "Career Counsellor", counselling_date,
+            data.counsellor_name, data.counsellor_code, data.referral_source || "Career Counsellor", counselling_date, toDate(data.enquiry_date),
             data.course_name, toNum(data.course_fees), toNum(data.total_fees), toNum(data.paid_fees), data.payment_mode || "Cash", toStr(data.payment_ref_no), payment_date,
-            toNum(data.instalment_1), toNum(data.instalment_2), toNum(data.balance_amount),
+            toNum(data.instalment_1), toStr(data.instalment_1_ref), toNum(data.instalment_2), toStr(data.instalment_2_ref), toNum(data.instalment_3), toStr(data.instalment_3_ref), toNum(data.instalment_4), toStr(data.instalment_4_ref), toNum(data.balance_amount),
             getFilePath('has_aadhaar_file'), getFilePath('has_edu_certs_file'), getFilePath('has_passport_file'), getFilePath('has_resume_file'), getFilePath('has_address_proof_file'), getFilePath('has_photos_file'),
             toBool(data.student_declaration), toBool(data.parent_declaration), toBool(data.placement_ack), toBool(data.overseas_disclaimer),
             toBool(data.discipline_ack), toBool(data.photo_consent), toBool(data.refund_policy_ack), toBool(data.data_privacy_ack), toBool(data.final_undertaking),
@@ -295,12 +303,23 @@ router.get("/no-credential", authMiddleware, async (req, res) => {
             return res.status(403).json({ error: "Access denied." });
         }
         
-        // Find admissions whose email_id is NOT in the users table
+        // Find admissions and check if credentials exist, sorting pending first
         const result = await pool.query(`
-            SELECT id, full_name, email_id, mobile_number, course_interested 
+            SELECT 
+                id, 
+                full_name, 
+                email_id, 
+                mobile_number, 
+                course_interested,
+                EXISTS (
+                    SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email)
+                ) AS has_credential
             FROM student_admissions 
-            WHERE email_id NOT IN (SELECT email FROM users WHERE email IS NOT NULL)
-            ORDER BY created_at DESC
+            ORDER BY 
+                EXISTS (
+                    SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email)
+                ) ASC,
+                created_at DESC
         `);
         res.json(result.rows);
     } catch (err) {
@@ -327,7 +346,7 @@ router.patch("/:id", authMiddleware, uploadFields, async (req, res) => {
         }
 
         const setClauseParts = fields.map((f, i) => `${f} = $${i + 1}`);
-        const numericFields = ['course_fees', 'total_fees', 'paid_fees', 'instalment_1', 'instalment_2', 'balance_amount', 'age'];
+        const numericFields = ['course_fees', 'total_fees', 'paid_fees', 'instalment_1', 'instalment_2', 'instalment_3', 'instalment_4', 'balance_amount', 'age'];
         const values = fields.map(f => {
             if (numericFields.includes(f)) {
                 const p = parseFloat(data[f]);

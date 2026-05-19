@@ -10,3 +10,57 @@ error: invalid input syntax for type date: ""
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
     at async D:\DEVSPECTRA COMPANY INTERNSHIP\NSKILL2\backend\routes\admissions.js:337:24
 
+[2026-05-19T07:04:18.875Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:364:24
+
+[2026-05-19T08:17:52.901Z] PATCH Error: column "initial_payment" of relation "student_admissions" does not exist
+error: column "initial_payment" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:364:24
+
+[2026-05-19T08:17:58.050Z] PATCH Error: column "initial_payment" of relation "student_admissions" does not exist
+error: column "initial_payment" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:364:24
+
+[2026-05-19T08:18:14.784Z] PATCH Error: column "initial_payment" of relation "student_admissions" does not exist
+error: column "initial_payment" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:364:24
+
+[2026-05-19T08:19:40.875Z] PATCH Error: column "initial_payment" of relation "student_admissions" does not exist
+error: column "initial_payment" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:364:24
+
+[2026-05-19T08:52:50.461Z] Admission Error: INSERT has more expressions than target columns
+error: INSERT has more expressions than target columns
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:164:24
+
+[2026-05-19T08:52:55.490Z] Admission Error: INSERT has more expressions than target columns
+error: INSERT has more expressions than target columns
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:164:24
+
+[2026-05-19T08:53:11.057Z] Admission Error: INSERT has more expressions than target columns
+error: INSERT has more expressions than target columns
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:164:24
+
+[2026-05-19T09:01:04.624Z] Admission Error: INSERT has more expressions than target columns
+error: INSERT has more expressions than target columns
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:164:24
+
