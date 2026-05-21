@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -74,23 +75,23 @@ const Footer = () => {
                 alt="Niile Logo"
                 width={266}
                 height={60}
-                className="object-contain h-[70px] w-auto"
-                style={{ width: 'auto', height: '70px' }}
+                className="object-contain h-[80px] w-auto"
+                style={{ width: 'auto', height: '80px' }}
               />
             </Link>
 
-            <div className="space-y-5 text-[15px] text-slate-700 leading-relaxed font-semibold">
-              <p className="max-w-[280px]">{contactInfo.address}</p>
+            <div className="space-y-6 text-base md:text-lg text-slate-700 leading-relaxed font-bold">
+              <p className="max-w-[320px]">{contactInfo.address}</p>
               <div className="space-y-4">
                 {contactInfo.phones.map((phone: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <Phone size={18} className="text-orange-500 shrink-0" strokeWidth={2.5} />
+                  <div key={idx} className="flex items-center gap-3.5">
+                    <Phone size={20} className="text-orange-500 shrink-0" strokeWidth={2.5} />
                     <span>{phone.value}</span>
                   </div>
                 ))}
-                <div className="flex items-center gap-3">
-                  <Mail size={18} className="text-orange-500 shrink-0" strokeWidth={2.5} />
-                  <span>{contactInfo.email}</span>
+                <div className="flex items-center gap-3.5">
+                  <Mail size={20} className="text-orange-500 shrink-0" strokeWidth={2.5} />
+                  <span className="break-all">{contactInfo.email}</span>
                 </div>
               </div>
             </div>
@@ -101,33 +102,33 @@ const Footer = () => {
                 href={socialLinks?.facebook_url || "https://www.facebook.com/share/1DzjthRWd6/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-[#1877F2] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#1877F2]/30 transition-all duration-300"
+                className="w-11 h-11 bg-[#1877F2] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#1877F2]/30 transition-all duration-300"
               >
-                <Facebook size={20} fill="currentColor" strokeWidth={0} />
+                <Facebook size={22} fill="currentColor" strokeWidth={0} />
               </a>
               <a
                 href={socialLinks?.instagram_url || "https://www.instagram.com/niile_technical_skill_25/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#ee2a7b]/30 transition-all duration-300"
+                className="w-11 h-11 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#ee2a7b]/30 transition-all duration-300"
               >
-                <Instagram size={20} strokeWidth={2} />
+                <Instagram size={22} strokeWidth={2} />
               </a>
               <a
                 href={socialLinks?.linkedin_url || "https://www.linkedin.com/in/niile-technical-skill-and-consulting-a26245198/"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-[#0077B5] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#0077B5]/30 transition-all duration-300"
+                className="w-11 h-11 bg-[#0077B5] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#0077B5]/30 transition-all duration-300"
               >
-                <Linkedin size={20} fill="currentColor" strokeWidth={0} />
+                <Linkedin size={22} fill="currentColor" strokeWidth={0} />
               </a>
               <a
                 href={socialLinks?.twitter_url || "https://x.com/NiileSkill"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-[#ff8a00] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#ff8a00]/30 transition-all duration-300"
+                className="w-11 h-11 bg-[#ff8a00] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#ff8a00]/30 transition-all duration-300"
               >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5.5 h-5.5">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </a>
@@ -136,18 +137,18 @@ const Footer = () => {
 
           {/* ── Column 2: Skill Training ── */}
           <div className="lg:pl-6">
-            <h3 className="text-[#0b1f3a] font-extrabold text-xl mb-8 relative inline-block">
+            <div className="text-[#2563eb] font-extrabold text-2xl mb-8 relative inline-block" style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.01em', textTransform: 'none' }}>
               Skill Training
-              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-blue-600 rounded-full"></span>
-            </h3>
+              <span className="absolute -bottom-2 left-0 w-10 h-1 bg-blue-600 rounded-full"></span>
+            </div>
             <ul className="space-y-4">
               {SKILL_CATEGORIES.map((cat) => (
                 <li key={cat}>
                   <Link
                     href={`/courses?category=${toSlug(cat)}`}
-                    className="text-[15px] text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-3 font-bold group"
+                    className="text-base md:text-lg text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-3.5 font-bold group"
                   >
-                    <span className="text-[20px] leading-none text-slate-400 group-hover:text-blue-600 transition-colors">•</span>
+                    <span className="text-[24px] leading-none text-slate-400 group-hover:text-blue-600 transition-colors">•</span>
                     {cat}
                   </Link>
                 </li>
@@ -157,10 +158,10 @@ const Footer = () => {
 
           {/* ── Column 3: Quick Links ── */}
           <div>
-            <h3 className="text-[#0b1f3a] font-extrabold text-xl mb-8 relative inline-block">
+            <div className="text-[#2563eb] font-extrabold text-2xl mb-8 relative inline-block" style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.01em', textTransform: 'none' }}>
               Quick Links
-              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-blue-600 rounded-full"></span>
-            </h3>
+              <span className="absolute -bottom-2 left-0 w-10 h-1 bg-blue-600 rounded-full"></span>
+            </div>
             <ul className="space-y-4">
               {[
                 { name: "Home", href: "/" },
@@ -175,9 +176,9 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-[15px] text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-3 font-bold"
+                    className="text-base md:text-lg text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-3.5 font-bold group"
                   >
-                    <span className="text-slate-400 text-[20px] leading-none">•</span>
+                    <span className="text-slate-400 text-[24px] leading-none group-hover:text-blue-600 transition-colors">•</span>
                     {link.name}
                   </Link>
                 </li>
@@ -188,22 +189,24 @@ const Footer = () => {
           {/* ── Column 4: Newsletter ── */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-[#0b1f3a] font-extrabold text-xl mb-8 relative inline-block">
+              <div className="text-[#2563eb] font-extrabold text-2xl mb-8 relative inline-block" style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.01em', textTransform: 'none' }}>
                 Newsletter
-                <span className="absolute -bottom-2 left-0 w-8 h-1 bg-blue-600 rounded-full"></span>
-              </h3>
-              <p className="text-[15px] text-slate-600 mb-6 leading-relaxed font-bold">
+                <span className="absolute -bottom-2 left-0 w-10 h-1 bg-blue-600 rounded-full"></span>
+              </div>
+              <p className="text-base md:text-lg text-slate-600 mb-6 leading-relaxed font-bold">
                 Stay updated with our latest courses and industrial training insights.
               </p>
-              <div className="space-y-4 relative z-10">
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  className="w-full h-12 bg-white border-none rounded-lg px-5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
-                />
-                <button className="w-full h-12 bg-[#2563eb] hover:bg-blue-700 text-white rounded-lg font-bold text-sm uppercase tracking-wide transition-all shadow-md active:scale-[0.98]">
-                  JOIN NOW
-                </button>
+              <div className="relative z-10 w-full max-w-sm">
+                <div className="relative flex items-center">
+                  <input
+                    type="email"
+                    placeholder="Your Email"
+                    className="w-full h-14 bg-white border border-slate-200/80 rounded-xl pl-5 pr-32 text-slate-800 text-base placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all font-semibold"
+                  />
+                  <button className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-[#2563eb] hover:bg-blue-700 text-white rounded-lg font-black text-sm uppercase tracking-wider transition-all shadow-md active:scale-[0.98] flex items-center justify-center">
+                    JOIN NOW
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -212,22 +215,104 @@ const Footer = () => {
       </div>
 
       {/* ── Bottom Wave ── */}
-      <div className="w-full pointer-events-none overflow-hidden leading-none -mt-8 md:-mt-16">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-[60px] md:h-[110px] block" preserveAspectRatio="none">
-          <path fill="#e0e7ff" fillOpacity="0.8" d="M0,160L60,176C120,192,240,224,360,208C480,192,600,128,720,101.3C840,75,960,85,1080,101.3C1200,117,1320,139,1380,149.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-          <path fill="#3b82f6" fillOpacity="0.5" d="M0,96L60,122.7C120,149,240,203,360,202.7C480,203,600,149,720,133.3C840,117,960,139,1080,149.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-          <path fill="#2563eb" fillOpacity="1" d="M0,288L60,277.3C120,267,240,245,360,224C480,203,600,181,720,186.7C840,192,960,224,1080,229.3C1200,235,1320,213,1380,202.7L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-        </svg>
+      <div className="relative w-full h-[80px] md:h-[140px] pointer-events-none overflow-hidden leading-none -mt-10 md:-mt-20">
+        {/* Wave Layer 1 */}
+        <motion.svg
+          className="absolute inset-0 w-[200%] h-full"
+          viewBox="0 0 2400 320"
+          fill="none"
+          preserveAspectRatio="none"
+          animate={{
+            x: [0, "-50%"],
+            y: [0, -15, 0]
+          }}
+          transition={{
+            x: { repeat: Infinity, ease: "linear", duration: 28 },
+            y: { repeat: Infinity, ease: "easeInOut", duration: 8 }
+          }}
+        >
+          <path
+            fill="#60a5fa"
+            fillOpacity="0.45"
+            d="M0,80 C300,180 900,20 1200,80 C1500,180 2100,20 2400,80 L2400,320 L0,320 Z"
+          />
+        </motion.svg>
+
+        {/* Wave Layer 2 */}
+        <motion.svg
+          className="absolute inset-0 w-[200%] h-full"
+          viewBox="0 0 2000 320"
+          fill="none"
+          preserveAspectRatio="none"
+          animate={{
+            x: ["-50%", 0],
+            y: [-12, 10, -12]
+          }}
+          transition={{
+            x: { repeat: Infinity, ease: "linear", duration: 20 },
+            y: { repeat: Infinity, ease: "easeInOut", duration: 6 }
+          }}
+        >
+          <path
+            fill="#3b82f6"
+            fillOpacity="0.55"
+            d="M0,110 C250,210 750,40 1000,110 C1250,210 1750,40 2000,110 L2000,320 L0,320 Z"
+          />
+        </motion.svg>
+
+        {/* Wave Layer 3 */}
+        <motion.svg
+          className="absolute inset-0 w-[200%] h-full"
+          viewBox="0 0 1600 320"
+          fill="none"
+          preserveAspectRatio="none"
+          animate={{
+            x: [0, "-50%"],
+            y: [0, -10, 0]
+          }}
+          transition={{
+            x: { repeat: Infinity, ease: "linear", duration: 14 },
+            y: { repeat: Infinity, ease: "easeInOut", duration: 5 }
+          }}
+        >
+          <path
+            fill="#2563eb"
+            fillOpacity="0.65"
+            d="M0,140 C200,230 600,70 800,140 C1000,230 1400,70 1600,140 L1600,320 L0,320 Z"
+          />
+        </motion.svg>
+
+        {/* Wave Layer 4 (Solid connection wave) */}
+        <motion.svg
+          className="absolute inset-0 w-[200%] h-full"
+          viewBox="0 0 1600 320"
+          fill="none"
+          preserveAspectRatio="none"
+          animate={{
+            x: ["-50%", 0],
+            y: [-8, 8, -8]
+          }}
+          transition={{
+            x: { repeat: Infinity, ease: "linear", duration: 22 },
+            y: { repeat: Infinity, ease: "easeInOut", duration: 7 }
+          }}
+        >
+          <path
+            fill="#1d4ed8"
+            fillOpacity="1"
+            d="M0,160 C200,245 600,85 800,160 C1000,245 1400,85 1600,160 L1600,320 L0,320 Z"
+          />
+        </motion.svg>
       </div>
       
       {/* ── Bottom bar ── */}
-      <div className="bg-[#2563eb] pt-1 pb-4 text-center text-[14px] text-white/90 font-medium">
+      <div className="bg-[#1d4ed8] pt-1 pb-4 text-center text-sm sm:text-base text-white font-bold">
         Copyright © {currentYear} All rights reserved | by{" "}
         <a
           href="https://devspectra.in"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white hover:text-orange-300 transition-colors font-bold tracking-wide"
+          className="text-blue-100 hover:text-orange-300 transition-colors font-bold tracking-wide"
         >
           DevSpectra
         </a>

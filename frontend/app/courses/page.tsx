@@ -136,8 +136,8 @@ function CourseCard({
 
       <div className="flex flex-col flex-1 p-6">
         <div className="flex items-center gap-1.5 mb-3">
-          <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+          <GraduationCap className="w-3.5 h-3.5 text-slate-500" />
+          <span className="text-[11px] font-semibold text-black uppercase tracking-wider">
             {course.eligibility ?? "Open to All"}
           </span>
         </div>
@@ -150,16 +150,16 @@ function CourseCard({
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Award className="w-4 h-4 text-amber-500" />
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-black uppercase tracking-wider text-black">
               Certified Program
             </span>
           </div>
           <Link
             href={`/courses/${course.slug}`}
-            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 px-3 py-2 rounded-xl transition-all duration-200 group/btn"
+            className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 px-4 py-2.5 rounded-xl transition-all duration-200 group/btn"
           >
             View Course
-            <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
           </Link>
         </div>
       </div>
@@ -214,36 +214,34 @@ function CoursesPageContent() {
       <div className="container mx-auto px-6">
 
         {/* Header */}
-        <div className="max-w-3xl mb-16">
+        <div className="max-w-5xl mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 mb-6"
           >
             <div className="w-12 h-1 bg-blue-600 rounded-full" />
-            <span className="text-blue-600 font-black text-xs uppercase tracking-[0.3em]">
+            <span className="text-blue-600 font-black text-sm uppercase tracking-[0.3em]">
               Skill Training Programs
             </span>
           </motion.div>
 
-          <motion.h1
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl font-black leading-tight mb-8 tracking-tight"
+            className="text-3xl md:text-4xl font-black leading-tight mb-8 tracking-tight"
           >
-            <span className="text-blue-600">Master New Skills</span> <br />
-            <span className="text-red-600">Shape Your Future</span>
-          </motion.h1>
+            <span className="text-blue-600">Master New Skills Shape Your Future</span>
+          </motion.h2>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-500 text-lg font-medium leading-relaxed"
+            className="text-black text-lg font-bold leading-relaxed whitespace-nowrap"
           >
-            Industry-recognized certifications with 100% hands-on practical
-            training in state-of-the-art labs.
+            Industry-Recognized Certifications With 100% Hands-On Practical Training In State-Of-The-Art Labs.
           </motion.p>
         </div>
 
@@ -256,12 +254,12 @@ function CoursesPageContent() {
           >
             <Link
               href="/courses"
-              className="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+              className="text-base md:text-lg font-black text-blue-600 hover:text-blue-700 flex items-center gap-1.5"
             >
               ← All Courses
             </Link>
-            <span className="text-slate-400">/</span>
-            <span className="text-sm font-bold text-slate-600 capitalize">
+            <span className="text-slate-400 text-base md:text-lg font-bold">/</span>
+            <span className="text-base md:text-lg font-extrabold text-slate-700 capitalize">
               {categoryParam.replace(/-/g, " ")}
             </span>
           </motion.div>
@@ -293,18 +291,18 @@ function CoursesPageContent() {
                   <div className="flex items-center gap-6 mb-8">
                     <div>
                       <h2 className="text-2xl font-black tracking-tight">
-                        <span className="text-blue-600">{category}</span> <span className="text-red-600">Courses</span>
+                        <span className="text-blue-600">{category}</span> <span className="text-blue-600">Courses</span>
                       </h2>
-                      <p className="text-sm text-slate-400 font-medium mt-0.5">
+                      <p className="text-sm text-black font-medium mt-0.5">
                         {categoryCourses.length} programs available
                       </p>
                     </div>
                     <div className="h-px flex-1 bg-slate-200 hidden md:block" />
                     <Link
                       href={`/courses?category=${category.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="hidden md:flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0"
+                      className="hidden md:flex items-center gap-1.5 text-base font-bold text-blue-600 hover:text-blue-700 shrink-0"
                     >
-                      View all <ArrowRight className="w-3.5 h-3.5" />
+                      View all <ArrowRight className="w-5 h-5" />
                     </Link>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -342,10 +340,10 @@ function CoursesPageContent() {
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-indigo-600" />
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
+                <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-6">
                   Ready to Start Your Training?
                 </h2>
-                <p className="text-slate-500 text-lg font-medium leading-relaxed">
+                <p className="text-black text-lg font-medium leading-relaxed">
                   Join over 5,000+ students who have transformed their careers
                   with NSkill India's technical training programs.
                 </p>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +12,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -22,9 +24,10 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Cambria, Georgia, "Times New Roman", serif;
+  background: var(--bg-light);
+  font-family: var(--font-body);
+  color: #111827;
+  overflow-x: hidden;
 }
 
 /* Service Card Blue Theme */
@@ -80,30 +83,229 @@ input::-webkit-credentials-auto-fill-button {
    Global Typography System — Public Pages Only
    ══════════════════════════════════════════════════════════ */
 
-/* ── Section Headings (h1) ── */
-h1 { font-size: 2.25rem; line-height: 1.2; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #0b1f3a; }
-.dashboard-layout h1 { all: revert; }
+@layer base {
+  /* ── Section Headings (h1) ── */
+  h1 { font-family: var(--font-heading); font-size: 2.25rem; line-height: 1.2; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #0b1f3a; }
 
-/* ── Section Headings (h2) — BLUE ── */
-h2 { font-size: 1.875rem; line-height: 1.25; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #2563eb !important; }
-.dashboard-layout h2 { all: revert; }
+  /* ── Section Headings (h2) ── */
+  h2 { font-family: var(--font-heading); font-size: 1.875rem; line-height: 1.25; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #2563eb; }
 
-/* ── Sub Headings (h3) ── */
-h3 { font-size: 1.25rem; line-height: 1.4; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #2563eb !important; }
-.dashboard-layout h3 { all: revert; }
+  /* ── Sub Headings (h3) ── */
+  h3 { font-family: var(--font-heading); font-size: 1.25rem; line-height: 1.4; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #2563eb; }
 
-/* ── Sub Headings (h4) ── */
-h4 { font-size: 1.125rem; line-height: 1.4; font-weight: 700; color: #0b1f3a; }
-.dashboard-layout h4 { all: revert; }
+  /* ── Sub Headings (h4) ── */
+  h4 { font-family: var(--font-heading); font-size: 1.125rem; line-height: 1.4; font-weight: 700; color: #0b1f3a; }
 
-/* ── Paragraphs ── */
-p { font-size: 1.125rem !important; line-height: 1.75; font-weight: 500; color: #475569; }
-.dashboard-layout p { all: revert; }
+  /* ── Sub Headings (h5) ── */
+  h5 { font-family: var(--font-heading); font-size: 1rem; line-height: 1.4; font-weight: 700; color: #0b1f3a; }
 
-/* ── Responsive ── */
-@media (min-width: 768px) {
-  h1 { font-size: 3rem; }
-  h2 { font-size: 2.25rem; }
-  h3 { font-size: 1.5rem; }
-  h4 { font-size: 1.25rem; }
+  /* ── Sub Headings (h6) ── */
+  h6 { font-family: var(--font-heading); font-size: 0.875rem; line-height: 1.4; font-weight: 700; color: #0b1f3a; }
+
+  /* ── Paragraphs ── */
+  p { font-family: var(--font-body); font-size: 1.125rem; line-height: 1.75; font-weight: 500; color: #475569; }
+
+  /* ── Reset for Dashboard ── */
+  .dashboard-layout h1, .dashboard-layout h2, .dashboard-layout h3,
+  .dashboard-layout h4, .dashboard-layout h5, .dashboard-layout h6,
+  .dashboard-layout p {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    color: inherit;
+  }
+
+  /* =========================================
+     OPEN SANS FOR CONTENT TAGS
+  ========================================= */
+  span,
+  p,
+  a,
+  li,
+  button,
+  input,
+  textarea,
+  label {
+    font-family: 'Open Sans', sans-serif;
+  }
+  .dashboard-layout span,
+  .dashboard-layout a,
+  .dashboard-layout li,
+  .dashboard-layout button,
+  .dashboard-layout input,
+  .dashboard-layout textarea,
+  .dashboard-layout label {
+    font-family: inherit;
+  }
+
+  /* ── Responsive ── */
+  @media (min-width: 768px) {
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2.25rem; }
+    h3 { font-size: 1.5rem; }
+    h4 { font-size: 1.25rem; }
+  }
+}
+
+/* =========================================
+   RECOLETA FONT SETUP
+   Place font files inside:
+   /public/fonts/recoleta/
+========================================= */
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-Thin.woff2') format('woff2'),
+       url('/fonts/recoleta/Recoleta-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-Light.woff2') format('woff2'),
+       url('/fonts/recoleta/Recoleta-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-Regular.woff2') format('woff2'),
+       url('/fonts/recoleta/Recoleta-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-Medium.woff2') format('woff2'),
+       url('/fonts/recoleta/Recoleta-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-SemiBold.woff2') format('woff2'),
+       url('/fonts/recoleta/Recoleta-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/fonts/recoleta/Recoleta-Bold.woff2') format('woff2'),
+       url('/fonts/recoleta/Recoleta-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* =========================================
+   GLOBAL VARIABLES
+========================================= */
+
+:root {
+  --font-heading: 'Recoleta', serif;
+  --font-body: 'Open Sans', var(--font-inter), 'Inter', sans-serif;
+
+  --primary-blue: #0a2c73;
+  --secondary-blue: #2563eb;
+  --text-gray: #5b6475;
+  --bg-light: #f8fbff;
+}
+
+/* =========================================
+   HERO TITLE
+========================================= */
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(48px, 7vw, 78px);
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--primary-blue);
+  max-width: 700px;
+}
+
+/* =========================================
+   SUBTITLE
+========================================= */
+
+.hero-subtitle {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-gray);
+  margin-top: 20px;
+  max-width: 600px;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.primary-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 16px 34px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25);
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: white;
+  color: #1d4ed8;
+  border: 1.5px solid #c7d2fe;
+  padding: 16px 34px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: #eff6ff;
+}
+
+/* =========================================
+   BADGES / TAGS
+========================================= */
+
+.course-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: white;
+  border: 1px solid #dbeafe;
+  color: var(--primary-blue);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================================
+   GLASS CARD
+========================================= */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
 }

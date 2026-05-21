@@ -81,6 +81,33 @@ const Navbar = () => {
   const [skillTrainingMenu, setSkillTrainingMenu] = useState<CategoryMenu[]>([]);
   const [menuLoading, setMenuLoading] = useState(true);
   const coursesMenuRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setIsCoursesMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsCoursesMenuOpen(false);
+    }, 150);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
@@ -142,6 +169,17 @@ const Navbar = () => {
     setIsCoursesMenuOpen(false);
   };
 
+  // ── Close on scroll ───────────────────────────────────────────────────────
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsCoursesMenuOpen(false);
+    };
+    if (isCoursesMenuOpen) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isCoursesMenuOpen]);
+
   if (pathname?.startsWith("/login") || pathname?.startsWith("/dashboard")) {
     return null;
   }
@@ -161,61 +199,75 @@ const Navbar = () => {
   return (
     <header className="w-full relative shadow-sm">
 
-      {/* ── Top Bar ── */}
+      {/* ══════════════════════════════════════════
+          TOP BAR — Logo + Info + Login
+      ══════════════════════════════════════════ */}
+      <div className="bg-white border-b border-slate-100 py-3 px-6 xl:px-12">
+        <div className="w-full flex items-center justify-between gap-4">
 
-      {/* ── Top Bar ── */}
-      <div className="bg-white text-[#0b1f3a] py-3 px-4 md:px-6 text-base md:text-lg font-medium border-b border-slate-100">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
-          {/* Left side — hours + contact */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 font-bold text-slate-900">
-            {/* Business hours — always visible */}
-            <span className="flex items-center gap-2 whitespace-nowrap">
-              <Clock size={16} strokeWidth={3} className="text-orange-500 shrink-0" />
-              Business Hours : 9.30 am to 7.00 pm
-            </span>
+          {/* LEFT — Logo */}
+          <Link href="/" className="flex items-center shrink-0">
+            <Image
+              src="/logo.png"
+              alt="NSKILL Logo"
+              width={260}
+              height={64}
+              className="object-contain h-[56px] md:h-[68px] w-auto"
+              style={{ width: 'auto' }}
+              priority
+            />
+          </Link>
 
-            <span className="text-slate-300 hidden sm:inline font-normal">|</span>
+          {/* CENTER — Business Hours + Phones + Email */}
+          <div className="hidden md:flex items-center gap-6 flex-1 justify-center">
 
-            {/* Phone numbers — hidden on xs, show on sm+ */}
-            <span className="hidden sm:flex items-center gap-2 whitespace-nowrap">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#f97316" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-              </svg>
-              <a href="tel:09884209774" className="hover:text-orange-600 transition-colors">
-                +91 98842 09774
-              </a>
-              <span className="text-slate-300 font-normal">|</span>
-              <a href="tel:08056063023" className="hover:text-orange-600 transition-colors">
-                +91 80560 63023
-              </a>
-            </span>
+            {/* Business Hours */}
+            <div className="flex items-center gap-2 text-[#0f172a] font-bold text-lg whitespace-nowrap">
+              <Clock size={20} className="text-[#2563eb] shrink-0" strokeWidth={2.5} />
+              <span>Business Hours : 9.30 am to 7.00 pm</span>
+            </div>
 
-            <span className="text-slate-300 hidden md:inline font-normal">|</span>
+            <span className="text-slate-300 font-normal text-lg">|</span>
 
-            {/* Email — hidden on xs+sm, show on md+ */}
-            <span className="hidden md:flex items-center gap-2 whitespace-nowrap">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#f97316" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+            {/* Phones */}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-[#0f172a] font-medium text-lg whitespace-nowrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                </svg>
+                <a href="tel:09884209774" className="hover:text-[#2563eb] transition-colors">+91 98842 09774</a>
+              </div>
+              <div className="flex items-center gap-2 text-[#0f172a] font-medium text-lg whitespace-nowrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                </svg>
+                <a href="tel:08056063023" className="hover:text-[#2563eb] transition-colors">+91 80560 63023</a>
+              </div>
+            </div>
+
+            <span className="text-slate-300 font-normal text-lg">|</span>
+
+            {/* Email */}
+            <div className="flex items-center gap-2 text-[#0f172a] font-medium text-lg whitespace-nowrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
               </svg>
-              <a href="mailto:nskilltraining@gmail.com" className="hover:text-orange-600 transition-colors">
-                nskilltraining@gmail.com
-              </a>
-            </span>
+              <a href="mailto:nskilltraining@gmail.com" className="hover:text-[#2563eb] transition-colors">nskilltraining@gmail.com</a>
+            </div>
+
           </div>
 
-          {/* Right side — Login Access */}
+          {/* Login Button */}
           <div className="flex items-center">
             <div
-              className="relative py-1"
+              className="relative"
               onMouseEnter={() => setIsLoginMenuOpen(true)}
               onMouseLeave={() => setIsLoginMenuOpen(false)}
             >
-              <button className="flex items-center gap-1.5 text-[#0b1f3a] hover:text-orange-600 transition-colors uppercase tracking-widest text-xs md:text-sm whitespace-nowrap font-extrabold">
-                <Lock size={16} strokeWidth={3} className="text-orange-500" />
-                Login Access
+              <button className="flex items-center gap-2 bg-[#2563eb] text-white font-bold text-[15px] px-5 py-3 rounded-[10px] whitespace-nowrap shrink-0 transition-transform hover:-translate-y-0.5 shadow-[0_8px_20px_rgba(37,99,235,0.2)]">
+                <Lock size={16} strokeWidth={2.5} />
+                LOGIN ACCESS
               </button>
 
               <div
@@ -250,36 +302,31 @@ const Navbar = () => {
 
         </div>
       </div>
-      {/* ── Main Navbar ── */}
-      <nav className="bg-white px-4 md:px-6 py-3 sticky top-0 z-40 border-b">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 relative">
 
-          <Link href="/" className="flex items-center shrink-0">
-            <Image
-              src="/logo.png"
-              alt="NSKILL Logo"
-              width={210}
-              height={48}
-              className="object-contain h-[40px] md:h-[48px] w-auto md:-ml-6 scale-110 md:scale-125"
-              style={{ width: 'auto' }}
-              priority
-            />
-          </Link>
+      {/* ══════════════════════════════════════════
+          MAIN NAV BAR — Navigation links only
+      ══════════════════════════════════════════ */}
+      <nav className="bg-white px-6 xl:px-12 py-2.5 sticky top-0 z-40 border-b shadow-sm">
+        <div className="w-full flex items-center justify-between gap-4 relative">
 
           {/* Desktop Menu */}
-          <ul className="hidden lg:flex items-center justify-end flex-1 md:space-x-0.5 xl:space-x-1">
+          <ul className="hidden lg:flex items-center justify-between w-full">
             {menuItems.map((item) => (
               <li key={item.name} className={`shrink-0 ${item.dropdown ? "" : "relative group"}`}>
                 {item.dropdown ? (
-                  <div className="static" ref={coursesMenuRef}>
+                  <div
+                    className="static"
+                    ref={coursesMenuRef}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
                     <button
                       onClick={() => {
                         setIsCoursesMenuOpen(!isCoursesMenuOpen);
                       }}
-                      className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-bold transition text-sm uppercase tracking-wide whitespace-nowrap ${isCoursesMenuOpen
-                          ? "text-orange-600"
-                          : "text-[#0b1f3a] hover:text-orange-600"
-                        }`}
+                      className={`flex items-center gap-1 px-1.5 py-2 font-bold transition text-[15px] uppercase tracking-normal whitespace-nowrap ${
+                        isCoursesMenuOpen ? "text-[#2563eb]" : "text-[#0f172a] hover:text-[#2563eb]"
+                      }`}
                     >
                       {item.name}
                       <ChevronDown
@@ -290,13 +337,13 @@ const Navbar = () => {
 
                     {/* ── Mega Menu ── */}
                     <div
-                      className={`absolute left-1/2 -translate-x-1/2 mt-4 w-[98vw] max-w-7xl bg-white rounded-[40px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] z-50 border border-slate-100 overflow-hidden transition-all duration-500 origin-top ${isCoursesMenuOpen
+                      className={`absolute top-full left-1/2 -translate-x-1/2 -mt-4 pt-8 w-[98vw] max-w-7xl z-50 transition-all duration-500 origin-top ${isCoursesMenuOpen
                           ? "opacity-100 scale-100 visible"
                           : "opacity-0 scale-95 invisible"
                         }`}
                     >
                       {/* ── Course list ── */}
-                      <div>
+                      <div className="bg-white rounded-[40px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
                         <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
 
                           {menuLoading ? (
@@ -355,9 +402,14 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
-                    className="px-2 xl:px-3 py-2 font-bold text-[#0b1f3a] hover:text-orange-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
+                    className={`px-1.5 py-2 font-bold transition text-[15px] uppercase tracking-normal whitespace-nowrap relative ${
+                      pathname === item.href ? "text-[#2563eb]" : "text-[#0f172a] hover:text-[#2563eb]"
+                    }`}
                   >
                     {item.name}
+                    {pathname === item.href && (
+                      <span className="absolute left-0 -bottom-[10px] w-full h-[3px] bg-[#2563eb] rounded-[10px]" />
+                    )}
                   </Link>
                 )}
               </li>
@@ -365,7 +417,7 @@ const Navbar = () => {
           </ul>
 
           {/* Mobile Toggle */}
-          <div className="lg:hidden">
+          <div className="lg:hidden ml-auto">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-[#0b1f3a] hover:bg-gray-100 rounded-lg transition"
@@ -375,6 +427,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
+
 
       {/* ── Mobile Backdrop ── */}
       {isMenuOpen && (
@@ -414,7 +467,7 @@ const Navbar = () => {
               <Link
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-4 py-3 text-lg font-bold text-[#0b1f3a] hover:bg-orange-50 hover:text-orange-600 rounded-xl transition"
+                className="block px-4 py-3 text-lg font-bold text-[#0f172a] hover:bg-blue-50 hover:text-[#2563eb] rounded-xl transition"
               >
                 {item.name}
               </Link>

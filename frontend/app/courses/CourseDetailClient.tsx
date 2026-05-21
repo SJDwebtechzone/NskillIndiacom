@@ -215,10 +215,17 @@ function resolveVideoUrl(url: string): string {
 // }
 function VideoPlayer({ src, label }: { src: string; label: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 1;
+    }
+  }, [src, isPlaying]);
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-white/10 bg-gray-800">
-      <div className="relative bg-black aspect-video">
+    <div className="rounded-3xl overflow-hidden border border-slate-100 bg-white shadow-sm">
+      <div className="relative bg-slate-950 aspect-video rounded-t-3xl overflow-hidden">
         {isPlaying ? (
           <video
             src={src}
@@ -232,25 +239,34 @@ function VideoPlayer({ src, label }: { src: string; label: string }) {
             className="w-full h-full flex items-center justify-center cursor-pointer group relative"
             onClick={() => setIsPlaying(true)}
           >
+            <video
+              ref={videoRef}
+              src={src}
+              className="absolute inset-0 w-full h-full object-cover opacity-75"
+              preload="metadata"
+              muted
+              playsInline
+              onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
+            />
             {/* Dark overlay */}
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all" />
+            <div className="absolute inset-0 bg-black/25 group-hover:bg-black/15 transition-all" />
             {/* Play button */}
-            <div className="relative z-10 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/60 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/30 transition-all">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <div className="relative z-10 w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border-2 border-white flex items-center justify-center group-hover:scale-110 group-hover:bg-white/20 transition-all">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white" className="ml-1">
                 <polygon points="5 3 19 12 5 21 5 3" />
               </svg>
             </div>
             {/* Play hint */}
-            <div className="absolute bottom-3 right-3 bg-black/70 text-white text-sm font-bold px-3 py-1 rounded-lg backdrop-blur-md border border-white/10">
-              ▶ Play
+            <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/10 flex items-center gap-1">
+              <span>▶</span> Play
             </div>
           </div>
         )}
       </div>
       {/* Label bar */}
-      <div className="px-5 py-4 flex items-center gap-3 border-t border-white/10 bg-slate-900/50">
-        <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-        <span className="text-[14px] text-white font-black uppercase tracking-[0.15em] truncate">
+      <div className="px-5 py-4 flex items-center gap-3 border-t border-slate-100 bg-white">
+        <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
+        <span className="text-[14px] text-blue-900 font-extrabold uppercase tracking-[0.15em] truncate">
           {label}
         </span>
       </div>
@@ -1003,17 +1019,17 @@ function CourseSidebar({
   const CourseLink = ({ id, name, active = false, idx = 0 }: { id: string; name: string; active?: boolean; idx?: number }) => (
     <Link
       href={`/courses/${id}`}
-      className={`group flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all duration-150 ${
+      className={`group flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all duration-150 ${
         active ? "bg-blue-600 shadow-md shadow-blue-200/60" : "hover:bg-slate-50"
       }`}
     >
-      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors ${active ? "bg-white/20" : "bg-slate-100 group-hover:bg-slate-200"}`}>
+      <div className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${active ? "bg-white/20" : "bg-slate-100 group-hover:bg-slate-200"}`}>
         <span className={active ? "text-white" : "text-slate-500"}>
           <CourseIcon index={idx} active={active} />
         </span>
       </div>
       {active && <span className="w-1.5 h-1.5 rounded-full bg-white/60 shrink-0" />}
-      <span className={`text-[13px] leading-snug line-clamp-2 flex-1 transition-colors ${active ? "text-white font-semibold" : "text-slate-600 font-medium group-hover:text-slate-900"}`}>
+      <span className={`text-sm md:text-[15px] leading-snug line-clamp-2 flex-1 transition-colors ${active ? "text-white font-bold" : "text-slate-600 font-semibold group-hover:text-slate-900"}`}>
         {name}
       </span>
     </Link>
@@ -1021,29 +1037,29 @@ function CourseSidebar({
 
   return (
     <div className="sticky top-28 bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
-      <div className="px-5 pt-5 pb-3.5 border-b border-slate-100 flex items-start justify-between gap-2">
+      <div className="px-5 pt-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 truncate">
+          <p className="text-sm md:text-base font-black uppercase tracking-[0.1em] text-black">
             {showAll ? "All Courses" : currentCategory}
           </p>
           {!showAll && (
-            <p className="text-[11px] text-slate-400 font-medium mt-0.5">{sameCategoryCourses.length} courses</p>
+            <p className="text-base text-black font-black mt-0.5">{sameCategoryCourses.length} courses</p>
           )}
         </div>
         <button
           onClick={() => setShowAll((v) => !v)}
-          className={`shrink-0 flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl border transition-all duration-200 ${
+          className={`shrink-0 flex items-center gap-1.5 text-xs md:text-sm font-bold px-3.5 py-2 rounded-xl border transition-all duration-200 ${
             showAll ? "bg-blue-600 text-white border-blue-600" : "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100 hover:border-blue-200"
           }`}
         >
-          {showAll ? <><X className="w-3 h-3" /> Close</> : <><LayoutGrid className="w-3 h-3" /> All</>}
+          {showAll ? <><X className="w-3.5 h-3.5" /> Close</> : <><LayoutGrid className="w-3.5 h-3.5" /> All</>}
         </button>
       </div>
 
       <div className="max-h-[65vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
-        <div className="p-2.5">
+        <div className="p-3">
           {!showAll && (
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {sameCategoryCourses.map((item, idx) => (
                 <CourseLink key={item.id} id={item.id} name={item.name} active={item.id === currentId} idx={idx} />
               ))}
@@ -1053,12 +1069,12 @@ function CourseSidebar({
             <AnimatePresence initial={false}>
               <motion.div key="all-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-1.5 px-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest flex-1 truncate">{currentCategory}</p>
-                    <span className="text-[10px] text-slate-400">{sameCategoryCourses.length}</span>
+                  <div className="flex items-center gap-2 mb-2 px-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
+                    <p className="text-xs md:text-sm font-black text-blue-600 uppercase tracking-widest flex-1 truncate">{currentCategory}</p>
+                    <span className="text-xs md:text-sm text-slate-500 font-bold">{sameCategoryCourses.length}</span>
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     {sameCategoryCourses.map((item, idx) => (
                       <CourseLink key={item.id} id={item.id} name={item.name} active={item.id === currentId} idx={idx} />
                     ))}
@@ -1069,16 +1085,16 @@ function CourseSidebar({
                   const isExpanded = expandedCategories.has(cat);
                   return (
                     <div key={cat}>
-                      <button onClick={() => toggleCategory(cat)} className="w-full flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-slate-50 transition group">
-                        <span className="w-2 h-2 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors shrink-0" />
-                        <p className="text-[10px] font-black text-slate-400 group-hover:text-slate-600 uppercase tracking-widest flex-1 text-left transition-colors truncate">{cat}</p>
-                        <span className="text-[10px] text-slate-300 mr-1">{(items as any[]).length}</span>
-                        <ChevronDown className={`w-3 h-3 text-slate-300 group-hover:text-slate-500 shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                      <button onClick={() => toggleCategory(cat)} className="w-full flex items-center gap-2 px-2 py-2 rounded-xl hover:bg-slate-50 transition group">
+                        <span className="w-2.5 h-2.5 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors shrink-0" />
+                        <p className="text-xs md:text-sm font-black text-slate-400 group-hover:text-slate-600 uppercase tracking-widest flex-1 text-left transition-colors truncate">{cat}</p>
+                        <span className="text-xs md:text-sm text-slate-400 font-bold mr-1">{(items as any[]).length}</span>
+                        <ChevronDown className={`w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                       </button>
                       <AnimatePresence initial={false}>
                         {isExpanded && (
                           <motion.div key="items" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                            <div className="space-y-0.5 mt-1 mb-1">
+                            <div className="space-y-1 mt-1 mb-1">
                               {(items as any[]).map((item, idx) => (
                                 <CourseLink key={item.id} id={item.id} name={item.name} idx={idx} />
                               ))}
@@ -1094,12 +1110,12 @@ function CourseSidebar({
           )}
         </div>
         {!showAll && (
-          <div className="px-2.5 pb-3">
+          <div className="px-3 pb-4">
             <Link
               href={`/courses?category=${toSlug(currentCategory)}`}
-              className="flex items-center justify-center gap-1.5 w-full py-2.5 text-xs font-semibold text-blue-600 hover:text-blue-700 border border-blue-100 hover:border-blue-200 rounded-2xl bg-blue-50 hover:bg-blue-100 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-3.5 text-sm md:text-base font-bold text-blue-600 hover:text-blue-700 border border-blue-100 hover:border-blue-200 rounded-2xl bg-blue-50 hover:bg-blue-100 transition-all shadow-sm"
             >
-              View all in category <ChevronRight className="w-3 h-3" />
+              View all in category <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         )}
@@ -1120,12 +1136,12 @@ function StatsBar({ course }: { course: any }) {
     <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
       <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100">
         {stats.map(({ value, label, icon: Icon }) => (
-          <div key={label} className="flex flex-col items-center justify-center py-5 px-4 text-center gap-1">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center mb-1">
-              <Icon className="w-4 h-4 text-blue-600" />
+          <div key={label} className="flex flex-col items-center justify-center py-5 px-4 text-center gap-1.5">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center mb-1">
+              <Icon className="w-5 h-5 text-blue-600" />
             </div>
-            <span className="text-xl font-black text-slate-900">{value}</span>
-            <span className="text-xs text-slate-400 font-medium">{label}</span>
+            <span className="text-2xl sm:text-3xl font-black text-black">{value}</span>
+            <span className="text-sm text-slate-950 font-bold">{label}</span>
           </div>
         ))}
       </div>
@@ -1348,45 +1364,45 @@ function VideoSection({ videos }: { videos: any[] }) {
 
       {/* Thumbnail strip — only if multiple videos */}
       {videos.length > 1 && (
-        <div className="grid grid-cols-3 gap-2 mt-3 w-full">
+        <div className="grid grid-cols-3 gap-3 mt-3 w-full">
           {videos.map((v: any, i: number) => (
             <div key={v.id ?? i} className="relative group/tooltip">
               <button
                 onClick={() => setActiveIdx(i)}
-                className={`group relative w-full rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                className={`group relative w-full rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
                   i === activeIdx
-                    ? "border-blue-500 opacity-100 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-                    : "border-white/10 hover:border-white/30 opacity-70 hover:opacity-100"
+                    ? "border-blue-600 ring-2 ring-blue-600/20 opacity-100 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                    : "border-slate-200/80 hover:border-slate-300 opacity-80 hover:opacity-100 bg-white"
                 }`}
               >
-                <div className="relative bg-slate-900 aspect-video max-h-44">
+                <div className="relative bg-slate-900 aspect-video max-h-44 rounded-2xl overflow-hidden">
                   <video
                     src={resolveVideoUrl(v.url)}
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                    className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-opacity duration-300"
                     preload="metadata"
                     muted
                     playsInline
                     onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent flex flex-col justify-end p-3 sm:p-4 overflow-hidden">
-                    <p className="text-xs sm:text-sm font-black uppercase tracking-widest text-blue-400 leading-none mb-1.5 drop-shadow-lg truncate">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-2.5 overflow-hidden">
+                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-400 leading-none mb-1 drop-shadow-md truncate">
                       {v.type ?? "Video"}
                     </p>
-                    <p className="text-sm sm:text-base font-black text-white leading-tight line-clamp-2 drop-shadow-lg break-words">
+                    <p className="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-1 drop-shadow-md truncate">
                       {v.title ?? `Video ${i + 1}`}
                     </p>
                   </div>
                   {i !== activeIdx && (
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-black/15 group-hover:bg-transparent transition-colors duration-300" />
                   )}
                 </div>
               </button>
               
               {/* Custom Tooltip */}
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-30">
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-30">
                 {v.title ?? `Video ${i + 1}`}
                 {/* Tooltip Arrow */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-800" />
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900" />
               </div>
             </div>
           ))}
@@ -1406,25 +1422,25 @@ function CourseInfoCard({ course }: { course: any }) {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
       {/* Duration */}
       <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-slate-100">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center">
-            <Clock className="w-4 h-4 text-amber-500" />
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+            <Clock className="w-5 h-5 text-amber-500" />
           </div>
-          <h2 className="text-base font-black text-slate-900 uppercase tracking-wide">Course Duration</h2>
+          <h2 className="text-base sm:text-lg font-black text-slate-900 uppercase tracking-wide">Course Duration</h2>
         </div>
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[140px] bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 text-center">
-            <p className="text-2xl font-black text-amber-600">{course.duration}</p>
-            <p className="text-xs text-amber-500 font-semibold mt-0.5">Total Programme Length</p>
+        <div className="flex items-center gap-5 flex-wrap">
+          <div className="flex-1 min-w-[140px] bg-amber-50 border border-amber-100 rounded-2xl px-5 py-5 text-center">
+            <p className="text-2xl sm:text-3xl font-black text-amber-600">{course.duration}</p>
+            <p className="text-xs sm:text-sm text-amber-500 font-bold mt-1">Total Programme Length</p>
           </div>
-          <div className="flex-1 min-w-[140px] space-y-2">
+          <div className="flex-1 min-w-[140px] space-y-3.5">
             {[{ label: "Theory", value: "40%" }, { label: "Practical", value: "60%" }].map(({ label, value }) => (
               <div key={label}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-slate-600">{label}</span>
-                  <span className="font-black text-slate-800">{value}</span>
+                <div className="flex justify-between text-sm sm:text-base mb-1.5">
+                  <span className="font-bold text-slate-700">{label}</span>
+                  <span className="font-black text-slate-900">{value}</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
                   <div className={`h-full rounded-full ${label === "Practical" ? "bg-amber-400" : "bg-blue-400"}`} style={{ width: value }} />
                 </div>
               </div>
@@ -1456,20 +1472,20 @@ function CourseInfoCard({ course }: { course: any }) {
 
       {/* Career Opportunities */}
       <div className="px-6 sm:px-8 py-5">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Rocket className="w-4 h-4 text-blue-500" />
+        <div className="flex items-center gap-2.5 mb-5">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+            <Rocket className="w-5 h-5 text-blue-500" />
           </div>
-          <h2 className="text-base font-black text-slate-900 uppercase tracking-wide">Career Opportunities</h2>
+          <h2 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-wide">Career Opportunities</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {(course.careerOpportunities?.length
             ? course.careerOpportunities
             : ["Field Service Technician","Maintenance Engineer","Technical Supervisor","Self-Employment / Business","Government Sector Jobs","Export Opportunities Abroad"]
           ).map((role: string, i: number) => (
-            <div key={i} className="flex items-center gap-2.5 bg-slate-50 border border-slate-100 rounded-2xl px-3.5 py-3">
-              <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
-              <span className="text-sm font-medium text-slate-700">{role}</span>
+            <div key={i} className="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
+              <span className="text-base font-bold text-slate-800">{role}</span>
             </div>
           ))}
         </div>
@@ -1644,21 +1660,21 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
       className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
     >
       {/* Header */}
-      <div className="px-6 sm:px-8 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
-            <HelpCircle className="w-4 h-4 text-purple-500" />
+      <div className="px-6 sm:px-8 pt-8 pb-6 border-b border-slate-100 flex items-center justify-between gap-6 flex-wrap">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center shrink-0">
+            <HelpCircle className="w-5 h-5 text-purple-500" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             {lang === "en" ? "Frequently Asked Questions" : "அடிக்கடி கேட்கப்படும் கேள்விகள்"}
           </h2>
         </div>
 
         {/* Language toggle */}
-        <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-1 shrink-0">
+        <div className="flex items-center bg-slate-100 rounded-xl p-1.5 gap-1 shrink-0">
           <button
             onClick={() => handleLangSwitch("en")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+            className={`px-4 py-2 rounded-lg text-sm font-black transition-all duration-200 ${
               lang === "en"
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-500 hover:text-slate-700"
@@ -1668,7 +1684,7 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
           </button>
           <button
             onClick={() => handleLangSwitch("ta")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+            className={`px-4 py-2 rounded-lg text-sm font-black transition-all duration-200 ${
               lang === "ta"
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-500 hover:text-slate-700"
@@ -1681,10 +1697,10 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
 
       {/* Course-specific label */}
       {courseSpecific.length > 0 && (
-        <div className="px-6 sm:px-8 pt-4 pb-0">
+        <div className="px-6 sm:px-8 pt-5 pb-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-            <p className="text-[11px] font-black uppercase tracking-wider text-blue-500">
+            <span className="w-2 h-2 rounded-full bg-blue-500" />
+            <p className="text-xs md:text-sm font-black uppercase tracking-wider text-blue-500">
               {lang === "en" ? "Course-specific questions" : "கோர்ஸ் சார்ந்த கேள்விகள்"}
             </p>
           </div>
@@ -1692,7 +1708,7 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
       )}
 
       {/* FAQ list */}
-      <div className="px-4 sm:px-6 py-4 space-y-2">
+      <div className="px-4 sm:px-8 py-6 space-y-3">
         {items.map((item, i) => {
           const isOpen           = openIdx === i;
           const isCourseSpecific = i < courseSpecific.length;
@@ -1703,9 +1719,9 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
 
               {/* Divider between course-specific and general */}
               {isFirstDefault && (
-                <div className="flex items-center gap-2 mb-3 mt-1 px-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                  <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">
+                <div className="flex items-center gap-2 mb-4 mt-2 px-1">
+                  <span className="w-2 h-2 rounded-full bg-slate-300" />
+                  <p className="text-xs md:text-sm font-black uppercase tracking-wider text-slate-400">
                     {lang === "en" ? "General questions" : "பொதுவான கேள்விகள்"}
                   </p>
                 </div>
@@ -1722,26 +1738,26 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
                 >
                   <span
-                    className={`text-sm font-bold transition-colors leading-snug ${
-                      isOpen ? "text-purple-800" : "text-slate-700"
+                    className={`text-base md:text-lg font-bold transition-colors leading-snug ${
+                      isOpen ? "text-purple-800" : "text-slate-800"
                     }`}
                   >
                     {item.q}
                   </span>
                   <span
-                    className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                    className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
                       isOpen
                         ? "bg-purple-500 text-white"
                         : "bg-slate-200 text-slate-500"
                     }`}
                   >
                     {isOpen ? (
-                      <Minus className="w-3 h-3" />
+                      <Minus className="w-4 h-4" />
                     ) : (
-                      <Plus className="w-3 h-3" />
+                      <Plus className="w-4 h-4" />
                     )}
                   </span>
                 </button>
@@ -1754,29 +1770,29 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
       transition={{ duration: 0.22 }}
       className="overflow-hidden"
     >
-      <div className="px-5 pb-4 space-y-3">
+      <div className="px-6 pb-5 space-y-4">
 
         {/* Answer text */}
-        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+        <p className="text-base text-slate-600 leading-relaxed whitespace-pre-line">
           {item.a}
         </p>
 
         {/* Salary table — only renders if this FAQ has table data */}
         {item.table && item.table.length > 0 && (
-          <div className="overflow-x-auto rounded-xl border border-slate-100 mt-2">
-            <table className="w-full text-xs min-w-[480px]">
+          <div className="overflow-x-auto rounded-xl border border-slate-100 mt-3">
+            <table className="w-full text-sm min-w-[480px]">
               <thead>
                 <tr className="bg-slate-800 text-white">
-                  <th className="text-left px-3 py-2.5 font-bold rounded-tl-xl">
+                  <th className="text-left px-4 py-3 font-bold rounded-tl-xl">
                     {lang === "en" ? "Skill" : "திறன்"}
                   </th>
-                  <th className="text-left px-3 py-2.5 font-bold">
+                  <th className="text-left px-4 py-3 font-bold">
                     {lang === "en" ? "Fresher (India)" : "புதியவர் (இந்தியா)"}
                   </th>
-                  <th className="text-left px-3 py-2.5 font-bold">
+                  <th className="text-left px-4 py-3 font-bold">
                     {lang === "en" ? "Experienced (India)" : "அனுபவம் (இந்தியா)"}
                   </th>
-                  <th className="text-left px-3 py-2.5 font-bold rounded-tr-xl">
+                  <th className="text-left px-4 py-3 font-bold rounded-tr-xl">
                     {lang === "en" ? "Overseas (Gulf)" : "வெளிநாடு (Gulf)"}
                   </th>
                 </tr>
@@ -1787,16 +1803,16 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
                     key={ri}
                     className={ri % 2 === 0 ? "bg-white" : "bg-slate-50"}
                   >
-                    <td className="px-3 py-2.5 font-semibold text-slate-700 border-b border-slate-100">
+                    <td className="px-4 py-3 font-semibold text-slate-700 border-b border-slate-100">
                       {row.skill}
                     </td>
-                    <td className="px-3 py-2.5 text-emerald-700 font-semibold border-b border-slate-100">
+                    <td className="px-4 py-3 text-emerald-700 font-semibold border-b border-slate-100">
                       {row.fresher}
                     </td>
-                    <td className="px-3 py-2.5 text-blue-700 font-semibold border-b border-slate-100">
+                    <td className="px-4 py-3 text-blue-700 font-semibold border-b border-slate-100">
                       {row.experienced}
                     </td>
-                    <td className="px-3 py-2.5 text-violet-700 font-semibold border-b border-slate-100">
+                    <td className="px-4 py-3 text-violet-700 font-semibold border-b border-slate-100">
                       {row.overseas}
                     </td>
                   </tr>
@@ -1817,12 +1833,12 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
       </div>
 
       {/* Footer */}
-      <div className="px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/50">
-        <p className="text-sm text-slate-500 text-center">
+      <div className="px-6 sm:px-8 py-6 border-t border-slate-100 bg-slate-50/50">
+        <p className="text-base text-slate-600 text-center">
           {lang === "en" ? "Still have questions?" : "இன்னும் கேள்விகள் உள்ளதா?"}{" "}
           <button
             onClick={onEnquire}
-            className="font-bold text-purple-600 hover:text-purple-700 transition"
+            className="font-extrabold text-purple-600 hover:text-purple-700 transition"
           >
             {lang === "en" ? "Talk to our counsellors →" : "எங்கள் ஆலோசகரை தொடர்பு கொள்ளுங்கள் →"}
           </button>
@@ -1859,24 +1875,6 @@ export default function CourseDetailClient({
     const idxB = order.indexOf(b.type);
     return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
   });
-const [particles, setParticles] = useState<any[]>([]);
-// ── Glowing particles ──
-useEffect(() => {
-  setParticles(
-    [...Array(25)].map((_, i) => ({
-      id:       i,
-      width:    Math.random() * 4 + 2,
-      height:   Math.random() * 4 + 2,
-      top:      Math.random() * 100,
-      left:     Math.random() * 100,
-      opacity:  Math.random() * 0.6 + 0.2,
-      blur:     Math.random() * 10 + 4,
-      delay:    Math.random() * 3,
-      duration: Math.random() * 3 + 2,
-    }))
-  );
-}, []);
-
   return (
     <>
       <AnimatePresence>
@@ -1902,79 +1900,154 @@ useEffect(() => {
       />
 
         {/* ── HERO ── */}
-<section className="relative pt-24 md:pt-32 pb-12 md:pb-16 overflow-hidden bg-slate-950">
-          {/* ── Background Image & Overlays ── */}
-          <div className="absolute inset-0 z-0">
-            {course.thumbnail_url ? (
-              <img 
-                src={course.thumbnail_url} 
-                alt="Course Background" 
-                className="w-full h-full object-cover opacity-25 scale-105"
+        <section className="relative pt-10 md:pt-14 pb-12 md:pb-16 overflow-hidden bg-[#eef3fb]">
+          {/* ── Background Waves ── */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            {/* Base soft blue-to-white gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#eaf0fa] via-[#f1f5fc] to-[#f8fbfd]" />
+            
+            {/* Top-Right Soft Wave (Large) */}
+            <motion.svg
+              className="absolute top-0 right-0 w-[80%] h-full opacity-40 text-white"
+              viewBox="0 0 1000 800"
+              fill="none"
+              preserveAspectRatio="none"
+              animate={{
+                x: [0, 15, -10, 0],
+                y: [0, -20, 10, 0],
+              }}
+              transition={{
+                duration: 25,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <path
+                d="M1000,0 L200,0 C400,200 150,550 550,800 L1000,800 Z"
+                fill="currentColor"
               />
-            ) : (
-              <div className="w-full h-full bg-slate-900" />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/80 to-slate-950" />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent" />
-          </div>
+            </motion.svg>
 
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-1">
-            <div className="absolute -top-32 -left-32 w-[800px] h-[800px] bg-blue-700/20 rounded-full blur-[140px]" />
-            <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[110px]" />
-            <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
-          </div>
+            {/* Ocean Wave Layer 1 (Deepest & slowest) */}
+            <motion.svg
+              className="absolute bottom-0 left-0 w-[200%] h-[85%] opacity-[0.22] text-blue-200"
+              viewBox="0 0 2400 120"
+              fill="none"
+              preserveAspectRatio="none"
+              animate={{
+                x: [0, "-50%"]
+              }}
+              transition={{
+                duration: 32,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <path
+                d="M0,70 C200,110 400,30 600,70 C800,110 1000,30 1200,70 C1400,110 1600,30 1800,70 C2000,110 2200,30 2400,70 L2400,120 L0,120 Z"
+                fill="currentColor"
+              />
+            </motion.svg>
 
-{/* ── Glowing Particles ── */}
-<div className="absolute inset-0 overflow-hidden pointer-events-none z-2">
-  {particles.map((p) => (
-    <div
-      key={p.id}
-      className="absolute rounded-full animate-pulse"
-      style={{
-        width:    `${p.width * 1.5}px`,
-        height:   `${p.height * 1.5}px`,
-        top:      `${p.top}%`,
-        left:     `${p.left}%`,
-        background: `rgba(96, 165, 250, ${p.opacity})`,
-        boxShadow:  `0 0 ${p.blur}px rgba(96, 165, 250, 0.8)`,
-        animationDelay:    `${p.delay}s`,
-        animationDuration: `${p.duration}s`,
-      }}
-    />
-  ))}
-</div>
+            {/* Ocean Wave Layer 2 (Medium speed, opposite direction) */}
+            <motion.svg
+              className="absolute bottom-0 left-0 w-[200%] h-[70%] opacity-[0.28] text-[#93c5fd]"
+              viewBox="0 0 2000 120"
+              fill="none"
+              preserveAspectRatio="none"
+              animate={{
+                x: ["-50%", 0]
+              }}
+              transition={{
+                duration: 25,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <path
+                d="M0,60 C150,90 350,30 500,60 C650,90 850,30 1000,60 C1150,90 1350,30 1500,60 C1650,90 1850,30 2000,60 L2000,120 L0,120 Z"
+                fill="currentColor"
+              />
+            </motion.svg>
+
+            {/* Ocean Wave Layer 3 (Fastest, front-most overlay) */}
+            <motion.svg
+              className="absolute bottom-0 left-0 w-[200%] h-[55%] opacity-[0.32] text-[#bfdbfe]"
+              viewBox="0 0 1600 120"
+              fill="none"
+              preserveAspectRatio="none"
+              animate={{
+                x: [0, "-50%"]
+              }}
+              transition={{
+                duration: 18,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <path
+                d="M0,50 C120,80 280,20 400,50 C520,80 680,20 800,50 C920,80 1080,20 1200,50 C1320,80 1480,20 1600,50 L1600,120 L0,120 Z"
+                fill="currentColor"
+              />
+            </motion.svg>
+
+            {/* Bottom Curve Wave (Ocean Style - Blue) */}
+            <motion.svg
+              className="absolute bottom-0 left-0 w-[200%] h-[180px] opacity-[0.4] text-blue-200"
+              viewBox="0 0 1600 180"
+              fill="none"
+              preserveAspectRatio="none"
+              animate={{
+                x: ["-50%", 0]
+              }}
+              transition={{
+                duration: 22,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <path
+                d="M0,90 C120,135 280,45 400,90 C520,135 680,45 800,90 C920,135 1080,45 1200,90 C1320,135 1480,45 1600,90 L1600,180 L0,180 Z"
+                fill="currentColor"
+              />
+            </motion.svg>
+          </div>
 
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
-   <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,1.1fr)] gap-12 lg:gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,1.1fr)] gap-12 lg:gap-16 items-center">
 
               {/* Left: Text */}
               <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.65 }}>
-                <div className="flex items-center gap-2 mb-6 text-white text-sm font-bold uppercase tracking-[0.2em] flex-wrap">
-                  <Link href="/" className="hover:text-blue-400 transition">Home</Link>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-                  <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-blue-400 transition truncate max-w-[140px]">{course.category}</Link>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-                  <span className="opacity-40 truncate max-w-[180px]">{course.title}</span>
+                {/* Breadcrumbs */}
+                <div className="flex items-center gap-2 mb-6 text-black text-sm font-bold uppercase tracking-[0.2em] flex-wrap">
+                  <Link href="/" className="hover:text-blue-600 transition">Home</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-black/60" />
+                  <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-blue-600 transition">{course.category}</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-black/60" />
+                  <span className="text-black">{course.title}</span>
                 </div>
 
-                <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 text-white text-[11px] font-black uppercase tracking-[0.25em] px-5 py-2 rounded-full mb-6 backdrop-blur-md">
-                  <BookOpen className="w-4 h-4" />
+                {/* Category Badge */}
+                <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200/80 text-[#0b1f3a] text-[11px] font-black uppercase tracking-[0.2em] px-5 py-2.5 rounded-full mb-6 shadow-sm">
+                  <span className="text-sm">📖</span>
                   {course.category}
                 </div>
 
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.1] mb-8 tracking-tighter drop-shadow-2xl break-words">
+                {/* Title Heading */}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-blue-600 leading-tight mb-8 tracking-tight break-words">
                   {course.title}
                 </h1>
 
-                <div className="flex flex-wrap gap-3 text-sm text-white/90 mb-10">
+                {/* Metadata Pills */}
+                <div className="flex flex-wrap gap-3 text-sm mb-10">
                   {[
                     { icon: Clock,         label: course.duration, title: "Course Duration" },
                     { icon: GraduationCap, label: course.eligibility ?? "Open to All", title: "Eligibility" },
                     { icon: ShieldCheck,   label: "Govt. Approved Certified", title: "Certification" },
                   ].map(({ icon: Icon, label, title }) => (
-                    <div key={label} className="group relative flex items-center gap-2.5 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/15 hover:border-white/20 px-4 py-2 rounded-2xl text-[13px] font-bold transition-all duration-300 cursor-default">
-                      <Icon className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                      {label}
+                    <div key={label} className="group relative flex items-center gap-2.5 bg-white border border-slate-200/80 px-5 py-3 rounded-full text-[13px] font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-slate-300 cursor-default">
+                      <Icon className="w-4 h-4 text-blue-600" />
+                      <span>{label}</span>
                       {/* Custom Tooltip */}
                       <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-2xl z-20">
                         {title}
@@ -1985,21 +2058,22 @@ useEffect(() => {
                   ))}
                 </div>
 
+                {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-4">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl shadow-orange-500/20 text-[15px] uppercase tracking-wider"
+                    className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider shadow-lg shadow-blue-600/20"
                   >
                     Enquire Now
                   </button>
                   <button 
                     onClick={() => setShowDemoModal(true)}
-                    className="flex items-center gap-3 bg-white text-slate-900 hover:bg-blue-50 font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl text-[15px] border border-white/20 uppercase tracking-wider"
+                    className="flex items-center justify-center gap-2 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-black px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider shadow-sm"
                   >
                     <CalendarDays className="w-5 h-5 text-blue-600" />
                     Book a Free Demo
                   </button>
-                  <button onClick={() => setShowMobileSheet(true)} className="lg:hidden flex items-center gap-3 bg-white/10 hover:bg-white/20 text-white font-bold px-8 py-4 rounded-2xl border border-white/15 transition-all duration-300 text-[15px] uppercase tracking-wider">
+                  <button onClick={() => setShowMobileSheet(true)} className="lg:hidden flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider">
                     <Menu className="w-5 h-5" /> Browse Courses
                   </button>
                 </div>
@@ -2011,11 +2085,9 @@ useEffect(() => {
                   initial={{ opacity: 0, scale: 0.9, x: 40 }}
                   animate={{ opacity: 1, scale: 1, x: 0 }}
                   transition={{ duration: 0.65, delay: 0.2 }}
-                  className="hidden lg:block w-full max-w-[650px] shrink-0 overflow-hidden ml-auto"
+                  className="hidden lg:block w-full max-w-[650px] shrink-0 ml-auto"
                 >
-                  <div className="relative group">
-                    {/* Glowing effect behind video */}
-                    <div className="absolute -inset-4 bg-blue-600/30 rounded-[40px] blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-500" />
+                  <div className="bg-white border border-slate-100 rounded-[32px] p-3.5 shadow-md shadow-slate-200/50">
                     <VideoSection videos={videos} />
                   </div>
                 </motion.div>
@@ -2030,12 +2102,12 @@ useEffect(() => {
                 transition={{ duration: 0.55, delay: 0.25 }}
                 className="block lg:hidden mt-8"
               >
-                <VideoSection videos={videos} />
+                <div className="bg-white border border-slate-100 rounded-[32px] p-3.5 shadow-md shadow-slate-200/50">
+                  <VideoSection videos={videos} />
+                </div>
               </motion.div>
             )}
           </div>
-
-
         </section>
 
         {/* ── STATS BAR ── */}
@@ -2079,14 +2151,14 @@ useEffect(() => {
                       Delivery: <span className="font-semibold text-slate-600">{course.delivery_method}</span>
                     </p>
                   )}
-                  <div className="mt-5 flex flex-wrap gap-2">
+                  <div className="mt-6 flex flex-wrap gap-3">
                     {[
                       { icon: BadgeCheck, text: "Govt. of India Certified" },
                       { icon: TrendingUp, text: "High Placement Rate"     },
                       { icon: Users,      text: "Expert Instructors"       },
                     ].map(({ icon: Icon, text }) => (
-                      <div key={text} className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-600">
-                        <Icon className="w-3.5 h-3.5 text-blue-500" />
+                      <div key={text} className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-sm sm:text-base font-extrabold text-slate-700 shadow-xs">
+                        <Icon className="w-4.5 h-4.5 sm:w-5 h-5 text-blue-600 shrink-0" />
                         {text}
                       </div>
                     ))}
@@ -2107,11 +2179,11 @@ useEffect(() => {
                   <div className="px-6 sm:px-8 py-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {syllabusItems.length > 0 ? syllabusItems.map((item: string, i: number) => (
                       <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }} className="flex items-start gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3">
-                        <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                        <span className="text-sm text-slate-700 leading-snug">{item}</span>
+                        <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                        <span className="text-sm sm:text-base font-bold text-black leading-snug">{item}</span>
                       </motion.div>
                     )) : (
-                      <p className="text-slate-400 text-sm col-span-2">Syllabus details coming soon.</p>
+                      <p className="text-slate-900 font-bold text-sm col-span-2">Syllabus details coming soon.</p>
                     )}
                   </div>
                 </motion.div>
@@ -2122,7 +2194,7 @@ useEffect(() => {
                   <div className="absolute bottom-0 left-20 w-32 h-32 bg-white/5 rounded-full" />
                   <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-lg sm:text-xl font-black mb-1">Start Your Career Journey</h3>
+                      <h3 className="text-lg sm:text-xl font-black mb-1 text-white">Start Your Career Journey</h3>
                       <p className="text-blue-100 text-sm">Get the full brochure — detailed syllabus, fee structure & career outcomes</p>
                     </div>
                     <button

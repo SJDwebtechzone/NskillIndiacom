@@ -206,45 +206,57 @@ export default function StudentCalendar() {
       `}</style>
 
       {/* ── Page Banner ── */}
-      <div className="bg-[#0b1f3a] text-white">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div 
+        className="relative pt-16 pb-12 overflow-hidden bg-center bg-cover bg-no-repeat mb-8"
+        style={{ backgroundImage: "url('/images/calender/calendar-bg.png')" }}
+      >
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            
+            {/* Header Text */}
             <div>
-              <p className="text-white/90 text-sm md:text-base font-bold uppercase tracking-widest mb-2">FY 2026–2027</p>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase">Course Calendar</h1>
-              <p className="text-white text-base md:text-lg mt-2 font-medium">Skill Training Schedule · Student View</p>
+              <div className="inline-flex items-center gap-2 bg-[#dbeafe] border border-[#bfdbfe] rounded-full px-4 py-1 mb-4 shadow-sm">
+                <span className="text-[#2563eb] text-[11px] font-black tracking-widest uppercase">FY 2026–2027</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-[#0b1f3a] uppercase" style={{ fontFamily: 'var(--font-heading)' }}>
+                Course Calendar
+              </h1>
             </div>
+
             {/* Month Navigator */}
-            <div className="flex items-center gap-4 bg-white/10 rounded-2xl px-5 py-3 border border-white/20">
+            <div className="flex items-center gap-4 bg-[#eff6ff]/80 backdrop-blur-sm rounded-2xl px-5 py-3 border border-[#dbeafe] shadow-sm">
               <button
                 onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
                 disabled={monthIdx === 0}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-30 text-white text-lg font-bold"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#dbeafe] hover:bg-[#bfdbfe] transition disabled:opacity-40 text-[#2563eb] text-xl shadow-sm"
               >‹</button>
-              <span className="min-w-[160px] text-center text-base font-bold text-white">{month} {year}</span>
+              <span className="min-w-[140px] text-center text-[17px] font-black text-[#1e3a8a]">{month} {year}</span>
               <button
                 onClick={() => setMonthIdx((i) => Math.min(MONTHS_FY.length - 1, i + 1))}
                 disabled={monthIdx === MONTHS_FY.length - 1}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-30 text-white text-lg font-bold"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#dbeafe] hover:bg-[#bfdbfe] transition disabled:opacity-40 text-[#2563eb] text-xl shadow-sm"
               >›</button>
             </div>
           </div>
 
           {/* Month Tabs */}
-          <div className="flex gap-2 mt-6 overflow-x-auto scrollbar-hide pb-1">
-            {MONTHS_FY.map(({ month: m, year: y }, i) => (
-              <button
-                key={i}
-                onClick={() => setMonthIdx(i)}
-                className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm md:text-base font-bold transition-all ${
-                  monthIdx === i
-                    ? "bg-white text-[#0b1f3a] shadow-lg shadow-black/10"
-                    : "bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
-                }`}
-              >
-                {m.slice(0, 3)} '{String(y).slice(2)}
-              </button>
-            ))}
+          <div className="flex gap-3 mt-12 overflow-x-auto scrollbar-hide pb-2 pt-1">
+            {MONTHS_FY.map(({ month: m, year: y }, i) => {
+              const isActive = monthIdx === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setMonthIdx(i)}
+                  className={`flex-shrink-0 px-6 py-3 rounded-2xl text-[15px] font-bold transition-all shadow-sm ${
+                    isActive
+                      ? "bg-white text-[#2563eb] border-2 border-[#3b82f6] shadow-md shadow-blue-500/10 scale-105 transform -translate-y-1"
+                      : "bg-[#e0e7ff]/60 text-[#3b82f6] border border-[#c7d2fe] hover:bg-[#dbeafe] hover:-translate-y-0.5"
+                  }`}
+                >
+                  {m.slice(0, 3)} '{String(y).slice(2)}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -261,9 +273,9 @@ export default function StudentCalendar() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
             { label: "Total Sessions",   value: monthEvents.length,      icon: "📅", color: "text-blue-600",   bg: "bg-blue-50",   border: "border-blue-100" },
-            { label: "Courses Running",  value: monthCourseNames.length, icon: "📚", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
-            { label: "Batch 1 Sessions", value: batch1Count,             icon: "🔵", color: "text-violet-600",  bg: "bg-violet-50",  border: "border-violet-100" },
-            { label: "Batch 2 Sessions", value: batch2Count,             icon: "🟡", color: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-100" },
+            { label: "Courses Running",  value: monthCourseNames.length, icon: "📚", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+            { label: "Batch 1 Sessions", value: batch1Count,             icon: "🔵", color: "text-indigo-600",  bg: "bg-indigo-50",  border: "border-indigo-100" },
+            { label: "Batch 2 Sessions", value: batch2Count,             icon: "🟡", color: "text-sky-600",   bg: "bg-sky-50",   border: "border-sky-100" },
           ].map((s) => (
             <div key={s.label} className={`rounded-2xl p-5 border ${s.bg} ${s.border}`}>
               <div className="text-2xl mb-2">{s.icon}</div>
@@ -285,7 +297,7 @@ export default function StudentCalendar() {
                   className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
                     filterBatch === b
                       ? b === "batch1" ? "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
-                      : b === "batch2" ? "bg-violet-600 text-white border-violet-600 shadow-md"
+                      : b === "batch2" ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
                       : "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
                       : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
                   }`}
@@ -337,7 +349,7 @@ export default function StudentCalendar() {
                 <div className="flex flex-col gap-3">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-orange-500/20 active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2"
                   >
                     Enquire Now
                     <span>→</span>
@@ -489,7 +501,7 @@ export default function StudentCalendar() {
                 </>
               ) : (
                 <div className="p-12 text-center">
-                  <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-100">
+                  <div className="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-100">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                   </div>
                   <h3 className="text-[28px] font-black text-[#111827] mb-2 leading-tight">Done! 🎉</h3>

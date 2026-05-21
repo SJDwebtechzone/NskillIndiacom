@@ -130,17 +130,18 @@ const ContactPage: React.FC = () => {
       {/* ── Page Header ── */}
       <div className="relative h-[280px] md:h-[350px] flex flex-col items-center justify-center text-white overflow-hidden">
         <img
-          src="/images/contact/contactus.jpg"
+          src="/images/contact/contactus.png"
           alt="Contact Us"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-[#0b1f3a]/75" />
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#0b1f3a]" />
+        <div className="absolute inset-0 bg-white/10" />
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb]" />
+        <div className="relative z-10 px-6 md:px-12 max-w-7xl mx-auto w-full text-center">
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="relative text-orange-400 text-xs font-bold uppercase tracking-widest mb-3 z-10"
+          className="text-[#0f172a] text-sm md:text-base font-bold uppercase tracking-widest mb-3"
         >
           Get In Touch
         </motion.p>
@@ -148,7 +149,7 @@ const ContactPage: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative text-4xl md:text-5xl font-black mb-3 z-10 uppercase tracking-tight"
+          className="text-[#0f172a] text-4xl md:text-5xl font-black mb-3 uppercase tracking-tight"
         >
           Contact Us
         </motion.h1>
@@ -156,10 +157,11 @@ const ContactPage: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="relative text-slate-300 z-10 text-sm"
+          className="text-[#0f172a] text-base md:text-lg font-semibold"
         >
           We&apos;re here to help you
         </motion.p>
+        </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 md:px-12 py-16 space-y-12">
@@ -177,12 +179,12 @@ const ContactPage: React.FC = () => {
               transition={{ duration: 0.3 }}
               className="flex items-center gap-2"
             >
-              <div className="flex items-center gap-2 bg-[#0b1f3a] text-white px-4 py-2 rounded-full text-sm font-bold">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                 <MapPin size={14} />
                 {primaryLocation.location_name}
                 {primaryLocation.is_primary && selectedLocationId === null && (
-                  <span className="flex items-center gap-1 bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded-full">
-                    <Star size={8} className="fill-yellow-900" /> Primary
+                  <span className="flex items-center gap-1 bg-white text-blue-600 text-[10px] font-black px-2 py-0.5 rounded-full">
+                    <Star size={8} className="fill-blue-600" /> Primary
                   </span>
                 )}
                 {selectedLocationId !== null && (
@@ -204,13 +206,13 @@ const ContactPage: React.FC = () => {
               animate="visible"
               variants={cardVariants}
               whileHover={{ scale: 1.02 }}
-              className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
+              className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
             >
-              <div className="bg-orange-50 p-3 rounded-full text-orange-500 shrink-0">
+              <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
                 <MapPin size={24} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[#0b1f3a] mb-1">Office Location</h3>
+                <h3 className="text-lg font-bold text-[#2563eb] mb-1">Office Location</h3>
                 <p className="text-sm text-gray-600">{primaryLocation.address}</p>
               </div>
             </motion.div>
@@ -223,13 +225,13 @@ const ContactPage: React.FC = () => {
                 animate="visible"
                 variants={cardVariants}
                 whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
+                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
               >
-                <div className="bg-orange-50 p-3 rounded-full text-orange-500 shrink-0">
+                <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
                   <Phone size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#0b1f3a] mb-1">Phone</h3>
+                  <h3 className="text-lg font-bold text-[#2563eb] mb-1">Phone</h3>
                   {primaryLocation.primary_phone && (
                     <p className="text-sm text-gray-600 font-semibold">{primaryLocation.primary_phone}</p>
                   )}
@@ -261,16 +263,16 @@ const ContactPage: React.FC = () => {
                 animate="visible"
                 variants={cardVariants}
                 whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
+                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
               >
-                <div className="bg-orange-50 p-3 rounded-full text-orange-500 shrink-0">
+                <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
                   <Mail size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#0b1f3a] mb-1">Email</h3>
+                  <h3 className="text-lg font-bold text-[#2563eb] mb-1">Email</h3>
                   <a
                     href={`mailto:${primaryLocation.email}`}
-                    className="text-sm text-gray-600 font-semibold hover:text-orange-500 transition-colors"
+                    className="text-sm text-gray-600 font-semibold hover:text-[#2563eb] transition-colors"
                   >
                     {primaryLocation.email}
                   </a>
@@ -287,20 +289,20 @@ const ContactPage: React.FC = () => {
                 animate="visible"
                 variants={cardVariants}
                 whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#0b1f3a]"
+                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
               >
-                <div className="bg-orange-50 p-3 rounded-full text-orange-500 shrink-0">
+                <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#0b1f3a] mb-3">Follow Us</h3>
+                  <h3 className="text-lg font-bold text-[#2563eb] mb-3">Follow Us</h3>
                   <div className="flex items-center gap-3">
                     {primaryLocation.facebook_url && (
                       <a href={primaryLocation.facebook_url} target="_blank" rel="noopener noreferrer"
-                        className="bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600 transition-all hover:scale-110" title="Facebook">
+                        className="bg-[#2563eb] text-white p-2 rounded-full hover:bg-[#1d4ed8] transition-all hover:scale-110" title="Facebook">
                         <Facebook size={18} />
                       </a>
                     )}
@@ -318,7 +320,7 @@ const ContactPage: React.FC = () => {
                     )}
                     {primaryLocation.linkedin_url && (
                       <a href={primaryLocation.linkedin_url} target="_blank" rel="noopener noreferrer"
-                        className="bg-orange-500 text-white p-2 rounded-full hover:bg-orange-600 transition-all hover:scale-110" title="LinkedIn">
+                        className="bg-[#2563eb] text-white p-2 rounded-full hover:bg-[#1d4ed8] transition-all hover:scale-110" title="LinkedIn">
                         <Linkedin size={18} />
                       </a>
                     )}
@@ -335,10 +337,10 @@ const ContactPage: React.FC = () => {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={cardVariants}
-                className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-[#0b1f3a]"
+                className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-[#2563eb]"
               >
-                <h3 className="text-lg font-bold text-[#0b1f3a] mb-3 flex items-center gap-2">
-                  <MapPin size={18} className="text-orange-500" />
+                <h3 className="text-lg font-bold text-[#2563eb] mb-3 flex items-center gap-2">
+                  <MapPin size={18} className="text-[#2563eb]" />
                   Our Other Locations
                 </h3>
                 <div className="space-y-2">
@@ -355,13 +357,13 @@ const ContactPage: React.FC = () => {
                           }
                           className={`w-full text-left flex items-start gap-2 px-4 py-3 rounded-xl transition-all text-sm
                             ${isActive
-                              ? "bg-[#0b1f3a] text-white"
-                              : "bg-slate-50 text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                              ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white"
+                              : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-[#2563eb]"
                             }`}
                         >
-                          <MapPin size={13} className={`shrink-0 mt-0.5 ${isActive ? "text-orange-300" : "text-orange-500"}`} />
+                          <MapPin size={13} className={`shrink-0 mt-0.5 ${isActive ? "text-blue-200" : "text-[#2563eb]"}`} />
                           <div>
-                            <p className={`font-bold ${isActive ? "text-white" : "text-[#0b1f3a]"}`}>{loc.location_name}</p>
+                            <p className={`font-bold ${isActive ? "text-white" : "text-[#2563eb]"}`}>{loc.location_name}</p>
                             <p className={`text-xs ${isActive ? "text-slate-300" : "text-slate-500"}`}>{loc.address}</p>
                             {loc.primary_phone && (
                               <p className={`text-xs ${isActive ? "text-slate-300" : "text-slate-500"}`}>{loc.primary_phone}</p>
@@ -382,52 +384,52 @@ const ContactPage: React.FC = () => {
             viewport={{ once: true }}
             variants={cardVariants}
             custom={4}
-            className="bg-white p-8 rounded-lg shadow-md border border-gray-200 border-t-4 border-t-[#0b1f3a]"
+            className="bg-white p-8 rounded-lg shadow-md border border-gray-200 border-t-4 border-t-[#2563eb]"
           >
-            <h2 className="text-3xl font-bold text-[#0b1f3a] mb-4">Send a Message</h2>
+            <h2 className="text-3xl font-bold text-[#2563eb] mb-4">Send a Message</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0b1f3a] uppercase tracking-wider ml-1">Full Name</label>
+                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Full Name</label>
                   <input
                     type="text" name="name" placeholder="Enter your name"
                     value={formData.name} onChange={handleChange} required
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#0b1f3a] focus:ring-1 focus:ring-orange-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0b1f3a] uppercase tracking-wider ml-1">Email Address</label>
+                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Email Address</label>
                   <input
                     type="email" name="email" placeholder="Enter your email"
                     value={formData.email} onChange={handleChange} required
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#0b1f3a] focus:ring-1 focus:ring-orange-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0b1f3a] uppercase tracking-wider ml-1">Phone Number</label>
+                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Phone Number</label>
                   <input
                     type="tel" name="phone" placeholder="Enter phone number"
                     value={formData.phone} onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#0b1f3a] focus:ring-1 focus:ring-orange-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#0b1f3a] uppercase tracking-wider ml-1">Subject</label>
+                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Subject</label>
                   <input
                     type="text" name="subject" placeholder="How can we help?"
                     value={formData.subject} onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#0b1f3a] focus:ring-1 focus:ring-orange-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-[#0b1f3a] uppercase tracking-wider ml-1">Message</label>
+                <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Message</label>
                 <textarea
                   name="message" rows={4} placeholder="Write your message here..."
                   value={formData.message} onChange={handleChange} required
-                  className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#0b1f3a] focus:ring-1 focus:ring-orange-500 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
                 />
               </div>
 
@@ -440,7 +442,7 @@ const ContactPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => { generateCaptcha(); setCaptchaInput(""); }}
-                    className="p-2 text-gray-500 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-all"
+                    className="p-2 text-gray-500 hover:text-[#2563eb] hover:bg-blue-50 rounded-full transition-all"
                     title="Refresh Captcha"
                   >
                     <RefreshCw size={20} />
@@ -450,13 +452,13 @@ const ContactPage: React.FC = () => {
                   type="text" placeholder="Enter Captcha"
                   value={captchaInput}
                   onChange={(e) => setCaptchaInput(e.target.value)}
-                  className="px-4 py-3 bg-white border border-gray-300 rounded focus:border-[#0b1f3a] focus:ring-1 focus:ring-orange-500 outline-none w-48 text-gray-900"
+                  className="px-4 py-3 bg-white border border-gray-300 rounded focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none w-48 text-gray-900"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-orange-500 text-white font-bold py-4 rounded-xl hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-lg shadow-orange-500/20 hover:shadow-xl active:scale-[0.99]"
+                className="w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white font-bold py-4 rounded-xl hover:from-[#1d4ed8] hover:to-[#1e40af] transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 hover:shadow-xl active:scale-[0.99]"
               >
                 Send Message <Send size={18} />
               </button>
@@ -472,8 +474,8 @@ const ContactPage: React.FC = () => {
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <MapPin size={18} className="text-orange-500" />
-              <h3 className="font-bold text-[#0b1f3a] text-lg">
+              <MapPin size={18} className="text-[#2563eb]" />
+              <h3 className="font-bold text-[#2563eb] text-lg">
                 {primaryLocation.location_name} — Map
               </h3>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Camera, Clapperboard, Folder } from "lucide-react";
 
 interface MediaItem {
   id: number;
@@ -48,88 +49,61 @@ export default function InfrastructurePage() {
     <div className="min-h-screen bg-slate-50">
 
       {/* ── HERO BANNER ── */}
-      <div className="relative bg-[#0b1f3a] text-white overflow-hidden">
-
-        {/* Background decorations */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-orange-500/10 blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 w-[400px] h-[400px] rounded-full bg-[#0b1f3a]/30 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-px bg-white/5" />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-[0.04]" style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px"
-          }} />
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col md:flex-row items-center justify-between gap-10">
+      {/* ── HERO BANNER ── */}
+      <div 
+        className="relative pt-16 pb-16 lg:pb-20 overflow-hidden bg-center bg-cover bg-no-repeat"
+        style={{ backgroundImage: "url('/images/infra/infrastructure-bg.png')" }}
+      >
+        <div className="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12 z-10">
           
-          {/* Left Side: Title */}
-          <div className="flex-1 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-400/30 rounded-full px-4 py-1.5 mb-6">
-              <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-              <span className="text-white text-xs font-bold tracking-widest uppercase">Our Facilities</span>
+          {/* Left Side: Title & Badge */}
+          <div className="flex-1 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 bg-[#e0e7ff] border border-[#c7d2fe] rounded-full px-4 py-1.5 mb-8 shadow-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
+              <span className="text-[#2563eb] text-xs font-black tracking-widest uppercase">Our Facilities</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight">
-              Infrastructure
-              <span className="block text-white">Gallery</span>
+            <h1 className="text-5xl md:text-6xl lg:text-[4.5rem] font-black tracking-tight leading-none text-[#0b1f3a] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+              INFRASTRUCTURE
             </h1>
+            <h2 className="text-[3.5rem] md:text-[5rem] lg:text-[6.5rem] font-black tracking-tighter leading-none text-[#2563eb] uppercase">
+              Gallery
+            </h2>
           </div>
 
           {/* Right Side: Text & Stats */}
-          <div className="flex-1 w-full flex flex-col items-center md:items-end text-center md:text-left">
-            <div className="w-full md:max-w-md">
-              <p className="text-white text-base md:text-lg mb-8">
-                Explore our state-of-the-art training facilities through photos &amp; videos
+          <div className="flex-1 w-full flex flex-col items-center lg:items-end text-center lg:text-left lg:pt-8">
+            <div className="w-full max-w-lg lg:max-w-md">
+              <p className="text-[#1e293b] text-base md:text-lg mb-10 font-medium leading-relaxed lg:text-left text-center">
+                Explore our state-of-the-art training facilities through<br className="hidden lg:block"/> photos & videos
               </p>
 
-              {/* Stats */}
+              {/* Stats Cards */}
               {!loading && (
-                <div className="flex justify-center md:justify-start gap-4 w-full">
+                <div className="flex justify-center lg:justify-start gap-5 w-full">
                   {[
-                    { label: "Photos", value: photos.length,  icon: "📷", filter: "photo" },
-                    { label: "Videos", value: videos.length,  icon: "🎬", filter: "video" },
-                    { label: "Total",  value: media.length,   icon: "📁", filter: "all"  },
+                    { label: "Photos", value: photos.length, icon: <Camera size={32} fill="#3b82f6" stroke="#ffffff" strokeWidth={1} />, filter: "photo" },
+                    { label: "Videos", value: videos.length, icon: <Clapperboard size={32} fill="#3b82f6" stroke="#ffffff" strokeWidth={1} />, filter: "video" },
+                    { label: "Total",  value: media.length,  icon: <Folder size={32} fill="#3b82f6" stroke="#3b82f6" strokeWidth={0} />, filter: "all" },
                   ].map((s) => (
                     <div 
                       key={s.label} 
                       onClick={() => setFilter(s.filter as "all" | "photo" | "video")}
-                      className={`bg-white/5 hover:bg-white/10 border rounded-2xl px-6 py-4 md:px-8 md:py-5 text-center transition-all duration-300 group cursor-pointer ${
-                        filter === s.filter ? "border-orange-500 bg-white/20" : "border-white/10 hover:border-orange-500/40"
+                      className={`bg-white rounded-3xl p-6 w-[110px] md:w-[130px] flex flex-col items-center justify-center text-center transition-all duration-300 cursor-pointer shadow-[0_10px_40px_rgb(37,99,235,0.08)] border border-white hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(37,99,235,0.15)] relative overflow-hidden group ${
+                        filter === s.filter ? "ring-2 ring-[#3b82f6] border-[#3b82f6]/20" : ""
                       }`}
                     >
-                      <div className="text-2xl mb-1">{s.icon}</div>
-                      <p className="text-2xl md:text-3xl font-black text-white group-hover:text-blue-300 transition-colors">{s.value}</p>
-                      <p className="text-blue-300/70 text-[10px] md:text-xs uppercase tracking-widest mt-1">{s.label}</p>
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#f8fafc] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative z-10 text-[#3b82f6] mb-3 group-hover:scale-110 transition-transform duration-300 drop-shadow-md">
+                        {s.icon}
+                      </div>
+                      <p className="relative z-10 text-4xl md:text-[2.75rem] font-black text-[#2563eb] mb-1 leading-none">{s.value}</p>
+                      <p className="relative z-10 text-[#3b82f6] text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">{s.label}</p>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Bottom wave */}
-        <div className="absolute bottom-0 left-0 right-0 overflow-hidden">
-          <style>{`
-            @keyframes wave-move {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            .wave-animate {
-              animation: wave-move 8s linear infinite;
-              width: 200%;
-              display: flex;
-            }
-          `}</style>
-          <div className="wave-animate">
-            <svg viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "50%", flexShrink: 0 }}>
-              <path d="M0 50L1440 50L1440 15C1200 45 900 5 720 25C540 45 240 5 0 15L0 50Z" fill="#f8fafc"/>
-            </svg>
-            <svg viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "50%", flexShrink: 0 }}>
-              <path d="M0 50L1440 50L1440 15C1200 45 900 5 720 25C540 45 240 5 0 15L0 50Z" fill="#f8fafc"/>
-            </svg>
           </div>
         </div>
       </div>
@@ -147,8 +121,8 @@ export default function InfrastructurePage() {
                 onClick={() => setFilter(tab)}
                 className={`px-5 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-200 ${
                   filter === tab
-                    ? "bg-orange-500 text-white shadow-md"
-                    : "bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-600"
+                    ? "bg-blue-500 text-white shadow-md"
+                    : "bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-600"
                 }`}
               >
                 {tab === "all" ? "All" : tab === "photo" ? "📷 Photos" : "🎬 Videos"}
@@ -174,7 +148,7 @@ export default function InfrastructurePage() {
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-1 h-8 bg-[#0b1f3a] rounded-full" />
                   <h2 className="text-xl font-black text-[#0b1f3a] tracking-tight uppercase">Photos</h2>
-                  <span className="bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
                     {photos.length}
                   </span>
                   <div className="flex-1 h-px bg-slate-200" />
@@ -191,7 +165,7 @@ export default function InfrastructurePage() {
                       <div
                         key={item.id}
                         onClick={() => setSelected(item)}
-                        className="group cursor-pointer rounded-2xl overflow-hidden border border-slate-200 hover:border-orange-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                        className="group cursor-pointer rounded-2xl overflow-hidden border border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                       >
                         <div className="relative aspect-square overflow-hidden bg-slate-100">
                           <img
@@ -201,7 +175,7 @@ export default function InfrastructurePage() {
                           />
                           <div className="absolute inset-0 bg-[#0b1f3a]/0 group-hover:bg-[#0b1f3a]/30 transition-all duration-300 flex items-center justify-center">
                             <div className="w-10 h-10 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 scale-75 group-hover:scale-100">
-                              <span className="text-orange-500 text-lg">🔍</span>
+                              <span className="text-blue-500 text-lg">🔍</span>
                             </div>
                           </div>
                         </div>
@@ -218,7 +192,7 @@ export default function InfrastructurePage() {
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-1 h-8 bg-[#0b1f3a] rounded-full" />
                   <h2 className="text-xl font-black text-[#0b1f3a] tracking-tight uppercase">Videos</h2>
-                  <span className="bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
                     {videos.length}
                   </span>
                   <div className="flex-1 h-px bg-slate-200" />
@@ -235,7 +209,7 @@ export default function InfrastructurePage() {
                       <div
                         key={item.id}
                         onClick={() => setSelected(item)}
-                        className="group cursor-pointer rounded-2xl overflow-hidden border border-slate-200 hover:border-orange-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                        className="group cursor-pointer rounded-2xl overflow-hidden border border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                       >
                         <div className="relative aspect-video overflow-hidden bg-slate-900">
                           <video
@@ -249,11 +223,11 @@ export default function InfrastructurePage() {
                             }}
                           />
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="w-14 h-14 rounded-full bg-white/90 border-2 border-white flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-orange-500 group-hover:border-orange-500 transition-all duration-300">
-                              <span className="text-orange-500 group-hover:text-white text-xl ml-1 transition-colors duration-300">▶</span>
+                            <div className="w-14 h-14 rounded-full bg-white/90 border-2 border-white flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-blue-500 group-hover:border-blue-500 transition-all duration-300">
+                              <span className="text-blue-500 group-hover:text-white text-xl ml-1 transition-colors duration-300">▶</span>
                             </div>
                           </div>
-                          <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-lg">
+                          <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-lg">
                             VIDEO
                           </div>
                         </div>
