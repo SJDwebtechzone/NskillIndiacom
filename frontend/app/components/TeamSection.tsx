@@ -222,12 +222,7 @@ const TeamSection = () => {
             <span className="w-8 h-px bg-slate-300" />
           </div>
 
-          <h2
-            className="text-4xl md:text-5xl font-black mb-5 leading-tight uppercase tracking-tighter"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
-            <span className="text-blue-600">Our</span> <span className="text-red-600">Team</span>
-          </h2>
+          <h2 className="mb-5">Our Team</h2>
 
           <p className="text-slate-500 max-w-xl mx-auto text-base font-light leading-relaxed">
            NTSC has a competent team of people from various specialities like Lean, safety, Electrical (Domestic and Industry), HVAC, HR management, soft skills, etc. The team is headed by,

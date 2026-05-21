@@ -79,7 +79,7 @@ export default function ReferralTracking() {
                     label="Total Points Earned" 
                     value={`₹ ${stats.totalEarned.toLocaleString()}`} 
                     icon={Wallet} 
-                    color="bg-blue-600" 
+                    color="bg-orange-500" 
                     trend="10% Referral Active"
                 />
                 <StatCard 
@@ -109,9 +109,9 @@ export default function ReferralTracking() {
             <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
                 <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                     <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                        <TrendingUp className="text-blue-600" /> Commission History
+                        <TrendingUp className="text-orange-500" /> Commission History
                     </h3>
-                    <div className="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">
+                    <div className="px-4 py-1.5 bg-orange-50 text-orange-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-100">
                         Total Referrals: {points.length}
                     </div>
                 </div>
@@ -119,7 +119,7 @@ export default function ReferralTracking() {
                 <div className="p-0">
                     {isLoading ? (
                         <div className="py-20 flex flex-col items-center gap-4">
-                            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
                             <p className="font-bold text-slate-400 animate-pulse">Analyzing your referral data...</p>
                         </div>
                     ) : points.length === 0 ? (
@@ -143,7 +143,7 @@ export default function ReferralTracking() {
                                 </thead>
                                 <tbody>
                                     {points.map((item) => (
-                                        <tr key={item.id} className="border-b border-slate-100/50 hover:bg-blue-50/30 transition-all group">
+                                        <tr key={item.id} className="border-b border-slate-100/50 hover:bg-orange-50/30 transition-all group">
                                             <td className="py-6 px-8">
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex-shrink-0">
@@ -157,7 +157,7 @@ export default function ReferralTracking() {
                                                                 }}
                                                             />
                                                         ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-blue-600">
+                                                            <div className="w-full h-full flex items-center justify-center text-orange-500">
                                                                 <User size={20} />
                                                             </div>
                                                         )}
@@ -176,7 +176,7 @@ export default function ReferralTracking() {
                                             </td>
                                             <td className="py-6 px-8">
                                                 <div className="flex flex-col">
-                                                    <span className={`font-black text-lg ${parseFloat(item.points_earned) === 0 ? 'text-slate-400' : 'text-blue-600'}`}>
+                                                    <span className={`font-black text-lg ${parseFloat(item.points_earned) === 0 ? 'text-slate-400' : 'text-orange-500'}`}>
                                                         ₹ {parseFloat(item.points_earned).toLocaleString()}
                                                     </span>
                                                     {parseFloat(item.points_earned) === 0 && (
@@ -210,42 +210,42 @@ export default function ReferralTracking() {
 
             {/* Info Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="p-10 bg-[#0b1f3a] rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl">
+                <div className="p-10 bg-slate-900 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl">
                     <div className="relative z-10">
                         <h4 className="text-xl font-black mb-6 flex items-center gap-2">
-                             <Award className="text-blue-400" /> Referral Pay Schedule
+                             <Award className="text-orange-400" /> Referral Pay Schedule
                         </h4>
                         <ul className="space-y-6">
                             <li className="flex items-start gap-4">
-                                <div className="w-8 h-8 rounded-xl bg-blue-600/30 flex items-center justify-center shrink-0">
+                                <div className="w-8 h-8 rounded-xl bg-orange-500/30 flex items-center justify-center shrink-0">
                                     <span className="text-xs font-black">01</span>
                                 </div>
                                 <div>
                                     <p className="font-black text-sm uppercase tracking-wider">Student Clears Balance</p>
-                                    <p className="text-xs text-blue-200 mt-1 font-medium">Commission is only calculated once the student's admission balance becomes ₹0.</p>
+                                    <p className="text-xs text-orange-200 mt-1 font-medium">Commission is only calculated once the student's admission balance becomes ₹0.</p>
                                 </div>
                             </li>
                             <li className="flex items-start gap-4">
-                                <div className="w-8 h-8 rounded-xl bg-blue-600/30 flex items-center justify-center shrink-0">
+                                <div className="w-8 h-8 rounded-xl bg-orange-500/30 flex items-center justify-center shrink-0">
                                     <span className="text-xs font-black">02</span>
                                 </div>
                                 <div>
                                     <p className="font-black text-sm uppercase tracking-wider">Ready for Payout</p>
-                                    <p className="text-xs text-blue-200 mt-1 font-medium">Once a set of points hits 10%, it shows as 'Ready for Payout' in your dashboard.</p>
+                                    <p className="text-xs text-orange-200 mt-1 font-medium">Once a set of points hits 10%, it shows as 'Ready for Payout' in your dashboard.</p>
                                 </div>
                             </li>
                              <li className="flex items-start gap-4">
-                                <div className="w-8 h-8 rounded-xl bg-blue-600/30 flex items-center justify-center shrink-0">
+                                <div className="w-8 h-8 rounded-xl bg-orange-500/30 flex items-center justify-center shrink-0">
                                     <span className="text-xs font-black">03</span>
                                 </div>
                                 <div>
                                     <p className="font-black text-sm uppercase tracking-wider">Admin Settlement</p>
-                                    <p className="text-xs text-blue-200 mt-1 font-medium">When the finance team processes your payment, the status updates to 'Paid & Settled'.</p>
+                                    <p className="text-xs text-orange-200 mt-1 font-medium">When the finance team processes your payment, the status updates to 'Paid & Settled'.</p>
                                 </div>
                             </li>
                         </ul>
                     </div>
-                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl"></div>
+                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl"></div>
                 </div>
 
                 <div className="p-10 bg-white border-2 border-slate-50 rounded-[2.5rem] shadow-xl flex flex-col justify-center items-center text-center">
@@ -259,10 +259,10 @@ export default function ReferralTracking() {
 
             {/* Info Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="p-8 bg-[#0b1f3a] rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl">
+                <div className="p-8 bg-slate-900 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl">
                     <div className="relative z-10">
                         <h4 className="text-xl font-black mb-4 flex items-center gap-2">
-                             <Award className="text-blue-400" /> Referral Policy
+                             <Award className="text-orange-400" /> Referral Policy
                         </h4>
                         <ul className="space-y-4">
                             <PolicyItem text="Earn 10% commission on the total course fee for every successful referral." />
@@ -270,7 +270,7 @@ export default function ReferralTracking() {
                             <PolicyItem text="Track your earnings in real-time through this dedicated dashboard." />
                         </ul>
                     </div>
-                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl"></div>
+                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl"></div>
                 </div>
 
                 <div className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-xl flex flex-col justify-center items-center text-center">
@@ -297,15 +297,15 @@ const StatCard = ({ label, value, icon: Icon, color, trend, sub }: any) => (
         <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
             <h4 className="text-2xl font-black text-slate-800">{value}</h4>
-            {trend && <p className="text-[10px] font-bold text-blue-600 mt-1 flex items-center gap-1"><ArrowUpRight size={12} /> {trend}</p>}
+            {trend && <p className="text-[10px] font-bold text-orange-500 mt-1 flex items-center gap-1"><ArrowUpRight size={12} /> {trend}</p>}
             {sub && <p className="text-[10px] font-bold text-slate-400 mt-1">{sub}</p>}
         </div>
     </motion.div>
 );
 
 const PolicyItem = ({ text }: { text: string }) => (
-    <li className="flex items-start gap-3 text-sm font-medium text-blue-100">
-        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></div>
+    <li className="flex items-start gap-3 text-sm font-medium text-orange-100">
+        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></div>
         {text}
     </li>
 );

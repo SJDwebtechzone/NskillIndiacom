@@ -81,13 +81,13 @@ export default function AssociateDashboard() {
     return (
         <div className="space-y-8 pb-12">
             {/* Welcome Header */}
-            <div className="relative p-10 bg-[#0b1f3a] rounded-[3rem] text-white overflow-hidden shadow-2xl">
+            <div className="relative p-10 bg-slate-900 rounded-[3rem] text-white overflow-hidden shadow-2xl">
                 <div className="relative z-10">
                     <h2 className="text-4xl font-black tracking-tight mb-2">Associate Dashboard</h2>
-                    <p className="text-blue-300 font-bold uppercase text-[10px] tracking-[0.2em]">Manage your enquiries, admissions, and referral earnings</p>
+                    <p className="text-orange-300 font-bold uppercase text-[10px] tracking-[0.2em]">Manage your enquiries, admissions, and referral earnings</p>
                     
                     <div className="mt-8 flex flex-wrap gap-4">
-                        <Link href="/dashboard/associate-management/enquiry" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+                        <Link href="/dashboard/associate-management/enquiry" className="px-6 py-3 bg-orange-500 hover:bg-orange-600 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
                            <UserPlus size={16} /> New Enquiry
                         </Link>
                         <Link href="/dashboard/associate-management/admission" className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
@@ -95,8 +95,8 @@ export default function AssociateDashboard() {
                         </Link>
                     </div>
                 </div>
-                <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-400/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-orange-400/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
             </div>
 
             {/* Stats Grid */}
@@ -105,8 +105,8 @@ export default function AssociateDashboard() {
                     label="My Enquiries" 
                     value={stats.totalEnquiries.toString()} 
                     icon={Users} 
-                    color="text-blue-600" 
-                    bg="bg-blue-50" 
+                    color="text-orange-500" 
+                    bg="bg-orange-50" 
                 />
                 <DashboardStat 
                     label="Admissions" 
@@ -135,7 +135,7 @@ export default function AssociateDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
                 <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
                     <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2">
-                        <Award className="text-blue-600" /> Career Counsellor Program
+                        <Award className="text-orange-500" /> Career Counsellor Program
                     </h3>
                     <p className="text-slate-500 font-medium mb-6 leading-relaxed">
                         As an authorized associate, you earn **10% commission** on every student who completes their course fee payment. Enquiries you add today can become successful admissions tomorrow.
@@ -170,9 +170,9 @@ export default function AssociateDashboard() {
                 <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
                     <div className="p-8 border-b border-slate-50 flex justify-between items-center">
                         <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                            <Users className="text-blue-600" /> Recent Enquiries
+                            <Users className="text-orange-500" /> Recent Enquiries
                         </h3>
-                        <Link href="/dashboard/associate-management/enquiry" className="text-xs font-bold text-blue-600 hover:underline">View All</Link>
+                        <Link href="/dashboard/associate-management/enquiry" className="text-xs font-bold text-orange-500 hover:underline">View All</Link>
                     </div>
                     <div className="max-h-[350px] overflow-y-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse">
@@ -187,16 +187,16 @@ export default function AssociateDashboard() {
                                 {stats.recentEnquiries.length === 0 ? (
                                     <tr><td colSpan={3} className="py-10 text-center text-slate-300 font-bold">No enquiries found</td></tr>
                                 ) : stats.recentEnquiries.map((enq, i) => (
-                                    <tr key={enq.id} className="border-b border-slate-50 hover:bg-blue-50/20 transition-all group">
+                                    <tr key={enq.id} className="border-b border-slate-50 hover:bg-orange-50/20 transition-all group">
                                         <td className="py-4 px-8">
                                             <div className="font-bold text-slate-800">{enq.student_name}</div>
-                                            <div className="text-[10px] font-mono text-blue-600 font-black">ID: {enq.enquiry_id}</div>
+                                            <div className="text-[10px] font-mono text-orange-500 font-black">ID: {enq.enquiry_id}</div>
                                         </td>
                                         <td className="py-4 px-4 text-xs font-bold text-slate-500">{enq.course_interested || "General"}</td>
                                         <td className="py-4 px-8 text-right">
                                             <button 
                                                 onClick={() => { setSelectedItem(enq); setViewType("enquiry"); }}
-                                                className="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm group-hover:scale-110"
+                                                className="p-2.5 bg-orange-50 text-orange-500 rounded-xl hover:bg-orange-500 hover:text-white transition-all shadow-sm group-hover:scale-110"
                                             >
                                                 <Eye size={16} />
                                             </button>
@@ -275,7 +275,7 @@ export default function AssociateDashboard() {
 
                             <div className="p-10 max-h-[85vh] overflow-y-auto custom-dashboard-modal-scroll">
                                 <div className="flex items-center gap-6 mb-10 pb-6 border-b border-slate-100">
-                                    <div className="w-20 h-20 bg-[#0b1f3a] rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-blue-900/20">
+                                    <div className="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-orange-700/20">
                                         {(viewType === "enquiry" ? selectedItem.student_name : selectedItem.full_name)[0].toUpperCase()}
                                     </div>
                                     <div>
@@ -283,7 +283,7 @@ export default function AssociateDashboard() {
                                             {viewType === "enquiry" ? selectedItem.student_name : selectedItem.full_name}
                                         </h3>
                                         <div className="flex items-center gap-3 mt-1">
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.15em] ${viewType === 'enquiry' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}`}>
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.15em] ${viewType === 'enquiry' ? 'bg-orange-50 text-orange-500' : 'bg-green-50 text-green-600'}`}>
                                                 {viewType === "enquiry" ? "Enquiry Record" : "Admission Record"}
                                             </span>
                                             <span className="text-slate-300">|</span>
@@ -295,8 +295,8 @@ export default function AssociateDashboard() {
                                 <div className="space-y-12">
                                     {/* Personal & Identification */}
                                     <section>
-                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-6 group">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 1. Personal Information
+                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-6 group">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span> 1. Personal Information
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                             <DetailBox label="Full Name" value={viewType === "enquiry" ? selectedItem.student_name : selectedItem.full_name} icon={User} />
@@ -314,8 +314,8 @@ export default function AssociateDashboard() {
 
                                     {/* Contact & Location */}
                                     <section>
-                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-6 group">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 2. Contact Details
+                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-6 group">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span> 2. Contact Details
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                             <DetailBox label="Mobile Number" value={selectedItem.mobile_number} icon={User} />
@@ -329,8 +329,8 @@ export default function AssociateDashboard() {
 
                                     {/* Guardian & Background */}
                                     <section>
-                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-6 group">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 3. Guardian & Background
+                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-6 group">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span> 3. Guardian & Background
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                             <DetailBox label="Guardian Name" value={selectedItem.parent_name || selectedItem.father_name} icon={User} />
@@ -344,8 +344,8 @@ export default function AssociateDashboard() {
 
                                     {/* Training & Fees */}
                                     <section className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 shadow-inner">
-                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-6 group">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 4. Course & Financials
+                                        <h4 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-6 group">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span> 4. Course & Financials
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                             <DetailBox label="Selected Course" value={selectedItem.course_interested || selectedItem.course_name} icon={BookOpen} />
@@ -373,7 +373,7 @@ export default function AssociateDashboard() {
 
                                     {selectedItem.remarks && (
                                         <section>
-                                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-3 ml-1">Internal Remarks</h4>
+                                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-3 ml-1">Internal Remarks</h4>
                                             <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 text-sm font-medium text-amber-900 italic">
                                                 "{selectedItem.remarks}"
                                             </div>
@@ -384,7 +384,7 @@ export default function AssociateDashboard() {
                                 <div className="mt-12 flex justify-center">
                                     <button 
                                         onClick={() => { setSelectedItem(null); setViewType(null); }}
-                                        className="w-full py-4 bg-[#0b1f3a] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-600 transition-all shadow-lg"
+                                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-500 transition-all shadow-lg"
                                     >
                                         Close Quick View
                                     </button>
@@ -420,7 +420,7 @@ const DashboardStat = ({ label, value, icon: Icon, color, bg }: any) => (
 
 const BenefitItem = ({ text }: { text: string }) => (
     <div className="flex items-center gap-3 text-sm font-bold text-slate-600">
-        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+        <div className="w-2 h-2 rounded-full bg-orange-500"></div>
         {text}
     </div>
 );

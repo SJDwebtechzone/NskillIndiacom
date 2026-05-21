@@ -83,10 +83,8 @@ const getPhotoUrl = (photoUrl: string) => {
             </svg>
             <p className="font-semibold text-sm uppercase tracking-widest text-gray-500">Google Reviews</p>
           </div>
-          <h2 className="text-3xl md:text-4xl font-black mb-6 tracking-tight uppercase">
-            <span className="text-blue-600">Student</span> <span className="text-red-600">Reviews</span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
+          <h2 className="mb-6">Student Reviews</h2>
+          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
             Verified reviews from our students on Google
           </p>
           <div className="flex items-center justify-center gap-3 mt-4">
@@ -146,7 +144,7 @@ const getPhotoUrl = (photoUrl: string) => {
                       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                     </svg>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-5 italic line-clamp-4">
+                  <p className="text-gray-600 leading-relaxed mb-5 italic line-clamp-4">
                     "{r.review_text}"
                   </p>
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-100">

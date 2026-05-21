@@ -133,7 +133,7 @@ const VisionSection = () => {
                   <active.icon className="text-blue-700 w-5 h-5" />
                 </motion.div>
 
-                <h3 className="font-black text-xl text-red-600">
+                <h3>
                   {active.label}
                 </h3>
               </div>
@@ -175,7 +175,7 @@ const VisionSection = () => {
                       <span className="group-hover:bg-blue-700 group-hover:text-white w-6 h-6 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 text-xs font-bold transition">
                         {i + 1}
                       </span>
-                      <p className="text-sm text-gray-600">{item}</p>
+                      <p className="text-gray-600">{item}</p>
                     </motion.li>
                   ))}
                 </motion.ul>

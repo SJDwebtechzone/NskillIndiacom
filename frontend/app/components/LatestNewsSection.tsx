@@ -47,9 +47,7 @@ const LatestNewsSection = () => {
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight uppercase">
-                        <span className="text-blue-600">Latest</span> <span className="text-red-600">News</span>
-                    </h2>
+                    <h2 className="mb-6">Latest News</h2>
                     <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full" />
                 </motion.div>
 
@@ -99,7 +97,7 @@ const LatestNewsSection = () => {
                                     <h3 className="text-xl font-black text-slate-800 mb-4 leading-tight group-hover:text-blue-600 transition-colors">
                                         {item.title}
                                     </h3>
-                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                                    <p className="text-slate-500 leading-relaxed font-medium text-justify">
                                         {item.content}
                                     </p>
                                 </div>

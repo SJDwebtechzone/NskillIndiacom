@@ -13,9 +13,9 @@ const sections = [
     description: "View your performance stats, enquiry counts, and recent referral activities at a glance.",
     href: "/dashboard/associate-management/dashboard",
     icon: LayoutDashboard,
-    bg: "bg-blue-50",
-    iconColor: "text-blue-600",
-    border: "border-blue-100",
+    bg: "bg-orange-50",
+    iconColor: "text-orange-500",
+    border: "border-orange-100",
     badge: "Home",
   },
   {
@@ -57,8 +57,8 @@ export default function AssociateManagementLanding() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
             <h1 className="text-4xl font-black text-slate-800 tracking-tight flex items-center gap-4">
-            <div className="w-14 h-14 bg-[#0b1f3a] rounded-[1.25rem] flex items-center justify-center shadow-2xl shadow-blue-900/20">
-                <Award className="w-7 h-7 text-blue-400" />
+            <div className="w-14 h-14 bg-slate-900 rounded-[1.25rem] flex items-center justify-center shadow-2xl shadow-orange-700/20">
+                <Award className="w-7 h-7 text-orange-400" />
             </div>
             Associate Portal
             </h1>
@@ -102,7 +102,7 @@ export default function AssociateManagementLanding() {
                 </div>
 
                 <div className="flex-grow relative z-10">
-                  <h2 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-blue-900 transition-colors">
+                  <h2 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-orange-700 transition-colors">
                     {section.title}
                   </h2>
                   <p className="text-slate-500 font-medium leading-relaxed text-sm">
@@ -120,15 +120,15 @@ export default function AssociateManagementLanding() {
       </div>
 
       {/* Informational Banner */}
-      <div className="bg-[#0b1f3a] rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl mt-8">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="bg-slate-900 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl mt-8">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="flex flex-col md:flex-row items-center gap-8 relative z-10 text-center md:text-left">
             <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center backdrop-blur-md border border-white/20">
-                <BookOpen className="w-10 h-10 text-blue-300" />
+                <BookOpen className="w-10 h-10 text-orange-300" />
             </div>
             <div className="flex-1">
                 <h3 className="text-2xl font-black tracking-tight mb-2">Automated Referral Engine</h3>
-                <p className="text-blue-200 font-medium leading-relaxed max-w-2xl">
+                <p className="text-orange-200 font-medium leading-relaxed max-w-2xl">
                     Every admission you process enters our dynamic tracking system. Once the student clears their total balance (₹0), our engine automatically credits **10% of the course fee** to your account.
                 </p>
             </div>

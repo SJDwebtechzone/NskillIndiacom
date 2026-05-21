@@ -51,9 +51,7 @@ const AboutSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight uppercase">
-            <span className="text-blue-600">About</span> <span className="text-red-600">Us</span>
-          </h2>
+          <h2 className="mb-4">About Us</h2>
           <div className="w-16 h-1 bg-blue-600 mx-auto rounded-full" />
         </motion.div>
 
@@ -100,19 +98,17 @@ const AboutSection = () => {
               <ShieldCheck className="w-3 h-3" /> Established 2012
             </div>
             <div>
-              <h3 className="text-2xl font-black mb-2">
-                <span className="text-blue-600">NIILE</span> <span className="text-red-600">Solution</span>
-              </h3>
+              <h3 className="mb-2">NIILE Solution</h3>
               <div className="w-12 h-1 bg-blue-900 rounded-full" />
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed text-justify">
+            <p className="text-slate-600 leading-relaxed text-justify">
               NIILE Solution is established in 2012 in Kundrathur, Chennai to offer{" "}
               <strong className="text-blue-600">Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
               services. NIILE serves world-renowned organizations from Hydrocarbon, Power, Steel, Cement and Heavy Infrastructure industries involved in Construction, Commissioning, Operation and Maintenance activities.
             </p>
-            <p className="text-slate-500 text-sm leading-relaxed text-justify">
+            <p className="text-slate-500 leading-relaxed text-justify">
               As a strategic expansion aligning with the Skill India Mission, NIILE Solutions started{" "}
-              <strong className="text-[#0b1f3a] whitespace-nowrap">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
+              <strong className="text-blue-600">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
               near Kundrathur, Chennai during 2018 — to train unemployed youth, school and college finishers and dropouts in various skill-based trades for domestic and overseas employment.
             </p>
           </div>
@@ -128,17 +124,15 @@ const AboutSection = () => {
           {/* Text — second on mobile, first on desktop */}
           <div className="flex flex-col justify-center px-6 md:px-12 py-10 gap-5 flex-1 order-2 md:order-1">
             <div>
-              <h3 className="text-2xl font-black mb-2">
-                <span className="text-blue-600">NTSC</span> <span className="text-red-600">Training</span>
-              </h3>
+              <h3 className="mb-2">NTSC Training</h3>
               <div className="w-12 h-1 bg-blue-900 rounded-full" />
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed text-justify">
+            <p className="text-slate-600 leading-relaxed text-justify">
               NTSC training focuses on various skills like{" "}
               <strong className="text-[#0b1f3a]">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
               and Civil construction skills such as Carpentry, Masonry, Plumbing, Bar-Bending, and a host of other trades. NTSC also offers customized courses for corporates on Behavioural, Leadership and Technical skills.
             </p>
-            <p className="text-slate-500 text-sm leading-relaxed text-justify">
+            <p className="text-slate-500 leading-relaxed text-justify">
               NTSC's facility complies with NSDC requirements and is accredited by various State and Central Government bodies like{" "}
               <strong className="text-[#0b1f3a]">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
               etc. The certifications help students avail opportunities for job and entrepreneurship.
@@ -224,11 +218,10 @@ const AboutSection = () => {
 
               {/* Body */}
               <div className="flex flex-col flex-1 p-6 gap-3 relative z-10">
-                <h3 className="text-base font-black uppercase tracking-tight">
-                  <span className="text-blue-600">{s.title.split(' ')[0]}</span>{' '}
-                  <span className="text-red-600">{s.title.split(' ').slice(1).join(' ')}</span>
+                <h3 className="tracking-tight">
+                  {s.title}
                 </h3>
-                <p className="text-slate-500 text-sm leading-relaxed flex-1 text-justify">{s.desc}</p>
+                <p className="text-slate-500 leading-relaxed flex-1 text-justify">{s.desc}</p>
               </div>
 
               {/* Footer */}

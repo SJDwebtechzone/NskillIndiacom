@@ -58,67 +58,76 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-[#0b1f3a] text-white pt-16 border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="bg-[#f0f6ff] text-[#0b1f3a] pt-16 relative overflow-hidden font-sans">
+      {/* Background Dots */}
+      <div className="absolute top-0 right-0 w-80 h-80 opacity-40 bg-[radial-gradient(#cbd5e1_2px,transparent_2px)] [background-size:24px_24px] rounded-full blur-[1px] pointer-events-none"></div>
+      <div className="absolute bottom-10 left-0 w-80 h-80 opacity-40 bg-[radial-gradient(#cbd5e1_2px,transparent_2px)] [background-size:24px_24px] rounded-full blur-[1px] pointer-events-none"></div>
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-12 mb-16">
 
           {/* ── Column 1: Company & Social ── */}
           <div className="space-y-8">
-            <Link href="/" className="inline-flex bg-white px-6 py-3 rounded-[20px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] hover:scale-105 transition-transform">
+            <Link href="/" className="inline-block">
               <Image
                 src="/logo.png"
                 alt="Niile Logo"
                 width={266}
                 height={60}
-                className="object-contain h-[54px] w-auto"
-                style={{ width: 'auto', height: '54px' }}
+                className="object-contain h-[70px] w-auto"
+                style={{ width: 'auto', height: '70px' }}
               />
             </Link>
 
-            <div className="space-y-4 text-lg text-white/90 leading-relaxed">
-              <p className="text-gray-100">{contactInfo.address}</p>
-              <div className="space-y-3">
+            <div className="space-y-5 text-[15px] text-slate-700 leading-relaxed font-semibold">
+              <p className="max-w-[280px]">{contactInfo.address}</p>
+              <div className="space-y-4">
                 {contactInfo.phones.map((phone: any, idx: number) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-orange-500">
-                      <Phone size={16} />
-                    </div>
-                    <span className="text-white font-medium">{phone.value}</span>
+                    <Phone size={18} className="text-orange-500 shrink-0" strokeWidth={2.5} />
+                    <span>{phone.value}</span>
                   </div>
                 ))}
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-orange-500">
-                    <Mail size={16} />
-                  </div>
-                  <span className="text-white font-medium">{contactInfo.email}</span>
+                  <Mail size={18} className="text-orange-500 shrink-0" strokeWidth={2.5} />
+                  <span>{contactInfo.email}</span>
                 </div>
               </div>
             </div>
 
-            {/* Social Icons integrated here */}
-            <div className="flex gap-3 pt-4">
-              {[
-                { key: "facebook", Icon: Facebook, url: socialLinks?.facebook_url || "https://www.facebook.com/share/1DzjthRWd6/" },
-                { key: "instagram", Icon: Instagram, url: socialLinks?.instagram_url || "https://www.instagram.com/niile_technical_skill_25/" },
-                { key: "linkedin", Icon: Linkedin, url: socialLinks?.linkedin_url || "https://www.linkedin.com/in/niile-technical-skill-and-consulting-a26245198/" },
-              ].map(({ key, Icon, url }) => (
-                <a
-                  key={key}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-11 h-11 bg-orange-500 border border-orange-500 rounded-xl flex items-center justify-center text-white hover:bg-gray-600 hover:border-gray-600 hover:-translate-y-1 shadow-lg transition-all duration-300"
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
+            {/* Social Icons */}
+            <div className="flex gap-4 pt-2">
+              <a
+                href={socialLinks?.facebook_url || "https://www.facebook.com/share/1DzjthRWd6/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-[#1877F2] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#1877F2]/30 transition-all duration-300"
+              >
+                <Facebook size={20} fill="currentColor" strokeWidth={0} />
+              </a>
+              <a
+                href={socialLinks?.instagram_url || "https://www.instagram.com/niile_technical_skill_25/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#ee2a7b]/30 transition-all duration-300"
+              >
+                <Instagram size={20} strokeWidth={2} />
+              </a>
+              <a
+                href={socialLinks?.linkedin_url || "https://www.linkedin.com/in/niile-technical-skill-and-consulting-a26245198/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-[#0077B5] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#0077B5]/30 transition-all duration-300"
+              >
+                <Linkedin size={20} fill="currentColor" strokeWidth={0} />
+              </a>
               <a
                 href={socialLinks?.twitter_url || "https://x.com/NiileSkill"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-11 h-11 bg-orange-500 border border-orange-500 rounded-xl flex items-center justify-center text-white hover:bg-gray-600 hover:border-gray-600 hover:-translate-y-1 shadow-lg transition-all duration-300"
+                className="w-10 h-10 bg-[#ff8a00] rounded-xl flex items-center justify-center text-white hover:-translate-y-1 shadow-md shadow-[#ff8a00]/30 transition-all duration-300"
               >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </a>
@@ -126,19 +135,19 @@ const Footer = () => {
           </div>
 
           {/* ── Column 2: Skill Training ── */}
-          <div>
-            <h3 className="text-white font-bold text-2xl mb-8 relative inline-block">
+          <div className="lg:pl-6">
+            <h3 className="text-[#0b1f3a] font-extrabold text-xl mb-8 relative inline-block">
               Skill Training
-              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-orange-500 rounded-full"></span>
+              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-blue-600 rounded-full"></span>
             </h3>
             <ul className="space-y-4">
               {SKILL_CATEGORIES.map((cat) => (
                 <li key={cat}>
                   <Link
                     href={`/courses?category=${toSlug(cat)}`}
-                    className="text-lg text-white hover:text-orange-500 transition-colors flex items-center gap-2 group font-medium"
+                    className="text-[15px] text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-3 font-bold group"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-orange-500 transition-colors"></span>
+                    <span className="text-[20px] leading-none text-slate-400 group-hover:text-blue-600 transition-colors">•</span>
                     {cat}
                   </Link>
                 </li>
@@ -148,9 +157,9 @@ const Footer = () => {
 
           {/* ── Column 3: Quick Links ── */}
           <div>
-            <h3 className="text-white font-bold text-2xl mb-8 relative inline-block">
+            <h3 className="text-[#0b1f3a] font-extrabold text-xl mb-8 relative inline-block">
               Quick Links
-              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-orange-500 rounded-full"></span>
+              <span className="absolute -bottom-2 left-0 w-8 h-1 bg-blue-600 rounded-full"></span>
             </h3>
             <ul className="space-y-4">
               {[
@@ -166,9 +175,9 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-lg text-white hover:text-orange-500 transition-colors flex items-center gap-2 group font-medium"
+                    className="text-[15px] text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-3 font-bold"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/30 group-hover:bg-orange-500 transition-colors"></span>
+                    <span className="text-slate-400 text-[20px] leading-none">•</span>
                     {link.name}
                   </Link>
                 </li>
@@ -177,47 +186,55 @@ const Footer = () => {
           </div>
 
           {/* ── Column 4: Newsletter ── */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div>
-              <h3 className="text-white font-bold text-2xl mb-8 relative inline-block">
+              <h3 className="text-[#0b1f3a] font-extrabold text-xl mb-8 relative inline-block">
                 Newsletter
-                <span className="absolute -bottom-2 left-0 w-8 h-1 bg-orange-500 rounded-full"></span>
+                <span className="absolute -bottom-2 left-0 w-8 h-1 bg-blue-600 rounded-full"></span>
               </h3>
-              <p className="text-lg text-white mb-6 leading-relaxed font-medium">
+              <p className="text-[15px] text-slate-600 mb-6 leading-relaxed font-bold">
                 Stay updated with our latest courses and industrial training insights.
               </p>
-              <div className="space-y-3">
-                <div className="relative group">
-                  <input
-                    type="email"
-                    placeholder="Your Email"
-                    className="w-full h-14 bg-white/10 border border-white/20 rounded-xl px-5 text-white text-base focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-white/40"
-                  />
-                </div>
-                <button className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black text-[12px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-orange-500/20">
-                  Join Now
+              <div className="space-y-4 relative z-10">
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className="w-full h-12 bg-white border-none rounded-lg px-5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
+                />
+                <button className="w-full h-12 bg-[#2563eb] hover:bg-blue-700 text-white rounded-lg font-bold text-sm uppercase tracking-wide transition-all shadow-md active:scale-[0.98]">
+                  JOIN NOW
                 </button>
               </div>
             </div>
           </div>
 
         </div>
+      </div>
 
-        {/* ── Bottom bar ── */}
-        <div className="py-8 border-t border-white/10 text-center text-lg text-white font-medium">
-          Copyright © {currentYear} All rights reserved | by{" "}
-          <a
-            href="https://devspectra.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white hover:text-orange-500 transition-colors font-bold"
-          >
-            DevSpectra
-          </a>
-        </div>
+      {/* ── Bottom Wave ── */}
+      <div className="w-full pointer-events-none overflow-hidden leading-none -mt-8 md:-mt-16">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-[60px] md:h-[110px] block" preserveAspectRatio="none">
+          <path fill="#e0e7ff" fillOpacity="0.8" d="M0,160L60,176C120,192,240,224,360,208C480,192,600,128,720,101.3C840,75,960,85,1080,101.3C1200,117,1320,139,1380,149.3L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+          <path fill="#3b82f6" fillOpacity="0.5" d="M0,96L60,122.7C120,149,240,203,360,202.7C480,203,600,149,720,133.3C840,117,960,139,1080,149.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+          <path fill="#2563eb" fillOpacity="1" d="M0,288L60,277.3C120,267,240,245,360,224C480,203,600,181,720,186.7C840,192,960,224,1080,229.3C1200,235,1320,213,1380,202.7L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+        </svg>
+      </div>
+      
+      {/* ── Bottom bar ── */}
+      <div className="bg-[#2563eb] pt-1 pb-4 text-center text-[14px] text-white/90 font-medium">
+        Copyright © {currentYear} All rights reserved | by{" "}
+        <a
+          href="https://devspectra.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white hover:text-orange-300 transition-colors font-bold tracking-wide"
+        >
+          DevSpectra
+        </a>
       </div>
     </footer>
   );
 };
 
 export default Footer;
+

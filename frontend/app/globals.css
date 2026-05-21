@@ -75,3 +75,35 @@ input::-webkit-credentials-auto-fill-button {
   display: none !important;
   pointer-events: none;
 }
+
+/* ══════════════════════════════════════════════════════════
+   Global Typography System — Public Pages Only
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Section Headings (h1) ── */
+h1 { font-size: 2.25rem; line-height: 1.2; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #0b1f3a; }
+.dashboard-layout h1 { all: revert; }
+
+/* ── Section Headings (h2) — BLUE ── */
+h2 { font-size: 1.875rem; line-height: 1.25; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #2563eb !important; }
+.dashboard-layout h2 { all: revert; }
+
+/* ── Sub Headings (h3) ── */
+h3 { font-size: 1.25rem; line-height: 1.4; font-weight: 900; letter-spacing: -0.025em; text-transform: uppercase; color: #2563eb !important; }
+.dashboard-layout h3 { all: revert; }
+
+/* ── Sub Headings (h4) ── */
+h4 { font-size: 1.125rem; line-height: 1.4; font-weight: 700; color: #0b1f3a; }
+.dashboard-layout h4 { all: revert; }
+
+/* ── Paragraphs ── */
+p { font-size: 1.125rem !important; line-height: 1.75; font-weight: 500; color: #475569; }
+.dashboard-layout p { all: revert; }
+
+/* ── Responsive ── */
+@media (min-width: 768px) {
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.25rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.25rem; }
+}

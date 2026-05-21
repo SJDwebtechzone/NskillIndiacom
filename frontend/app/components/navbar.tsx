@@ -164,44 +164,43 @@ const Navbar = () => {
       {/* ── Top Bar ── */}
 
       {/* ── Top Bar ── */}
-      {/* ── Top Bar ── */}
-      <div className="bg-[#0b1f3a] text-white py-3 px-4 md:px-6 text-sm sm:text-base font-medium">
+      <div className="bg-white text-[#0b1f3a] py-3 px-4 md:px-6 text-base md:text-lg font-medium border-b border-slate-100">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
           {/* Left side — hours + contact */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 font-bold text-slate-900">
             {/* Business hours — always visible */}
             <span className="flex items-center gap-2 whitespace-nowrap">
-              <Clock size={14} strokeWidth={3} className="text-orange-400 shrink-0" />
+              <Clock size={16} strokeWidth={3} className="text-orange-500 shrink-0" />
               Business Hours : 9.30 am to 7.00 pm
             </span>
 
-            <span className="text-white/20 hidden sm:inline">|</span>
+            <span className="text-slate-300 hidden sm:inline font-normal">|</span>
 
             {/* Phone numbers — hidden on xs, show on sm+ */}
             <span className="hidden sm:flex items-center gap-2 whitespace-nowrap">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                stroke="#fb923c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="#f97316" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
               </svg>
-              <a href="tel:09884209774" className="hover:text-orange-500 transition-colors">
+              <a href="tel:09884209774" className="hover:text-orange-600 transition-colors">
                 +91 98842 09774
               </a>
-              <span className="text-white/20">|</span>
-              <a href="tel:08056063023" className="hover:text-orange-500 transition-colors">
+              <span className="text-slate-300 font-normal">|</span>
+              <a href="tel:08056063023" className="hover:text-orange-600 transition-colors">
                 +91 80560 63023
               </a>
             </span>
 
-            <span className="text-white/20 hidden md:inline">|</span>
+            <span className="text-slate-300 hidden md:inline font-normal">|</span>
 
             {/* Email — hidden on xs+sm, show on md+ */}
             <span className="hidden md:flex items-center gap-2 whitespace-nowrap">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                stroke="#fb923c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="#f97316" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
               </svg>
-              <a href="mailto:nskilltraining@gmail.com" className="hover:text-orange-500 transition-colors">
+              <a href="mailto:nskilltraining@gmail.com" className="hover:text-orange-600 transition-colors">
                 nskilltraining@gmail.com
               </a>
             </span>
@@ -214,8 +213,8 @@ const Navbar = () => {
               onMouseEnter={() => setIsLoginMenuOpen(true)}
               onMouseLeave={() => setIsLoginMenuOpen(false)}
             >
-              <button className="flex items-center gap-1.5 text-white hover:text-orange-500 transition-colors uppercase tracking-widest text-xs md:text-sm whitespace-nowrap font-bold">
-                <Lock size={15} strokeWidth={3} className="text-orange-400" />
+              <button className="flex items-center gap-1.5 text-[#0b1f3a] hover:text-orange-600 transition-colors uppercase tracking-widest text-xs md:text-sm whitespace-nowrap font-extrabold">
+                <Lock size={16} strokeWidth={3} className="text-orange-500" />
                 Login Access
               </button>
 
@@ -277,9 +276,9 @@ const Navbar = () => {
                       onClick={() => {
                         setIsCoursesMenuOpen(!isCoursesMenuOpen);
                       }}
-                      className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-semibold transition text-sm uppercase tracking-wide whitespace-nowrap ${isCoursesMenuOpen
-                          ? "text-red-600"
-                          : "text-blue-600 hover:text-red-600"
+                      className={`flex items-center gap-1 px-2 xl:px-3 py-2 font-bold transition text-sm uppercase tracking-wide whitespace-nowrap ${isCoursesMenuOpen
+                          ? "text-orange-600"
+                          : "text-[#0b1f3a] hover:text-orange-600"
                         }`}
                     >
                       {item.name}
@@ -356,7 +355,7 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href}
-                    className="px-2 xl:px-3 py-2 font-semibold text-blue-600 hover:text-red-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
+                    className="px-2 xl:px-3 py-2 font-bold text-[#0b1f3a] hover:text-orange-600 transition text-sm uppercase tracking-wide whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
@@ -415,7 +414,7 @@ const Navbar = () => {
               <Link
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-4 py-3 text-lg font-bold text-blue-600 hover:bg-red-50 hover:text-red-600 rounded-xl transition"
+                className="block px-4 py-3 text-lg font-bold text-[#0b1f3a] hover:bg-orange-50 hover:text-orange-600 rounded-xl transition"
               >
                 {item.name}
               </Link>

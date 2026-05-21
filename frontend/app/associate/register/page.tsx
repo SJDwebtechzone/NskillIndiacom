@@ -82,7 +82,7 @@ export default function PublicAssociateRegisterPage() {
         borderBottom: "1.5px solid #e2e8f0", textAlign: "center",
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)"
       }}>
-        <h1 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#6366f1", margin: 0 }}>
+        <h1 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#f97316", margin: 0 }}>
           NTSC — Associate Registration
         </h1>
         <p style={{ fontSize: "0.73rem", color: "#94a3b8", marginTop: 4, marginBottom: 0 }}>
@@ -107,8 +107,8 @@ export default function PublicAssociateRegisterPage() {
           <div style={{
             background: "#fff", borderRadius: 20, padding: "48px 36px",
             maxWidth: 420, width: "90%", textAlign: "center",
-            boxShadow: "0 8px 40px rgba(99,102,241,0.18)",
-            border: "1.5px solid #e0e7ff"
+            boxShadow: "0 8px 40px rgba(249,115,22,0.18)",
+            border: "1.5px solid #ffedd5"
           }}>
             <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
             <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#1e293b", marginBottom: 10 }}>
@@ -119,18 +119,18 @@ export default function PublicAssociateRegisterPage() {
               Our team will review your application and get back to you shortly.
             </p>
             <div style={{
-              background: "#eef2ff", borderRadius: 12, padding: "10px 20px",
-              color: "#6366f1", fontWeight: 700, fontSize: "0.84rem", marginBottom: 28
+              background: "#ffedd5", borderRadius: 12, padding: "10px 20px",
+              color: "#ea580c", fontWeight: 700, fontSize: "0.84rem", marginBottom: 28
             }}>
               ⏳ Status: Pending Review
             </div>
             <button
               onClick={() => router.push("/")}
               style={{
-                background: "#6366f1", color: "#fff", border: "none",
+                background: "#f97316", color: "#fff", border: "none",
                 borderRadius: 10, padding: "12px 36px", fontWeight: 700,
                 fontSize: "0.95rem", cursor: "pointer", width: "100%",
-                boxShadow: "0 2px 8px rgba(99,102,241,0.25)"
+                boxShadow: "0 2px 8px rgba(249,115,22,0.25)"
               }}
             >
               Close

@@ -74,10 +74,8 @@ export default function TestimonialsSection() {
           <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">
             Success Stories
           </p>
-          <h2 className="text-3xl md:text-4xl font-black mb-6 tracking-tight uppercase">
-            <span className="text-blue-600">What Our</span> <span className="text-red-600">Students Say</span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
+          <h2 className="mb-6">What Our Students Say</h2>
+          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
             Real experiences from students who transformed their careers with us
           </p>
         </div>
@@ -121,29 +119,29 @@ export default function TestimonialsSection() {
                   onClick={() => goTo(index)}
                   className={`flex-shrink-0 w-[300px] md:w-[340px] cursor-pointer rounded-2xl p-6 border transition-all duration-500 ${
                     isActive
-                      ? "bg-blue-800 border-blue-500 shadow-xl shadow-blue-900/40 scale-105"
-                      : "bg-[#ffffff] border-white/10 shadow-sm scale-95 opacity-60 hover:opacity-80"
+                      ? "bg-[#f0f6ff] border-blue-200 shadow-xl shadow-blue-900/10 scale-105"
+                      : "bg-[#ffffff] border-slate-200 shadow-sm scale-95 opacity-60 hover:opacity-100"
                   }`}
                 >
                   {/* Stars */}
                   <div className="flex gap-0.5 mb-4">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <span key={s} className="text-base">
-                        {s <= t.rating ? "⭐" : <span className="text-white/30">☆</span>}
+                        {s <= t.rating ? "⭐" : <span className={isActive ? "text-blue-300" : "text-slate-300"}>☆</span>}
                       </span>
                     ))}
                   </div>
 
                   {/* Quote */}
-                  <p className={`text-sm leading-relaxed mb-6 italic line-clamp-4 ${
-                    isActive ? "text-blue-100" : "text-slate-500"
+                  <p className={`leading-relaxed mb-6 italic line-clamp-4 ${
+                    isActive ? "text-[#0b1f3a]" : "text-slate-500"
                   }`}>
                     &quot;{t.testimonial}&quot;
                   </p>
 
                   {/* Student */}
                   <div className={`flex items-center gap-3 pt-4 border-t ${
-                    isActive ? "border-blue-700" : "border-white/10"
+                    isActive ? "border-blue-200" : "border-slate-100"
                   }`}>
                     {photoUrl ? (
                       <img
@@ -153,16 +151,16 @@ export default function TestimonialsSection() {
                       />
                     ) : (
                       <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border-2 shadow ${
-                        isActive ? "bg-blue-600 border-blue-400 text-white" : "bg-white/10 border-white/20 text-white"
+                        isActive ? "bg-blue-600 border-blue-400 text-white" : "bg-slate-200 border-slate-300 text-slate-600"
                       }`}>
                         {t.full_name.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div>
-                      <p className={`font-semibold text-sm ${isActive ? "text-white" : "text-white/60"}`}>
+                      <p className={`font-semibold text-sm ${isActive ? "text-[#0b1f3a]" : "text-slate-700"}`}>
                         {t.full_name}
                       </p>
-                      <p className={`text-xs font-medium ${isActive ? "text-blue-300" : "text-blue-400/50"}`}>
+                      <p className={`text-xs font-medium ${isActive ? "text-blue-600" : "text-slate-400"}`}>
                         {t.course_name}
                       </p>
                     </div>

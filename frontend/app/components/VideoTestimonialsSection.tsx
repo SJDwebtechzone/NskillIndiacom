@@ -47,10 +47,8 @@ const getVideoUrl = (videoUrl: string) =>
           <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">
             🎬 Video Testimonials
           </p>
-          <h2 className="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tight">
-            <span className="text-blue-600">Hear It From</span> <span className="text-red-600">Our Students</span>
-          </h2>
-          <p className="text-slate-500 mt-3 max-w-xl mx-auto text-sm">
+          <h2 className="mb-4">Hear It From Our Students</h2>
+          <p className="text-slate-500 mt-3 max-w-xl mx-auto">
             Real video stories from students who built their careers with us
           </p>
         </div>
@@ -109,8 +107,8 @@ const getVideoUrl = (videoUrl: string) =>
                 {/* Card Info */}
                 <div className="p-4">
                   {v.description && (
-                    <p className="text-slate-600 text-sm italic mb-3 line-clamp-2">
-                      "{v.description}"
+                    <p className="text-slate-600 italic mb-3 line-clamp-2">
+                       "{v.description}"
                     </p>
                   )}
                   <div className="flex items-center gap-3">

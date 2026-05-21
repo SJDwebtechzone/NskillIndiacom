@@ -67,9 +67,7 @@ const WhyUsSection = () => {
             {/* ================= LEFT CONTENT ================= */}
             <div className="p-10 md:p-14">
 
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 uppercase tracking-tight">
-                <span className="text-blue-600">Why</span> <span className="text-red-600">Choose Us</span>
-              </h2>
+              <h2 className="mb-6">Why Choose Us</h2>
 
               <div className="grid sm:grid-cols-2 gap-4">
 
@@ -82,7 +80,7 @@ const WhyUsSection = () => {
                     className="flex items-start gap-3"
                   >
                     <CheckCircle2 className="w-5 h-5 text-blue-600 mt-1 shrink-0" />
-                    <p className="text-sm text-slate-600">{item}</p>
+                    <p className="text-slate-600">{item}</p>
                   </motion.div>
                 ))}
 

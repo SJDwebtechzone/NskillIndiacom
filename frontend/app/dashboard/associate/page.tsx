@@ -254,7 +254,7 @@ const DocSection = ({ assoc }: { assoc: Associate }) => {
       }}>
         <p style={{
           fontSize: "0.62rem", fontWeight: 800, textTransform: "uppercase",
-          letterSpacing: "0.12em", color: "#6366f1",
+          letterSpacing: "0.12em", color: "#f97316",
         }}>📎 Documents &amp; Files</p>
       </div>
 
@@ -268,13 +268,13 @@ const DocSection = ({ assoc }: { assoc: Associate }) => {
         {uploaded.map(({ field, label, icon }) => (
           <div key={field} style={{
             display: "flex", alignItems: "center", gap: 14,
-            border: "1.5px solid #e0e7ff", borderRadius: 12,
+            border: "1.5px solid #ffedd5", borderRadius: 12,
             padding: "12px 16px", background: "#fafbff",
           }}>
             {/* Icon */}
             <div style={{
               width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-              background: "#eef2ff", display: "flex",
+              background: "#fff7ed", display: "flex",
               alignItems: "center", justifyContent: "center", fontSize: 20,
             }}>{icon}</div>
 
@@ -308,15 +308,15 @@ const DocSection = ({ assoc }: { assoc: Associate }) => {
                 disabled={downloading === field}
                 style={{
                   padding: "6px 12px", borderRadius: 8,
-                  border: "1.5px solid #a5b4fc",
-                  background: downloading === field ? "#e0e7ff" : "#eef2ff",
+                  border: "1.5px solid #fdba74",
+                  background: downloading === field ? "#ffedd5" : "#fff7ed",
                   cursor: downloading === field ? "not-allowed" : "pointer",
                   fontSize: "0.74rem", fontWeight: 700,
-                  color: "#4338ca", fontFamily: "inherit",
+                  color: "#ea580c", fontFamily: "inherit",
                   display: "flex", alignItems: "center", gap: 5,
                 }}>
                 {downloading === field
-                  ? <><span style={{ width: 10, height: 10, border: "2px solid #a5b4fc", borderTopColor: "#4338ca", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} /> Saving…</>
+                  ? <><span style={{ width: 10, height: 10, border: "2px solid #fdba74", borderTopColor: "#ea580c", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} /> Saving…</>
                   : "⬇ Download"}
               </button>
 
@@ -390,25 +390,25 @@ function printAssociatePDF(assoc: Associate) {
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; padding: 28px 32px; }
-    .header { display: flex; align-items: center; gap: 16px; border-bottom: 2.5px solid #6366f1; padding-bottom: 14px; margin-bottom: 20px; }
-    .avatar { width: 56px; height: 56px; border-radius: 12px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .header { display: flex; align-items: center; gap: 16px; border-bottom: 2.5px solid #f97316; padding-bottom: 14px; margin-bottom: 20px; }
+    .avatar { width: 56px; height: 56px; border-radius: 12px; background: linear-gradient(135deg,#f97316,#fb923c); color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .header-info h1 { font-size: 19px; font-weight: 800; color: #1e293b; }
-    .header-info p  { font-size: 11px; color: #6366f1; margin-top: 3px; }
+    .header-info p  { font-size: 11px; color: #f97316; margin-top: 3px; }
     .status-badge { margin-left: auto; padding: 4px 14px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
     .status-approved { background: #d1fae5; color: #065f46; }
     .status-pending  { background: #fef3c7; color: #92400e; }
     .status-rejected { background: #fee2e2; color: #991b1b; }
     .section { margin-bottom: 14px; page-break-inside: avoid; }
-    .section-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #6366f1; border-bottom: 1px solid #e0e7ff; padding-bottom: 5px; margin-bottom: 10px; }
+    .section-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #f97316; border-bottom: 1px solid #ffedd5; padding-bottom: 5px; margin-bottom: 10px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
     .field { }
     .full { grid-column: 1 / -1; }
     .label { font-size: 8px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; letter-spacing: 0.06em; }
     .value { font-size: 11px; font-weight: 600; color: #1e293b; word-break: break-word; }
     .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-    .chip { background: #eef2ff; color: #6366f1; padding: 2px 9px; border-radius: 99px; font-size: 9px; font-weight: 600; }
+    .chip { background: #fff7ed; color: #f97316; padding: 2px 9px; border-radius: 99px; font-size: 9px; font-weight: 600; }
     .footer { margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 9px; color: #94a3b8; display: flex; justify-content: space-between; }
-    .org-name { font-size: 13px; font-weight: 800; color: #6366f1; }
+    .org-name { font-size: 13px; font-weight: 800; color: #f97316; }
     @media print { body { padding: 16px; } }
   </style></head><body>
 
@@ -668,13 +668,13 @@ const FChecks = ({ options, selected, onChange, cols=2 }: {
     {options.map(opt => (
       <label key={opt} style={{
         display:"flex", alignItems:"center", gap:8, padding:"9px 12px",
-        borderRadius:9, border: selected.includes(opt) ? "1.5px solid #6366f1" : "1.5px solid #e2e8f0",
-        background: selected.includes(opt) ? "#eef2ff" : "#fff",
+        borderRadius:9, border: selected.includes(opt) ? "1.5px solid #f97316" : "1.5px solid #e2e8f0",
+        background: selected.includes(opt) ? "#fff7ed" : "#fff",
         cursor:"pointer", fontSize:"0.82rem", fontWeight: selected.includes(opt) ? 600 : 400,
-        color: selected.includes(opt) ? "#4338ca" : "#475569", transition:"all 0.12s",
+        color: selected.includes(opt) ? "#ea580c" : "#475569", transition:"all 0.12s",
       }}>
         <input type="checkbox" checked={selected.includes(opt)} onChange={() => onChange(opt)}
-          style={{ accentColor:"#6366f1" }} />
+          style={{ accentColor:"#f97316" }} />
         {opt}
       </label>
     ))}
@@ -688,13 +688,13 @@ const FRadios = ({ name, options, value, onChange }: {
     {options.map(opt => (
       <label key={opt} style={{
         display:"flex", alignItems:"center", gap:7, padding:"8px 14px",
-        borderRadius:9, border: value===opt ? "1.5px solid #6366f1" : "1.5px solid #e2e8f0",
-        background: value===opt ? "#eef2ff" : "#fff",
+        borderRadius:9, border: value===opt ? "1.5px solid #f97316" : "1.5px solid #e2e8f0",
+        background: value===opt ? "#fff7ed" : "#fff",
         cursor:"pointer", fontSize:"0.82rem", fontWeight: value===opt ? 600 : 400,
-        color: value===opt ? "#4338ca" : "#475569", transition:"all 0.12s",
+        color: value===opt ? "#ea580c" : "#475569", transition:"all 0.12s",
       }}>
         <input type="radio" name={name} value={opt} checked={value===opt}
-          onChange={() => onChange(opt)} style={{ accentColor:"#6366f1" }} />
+          onChange={() => onChange(opt)} style={{ accentColor:"#f97316" }} />
         {opt}
       </label>
     ))}
@@ -703,10 +703,10 @@ const FRadios = ({ name, options, value, onChange }: {
 
 const SecTitle = ({ children }: { children: React.ReactNode }) => (
   <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16,
-    paddingBottom:10, borderBottom:"1.5px solid #e0e7ff" }}>
-    <span style={{ width:3, height:18, background:"linear-gradient(to bottom,#6366f1,#8b5cf6)",
+    paddingBottom:10, borderBottom:"1.5px solid #ffedd5" }}>
+    <span style={{ width:3, height:18, background:"linear-gradient(to bottom,#f97316,#fb923c)",
       borderRadius:2, display:"inline-block" }} />
-    <h3 style={{ fontSize:"0.7rem", fontWeight:800, color:"#6366f1",
+    <h3 style={{ fontSize:"0.7rem", fontWeight:800, color:"#f97316",
       textTransform:"uppercase", letterSpacing:"0.12em" }}>{children as string}</h3>
   </div>
 );
@@ -754,7 +754,7 @@ const FileCard = ({ field, label, icon, required, file, onChange, onRemove, erro
                 color:"#ef4444", cursor:"pointer", fontSize:12, fontWeight:700,
                 display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
           ) : (
-            <span style={{ fontSize:"0.72rem", background:"#6366f1", color:"#fff",
+            <span style={{ fontSize:"0.72rem", background:"#f97316", color:"#fff",
               padding:"5px 12px", borderRadius:7, fontWeight:700, flexShrink:0 }}>Upload</span>
           )}
         </div>
@@ -777,7 +777,7 @@ const CredCard = ({ creds, onClose }: { creds: Credentials; onClose: () => void 
       <div style={{ background:"#fff", borderRadius:20, padding:"32px 28px", maxWidth:400,
         width:"100%", boxShadow:"0 24px 64px rgba(0,0,0,0.2)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
-          <div style={{ width:56, height:56, borderRadius:16, background:"rgba(99,102,241,0.1)",
+          <div style={{ width:56, height:56, borderRadius:16, background:"rgba(249,115,22,0.1)",
             display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px", fontSize:26 }}>🔐</div>
           <h3 style={{ fontSize:"1.1rem", fontWeight:800, color:"#1e293b" }}>Credentials Generated!</h3>
           <p style={{ fontSize:"0.77rem", color:"#94a3b8", marginTop:4 }}>Share these securely with the associate.</p>
@@ -793,7 +793,7 @@ const CredCard = ({ creds, onClose }: { creds: Credentials; onClose: () => void 
                 fontFamily:"'Courier New',monospace", wordBreak:"break-all" }}>{val}</code>
               <button onClick={() => copy(val, w)}
                 style={{ fontSize:"0.7rem", fontWeight:700, background:"none", border:"none",
-                  cursor:"pointer", color: copied===w ? "#10b981":"#6366f1", whiteSpace:"nowrap" }}>
+                  cursor:"pointer", color: copied===w ? "#10b981":"#f97316", whiteSpace:"nowrap" }}>
                 {copied===w ? "✓ Copied" : "Copy"}
               </button>
             </div>
@@ -806,7 +806,7 @@ const CredCard = ({ creds, onClose }: { creds: Credentials; onClose: () => void 
           </p>
         </div>
         <button onClick={onClose} style={{ marginTop:18, width:"100%", padding:11,
-          background:"#6366f1", color:"#fff", border:"none", borderRadius:11,
+          background:"#f97316", color:"#fff", border:"none", borderRadius:11,
           fontWeight:700, fontSize:"0.88rem", cursor:"pointer", fontFamily:"inherit" }}>
           Done
         </button>
@@ -820,7 +820,7 @@ const SectionHead = ({ children }: { children: React.ReactNode }) => (
   <div style={{ gridColumn:"1/-1", borderBottom:"1.5px solid #f1f5f9", paddingBottom:6,
     marginTop:8, marginBottom:2 }}>
     <p style={{ fontSize:"0.62rem", fontWeight:800, textTransform:"uppercase",
-      letterSpacing:"0.12em", color:"#6366f1" }}>{children as string}</p>
+      letterSpacing:"0.12em", color:"#f97316" }}>{children as string}</p>
   </div>
 );
 const FV = ({ label, value, wide }: { label:string; value:string; wide?:boolean }) => (
@@ -837,7 +837,7 @@ const Chips = ({ label, items }: { label:string; items:string[] }) => (
         letterSpacing:"0.1em", color:"#94a3b8", marginBottom:6 }}>{label}</p>
       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
         {items.map(s => (
-          <span key={s} style={{ background:"#eef2ff", color:"#6366f1",
+          <span key={s} style={{ background:"#fff7ed", color:"#f97316",
             padding:"3px 10px", borderRadius:99, fontSize:"0.72rem", fontWeight:600 }}>{s}</span>
         ))}
       </div>
@@ -861,7 +861,7 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           display:"flex", alignItems:"center", gap:14, position:"sticky", top:0,
           background:"#fff", zIndex:1 }}>
           <div style={{ width:48, height:48, borderRadius:14,
-            background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff",
+            background:"linear-gradient(135deg,#f97316,#fb923c)", color:"#fff",
             fontWeight:800, fontSize:"1rem", display:"flex", alignItems:"center",
             justifyContent:"center", flexShrink:0 }}>{initials(assoc.full_name)}</div>
           <div style={{ flex:1 }}>
@@ -957,7 +957,7 @@ const ViewModal = ({ assoc, onClose, onEdit, onGenCreds, canEdit }: {
           </button>
           {canEdit && (
             <button onClick={() => { onClose(); onEdit(assoc); }}
-              style={{ flex:1, padding:"10px 16px", background:"#6366f1", color:"#fff",
+              style={{ flex:1, padding:"10px 16px", background:"#f97316", color:"#fff",
                 border:"none", borderRadius:10, fontWeight:700, fontSize:"0.84rem",
                 cursor:"pointer", fontFamily:"inherit" }}>✏️ Edit</button>
           )}
@@ -1056,10 +1056,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange, totalItems, itemsPe
             ) : (
               <button key={p} onClick={() => onPageChange(p as number)}
                 style={{ ...btnBase, width: 32, height: 32,
-                  background: currentPage === p ? "#6366f1" : "#fff",
+                  background: currentPage === p ? "#f97316" : "#fff",
                   color: currentPage === p ? "#fff" : "#64748b",
                   border: currentPage === p ? "none" : "1.5px solid #e2e8f0",
-                  boxShadow: currentPage === p ? "0 2px 8px rgba(99,102,241,0.3)" : "none" }}>{p}</button>
+                  boxShadow: currentPage === p ? "0 2px 8px rgba(249,115,22,0.3)" : "none" }}>{p}</button>
             )
           )}
           <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}
@@ -1175,7 +1175,7 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
                   <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:10 }}>
                     <label style={{ cursor:"pointer" }}>
                       <input type="file" accept=".jpg,.jpeg,.png" style={{ display:"none" }} onChange={handlePhotoChange} />
-                      <span style={{ display:"inline-block", fontSize:"0.75rem", background:"#6366f1", color:"#fff", padding:"6px 14px", borderRadius:8, fontWeight:700 }}>{files.file_photo ? "Change" : "Choose Photo"}</span>
+                      <span style={{ display:"inline-block", fontSize:"0.75rem", background:"#f97316", color:"#fff", padding:"6px 14px", borderRadius:8, fontWeight:700 }}>{files.file_photo ? "Change" : "Choose Photo"}</span>
                     </label>
                     {files.file_photo && <button type="button" onClick={() => { hfc("file_photo",null); setPhotoPreview(null); }} style={{ fontSize:"0.75rem", color:"#ef4444", fontWeight:600, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>Remove</button>}
                   </div>
@@ -1241,8 +1241,8 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
           <SecTitle>Office & Infrastructure</SecTitle>
           <div><FLabel>Do you have an office?</FLabel><FRadios name="has_office" options={["Already available","Not available","Planning to Set up shortly"]} value={form.has_office||""} onChange={v=>rad("has_office",v)} /></div>
           {form.has_office === "Already available" && (
-            <div style={{ background:"#eef2ff", borderRadius:14, padding:16, border:"1.5px solid #c7d2fe" }}>
-              <p style={{ fontSize:"0.78rem", fontWeight:700, color:"#6366f1", marginBottom:14 }}>Office Address</p>
+            <div style={{ background:"#fff7ed", borderRadius:14, padding:16, border:"1.5px solid #fed7aa" }}>
+              <p style={{ fontSize:"0.78rem", fontWeight:700, color:"#f97316", marginBottom:14 }}>Office Address</p>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px 16px" }}>
                 <div style={{ gridColumn:"1/-1" }}><FLabel>No. / Street</FLabel><FInp name="office_no_street" value={form.office_no_street||""} onChange={hc} placeholder="Street" /></div>
                 <div><FLabel>Area</FLabel><FInp name="office_area_name" value={form.office_area_name||""} onChange={hc} placeholder="Area" /></div>
@@ -1269,7 +1269,7 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
             {[{n:"linkedin",p:"LinkedIn URL",pfx:"in"},{n:"instagram",p:"Instagram handle",pfx:"IG"},{n:"facebook",p:"Facebook URL",pfx:"fb"}].map(s => (
               <div key={s.n}><FLabel>{s.n.charAt(0).toUpperCase()+s.n.slice(1)}</FLabel>
                 <div style={{ position:"relative" }}>
-                  <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", fontSize:"0.68rem", fontWeight:800, color:"#6366f1" }}>{s.pfx}</span>
+                  <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", fontSize:"0.68rem", fontWeight:800, color:"#f97316" }}>{s.pfx}</span>
                   <input name={s.n} value={form[s.n]||""} onChange={hc} placeholder={s.p} style={{ width:"100%", paddingLeft:30, paddingRight:12, paddingTop:9, paddingBottom:9, borderRadius:9, border:"1.5px solid #e2e8f0", fontSize:"0.82rem", outline:"none", fontFamily:"inherit", boxSizing:"border-box" as any }} />
                 </div>
               </div>
@@ -1305,13 +1305,13 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
       case 6: return (
         <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
           <SecTitle>Consent & Review</SecTitle>
-          <div style={{ background:"#eef2ff", border:"1.5px solid #c7d2fe", borderRadius:12, padding:18 }}>
-            <p style={{ fontSize:"0.84rem", color:"#3730a3", lineHeight:1.7 }}>
+          <div style={{ background:"#fff7ed", border:"1.5px solid #fed7aa", borderRadius:12, padding:18 }}>
+            <p style={{ fontSize:"0.84rem", color:"#9a3412", lineHeight:1.7 }}>
               I hereby confirm my interest in partnering with <strong>NTSC</strong>, expecting a long-term association, in an ethical way to contribute to the skill and career development of the student community and society.
             </p>
           </div>
-          <label style={{ display:"flex", alignItems:"flex-start", gap:12, padding:16, borderRadius:12, border: form.consent_agreed ? "1.5px solid #6366f1" : errors.consent_agreed ? "1.5px solid #ef4444" : "1.5px solid #e2e8f0", background: form.consent_agreed ? "#eef2ff" : "#fff", cursor:"pointer" }}>
-            <input type="checkbox" name="consent_agreed" checked={!!form.consent_agreed} onChange={hc} style={{ accentColor:"#6366f1", width:16, height:16, marginTop:1, flexShrink:0 }} />
+          <label style={{ display:"flex", alignItems:"flex-start", gap:12, padding:16, borderRadius:12, border: form.consent_agreed ? "1.5px solid #f97316" : errors.consent_agreed ? "1.5px solid #ef4444" : "1.5px solid #e2e8f0", background: form.consent_agreed ? "#fff7ed" : "#fff", cursor:"pointer" }}>
+            <input type="checkbox" name="consent_agreed" checked={!!form.consent_agreed} onChange={hc} style={{ accentColor:"#f97316", width:16, height:16, marginTop:1, flexShrink:0 }} />
             <span style={{ fontSize:"0.84rem", color:"#1e293b", fontWeight:500 }}>I agree to the above declaration and confirm all information is accurate.</span>
           </label>
           {errors.consent_agreed && <p style={{ color:"#ef4444", fontSize:"0.68rem", marginTop:-10 }}>⚠ {errors.consent_agreed}</p>}
@@ -1322,8 +1322,8 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
           <div style={{ background:"#f8fafc", borderRadius:14, padding:18, border:"1.5px solid #e2e8f0" }}>
             <p style={{ fontSize:"0.65rem", fontWeight:800, color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:14 }}>Submission Summary</p>
             <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
-              {photoPreview ? <img src={photoPreview} alt="Profile" style={{ width:52, height:52, borderRadius:"50%", objectFit:"cover", border:"2px solid #a5b4fc", flexShrink:0 }} />
-                : <div style={{ width:52, height:52, borderRadius:"50%", background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff", fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1rem", flexShrink:0 }}>{initials(form.full_name||"")}</div>}
+              {photoPreview ? <img src={photoPreview} alt="Profile" style={{ width:52, height:52, borderRadius:"50%", objectFit:"cover", border:"2px solid #fdba74", flexShrink:0 }} />
+                : <div style={{ width:52, height:52, borderRadius:"50%", background:"linear-gradient(135deg,#f97316,#fb923c)", color:"#fff", fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1rem", flexShrink:0 }}>{initials(form.full_name||"")}</div>}
               <div><p style={{ fontWeight:800, color:"#1e293b" }}>{form.full_name||"—"}</p><p style={{ fontSize:"0.75rem", color:"#94a3b8" }}>{form.current_profession||"—"}</p></div>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px 20px" }}>
@@ -1346,7 +1346,7 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
       <div style={{ width:"100%", maxWidth:"100%", background:"#fff", display:"flex", flexDirection:"column", height:"100vh", overflowY:"hidden", animation:"slideDrawer 0.28s cubic-bezier(0.4,0,0.2,1)" }}>
         <div style={{ padding:"22px 24px 18px", borderBottom:"1.5px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
           <div style={{ position:"absolute", left:0, right:0, textAlign:"center", pointerEvents:"none" }}>
-            <h2 style={{ fontSize:"2.05rem", fontWeight:800, color:"#6366f1" }}>{isEdit ? `Edit: ${existing!.full_name}` : "New Associate Form"}</h2>
+            <h2 style={{ fontSize:"2.05rem", fontWeight:800, color:"#f97316" }}>{isEdit ? `Edit: ${existing!.full_name}` : "New Associate Form"}</h2>
             <p style={{ fontSize:"0.73rem", color:"#94a3b8", marginTop:2 }}>Step {step+1} of {STEPS.length} — {STEPS[step]}</p>
           </div>
           {!isPublic && (
@@ -1355,15 +1355,15 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
         </div>
         <div style={{ padding:"14px 24px 0", flexShrink:0 }}>
           <div style={{ width:"100%", background:"#e2e8f0", borderRadius:99, height:4 }}>
-            <div style={{ height:4, borderRadius:99, background:"linear-gradient(90deg,#6366f1,#8b5cf6)", width:`${((step+1)/STEPS.length)*100}%`, transition:"width 0.4s ease" }} />
+            <div style={{ height:4, borderRadius:99, background:"linear-gradient(90deg,#f97316,#fb923c)", width:`${((step+1)/STEPS.length)*100}%`, transition:"width 0.4s ease" }} />
           </div>
           <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, gap:4 }}>
             {STEPS.map((s,i) => (
               <div key={s} style={{ display:"flex", flexDirection:"column", alignItems:"center", minWidth:0, flex:1 }}>
-                <div style={{ width:28, height:28, borderRadius:"50%", background: i<step ? "#6366f1" : i===step ? "#fff" : "#f1f5f9", border: i===step ? "2px solid #6366f1" : i<step ? "none" : "2px solid #e2e8f0", display:"flex", alignItems:"center", justifyContent:"center", fontSize: i<step ? "0.72rem" : "0.82rem", color: i<step ? "#fff" : i===step ? "#6366f1" : "#cbd5e1", fontWeight:700, boxShadow: i===step ? "0 0 0 4px rgba(99,102,241,0.15)" : "none", transition:"all 0.2s" }}>
+                <div style={{ width:28, height:28, borderRadius:"50%", background: i<step ? "#f97316" : i===step ? "#fff" : "#f1f5f9", border: i===step ? "2px solid #f97316" : i<step ? "none" : "2px solid #e2e8f0", display:"flex", alignItems:"center", justifyContent:"center", fontSize: i<step ? "0.72rem" : "0.82rem", color: i<step ? "#fff" : i===step ? "#f97316" : "#cbd5e1", fontWeight:700, boxShadow: i===step ? "0 0 0 4px rgba(249,115,22,0.15)" : "none", transition:"all 0.2s" }}>
                   {i<step ? "✓" : STEP_ICONS[i]}
                 </div>
-                <span style={{ fontSize:"0.58rem", marginTop:4, color: i===step ? "#6366f1":"#94a3b8", fontWeight: i===step ? 700:400, textAlign:"center", lineHeight:1.2, display:"block", maxWidth:52, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{s.split(" ")[0]}</span>
+                <span style={{ fontSize:"0.58rem", marginTop:4, color: i===step ? "#f97316":"#94a3b8", fontWeight: i===step ? 700:400, textAlign:"center", lineHeight:1.2, display:"block", maxWidth:52, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{s.split(" ")[0]}</span>
               </div>
             ))}
           </div>
@@ -1372,8 +1372,8 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
         <div style={{ padding:"16px 24px", borderTop:"1.5px solid #f1f5f9", display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, background:"#fff" }}>
           <button onClick={goBack} disabled={step===0} style={{ padding:"10px 20px", borderRadius:10, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:"0.84rem", fontWeight:700, color:"#64748b", cursor: step===0?"not-allowed":"pointer", opacity: step===0?0.4:1, fontFamily:"inherit" }}>← Back</button>
           {step < STEPS.length-1
-            ? <button onClick={goNext} style={{ padding:"10px 28px", borderRadius:10, background:"linear-gradient(135deg,#6366f1,#7c3aed)", color:"#fff", border:"none", fontSize:"0.84rem", fontWeight:700, cursor:"pointer", fontFamily:"inherit", boxShadow:"0 4px 12px rgba(99,102,241,0.3)" }}>Continue →</button>
-            : <button onClick={handleSubmit} disabled={submitting} style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 28px", borderRadius:10, background: submitting ? "#a5b4fc":"#16a34a", color:"#fff", border:"none", fontSize:"0.84rem", fontWeight:700, cursor: submitting?"not-allowed":"pointer", fontFamily:"inherit", boxShadow:"0 4px 12px rgba(22,163,74,0.3)" }}>
+            ? <button onClick={goNext} style={{ padding:"10px 28px", borderRadius:10, background:"linear-gradient(135deg,#f97316,#ea580c)", color:"#fff", border:"none", fontSize:"0.84rem", fontWeight:700, cursor:"pointer", fontFamily:"inherit", boxShadow:"0 4px 12px rgba(249,115,22,0.3)" }}>Continue →</button>
+            : <button onClick={handleSubmit} disabled={submitting} style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 28px", borderRadius:10, background: submitting ? "#fdba74":"#16a34a", color:"#fff", border:"none", fontSize:"0.84rem", fontWeight:700, cursor: submitting?"not-allowed":"pointer", fontFamily:"inherit", boxShadow:"0 4px 12px rgba(22,163,74,0.3)" }}>
                 {submitting ? <><span style={{ width:14, height:14, border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.7s linear infinite", display:"inline-block" }} /> Saving…</> : `✓ ${isEdit?"Save Changes":"Submit Enrolment"}`}
               </button>}
         </div>
@@ -1526,7 +1526,7 @@ export default function AssociateManagementPage() {
         @keyframes toastIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
         .am-root { font-family:'Cabinet Grotesk',sans-serif; color:#1e293b; }
         .action-btn { width:30px; height:30px; borderRadius:8px; border:1.5px solid #e2e8f0; background:#fff; cursor:pointer; fontSize:13px; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s; }
-        .action-btn:hover { border-color:#a5b4fc; background:#eef2ff; }
+        .action-btn:hover { border-color:#fdba74; background:#fff7ed; }
         .action-btn.red:hover { border-color:#fca5a5; background:#fee2e2; }
         .skeleton { background:linear-gradient(90deg,#f1f5f9 25%,#e9eef5 50%,#f1f5f9 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -1543,9 +1543,9 @@ export default function AssociateManagementPage() {
           {can("Associate", "add") && (
             <button onClick={() => setFormAssoc(null)}
               style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 20px",
-                background:"linear-gradient(135deg,#6366f1,#7c3aed)", color:"#fff", border:"none",
+                background:"linear-gradient(135deg,#f97316,#ea580c)", color:"#fff", border:"none",
                 borderRadius:11, fontWeight:700, fontSize:"0.86rem", cursor:"pointer",
-                fontFamily:"inherit", boxShadow:"0 4px 16px rgba(99,102,241,0.35)" }}>
+                fontFamily:"inherit", boxShadow:"0 4px 16px rgba(249,115,22,0.35)" }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width:15, height:15 }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
@@ -1561,7 +1561,7 @@ export default function AssociateManagementPage() {
               <button key={s} onClick={() => setStatusFilter(s)}
                 style={{ padding:"7px 14px", fontSize:"0.76rem", fontWeight:700, border:"none",
                   cursor:"pointer", fontFamily:"inherit", transition:"background 0.12s",
-                  background: statusFilter===s ? "#6366f1":"#fff",
+                  background: statusFilter===s ? "#f97316":"#fff",
                   color: statusFilter===s ? "#fff":"#64748b" }}>
                 {s.charAt(0).toUpperCase()+s.slice(1)} ({counts[s]})
               </button>
@@ -1635,7 +1635,7 @@ export default function AssociateManagementPage() {
                       <td style={{ padding:"12px 16px", color:"#cbd5e1", fontSize:"0.72rem", fontWeight:600 }}>{rowNum}</td>
                       <td style={{ padding:"12px 16px" }}>
                         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                          <div style={{ width:34, height:34, borderRadius:10, background:"linear-gradient(135deg,#6366f1,#8b5cf6)",
+                          <div style={{ width:34, height:34, borderRadius:10, background:"linear-gradient(135deg,#f97316,#fb923c)",
                             color:"#fff", fontWeight:800, fontSize:"0.72rem", display:"flex",
                             alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                             {initials(row.full_name)}
@@ -1649,7 +1649,7 @@ export default function AssociateManagementPage() {
                       <td style={{ padding:"12px 16px", fontFamily:"'Courier New',monospace", fontSize:"0.78rem", color:"#374151" }}>{row.mobile_primary}</td>
                       <td style={{ padding:"12px 16px", color:"#475569" }}>{row.city||"—"}</td>
                       <td style={{ padding:"12px 16px" }}>
-                        <span style={{ background:"rgba(99,102,241,0.08)", color:"#6366f1", padding:"3px 9px", borderRadius:99, fontSize:"0.7rem", fontWeight:600 }}>
+                        <span style={{ background:"rgba(249,115,22,0.08)", color:"#f97316", padding:"3px 9px", borderRadius:99, fontSize:"0.7rem", fontWeight:600 }}>
                           {(row.current_profession||"—").split(" ").slice(0,2).join(" ")}
                         </span>
                       </td>

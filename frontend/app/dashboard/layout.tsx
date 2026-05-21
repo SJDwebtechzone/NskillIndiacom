@@ -121,7 +121,7 @@ const backgroundImagesItems = [
 function SubLink({ path, name, icon: Icon, pathname }: { path: string; name: string; icon: any; pathname: string }) {
   return (
     <Link href={path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-      pathname === path ? "text-blue-400 font-bold bg-blue-400/10" : "text-gray-500 hover:text-white hover:bg-white/5"
+      pathname === path ? "text-orange-600 font-bold bg-orange-50" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
     }`}>
       <Icon className="w-4 h-4" />
       <span>{name}</span>
@@ -132,10 +132,10 @@ function SubLink({ path, name, icon: Icon, pathname }: { path: string; name: str
 function SectionToggle({ label, icon: Icon, isOpen, onClick }: { label: string; icon: any; isOpen: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
-      isOpen ? "text-white bg-white/5" : "text-gray-400 hover:text-white hover:bg-white/5"
+      isOpen ? "text-orange-600 bg-orange-50" : "text-slate-600 hover:text-orange-600 hover:bg-orange-50"
     }`}>
       <div className="flex items-center gap-3">
-        <Icon className={`w-5 h-5 ${isOpen ? "text-blue-400" : "group-hover:text-blue-400"}`} />
+        <Icon className={`w-5 h-5 ${isOpen ? "text-orange-600" : "group-hover:text-orange-600"}`} />
         <span className="font-medium">{label}</span>
       </div>
       {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -255,7 +255,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc]">
+    <div className="dashboard-layout flex min-h-screen bg-[#f8fafc]">
 
       {/* Mobile Overlay */}
       {isMobileSidebarOpen && (
@@ -265,8 +265,8 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
       {/* Sidebar */}
       <aside className={`
         fixed md:static inset-y-0 left-0 z-50
-        w-72 bg-[#0b1f3a] text-white flex flex-col
-        shadow-2xl border-r border-white/5
+        w-72 bg-white text-slate-800 flex flex-col
+        shadow-2xl border-r border-slate-200
         transition-transform duration-300 ease-in-out
         ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0
@@ -274,19 +274,19 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
         {/* Logo */}
         <div className="p-6 pb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-white">
               <span className="text-xl font-bold">NS</span>
             </div>
-            <h2 className="text-xl font-black tracking-tight uppercase">NSkill India</h2>
+            <h2 className="text-xl font-black tracking-tight uppercase text-slate-900">NSkill India</h2>
           </div>
           <button onClick={() => setIsMobileSidebarOpen(false)}
-            className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+            className="md:hidden p-2 rounded-lg text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <nav className="flex-1 px-6 pb-4 overflow-y-auto">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 px-2">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">
             {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : isAssociate ? "Associate Panel" : (user?.role === "Super Admin" || user?.role === "Admin" ? "Super Admin Dashboard" : "Admin Panel")}
           </p>
 
@@ -294,9 +294,9 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             {showDashboard && (
               <li>
                 <Link href="/dashboard" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  pathname === "/dashboard" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "text-gray-400 hover:text-white hover:bg-white/5"
+                  pathname === "/dashboard" ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
                 }`}>
-                  <LayoutDashboard className={`w-5 h-5 ${pathname === "/dashboard" ? "text-white" : "group-hover:text-blue-400"}`} />
+                  <LayoutDashboard className={`w-5 h-5 ${pathname === "/dashboard" ? "text-white" : "group-hover:text-orange-600"}`} />
                   <span className="font-medium">Dashboard</span>
                 </Link>
               </li>
@@ -304,23 +304,23 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             {showPayments && (
               <li>
                 <Link href="/dashboard/payments" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  pathname === "/dashboard/payments" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "text-gray-400 hover:text-white hover:bg-white/5"
+                  pathname === "/dashboard/payments" ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
                 }`}>
-                  <CreditCard className={`w-5 h-5 ${pathname === "/dashboard/payments" ? "text-white" : "group-hover:text-blue-400"}`} />
+                  <CreditCard className={`w-5 h-5 ${pathname === "/dashboard/payments" ? "text-white" : "group-hover:text-orange-600"}`} />
                   <span className="font-medium">Payment</span>
                 </Link>
               </li>
             )}
           </ul>
 
-          <div className="h-px bg-white/10 my-5 mx-2" />
+          <div className="h-px bg-slate-100 my-5 mx-2" />
 
           {/* User Management */}
           {visibleUserItems.length > 0 && (
             <div className="space-y-1 mb-1">
               <SectionToggle label="User Management" icon={Users} isOpen={isUserMenuOpen} onClick={() => setIsUserMenuOpen(v => !v)} />
               {isUserMenuOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleUserItems.map(item => (
                     <li key={item.name}><SubLink path={item.path} name={item.name} icon={item.icon} pathname={pathname} /></li>
                   ))}
@@ -334,20 +334,20 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <button onClick={() => setIsSettingsMenuOpen(v => !v)}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  isSettingsMenuOpen ? "text-white bg-white/5" : "text-gray-400 hover:text-white hover:bg-white/5"
+                  isSettingsMenuOpen ? "text-orange-600 bg-orange-50" : "text-slate-600 hover:text-orange-600 hover:bg-orange-50"
                 }`}>
                 <div className="flex items-center gap-3">
-                  <Settings className={`w-5 h-5 ${isSettingsMenuOpen ? "text-blue-400" : "group-hover:rotate-45 group-hover:text-blue-400 transition-transform duration-500"}`} />
+                  <Settings className={`w-5 h-5 ${isSettingsMenuOpen ? "text-orange-600" : "group-hover:rotate-45 group-hover:text-orange-600 transition-transform duration-500"}`} />
                   <span className="font-medium">Website Settings</span>
                 </div>
                 {isSettingsMenuOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </button>
               {isSettingsMenuOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleSettingsItems.map(item => (
                     <li key={item.name}>
                       <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                        isSettingActive(item.name) ? "text-blue-400 font-bold bg-blue-400/10" : "text-gray-500 hover:text-white hover:bg-white/5"
+                        isSettingActive(item.name) ? "text-orange-600 font-bold bg-orange-50" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
                       }`}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.name}</span>
@@ -364,7 +364,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <SectionToggle label="Course Management" icon={BookMarked} isOpen={isCourseMenuOpen} onClick={() => setIsCourseMenuOpen(v => !v)} />
               {isCourseMenuOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleCourseItems.map(item => (
                     <li key={item.name}><SubLink path={item.path} name={item.name} icon={item.icon} pathname={pathname} /></li>
                   ))}
@@ -378,7 +378,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <SectionToggle label="Associate Management" icon={ClipboardList} isOpen={isAssociateMenuOpen} onClick={() => setIsAssociateMenuOpen(v => !v)} />
               {isAssociateMenuOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleAssociateItems.map(item => (
                     <li key={item.name}><SubLink path={item.path} name={item.name} icon={item.icon} pathname={pathname} /></li>
                   ))}
@@ -392,7 +392,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <SectionToggle label="Student Management" icon={GraduationCap} isOpen={isStudentManagementOpen} onClick={() => setIsStudentManagementOpen(v => !v)} />
               {isStudentManagementOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleStudentItems.map(item => {
                     if (item.isDropdown) {
                       const isOpen    = item.name === "Certification" ? isCertificationOpen : isFeeDetailsOpen;
@@ -400,17 +400,17 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                       return (
                         <li key={item.name}>
                           <button onClick={() => setIsOpen(!isOpen)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                            isOpen ? "text-white bg-white/5" : "text-gray-500 hover:text-white hover:bg-white/5"
+                            isOpen ? "text-orange-600 bg-orange-50" : "text-slate-600 hover:text-orange-600 hover:bg-orange-50"
                           }`}>
                             <div className="flex items-center gap-3"><item.icon className="w-4 h-4" /><span>{item.name}</span></div>
                             {isOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                           </button>
                           {isOpen && (
-                            <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                            <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                               {item.children?.map(sub => (
                                 <li key={sub.name}>
                                   <Link href={sub.path!} className={`flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all duration-300 ${
-                                    pathname === sub.path ? "text-blue-400 font-bold bg-blue-400/10" : "text-gray-500 hover:text-white hover:bg-white/5"
+                                    pathname === sub.path ? "text-orange-600 font-bold bg-orange-50" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
                                   }`}>
                                     <sub.icon className="w-3.5 h-3.5" /><span>{sub.name}</span>
                                   </Link>
@@ -433,23 +433,23 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <SectionToggle label="Trainer Management" icon={Briefcase} isOpen={isTraineeManagementOpen} onClick={() => setIsTraineeManagementOpen(v => !v)} />
               {isTraineeManagementOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleTraineeItems.map(item => {
                     if (item.isDropdown) {
                       return (
                         <li key={item.name}>
                           <button onClick={() => setIsClassStatusOpen(v => !v)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                            isClassStatusOpen ? "text-white bg-white/5" : "text-gray-500 hover:text-white hover:bg-white/5"
+                            isClassStatusOpen ? "text-orange-600 bg-orange-50" : "text-slate-600 hover:text-orange-600 hover:bg-orange-50"
                           }`}>
                             <div className="flex items-center gap-3"><item.icon className="w-4 h-4" /><span>{item.name}</span></div>
                             {isClassStatusOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                           </button>
                           {isClassStatusOpen && (
-                            <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                            <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                               {item.children?.map(sub => (
                                 <li key={sub.name}>
                                   <Link href={sub.path!} className={`flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all duration-300 ${
-                                    pathname === sub.path ? "text-blue-400 font-bold bg-blue-400/10" : "text-gray-500 hover:text-white hover:bg-white/5"
+                                    pathname === sub.path ? "text-orange-600 font-bold bg-orange-50" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
                                   }`}>
                                     <sub.icon className="w-3.5 h-3.5" /><span>{sub.name}</span>
                                   </Link>
@@ -472,7 +472,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <SectionToggle label="NTSC Management" icon={ShieldCheck} isOpen={isNTSCManagementOpen} onClick={() => setIsNTSCManagementOpen(v => !v)} />
               {isNTSCManagementOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleNTSCItems.map(item => (
                     <li key={item.name}><SubLink path={item.path!} name={item.name} icon={item.icon} pathname={pathname} /></li>
                   ))}
@@ -486,7 +486,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <SectionToggle label="Background Images" icon={Image} isOpen={isBackgroundImagesOpen} onClick={() => setIsBackgroundImagesOpen(v => !v)} />
               {isBackgroundImagesOpen && (
-                <ul className="mt-1 ml-4 space-y-1 border-l border-white/10 pl-4 py-1">
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleBgItems.map(item => (
                     <li key={item.name}><SubLink path={item.path!} name={item.name} icon={item.icon} pathname={pathname} /></li>
                   ))}
