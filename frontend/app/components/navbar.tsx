@@ -191,7 +191,7 @@ const Navbar = () => {
     { name: "Corporate Training", href: "/corporate-training" },
     { name: "Consulting Services", href: "/consulting" },
     { name: "Course Calendar", href: "/course_calender" },
-    { name: "Placements", href: "/placements/register" },
+    { name: "Placements", href: "/placements" },
     { name: "Infrastructure", href: "/infrastructure" },
     { name: "Contact Us", href: "/contact" },
   ];
@@ -386,7 +386,7 @@ const Navbar = () => {
                           <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
                             <Link
                               href="/courses"
-                              className="group flex items-center gap-2 px-6 py-2 bg-orange-500 text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-orange-600 transition-all shadow-lg active:scale-95"
+                              className="group flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-full font-black text-[9px] uppercase tracking-[0.15em] hover:bg-blue-700 transition-all shadow-lg active:scale-95"
                               onClick={closeMegaMenu}
                             >
                               Explore Full Catalog

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, User, Mail, Phone, BookOpen, Send, CheckCircle2, ChevronRight, Loader2, Rocket, BadgeCheck, MessageSquare } from "lucide-react";
+import { motion } from "framer-motion";
+import { X, User, Mail, Phone, BookOpen, Send, CheckCircle2, ChevronRight, Loader2, Rocket, BadgeCheck, MessageSquare, CalendarDays, Users } from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
+import AnimatedCalendarBanner from "../components/AnimatedCalendarBanner";
 
 type EventType = "batch1" | "batch2" | "both";
 type Week      = "First" | "Second" | "Third" | "Fourth";
@@ -206,41 +208,54 @@ export default function StudentCalendar() {
       `}</style>
 
       {/* ── Page Banner ── */}
-      <div 
-        className="relative pt-16 pb-12 overflow-hidden bg-center bg-cover bg-no-repeat mb-8"
-        style={{ backgroundImage: "url('/images/calender/calendar-bg.png')" }}
-      >
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-            
-            {/* Header Text */}
-            <div>
+      <div className="relative h-[280px] md:h-[400px] flex items-center overflow-hidden bg-white mb-8">
+        <AnimatedCalendarBanner />
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb] z-20" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 w-full">
+                  {/* Header Text */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
               <div className="inline-flex items-center gap-2 bg-[#dbeafe] border border-[#bfdbfe] rounded-full px-4 py-1 mb-4 shadow-sm">
                 <span className="text-[#2563eb] text-[11px] font-black tracking-widest uppercase">FY 2026–2027</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-[#0b1f3a] uppercase" style={{ fontFamily: 'var(--font-heading)' }}>
+              <h1 className="text-[#0f172a] text-4xl md:text-5xl font-black uppercase tracking-tight mb-3">
                 Course Calendar
               </h1>
-            </div>
+            </motion.div>
 
             {/* Month Navigator */}
-            <div className="flex items-center gap-4 bg-[#eff6ff]/80 backdrop-blur-sm rounded-2xl px-5 py-3 border border-[#dbeafe] shadow-sm">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+              className="flex items-center gap-4 bg-white rounded-2xl px-5 py-3 border border-slate-200 shadow-sm"
+            >
               <button
                 onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
                 disabled={monthIdx === 0}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#dbeafe] hover:bg-[#bfdbfe] transition disabled:opacity-40 text-[#2563eb] text-xl shadow-sm"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-xl shadow-sm"
               >‹</button>
-              <span className="min-w-[140px] text-center text-[17px] font-black text-[#1e3a8a]">{month} {year}</span>
+              <span className="min-w-[140px] text-center text-[17px] font-black text-[#0f172a]">{month} {year}</span>
               <button
-                onClick={() => setMonthIdx((i) => Math.min(MONTHS_FY.length - 1, i + 1))}
+                onClick={() => setMonthIdx((i) => Math.max(MONTHS_FY.length - 1, i + 1))}
                 disabled={monthIdx === MONTHS_FY.length - 1}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#dbeafe] hover:bg-[#bfdbfe] transition disabled:opacity-40 text-[#2563eb] text-xl shadow-sm"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-xl shadow-sm"
               >›</button>
-            </div>
+            </motion.div>
           </div>
 
           {/* Month Tabs */}
-          <div className="flex gap-3 mt-12 overflow-x-auto scrollbar-hide pb-2 pt-1">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            className="flex gap-3 mt-12 overflow-x-auto scrollbar-hide pb-2 pt-1"
+          >
             {MONTHS_FY.map(({ month: m, year: y }, i) => {
               const isActive = monthIdx === i;
               return (
@@ -249,15 +264,15 @@ export default function StudentCalendar() {
                   onClick={() => setMonthIdx(i)}
                   className={`flex-shrink-0 px-6 py-3 rounded-2xl text-[15px] font-bold transition-all shadow-sm ${
                     isActive
-                      ? "bg-white text-[#2563eb] border-2 border-[#3b82f6] shadow-md shadow-blue-500/10 scale-105 transform -translate-y-1"
-                      : "bg-[#e0e7ff]/60 text-[#3b82f6] border border-[#c7d2fe] hover:bg-[#dbeafe] hover:-translate-y-0.5"
+                      ? "bg-white text-[#0f172a] border-2 border-[#3b82f6] shadow-md shadow-blue-500/10 scale-105 transform -translate-y-1"
+                      : "bg-[#e0e7ff]/60 text-[#0f172a] border border-[#c7d2fe] hover:bg-[#dbeafe] hover:-translate-y-0.5"
                   }`}
                 >
                   {m.slice(0, 3)} '{String(y).slice(2)}
                 </button>
               );
             })}
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -272,15 +287,17 @@ export default function StudentCalendar() {
         {/* ── Stats ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total Sessions",   value: monthEvents.length,      icon: "📅", color: "text-blue-600",   bg: "bg-blue-50",   border: "border-blue-100" },
-            { label: "Courses Running",  value: monthCourseNames.length, icon: "📚", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
-            { label: "Batch 1 Sessions", value: batch1Count,             icon: "🔵", color: "text-indigo-600",  bg: "bg-indigo-50",  border: "border-indigo-100" },
-            { label: "Batch 2 Sessions", value: batch2Count,             icon: "🟡", color: "text-sky-600",   bg: "bg-sky-50",   border: "border-sky-100" },
+            { label: "Total Sessions",   value: monthEvents.length,      icon: <CalendarDays className="w-6 h-6 text-blue-600" />,   color: "text-blue-600",   iconBg: "bg-blue-100" },
+            { label: "Courses Running",  value: monthCourseNames.length, icon: <BookOpen className="w-6 h-6 text-indigo-600" />,     color: "text-indigo-600", iconBg: "bg-indigo-100" },
+            { label: "Batch 1 Sessions", value: batch1Count,             icon: <Users className="w-6 h-6 text-sky-600" />,           color: "text-sky-600",    iconBg: "bg-sky-100" },
+            { label: "Batch 2 Sessions", value: batch2Count,             icon: <Users className="w-6 h-6 text-cyan-600" />,          color: "text-cyan-600",   iconBg: "bg-cyan-100" },
           ].map((s) => (
-            <div key={s.label} className={`rounded-2xl p-5 border ${s.bg} ${s.border}`}>
-              <div className="text-2xl mb-2">{s.icon}</div>
-              <div className={`text-3xl font-black ${s.color}`}>{s.value}</div>
-              <div className="text-sm font-medium text-slate-500 mt-1">{s.label}</div>
+            <div key={s.label} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${s.iconBg}`}>
+                {s.icon}
+              </div>
+              <div className={`text-4xl font-black ${s.color} mb-1 leading-none`}>{s.value}</div>
+              <div className="text-[17px] font-black text-[#0f172a]">{s.label}</div>
             </div>
           ))}
         </div>
@@ -288,18 +305,16 @@ export default function StudentCalendar() {
         {/* ── Filters + CTA ── */}
         <div className="flex flex-col lg:flex-row gap-6 mb-8">
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Filter by Batch</p>
-            <div className="flex flex-wrap gap-2 mb-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Filter by Batch</p>
+            <div className="flex flex-wrap gap-2 mb-8">
               {(["all", "batch1", "batch2"] as const).map((b) => (
                 <button
                   key={b}
                   onClick={() => setFilterBatch(b)}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                  className={`px-5 py-3 rounded-xl text-base font-bold transition-all border ${
                     filterBatch === b
-                      ? b === "batch1" ? "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
-                      : b === "batch2" ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
-                      : "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                      ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50"
                   }`}
                 >
                   {b === "all" ? "All Batches" : b === "batch1" ? "Batch 1" : "Batch 2"}
@@ -307,14 +322,14 @@ export default function StudentCalendar() {
               ))}
             </div>
 
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Filter by Course</p>
+            <p className="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Filter by Course</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilterCourse("all")}
-                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                className={`px-5 py-3 rounded-xl text-base font-bold transition-all border ${
                   filterCourse === "all"
                     ? "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                    : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
                 }`}
               >All Courses</button>
               {monthCourseNames.map((cname) => {
@@ -324,7 +339,7 @@ export default function StudentCalendar() {
                   <button
                     key={cname}
                     onClick={() => setFilterCourse(filterCourse === cname ? "all" : cname)}
-                    className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border flex items-center gap-2"
+                    className="px-5 py-3 rounded-xl text-base font-bold transition-all border flex items-center gap-2 hover:shadow-md"
                     style={isActive ? {
                       background: p.solidColor, color: "#fff", borderColor: p.solidColor,
                       boxShadow: `0 4px 12px ${p.dotColor}40`,
@@ -332,7 +347,7 @@ export default function StudentCalendar() {
                       background: "#fff", color: "#475569", borderColor: "#e2e8f0",
                     }}
                   >
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.dotColor }} />
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: p.dotColor }} />
                     {cname}
                   </button>
                 );
@@ -340,23 +355,23 @@ export default function StudentCalendar() {
             </div>
           </div>
 
-          <div className="w-full lg:w-[340px] flex flex-col gap-4">
+          <div className="w-full lg:w-[360px] flex flex-col gap-4">
             <div className="flex-1 bg-white rounded-2xl p-8 text-slate-900 relative overflow-hidden shadow-sm border border-slate-200 group">
-              <div className="absolute -right-8 -top-8 w-32 h-32 bg-slate-50 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
+              <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-50 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
               <div className="relative z-10">
-                <h3 className="text-xl font-black mb-2">Join a Batch</h3>
-                <p className="text-slate-500 text-sm mb-6 font-medium leading-relaxed">Have questions about our schedule or courses? Reach out to our team today.</p>
-                <div className="flex flex-col gap-3">
+                <h3 className="text-2xl font-black mb-3 text-[#0b1f3a]">Join a Batch</h3>
+                <p className="text-slate-600 text-[15px] mb-8 font-medium leading-relaxed">Have questions about our schedule or courses? Reach out to our team today.</p>
+                <div className="flex flex-col gap-4">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2"
                   >
                     Enquire Now
-                    <span>→</span>
+                    <span className="text-xl leading-none">→</span>
                   </button>
                   <button 
                     onClick={() => setShowDemoModal(true)}
-                    className="w-full py-4 bg-white hover:bg-slate-50 text-slate-700 rounded-xl font-black text-sm transition-all border border-slate-200 active:scale-95"
+                    className="w-full py-4 bg-white hover:bg-blue-50 text-blue-700 hover:border-blue-200 rounded-xl font-black text-base transition-all border border-slate-200 active:scale-95"
                   >
                     Book a Free Demo
                   </button>
@@ -532,7 +547,7 @@ export default function StudentCalendar() {
           {/* Day headers */}
           <div className="grid grid-cols-7 bg-[#0b1f3a]">
             {WEEK_DAYS.map((d) => (
-              <div key={d} className="py-4 text-center text-base font-bold uppercase tracking-widest text-white">{d}</div>
+              <div key={d} className="py-4 text-center text-[17px] font-black uppercase tracking-widest text-white">{d}</div>
             ))}
           </div>
 
@@ -633,14 +648,14 @@ export default function StudentCalendar() {
                     }}>
                       <span className="mt-1 w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: p.dotColor, boxShadow: `0 0 8px ${p.dotColor}60` }} />
                       <div>
-                        <p className="text-sm font-bold text-[#0b1f3a]">{ev.title}</p>
-                        <p className="text-xs font-semibold mt-0.5" style={{ color: p.solidColor }}>{ev.course_name}</p>
-                        {ev.description && <p className="text-xs mt-1 text-slate-500 leading-snug">{ev.description}</p>}
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: p.bgColor, color: p.solidColor, border: `1px solid ${p.borderColor}` }}>
+                        <p className="text-lg font-black text-[#0b1f3a] mb-0.5">{ev.title}</p>
+                        <p className="text-base font-bold" style={{ color: p.solidColor }}>{ev.course_name}</p>
+                        {ev.description && <p className="text-[15px] mt-2 text-slate-600 leading-relaxed font-medium">{ev.description}</p>}
+                        <div className="flex gap-2 mt-4 flex-wrap">
+                          <span className="text-sm font-bold px-3 py-1.5 rounded-full shadow-sm" style={{ background: p.bgColor, color: p.solidColor, border: `1px solid ${p.borderColor}` }}>
                             {ev.event_type === "both" ? "Batch 1 & 2" : ev.event_type === "batch1" ? "Batch 1" : "Batch 2"}
                           </span>
-                          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                          <span className="text-sm font-bold px-3 py-1.5 rounded-full shadow-sm bg-slate-100 text-slate-600 border border-slate-200">
                             {WEEK_LABEL[dateToWeek(ev.start_date)]}
                           </span>
                         </div>
@@ -654,34 +669,46 @@ export default function StudentCalendar() {
         )}
 
         {/* ── Week-wise Overview ── */}
-        <div className="mb-8">
-          <h2 className="text-base font-black text-[#0b1f3a] uppercase tracking-wide mb-4">Week-wise Overview · {month} {year}</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="mb-10">
+          <h2 className="text-xl font-black text-[#0b1f3a] uppercase tracking-wide mb-6">Week-wise Overview · {month} {year}</h2>
+          <div className="flex flex-col gap-8">
             {WEEK_ORDER.map((week) => {
               const weekEvents = filteredEvents.filter((e) => dateToWeek(e.start_date) === week);
               return (
-                <div key={week} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">{WEEK_LABEL[week]}</h3>
-                  {weekEvents.length === 0 ? (
-                    <p className="text-sm text-slate-300">No sessions</p>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      {weekEvents.map((ev, idx) => {
-                        const p = getCourseColor(ev.course_name, allCourses);
-                        return (
-                          <div key={idx} className="rounded-xl px-3 py-2.5 text-sm border" style={{
-                            background: p.bgColor, borderColor: p.borderColor,
-                          }}>
-                            <div className="font-bold truncate" style={{ color: p.solidColor }}>{ev.course_name}</div>
-                            <div className="mt-0.5 truncate text-slate-500 text-xs">{ev.title}</div>
-                            <div className="mt-0.5 text-xs font-medium text-slate-400">
-                              {ev.event_type === "both" ? "Batch 1 & 2" : ev.event_type === "batch1" ? "Batch 1" : "Batch 2"}
+                <div key={week} className="flex flex-col gap-3">
+                  <div className="flex items-end justify-between px-2">
+                    <h3 className="text-xl font-black uppercase tracking-widest text-blue-600">{WEEK_LABEL[week]}</h3>
+                    <span className="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold">{weekEvents.length} Sessions</span>
+                  </div>
+                  
+                  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:border-blue-300 transition-colors">
+                    {weekEvents.length === 0 ? (
+                      <div className="flex items-center justify-center py-6">
+                        <p className="text-[17px] font-medium text-slate-400">No sessions scheduled for this week</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        {weekEvents.map((ev, idx) => {
+                          const p = getCourseColor(ev.course_name, allCourses);
+                          return (
+                            <div key={idx} className="rounded-xl px-6 py-5 border shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow" style={{
+                              background: p.bgColor, borderColor: p.borderColor,
+                            }}>
+                              <div>
+                                <div className="text-[18px] font-black leading-snug mb-2" style={{ color: p.solidColor }}>{ev.course_name}</div>
+                                <div className="text-[16px] font-bold text-slate-800 mb-5 leading-relaxed">{ev.title}</div>
+                              </div>
+                              <div>
+                                <div className="inline-block px-4 py-2 rounded-full text-[15px] font-black shadow-sm" style={{ background: "#fff", color: p.solidColor, border: `1px solid ${p.borderColor}` }}>
+                                  {ev.event_type === "both" ? "Batch 1 & 2" : ev.event_type === "batch1" ? "Batch 1" : "Batch 2"}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -690,9 +717,9 @@ export default function StudentCalendar() {
 
         {/* ── Course Legend ── */}
         {allCourses.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-base font-black text-[#0b1f3a] uppercase tracking-wide mb-4">Course Legend</h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mb-12">
+            <h2 className="text-xl font-black text-[#0b1f3a] uppercase tracking-wide mb-6">Course Legend</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {allCourses.map((cname) => {
                 const p = getCourseColor(cname, allCourses);
                 const isActive = filterCourse === cname;
@@ -700,17 +727,17 @@ export default function StudentCalendar() {
                   <button
                     key={cname}
                     onClick={() => setFilterCourse(filterCourse === cname ? "all" : cname)}
-                    className="flex items-center gap-3 p-4 rounded-2xl text-left transition-all border hover:shadow-md"
+                    className="flex items-center gap-4 p-5 rounded-2xl text-left transition-all border hover:border-blue-400 hover:shadow-md bg-white"
                     style={{
-                      background: isActive ? p.bgColor : "#fff",
                       borderColor: isActive ? p.borderColor : "#e2e8f0",
-                      boxShadow: isActive ? `0 4px 16px ${p.dotColor}20` : undefined,
+                      boxShadow: isActive ? `0 6px 20px ${p.dotColor}25` : undefined,
+                      transform: isActive ? "translateY(-2px)" : "none",
                     }}
                   >
-                    <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: p.dotColor, boxShadow: `0 0 6px ${p.dotColor}70` }} />
+                    <span className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: p.dotColor, boxShadow: `0 0 8px ${p.dotColor}80` }} />
                     <div>
-                      <p className="text-sm font-bold" style={{ color: isActive ? p.solidColor : "#0f172a" }}>{cname}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-base font-bold" style={{ color: isActive ? p.solidColor : "#0f172a" }}>{cname}</p>
+                      <p className="text-[14px] font-medium text-slate-500 mt-1">
                         {events.filter((e) => e.course_name === cname).length} sessions total
                       </p>
                     </div>

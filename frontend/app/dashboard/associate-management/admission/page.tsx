@@ -420,17 +420,17 @@ export default function StudentAdmissionForm() {
 
             case "SEARCH": return (
                 <div className="space-y-6 flex flex-col items-center py-8">
-                    <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center text-orange-500"><Search size={40} /></div>
+                    <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center text-blue-500"><Search size={40} /></div>
                     <h3 className="text-xl font-bold text-slate-800">Start with Enquiry ID</h3>
                     <p className="text-slate-500 text-center max-w-sm">Enter the student's Enquiry ID to pull existing details.</p>
                     <div className="w-full max-w-md flex flex-col gap-4 mt-4">
                         <input type="text" placeholder="Enter Enquiry ID" value={searchId}
                             onChange={e => setSearchId(e.target.value)}
-                            className="w-full px-6 py-4 bg-white border border-slate-300 rounded-2xl outline-none focus:ring-4 focus:ring-orange-100 focus:border-orange-500 font-black text-xl text-center tracking-widest text-[#0b1f3a]"
+                            className="w-full px-6 py-4 bg-white border border-slate-300 rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 font-black text-xl text-center tracking-widest text-[#0b1f3a]"
                         />
                         {errors.enquiry_id && <span className="text-red-500 text-sm font-bold">{errors.enquiry_id}</span>}
                         <button type="button" onClick={handleSearch} disabled={isSearching || !searchId}
-                            className="w-full py-4 bg-orange-500 text-white rounded-2xl font-bold hover:bg-orange-600 transition-all flex items-center justify-center gap-2">
+                            className="w-full py-4 bg-blue-500 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                             {isSearching ? "Searching..." : "Fetch Details"}
                         </button>
                     </div>
@@ -459,7 +459,7 @@ export default function StudentAdmissionForm() {
             case "BC": return (
                 <div className="space-y-6">
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-sm">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Smartphone className="text-orange-500" size={18}/> Contact Details</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Smartphone className="text-blue-500" size={18}/> Contact Details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <InputField label="9. Mobile Number"   name="mobile_number"     value={formData.mobile_number}     onChange={handleChange} error={errors.mobile_number}    compulsory />
                             <InputField label="10. Alternate Mobile" name="alt_mobile_number" value={formData.alt_mobile_number} onChange={handleChange} />
@@ -478,7 +478,7 @@ export default function StudentAdmissionForm() {
                         </div>
                     </div>
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-sm">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Users className="text-orange-500" size={18}/> Parent / Guardian Details</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Users className="text-blue-500" size={18}/> Parent / Guardian Details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <InputField label="17. Parent / Guardian Name" name="parent_name"   value={formData.parent_name}   onChange={handleChange} error={errors.parent_name}   compulsory />
                             <InputField label="18. Relationship"           name="relationship"  value={formData.relationship}  onChange={handleChange} error={errors.relationship}  compulsory />
@@ -497,7 +497,7 @@ export default function StudentAdmissionForm() {
             case "DE": return (
                 <div className="space-y-6">
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><GraduationCap className="text-orange-500" size={18}/> Education Details</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><GraduationCap className="text-blue-500" size={18}/> Education Details</h4>
                         <SelectField label="22. Highest Qualification" name="highest_qualification" value={formData.highest_qualification}
                             options={["","School Dropout","10th / 12th","ITI / Diploma","Degree / Engineering"]} onChange={handleChange} compulsory error={errors.highest_qualification} />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -510,7 +510,7 @@ export default function StudentAdmissionForm() {
                         </div>
                     </div>
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Briefcase className="text-orange-500" size={18}/> Skill & Experience</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Briefcase className="text-blue-500" size={18}/> Skill & Experience</h4>
                         <TextAreaField label="27. Technical Background (if any)" name="technical_background" value={formData.technical_background} onChange={handleChange} />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <InputField label="28. Work Experience" name="total_experience"    value={formData.total_experience}    onChange={handleChange} />
@@ -526,7 +526,7 @@ export default function StudentAdmissionForm() {
             case "FG": return (
                 <div className="space-y-6">
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><BookOpen className="text-orange-500" size={18}/> Course Selection</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><BookOpen className="text-blue-500" size={18}/> Course Selection</h4>
                         {/* ── Course Interested → DROPDOWN ── */}
                         <SelectField label="31. Course Interested In" name="course_interested" value={formData.course_interested}
                             options={COURSE_OPTIONS} onChange={handleChange} compulsory error={errors.course_interested} />
@@ -543,7 +543,7 @@ export default function StudentAdmissionForm() {
                         </div>
                     </div>
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Target className="text-orange-500" size={18}/> Career Goal</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Target className="text-blue-500" size={18}/> Career Goal</h4>
                         <SelectField label="36. Career Goal" name="career_goal" value={formData.career_goal}
                             options={["Job in India","Overseas Job","Self-Employment / Entrepreneurship"]} onChange={handleChange} compulsory />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -560,7 +560,7 @@ export default function StudentAdmissionForm() {
             case "IJ": return (
                 <div className="space-y-6">
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Sparkles className="text-orange-500" size={18}/> Counsellor & Referral</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Sparkles className="text-blue-500" size={18}/> Counsellor & Referral</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <InputField label="43. Career Counsellor Name" name="counsellor_name" value={formData.counsellor_name} onChange={handleChange} compulsory error={errors.counsellor_name} />
                             <InputField label="44. Counsellor Code / ID"   name="counsellor_code" value={formData.counsellor_code} onChange={handleChange} compulsory error={errors.counsellor_code} />
@@ -572,8 +572,8 @@ export default function StudentAdmissionForm() {
                         </div>
                     </div>
 
-                    <div className="p-6 bg-orange-50 rounded-2xl border border-orange-200">
-                        <h4 className="font-black text-orange-700 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><CreditCard className="text-orange-500" size={18}/> Course Fee & Payment</h4>
+                    <div className="p-6 bg-blue-50 rounded-2xl border border-blue-200">
+                        <h4 className="font-black text-blue-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><CreditCard className="text-blue-500" size={18}/> Course Fee & Payment</h4>
 
                         {/* ── 47. Enquiry Date ── NEW ── */}
                         <div className="mb-4">
@@ -599,37 +599,37 @@ export default function StudentAdmissionForm() {
                         </div>
 
                         {/* ── Installments with Payment Reference ── UPDATED ── */}
-                        <div className="mt-6 pt-6 border-t border-orange-200">
+                        <div className="mt-6 pt-6 border-t border-blue-200">
                             <h5 className="font-bold text-blue-800 mb-4 text-xs uppercase tracking-widest">Installments</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Installment 1 */}
-                                <div className="p-4 bg-white rounded-2xl border border-orange-100 space-y-3">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-orange-600">55. Installment - 1</p>
+                                <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">55. Installment - 1</p>
                                     <InputField label="Amount"           name="instalment_1"     type="number" value={formData.instalment_1}     onChange={handleChange} />
                                     <InputField label="Payment Reference" name="instalment_1_ref"             value={formData.instalment_1_ref} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                                 {/* Installment 2 */}
-                                <div className="p-4 bg-white rounded-2xl border border-orange-100 space-y-3">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-orange-600">56. Installment - 2</p>
+                                <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">56. Installment - 2</p>
                                     <InputField label="Amount"           name="instalment_2"     type="number" value={formData.instalment_2}     onChange={handleChange} />
                                     <InputField label="Payment Reference" name="instalment_2_ref"             value={formData.instalment_2_ref} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                                 {/* Installment 3 */}
-                                <div className="p-4 bg-white rounded-2xl border border-orange-100 space-y-3">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-orange-600">57. Installment - 3</p>
+                                <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">57. Installment - 3</p>
                                     <InputField label="Amount"           name="instalment_3"     type="number" value={formData.instalment_3}     onChange={handleChange} />
                                     <InputField label="Payment Reference" name="instalment_3_ref"             value={formData.instalment_3_ref} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                                 {/* Installment 4 */}
-                                <div className="p-4 bg-white rounded-2xl border border-orange-100 space-y-3">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-orange-600">58. Installment - 4</p>
+                                <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">58. Installment - 4</p>
                                     <InputField label="Amount"           name="instalment_4"     type="number" value={formData.instalment_4}     onChange={handleChange} />
                                     <InputField label="Payment Reference" name="instalment_4_ref"             value={formData.instalment_4_ref} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                             </div>
 
                             <div className="mt-4 p-4 bg-slate-900 rounded-xl flex justify-between items-center shadow-lg">
-                                <span className="text-orange-200 font-bold uppercase text-xs tracking-widest">59. Balance Payable Amount</span>
+                                <span className="text-blue-200 font-bold uppercase text-xs tracking-widest">59. Balance Payable Amount</span>
                                 {can("Associate Management","edit") ? (
                                     <input name="balance_amount" value={formData.balance_amount} onChange={handleChange}
                                         className="bg-white/10 text-white text-2xl font-black w-32 outline-none text-right border-b border-white/20" />
@@ -637,7 +637,7 @@ export default function StudentAdmissionForm() {
                                     <span className="text-white text-2xl font-black">₹ {parseFloat(formData.balance_amount||0).toLocaleString("en-IN")}</span>
                                 )}
                             </div>
-                            <p className="text-[10px] text-orange-500 font-bold mt-2 flex items-center gap-1"><AlertTriangle size={12}/> Auto-points (10%) added once balance is 0.</p>
+                            <p className="text-[10px] text-blue-500 font-bold mt-2 flex items-center gap-1"><AlertTriangle size={12}/> Auto-points (10%) added once balance is 0.</p>
                         </div>
                     </div>
                 </div>
@@ -646,7 +646,7 @@ export default function StudentAdmissionForm() {
             case "KLM": return (
                 <div className="space-y-6">
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><FileText className="text-orange-500" size={18}/> K. Documents Checklist</h4>
+                        <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><FileText className="text-blue-500" size={18}/> K. Documents Checklist</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FileField label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
                             <FileField label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
@@ -658,11 +658,11 @@ export default function StudentAdmissionForm() {
                     </div>
 
                     <div className="space-y-4">
-                        <h4 className="font-black text-slate-800 uppercase tracking-widest text-xs flex items-center gap-2"><ShieldCheck className="text-orange-500" size={16}/> Declarations</h4>
+                        <h4 className="font-black text-slate-800 uppercase tracking-widest text-xs flex items-center gap-2"><ShieldCheck className="text-blue-500" size={16}/> Declarations</h4>
                         <div className="space-y-3">
                             <CheckboxField label="L. Student Declaration (Rules & Discipline)"  name="student_declaration" checked={formData.student_declaration} onChange={handleChange} compulsory error={errors.student_declaration} />
                             <CheckboxField label="M. Parent / Guardian Declaration (Consent)"  name="parent_declaration"  checked={formData.parent_declaration}  onChange={handleChange} compulsory error={errors.parent_declaration}  />
-                            <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
+                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                                 <p className="text-[11px] font-bold text-blue-800 mb-2">Placement Assistance: Performance dependent. Overseas subject to Visa/Medical.</p>
                                 <CheckboxField label="Placement Assistance Acknowledgement" name="placement_ack" checked={formData.placement_ack} onChange={handleChange} compulsory error={errors.placement_ack} />
                             </div>
@@ -693,7 +693,7 @@ export default function StudentAdmissionForm() {
                         </div>
 
                         <div className="p-6 bg-slate-900 rounded-2xl border border-white/10 shadow-2xl">
-                            <h5 className="font-black text-orange-200 text-[10px] uppercase tracking-widest mb-4">10. Student Undertaking</h5>
+                            <h5 className="font-black text-blue-200 text-[10px] uppercase tracking-widest mb-4">10. Student Undertaking</h5>
                             <CheckboxField label="I confirm that I have read all terms & conditions and voluntarily join NTSC Skill Centre." name="final_undertaking" checked={formData.final_undertaking} onChange={handleChange} compulsory error={errors.final_undertaking} dark />
                         </div>
                     </div>
@@ -703,7 +703,7 @@ export default function StudentAdmissionForm() {
             case "N": return (
                 <div className="space-y-6">
                     <div className="p-10 border-4 border-dashed border-slate-200 rounded-[3rem] bg-slate-50 flex flex-col items-center text-center">
-                        <h4 className="font-black text-slate-800 mb-6 flex items-center gap-2 uppercase tracking-widest text-lg"><PlusCircle className="text-orange-500" size={24}/> Office Use Only</h4>
+                        <h4 className="font-black text-slate-800 mb-6 flex items-center gap-2 uppercase tracking-widest text-lg"><PlusCircle className="text-blue-500" size={24}/> Office Use Only</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl">
                             <InputField label="Admission Number" name="admission_number" value={formData.admission_number} onChange={handleChange} placeholder="________" readOnly={user?.role !== "Super Admin"} />
                             <InputField label="Batch Allotted"   name="batch_allotted"   value={formData.batch_allotted}   onChange={handleChange} placeholder="________" />
@@ -738,7 +738,7 @@ export default function StudentAdmissionForm() {
 
             {isLoadingList ? (
                 <div className="flex flex-col items-center py-12 gap-4">
-                    <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"/>
+                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"/>
                     <p className="font-bold text-slate-400">Loading admissions...</p>
                 </div>
             ) : admissions.length === 0 ? (
@@ -768,7 +768,7 @@ export default function StudentAdmissionForm() {
                                             ) : (adm.full_name||"?")[0].toUpperCase()}
                                         </div>
                                     </td>
-                                    <td className="py-5 px-4 font-mono text-orange-600 font-black text-sm">{adm.admission_number||adm.enquiry_id}</td>
+                                    <td className="py-5 px-4 font-mono text-blue-700 font-black text-sm">{adm.admission_number||adm.enquiry_id}</td>
                                     <td className="py-5 px-4 font-black text-slate-900">{adm.full_name}</td>
                                     <td className="py-5 px-4 text-xs font-bold text-slate-500 uppercase">{adm.associate_name||"Admin"}</td>
                                     <td className="py-5 px-4 text-slate-700 font-bold">{adm.course_name||adm.course_interested}</td>
@@ -784,7 +784,7 @@ export default function StudentAdmissionForm() {
                                     <td className="py-5 px-4">
                                         <div className="flex gap-2 justify-center">
                                             {user?.role === "Admin" && (
-                                                <button onClick={() => setSelectedAdmission(adm)} className="p-2 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition-all" title="View"><Eye size={18}/></button>
+                                                <button onClick={() => setSelectedAdmission(adm)} className="p-2 bg-blue-100 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition-all" title="View"><Eye size={18}/></button>
                                             )}
                                             {can("Associate Management","edit") && user?.role !== "Associate" && (
                                                 <button onClick={() => handleEdit(adm)} className="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all" title="Edit"><Edit size={18}/></button>
@@ -830,13 +830,13 @@ export default function StudentAdmissionForm() {
                                 return (
                                     <div key={step.id} className="relative z-10 flex flex-col items-center">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                                            idx === currentStep ? "bg-orange-500 border-orange-500 text-white shadow-xl scale-110" :
+                                            idx === currentStep ? "bg-blue-500 border-blue-500 text-white shadow-xl scale-110" :
                                             idx < currentStep  ? "bg-green-500 border-green-500 text-white" :
                                             "bg-white border-slate-300 text-slate-300"
                                         }`}>
                                             {idx < currentStep ? <CheckCircle2 size={18}/> : <Icon size={18}/>}
                                         </div>
-                                        <span className={`text-[9px] font-black uppercase mt-2 tracking-widest ${idx===currentStep?"text-orange-500":"text-slate-400 opacity-50"}`}>Step {idx+1}</span>
+                                        <span className={`text-[9px] font-black uppercase mt-2 tracking-widest ${idx===currentStep?"text-blue-500":"text-slate-400 opacity-50"}`}>Step {idx+1}</span>
                                     </div>
                                 );
                             })}
@@ -849,15 +849,15 @@ export default function StudentAdmissionForm() {
                             <div className="flex justify-between items-center relative z-10 mb-8">
                                 <div>
                                     <h2 className="text-3xl font-black tracking-tight flex items-center gap-3">
-                                        <Award className="text-orange-400"/> {isEditing ? "Edit Admission" : "Student Admission"}
+                                        <Award className="text-blue-500"/> {isEditing ? "Edit Admission" : "Student Admission"}
                                     </h2>
-                                    <p className="text-orange-300 font-bold mt-1 uppercase text-xs tracking-[0.1em]">
+                                    <p className="text-blue-300 font-bold mt-1 uppercase text-xs tracking-[0.1em]">
                                         {isEditing ? "Update: " + (formData.full_name||"") : steps[currentStep].title}
                                     </p>
                                 </div>
                                 {formData.enquiry_id && (
                                     <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/20 hidden sm:block">
-                                        <p className="text-[10px] font-black text-orange-200 uppercase tracking-widest mb-1">Ref ID</p>
+                                        <p className="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">Ref ID</p>
                                         <p className="font-mono font-black text-lg">{formData.enquiry_id}</p>
                                     </div>
                                 )}
@@ -871,13 +871,13 @@ export default function StudentAdmissionForm() {
                                             else { setCurrentStep(idx); }
                                         }}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap min-w-fit ${
-                                            currentStep===idx?"bg-orange-500 text-white shadow-lg":"text-orange-200/40 hover:text-white hover:bg-white/5"
+                                            currentStep===idx?"bg-blue-500 text-white shadow-lg":"text-blue-200/40 hover:text-white hover:bg-white/5"
                                         }`}>
                                         <span className="text-[11px] font-black uppercase tracking-widest">{idx+1}. {s.title}</span>
                                     </button>
                                 ))}
                             </div>
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl z-0"/>
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl z-0"/>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-8 md:p-12">
@@ -894,7 +894,7 @@ export default function StudentAdmissionForm() {
                                 <div>
                                     {currentStep < steps.length - 1 ? (
                                         <button type="button" onClick={nextStep}
-                                            className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[11px] bg-slate-900 text-white hover:bg-orange-700 shadow-xl transition-all">
+                                            className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[11px] bg-slate-900 text-white hover:bg-blue-800 shadow-xl transition-all">
                                             Continue <ChevronRight size={16}/>
                                         </button>
                                     ) : (
@@ -933,7 +933,7 @@ export default function StudentAdmissionForm() {
                                     <div>
                                         <h3 className="text-3xl font-black text-slate-800">{selectedAdmission.full_name}</h3>
                                         <div className="flex gap-3 mt-2 flex-wrap">
-                                            <span className="px-3 py-1 bg-orange-50 text-orange-500 rounded-full text-[11px] font-black border border-orange-100">
+                                            <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full text-[11px] font-black border border-blue-100">
                                                 #{selectedAdmission.admission_number||selectedAdmission.enquiry_id}
                                             </span>
                                             <span className={`px-3 py-1 rounded-full text-[11px] font-black border ${parseFloat(selectedAdmission.balance_amount)===0?"bg-green-50 text-green-600 border-green-100":"bg-red-50 text-red-600 border-red-100"}`}>
@@ -1026,7 +1026,7 @@ export default function StudentAdmissionForm() {
                                     </Section>
 
                                     <div className="p-6 bg-slate-900 rounded-2xl text-white">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-orange-300 mb-5">Fee Details</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-blue-300 mb-5">Fee Details</p>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                                             <DetailRow label="Course Fees" value={`₹${parseFloat(selectedAdmission.course_fees||0).toLocaleString("en-IN")}`} light />
                                             <DetailRow label="Total Fees"  value={`₹${parseFloat(selectedAdmission.total_fees||0).toLocaleString("en-IN")}`}  light />
@@ -1061,12 +1061,12 @@ export default function StudentAdmissionForm() {
                                     
                                     <Section title="Documents Check & Undertakings">
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                                            <DetailRow label="Aadhaar File"        value={selectedAdmission.has_aadhaar_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_aadhaar_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-orange-500 font-bold hover:underline">View File</a> : "Pending"} />
-                                            <DetailRow label="Edu Certs"           value={selectedAdmission.has_edu_certs_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_edu_certs_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-orange-500 font-bold hover:underline">View File</a> : "Pending"} />
-                                            <DetailRow label="Passport File"       value={selectedAdmission.has_passport_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_passport_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-orange-500 font-bold hover:underline">View File</a> : "Pending"} />
-                                            <DetailRow label="Resume File"         value={selectedAdmission.has_resume_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_resume_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-orange-500 font-bold hover:underline">View File</a> : "Pending"} />
-                                            <DetailRow label="Address Proof"       value={selectedAdmission.has_address_proof_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_address_proof_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-orange-500 font-bold hover:underline">View File</a> : "Pending"} />
-                                            <DetailRow label="Photos"              value={selectedAdmission.has_photos_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_photos_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-orange-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Aadhaar File"        value={selectedAdmission.has_aadhaar_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_aadhaar_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Edu Certs"           value={selectedAdmission.has_edu_certs_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_edu_certs_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Passport File"       value={selectedAdmission.has_passport_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_passport_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Resume File"         value={selectedAdmission.has_resume_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_resume_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Address Proof"       value={selectedAdmission.has_address_proof_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_address_proof_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Photos"              value={selectedAdmission.has_photos_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_photos_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
                                             <DetailRow label="Student Declaration" value={selectedAdmission.student_declaration ? "Signed" : "—"} color="text-emerald-600" />
                                             <DetailRow label="Parent Declaration"  value={selectedAdmission.parent_declaration ? "Signed" : "—"} color="text-emerald-600" />
                                         </div>
@@ -1078,7 +1078,7 @@ export default function StudentAdmissionForm() {
                                         className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-200 transition-all">Close</button>
                                     {user?.role !== "Associate" && (
                                         <button onClick={() => { handleEdit(selectedAdmission); setSelectedAdmission(null); }}
-                                            className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-orange-700 transition-all">Edit Record</button>
+                                            className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-blue-800 transition-all">Edit Record</button>
                                     )}
                                 </div>
                             </div>
@@ -1111,8 +1111,8 @@ export default function StudentAdmissionForm() {
 // ── Helper section wrapper ─────────────────────────────────────────────────────
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-500 mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-orange-500 inline-block"/> {title}
+        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-500 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"/> {title}
         </p>
         {children}
     </div>
@@ -1121,7 +1121,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 // ── Helper components ──────────────────────────────────────────────────────────
 const DetailRow = ({ label, value, color="text-slate-700", bold=false, fontMono=false, light=false, className="" }: any) => (
     <div className={`flex flex-col gap-1 ${light?"":"border-b border-slate-100"} pb-3 ${className}`}>
-        <span className={`text-[10px] font-black uppercase tracking-widest ${light?"text-orange-300/80":"text-slate-400"}`}>{label}</span>
+        <span className={`text-[10px] font-black uppercase tracking-widest ${light?"text-blue-300/80":"text-slate-400"}`}>{label}</span>
         <span className={`text-sm ${bold?"font-black":"font-bold"} ${fontMono?"font-mono":""} ${color} ${light&&color==="text-slate-700"?"text-white":""}`}>
             {value||"—"}
         </span>
@@ -1134,7 +1134,7 @@ const InputField = ({ label, name, value, onChange, type="text", placeholder="",
             {label} {compulsory && <span className="text-red-500">*</span>}
         </label>
         <input type={type} name={name} value={value||""} onChange={onChange} placeholder={placeholder} readOnly={readOnly}
-            className={`w-full px-5 py-4 ${readOnly?"bg-slate-100 text-slate-500":"bg-slate-50 text-slate-900"} border ${error?"border-red-500":"border-slate-300 focus:border-orange-500"} rounded-2xl outline-none focus:ring-4 focus:ring-orange-100 transition-all font-black placeholder:text-slate-300`}
+            className={`w-full px-5 py-4 ${readOnly?"bg-slate-100 text-slate-500":"bg-slate-50 text-slate-900"} border ${error?"border-red-500":"border-slate-300 focus:border-blue-500"} rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 transition-all font-black placeholder:text-slate-300`}
         />
         {error && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{error}</span>}
     </div>
@@ -1146,7 +1146,7 @@ const SelectField = ({ label, name, value, options, onChange, error="", compulso
             {label} {compulsory && <span className="text-red-500">*</span>}
         </label>
         <select name={name} value={value||""} onChange={onChange}
-            className={`w-full px-5 py-4 bg-slate-50 border ${error?"border-red-500":"border-slate-300 focus:border-orange-500"} rounded-2xl outline-none focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900`}>
+            className={`w-full px-5 py-4 bg-slate-50 border ${error?"border-red-500":"border-slate-300 focus:border-blue-500"} rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 transition-all font-black text-slate-900`}>
             {options.map((o: string) => <option key={o} value={o}>{o||"Select..."}</option>)}
         </select>
         {error && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{error}</span>}
@@ -1159,17 +1159,17 @@ const TextAreaField = ({ label, name, value, onChange, error="", compulsory=fals
             {label} {compulsory && <span className="text-red-500">*</span>}
         </label>
         <textarea name={name} value={value||""} onChange={onChange} rows={3}
-            className={`w-full p-5 bg-slate-50 border ${error?"border-red-500":"border-slate-300 focus:border-orange-500"} rounded-2xl outline-none focus:ring-4 focus:ring-orange-100 transition-all font-black text-slate-900`}
+            className={`w-full p-5 bg-slate-50 border ${error?"border-red-500":"border-slate-300 focus:border-blue-500"} rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 transition-all font-black text-slate-900`}
         />
         {error && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{error}</span>}
     </div>
 );
 
 const CheckboxField = ({ label, name, checked, onChange, error="", compulsory=false, dark=false }: any) => (
-    <label className={`flex items-start gap-4 p-4 border transition-all cursor-pointer group w-full rounded-2xl ${dark?"bg-white/5 border-white/10 hover:bg-white/10":"bg-slate-50 border-slate-200 hover:bg-white hover:border-orange-300"}`}>
-        <input type="checkbox" name={name} checked={checked||false} onChange={onChange} className="mt-1 w-5 h-5 rounded-lg text-orange-500 border-slate-400 cursor-pointer"/>
+    <label className={`flex items-start gap-4 p-4 border transition-all cursor-pointer group w-full rounded-2xl ${dark?"bg-white/5 border-white/10 hover:bg-white/10":"bg-slate-50 border-slate-200 hover:bg-white hover:border-blue-300"}`}>
+        <input type="checkbox" name={name} checked={checked||false} onChange={onChange} className="mt-1 w-5 h-5 rounded-lg text-blue-500 border-slate-400 cursor-pointer"/>
         <div className="flex flex-col">
-            <span className={`text-[11px] uppercase tracking-widest font-black leading-tight ${error?"text-red-600":dark?"text-orange-100":"text-slate-700"} group-hover:text-orange-500 transition-colors`}>
+            <span className={`text-[11px] uppercase tracking-widest font-black leading-tight ${error?"text-red-600":dark?"text-blue-100":"text-slate-700"} group-hover:text-blue-500 transition-colors`}>
                 {label} {compulsory && <span className="text-red-500">*</span>}
             </span>
             {error && <span className="text-[9px] text-red-500 font-black uppercase mt-1">{error}</span>}
@@ -1182,10 +1182,10 @@ const FileField = ({ label, name, value, onChange, error="", compulsory=false }:
         <label className="text-[12px] font-black text-slate-700 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
             {label} {compulsory && <span className="text-red-500">*</span>}
         </label>
-        <div className={`relative flex items-center p-1 px-4 bg-slate-100 border-2 border-dashed ${error?"border-red-500 bg-red-50":"border-slate-300 hover:border-orange-500 hover:bg-orange-50"} rounded-2xl transition-all h-16`}>
+        <div className={`relative flex items-center p-1 px-4 bg-slate-100 border-2 border-dashed ${error?"border-red-500 bg-red-50":"border-slate-300 hover:border-blue-500 hover:bg-blue-50"} rounded-2xl transition-all h-16`}>
             <input type="file" name={name} onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
             <div className="flex items-center gap-3">
-                <Upload size={20} className={error?"text-red-400":"text-orange-400"}/>
+                <Upload size={20} className={error?"text-red-400":"text-blue-500"}/>
                 <span className={`text-xs font-black uppercase tracking-wider ${error?"text-red-600":"text-slate-600"}`}>
                     {value ? (typeof value==="string" ? value.split("/").pop() : value.name) : "Choose File"}
                 </span>

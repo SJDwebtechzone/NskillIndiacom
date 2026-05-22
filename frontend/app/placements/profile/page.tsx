@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SearchX, RotateCcw } from "lucide-react";
+import { SearchX, RotateCcw, Search, MapPin } from "lucide-react";
 
 interface Job {
   id: number;
@@ -100,32 +100,41 @@ export default function PlacementPage() {
     <div className="flex flex-col min-h-screen bg-[#f8fafc] pb-20 font-[Segoe_UI,sans-serif]">
       
       {/* ── SEARCH HEADER ── */}
-      <div className="bg-white border-b border-[#eff1f6] pt-12 pb-24 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#2f55e4]/5 rounded-full blur-3xl -mr-40 -mt-40"></div>
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-orange-500/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
+      <div className="relative h-[auto] min-h-[400px] pb-12 pt-16 flex items-center overflow-hidden">
+        <img
+          src="/images/placements/b49fc76a-fb0f-4d62-ab8d-67b6814fd77a.png"
+          alt="Find Jobs"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb]" />
         
-        <div className="max-w-7xl mx-auto px-4 md:px-10 relative z-10">
-          <div className="mb-10 text-center sm:text-left">
-            <h1 className="text-[32px] md:text-[48px] font-black text-[#111827] tracking-tight mb-4">Find your dream career</h1>
-            <p className="text-[16px] md:text-[18px] font-bold text-[#7c829c] max-w-2xl">Connect with top employers and explore opportunities tailored to your skills and preferences.</p>
+        <div className="max-w-7xl mx-auto px-4 md:px-10 relative z-10 w-full flex flex-col items-start justify-center mt-8">
+          <div className="max-w-xl text-left mb-10">
+            <h1 className="text-black text-5xl md:text-6xl font-black mb-4 uppercase tracking-tight leading-tight">
+              Find your dream career
+            </h1>
+            <p className="text-[18px] font-bold text-slate-600 leading-relaxed">
+              Connect with top employers and explore opportunities tailored to your skills and preferences.
+            </p>
           </div>
 
-          <div className="bg-white rounded-[32px] border border-[#eff1f6] shadow-2xl shadow-[#2f55e4]/10 p-3 flex flex-col sm:flex-row items-center gap-3 max-w-4xl transition-all hover:shadow-[#2f55e4]/20">
-            <div className="flex items-center gap-4 flex-1 px-5 py-2 w-full group">
-              <span className="text-[20px] transition-transform group-focus-within:scale-110">🔍</span>
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-3 flex flex-col sm:flex-row items-center gap-3 w-full max-w-4xl transition-all hover:shadow-2xl">
+            <div className="flex items-center gap-3 flex-1 px-5 py-2 w-full group">
+              <Search className="w-5 h-5 text-[#2563eb]" />
               <input
-                className="border-none outline-none text-[16px] font-black text-[#111827] bg-transparent w-full placeholder:text-[#a0a5ba] placeholder:font-bold"
+                className="border-none outline-none text-[16px] font-black text-[#0f172a] bg-transparent w-full placeholder:text-slate-400"
                 placeholder="Job title, keywords, or company"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
-            <div className="hidden sm:block w-px h-10 bg-[#eff1f6]" />
-            <div className="flex items-center gap-4 flex-1 sm:max-w-[280px] px-5 py-2 w-full group">
-              <span className="text-[20px] transition-transform group-focus-within:scale-110">📍</span>
+            <div className="hidden sm:block w-px h-10 bg-slate-200" />
+            <div className="flex items-center gap-3 flex-1 sm:max-w-[280px] px-5 py-2 w-full">
+              <MapPin className="w-5 h-5 text-[#2563eb]" />
               <input
-                className="border-none outline-none text-[16px] font-black text-[#111827] bg-transparent w-full placeholder:text-[#a0a5ba] placeholder:font-bold"
+                className="border-none outline-none text-[16px] font-black text-[#0f172a] bg-transparent w-full placeholder:text-slate-400"
                 placeholder="Location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
@@ -133,7 +142,7 @@ export default function PlacementPage() {
               />
             </div>
             <button
-              className="bg-[#2f55e4] hover:bg-[#2242c2] text-white rounded-2xl px-10 py-4 text-[16px] font-black cursor-pointer w-full sm:w-auto transition-all shadow-lg hover:shadow-[#2f55e4]/30 active:scale-95"
+              className="bg-[#2563eb] hover:bg-blue-700 text-white rounded-2xl px-10 py-4 text-[16px] font-bold cursor-pointer w-full sm:w-auto transition-all shadow-lg shadow-blue-600/30 active:scale-95 whitespace-nowrap"
               onClick={handleSearch}
             >
               Find jobs
@@ -143,7 +152,7 @@ export default function PlacementPage() {
       </div>
 
       {/* ── CONTENT ROW ── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-10 mt-[-40px] relative z-20">
+      <div className="max-w-7xl mx-auto px-4 md:px-10 mt-12 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-10">
 
           {/* ── STUDENT PROFILE (LEFT) ── */}

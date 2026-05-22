@@ -1423,15 +1423,15 @@ function CourseInfoCard({ course }: { course: any }) {
       {/* Duration */}
       <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-slate-100">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
-            <Clock className="w-5 h-5 text-amber-500" />
+          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+            <Clock className="w-5 h-5 text-blue-500" />
           </div>
           <h2 className="text-base sm:text-lg font-black text-slate-900 uppercase tracking-wide">Course Duration</h2>
         </div>
         <div className="flex items-center gap-5 flex-wrap">
-          <div className="flex-1 min-w-[140px] bg-amber-50 border border-amber-100 rounded-2xl px-5 py-5 text-center">
-            <p className="text-2xl sm:text-3xl font-black text-amber-600">{course.duration}</p>
-            <p className="text-xs sm:text-sm text-amber-500 font-bold mt-1">Total Programme Length</p>
+          <div className="flex-1 min-w-[140px] bg-blue-50 border border-blue-100 rounded-2xl px-5 py-5 text-center">
+            <p className="text-2xl sm:text-3xl font-black text-blue-600">{course.duration}</p>
+            <p className="text-xs sm:text-sm text-blue-500 font-bold mt-1">Total Programme Length</p>
           </div>
           <div className="flex-1 min-w-[140px] space-y-3.5">
             {[{ label: "Theory", value: "40%" }, { label: "Practical", value: "60%" }].map(({ label, value }) => (
@@ -1441,7 +1441,7 @@ function CourseInfoCard({ course }: { course: any }) {
                   <span className="font-black text-slate-900">{value}</span>
                 </div>
                 <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full ${label === "Practical" ? "bg-amber-400" : "bg-blue-400"}`} style={{ width: value }} />
+                  <div className={`h-full rounded-full ${label === "Practical" ? "bg-blue-400" : "bg-blue-400"}`} style={{ width: value }} />
                 </div>
               </div>
             ))}
@@ -1452,18 +1452,18 @@ function CourseInfoCard({ course }: { course: any }) {
       {/* Certification */}
       <div className="px-6 sm:px-8 py-5 border-b border-slate-100">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
-            <Medal className="w-4 h-4 text-emerald-500" />
+          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
+            <Medal className="w-4 h-4 text-blue-500" />
           </div>
           <h2 className="text-base font-black text-slate-900 uppercase tracking-wide">Certification</h2>
         </div>
         <div className="space-y-2.5">
           {certifications.map(({ label, sub }) => (
-            <div key={label} className="flex items-start gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3">
-              <BadgeCheck className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <div key={label} className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3">
+              <BadgeCheck className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-bold text-emerald-800">{label}</p>
-                <p className="text-[11px] text-emerald-600 mt-0.5">{sub}</p>
+                <p className="text-sm font-bold text-blue-800">{label}</p>
+                <p className="text-[11px] text-blue-600 mt-0.5">{sub}</p>
               </div>
             </div>
           ))}
@@ -2034,7 +2034,7 @@ export default function CourseDetailClient({
                 </div>
 
                 {/* Title Heading */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-blue-600 leading-tight mb-8 tracking-tight break-words">
+                <h1 className="text-blue-600 text-4xl md:text-5xl font-black uppercase tracking-tight mb-8 break-words">
                   {course.title}
                 </h1>
 
@@ -2131,12 +2131,54 @@ export default function CourseDetailClient({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
               {/* Left Sidebar */}
-              <aside className="lg:col-span-3 hidden lg:block">
-                <CourseSidebar currentId={currentSlug} currentCategory={course.category} allCourses={allCourses} />
+              <aside className="lg:col-span-4 space-y-6">
+                <div className="sticky top-28 space-y-5">
+                  {/* CourseSidebar */}
+                  <div className="hidden lg:block">
+                    <CourseSidebar currentId={currentSlug} currentCategory={course.category} allCourses={allCourses} />
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 mb-1">Quick Actions</h3>
+                    <button
+                      onClick={() => setShowDemoModal(true)}
+                      className="w-full flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-blue-200"
+                    >
+                      <CalendarDays className="w-4 h-4" /> Book a Free Demo
+                    </button>
+                    <button
+                      onClick={() => setShowEnquiryModal(true)}
+                      className="w-full flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-blue-200"
+                    >
+                      <Users className="w-4 h-4" /> Talk to Counsellor
+                    </button>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
+                    {[
+                      { icon: ShieldCheck, text: "Government Certified",  sub: "Ministry of Skill Development" },
+                      { icon: Award,       text: "Industry Recognised",   sub: "Accepted by top employers"     },
+                      { icon: Star,        text: "4.8 / 5 Rating",        sub: "Based on 500+ reviews"         },
+                      { icon: Users,       text: "500+ Placements",       sub: "Across India"                  },
+                    ].map(({ icon: Icon, text, sub }) => (
+                      <div key={text} className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                          <Icon className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-700">{text}</p>
+                          <p className="text-[11px] text-slate-400">{sub}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </aside>
 
               {/* Center */}
-              <main className="lg:col-span-6 space-y-6">
+              <main className="lg:col-span-8 space-y-6">
 
                 {/* About */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8">
@@ -2213,45 +2255,7 @@ export default function CourseDetailClient({
                 />
               </main>
 
-              {/* Right Sidebar */}
-              <aside className="lg:col-span-3">
-                <div className="sticky top-28 space-y-5">
-                  <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-orange-500 mb-1">Quick Actions</h3>
-                    <button
-                      onClick={() => setShowDemoModal(true)}
-                      className="w-full flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-orange-200"
-                    >
-                      <CalendarDays className="w-4 h-4" /> Book a Free Demo
-                    </button>
-                    <button
-                      onClick={() => setShowEnquiryModal(true)}
-                      className="w-full flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-orange-200"
-                    >
-                      <Users className="w-4 h-4" /> Talk to Counsellor
-                    </button>
-                  </div>
 
-                  <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
-                    {[
-                      { icon: ShieldCheck, text: "Government Certified",  sub: "Ministry of Skill Development" },
-                      { icon: Award,       text: "Industry Recognised",   sub: "Accepted by top employers"     },
-                      { icon: Star,        text: "4.8 / 5 Rating",        sub: "Based on 500+ reviews"         },
-                      { icon: Users,       text: "500+ Placements",       sub: "Across India"                  },
-                    ].map(({ icon: Icon, text, sub }) => (
-                      <div key={text} className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-700">{text}</p>
-                          <p className="text-[11px] text-slate-400">{sub}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </aside>
 
             </div>
           </div>

@@ -174,19 +174,19 @@ export default function InfrastructureSettings() {
   const videoCount = previews.filter((p) => p.type === "video").length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 md:p-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
 
         {/* ── Header ── */}
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <p className="text-amber-400 text-xs font-bold tracking-widest uppercase">Admin Panel</p>
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <p className="text-blue-600 text-xs font-bold tracking-widest uppercase">Admin Panel</p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
             Infrastructure Media
           </h1>
-          <p className="text-slate-400 mt-2 text-base">
+          <p className="text-slate-500 mt-2 text-base">
             Upload multiple photos & videos at once — all files upload simultaneously.
           </p>
         </div>
@@ -194,47 +194,47 @@ export default function InfrastructureSettings() {
         {/* ── Stats Bar ── */}
         {previews.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-6">
-            <div className="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-2 bg-white border border-blue-100 shadow-sm rounded-xl px-4 py-2">
               <span className="text-lg">🖼️</span>
-              <span className="text-white font-bold">{photoCount}</span>
-              <span className="text-slate-400 text-sm">Photos</span>
+              <span className="text-slate-900 font-bold">{photoCount}</span>
+              <span className="text-slate-500 text-sm">Photos</span>
             </div>
-            <div className="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-2 bg-white border border-blue-100 shadow-sm rounded-xl px-4 py-2">
               <span className="text-lg">🎬</span>
-              <span className="text-white font-bold">{videoCount}</span>
-              <span className="text-slate-400 text-sm">Videos</span>
+              <span className="text-slate-900 font-bold">{videoCount}</span>
+              <span className="text-slate-500 text-sm">Videos</span>
             </div>
-            <div className="flex items-center gap-2 bg-amber-400/10 border border-amber-400/30 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 shadow-sm rounded-xl px-4 py-2">
               <span className="text-lg">📦</span>
-              <span className="text-amber-400 font-bold">{previews.length}</span>
-              <span className="text-amber-400/70 text-sm">Total selected</span>
+              <span className="text-blue-700 font-bold">{previews.length}</span>
+              <span className="text-blue-600 text-sm">Total selected</span>
             </div>
           </div>
         )}
 
         {/* ── Upload Card ── */}
-        <div className="bg-slate-900 border border-slate-700/60 rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/40">
+        <div className="bg-white border border-blue-100 rounded-3xl p-6 md:p-8 shadow-sm">
 
           {/* Drop Zone */}
           <div
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-600 hover:border-amber-400
-              hover:bg-amber-400/5 transition-all duration-300 rounded-2xl p-10 md:p-16
+            className="border-2 border-dashed border-blue-200 bg-blue-50/30 hover:border-blue-400
+              hover:bg-blue-50 transition-all duration-300 rounded-2xl p-10 md:p-16
               text-center cursor-pointer group select-none"
           >
             <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
               📁
             </div>
-            <p className="text-white text-xl font-bold mb-1 group-hover:text-amber-400 transition-colors">
+            <p className="text-slate-800 text-xl font-bold mb-1 group-hover:text-blue-600 transition-colors">
               Click or drag & drop files here
             </p>
             <p className="text-slate-500 text-sm">
               JPG, PNG, GIF, WEBP, MP4, WEBM — max 100MB each — unlimited files
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 rounded-full px-4 py-1.5">
-              <span className="text-amber-400 text-xs font-semibold">⚡ All files upload at the same time</span>
+            <div className="mt-4 inline-flex items-center gap-2 bg-white border border-blue-100 shadow-sm rounded-full px-4 py-1.5">
+              <span className="text-blue-600 text-xs font-semibold">⚡ All files upload at the same time</span>
             </div>
             <input
               ref={fileInputRef}
@@ -250,12 +250,12 @@ export default function InfrastructureSettings() {
           {previews.length > 0 && (
             <div className="mt-8">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-slate-300 font-semibold text-sm uppercase tracking-wider">
+                <p className="text-slate-600 font-semibold text-sm uppercase tracking-wider">
                   Preview — {previews.length} file(s)
                 </p>
                 <button
                   onClick={() => { setFiles([]); setPreviews([]); setMessage(null); }}
-                  className="text-xs text-red-400 hover:text-red-300 border border-red-400/30 hover:border-red-400/60 px-3 py-1 rounded-full transition-all"
+                  className="text-xs text-red-500 hover:text-red-600 border border-red-200 hover:border-red-300 hover:bg-red-50 px-3 py-1 rounded-full transition-all"
                 >
                   Clear all
                 </button>
@@ -265,7 +265,7 @@ export default function InfrastructureSettings() {
                 {previews.map((p, i) => (
                   <div
                     key={i}
-                    className="relative group rounded-xl overflow-hidden bg-slate-800 border border-slate-700 hover:border-amber-400/50 transition-all"
+                    className="relative group rounded-xl overflow-hidden bg-white border border-blue-100 shadow-sm hover:border-blue-400 transition-all"
                     style={{ aspectRatio: "1" }}
                   >
                     {p.type === "photo" ? (
@@ -312,14 +312,14 @@ export default function InfrastructureSettings() {
           {uploading && (
             <div className="mt-6">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-slate-400">
+                <span className="text-slate-600">
                   Uploading {files.length} file(s) simultaneously...
                 </span>
-                <span className="text-amber-400 font-bold">{progress}%</span>
+                <span className="text-blue-600 font-bold">{progress}%</span>
               </div>
-              <div className="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-blue-100 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -343,13 +343,13 @@ export default function InfrastructureSettings() {
             disabled={uploading || files.length === 0}
             className="mt-6 w-full py-4 rounded-2xl font-black text-sm tracking-widest uppercase
               transition-all duration-300 relative overflow-hidden
-              bg-amber-400 hover:bg-amber-300 text-slate-900
-              disabled:opacity-30 disabled:cursor-not-allowed
+              bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md
+              disabled:opacity-50 disabled:cursor-not-allowed
               active:scale-[0.99]"
           >
             {uploading ? (
               <span className="flex items-center justify-center gap-2">
-                <span className="w-4 h-4 border-2 border-slate-900/40 border-t-slate-900 rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                 Uploading {files.length} file(s)...
               </span>
             ) : (
@@ -369,10 +369,10 @@ export default function InfrastructureSettings() {
       <div className="max-w-5xl mx-auto mt-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-black text-white">Uploaded Media</h2>
-            <p className="text-slate-400 text-sm mt-1">{media.length} file(s) in the gallery</p>
+            <h2 className="text-2xl font-black text-slate-900">Uploaded Media</h2>
+            <p className="text-slate-500 text-sm mt-1">{media.length} file(s) in the gallery</p>
           </div>
-          <button onClick={fetchMedia} className="text-xs text-slate-400 hover:text-white border border-slate-700 px-3 py-1.5 rounded-full transition-all">
+          <button onClick={fetchMedia} className="text-xs text-slate-500 hover:text-blue-600 hover:bg-blue-50 border border-slate-200 px-3 py-1.5 rounded-full transition-all">
             ↻ Refresh
           </button>
         </div>
@@ -380,14 +380,14 @@ export default function InfrastructureSettings() {
         {mediaLoading ? (
           <div className="text-center py-16 text-slate-500 animate-pulse">Loading media...</div>
         ) : media.length === 0 ? (
-          <div className="text-center py-16 border-2 border-dashed border-slate-700 rounded-2xl text-slate-500">
+          <div className="text-center py-16 border-2 border-dashed border-blue-200 bg-blue-50/50 rounded-2xl text-slate-500">
             <p className="text-4xl mb-3">📂</p>
             <p className="font-semibold">No media uploaded yet</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {media.map((item) => (
-              <div key={item.id} className="group relative rounded-xl overflow-hidden bg-slate-800 border border-slate-700 hover:border-red-500/50 transition-all" style={{ aspectRatio: "1" }}>
+              <div key={item.id} className="group relative rounded-xl overflow-hidden bg-white border border-blue-100 shadow-sm hover:border-red-500/50 transition-all" style={{ aspectRatio: "1" }}>
                 {item.file_type === "photo" ? (
                   <img src={item.file_url} alt={item.file_name} className="w-full h-full object-cover" />
                 ) : (

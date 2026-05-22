@@ -66,21 +66,21 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
   };
 
   const fieldBorderClass = (val: string) => {
-    if (!tried) return "border-[#e0e0f0]";
-    return !val ? "border-[#e24b4a]" : "border-indigo-500";
+    if (!tried) return "border-slate-200";
+    return !val ? "border-[#e24b4a]" : "border-blue-600";
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#1a1a3e] to-[#0f3460] p-4 md:p-8 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 md:p-8 relative overflow-hidden">
       {/* Blobs */}
-      <div className="absolute w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.25)_0%,transparent_70%)] -top-24 -left-24 pointer-events-none" />
-      <div className="absolute w-[350px] h-[350px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.2)_0%,transparent_70%)] -bottom-20 -right-20 pointer-events-none" />
+      <div className="absolute w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,transparent_70%)] -top-24 -left-24 pointer-events-none" />
+      <div className="absolute w-[350px] h-[350px] rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.1)_0%,transparent_70%)] -bottom-20 -right-20 pointer-events-none" />
 
       {/* Card */}
-      <div className="flex flex-col md:flex-row w-full max-w-[820px] rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.4)] relative z-10">
+      <div className="flex flex-col md:flex-row w-full max-w-[820px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 relative z-10">
 
         {/* LEFT PANEL */}
-        <div className="w-full md:w-[42%] bg-gradient-to-br from-[#7c3aed] via-[#4f46e5] to-[#2563eb] p-8 md:p-10 flex flex-col gap-6 justify-between">
+        <div className="w-full md:w-[42%] bg-blue-600 p-8 md:p-10 flex flex-col gap-6 justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-white inline-block shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
@@ -144,7 +144,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
               href="/placements/recommended-jobs"
               className="text-[11px] text-white/50 hover:text-white transition-colors font-bold flex items-center gap-1 mt-1 underline underline-offset-4 decoration-white/20"
             >
-              Link --&gt;
+              Link →
             </Link>
           </div>
         </div>
@@ -165,7 +165,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 value={form.name}
                 placeholder="Enter your full name"
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-[14px] text-[#1e1e2e] outline-none bg-[#fafafe] ${fieldBorderClass(form.name)}`}
+                className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-[14px] text-[#0b1f3a] outline-none bg-slate-50 ${fieldBorderClass(form.name)}`}
               />
               {tried && !form.name && <p className="text-[11px] text-[#e24b4a] mt-0.5">Name cannot be empty</p>}
             </div>
@@ -178,7 +178,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 value={form.email}
                 placeholder="Enter your email"
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-[14px] text-[#1e1e2e] outline-none bg-[#fafafe] ${fieldBorderClass(form.email)}`}
+                className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-[14px] text-[#0b1f3a] outline-none bg-slate-50 ${fieldBorderClass(form.email)}`}
               />
               {tried && !form.email && <p className="text-[11px] text-[#e24b4a] mt-0.5">Email cannot be empty</p>}
             </div>
@@ -193,7 +193,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                   type={showPass ? "text" : "password"}
                   placeholder="Create a password"
                   onChange={handleChange}
-                  className={`w-full px-3 py-2.5 pr-11 rounded-xl border-[1.5px] text-[14px] text-[#1e1e2e] outline-none bg-[#fafafe] ${fieldBorderClass(form.password)}`}
+                  className={`w-full px-3 py-2.5 pr-11 rounded-xl border-[1.5px] text-[14px] text-[#0b1f3a] outline-none bg-slate-50 ${fieldBorderClass(form.password)}`}
                 />
                 <button
                   type="button"
@@ -225,7 +225,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 value={form.phone}
                 placeholder="Enter your mobile number"
                 onChange={handleChange}
-                className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-[14px] text-[#1e1e2e] outline-none bg-[#fafafe] ${fieldBorderClass(form.phone)}`}
+                className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-[14px] text-[#0b1f3a] outline-none bg-slate-50 ${fieldBorderClass(form.phone)}`}
               />
               {tried && !form.phone && <p className="text-[11px] text-[#e24b4a] mt-0.5">Mobile cannot be empty</p>}
             </div>
@@ -239,8 +239,8 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                     key={val}
                     className={`flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl border-[1.5px] cursor-pointer transition-all duration-200 ${
                       form.status === val
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-[#e0e0f0] bg-[#fafafe]"
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-slate-200 bg-slate-50"
                     }`}
                   >
                     <input
@@ -253,16 +253,16 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                     />
                     <div
                       className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        form.status === val ? "border-indigo-500" : "border-gray-300"
+                        form.status === val ? "border-blue-600" : "border-gray-300"
                       }`}
                     >
                       {form.status === val && (
-                        <div className="w-[7px] h-[7px] rounded-full bg-indigo-500" />
+                        <div className="w-[7px] h-[7px] rounded-full bg-blue-600" />
                       )}
                     </div>
                     <span
                       className={`text-[13px] font-medium capitalize ${
-                        form.status === val ? "text-indigo-700" : "text-[#555]"
+                        form.status === val ? "text-blue-700" : "text-[#555]"
                       }`}
                     >
                       {val}
@@ -277,7 +277,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-700 text-white text-[15px] font-semibold border-none cursor-pointer mt-1 disabled:opacity-70"
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white text-[15px] font-bold border-none cursor-pointer mt-1 disabled:opacity-70"
             >
               {loading ? "Registering..." : "Create Account"}
             </button>

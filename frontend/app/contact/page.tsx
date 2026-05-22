@@ -128,39 +128,41 @@ const ContactPage: React.FC = () => {
     <div className="bg-gray-50 min-h-screen">
 
       {/* ── Page Header ── */}
-      <div className="relative h-[280px] md:h-[350px] flex flex-col items-center justify-center text-white overflow-hidden">
+      <div className="relative h-[280px] md:h-[400px] flex items-start pt-8 md:pt-12 overflow-hidden">
         <img
           src="/images/contact/contactus.png"
           alt="Contact Us"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-white/10" />
         <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb]" />
-        <div className="relative z-10 px-6 md:px-12 max-w-7xl mx-auto w-full text-center">
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-[#0f172a] text-sm md:text-base font-bold uppercase tracking-widest mb-3"
-        >
-          Get In Touch
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-[#0f172a] text-4xl md:text-5xl font-black mb-3 uppercase tracking-tight"
-        >
-          Contact Us
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-[#0f172a] text-base md:text-lg font-semibold"
-        >
-          We&apos;re here to help you
-        </motion.p>
+        <div className="relative z-10 px-6 md:px-12 max-w-7xl mx-auto w-full flex justify-start">
+          <div className="max-w-xl text-left">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 bg-[#e0e7ff] border border-[#c7d2fe] rounded-full px-4 py-1.5 mb-3 shadow-sm"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
+              <span className="text-[#2563eb] text-xs font-black tracking-widest uppercase">Get In Touch</span>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-[#0f172a] text-5xl md:text-6xl font-black mb-4 uppercase tracking-tight"
+            >
+              Contact Us
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-slate-600 text-lg md:text-xl font-bold"
+            >
+              We&apos;re here to help you
+            </motion.p>
+          </div>
         </div>
       </div>
 

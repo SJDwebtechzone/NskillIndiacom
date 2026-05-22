@@ -121,7 +121,7 @@ const backgroundImagesItems = [
 function SubLink({ path, name, icon: Icon, pathname }: { path: string; name: string; icon: any; pathname: string }) {
   return (
     <Link href={path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-      pathname === path ? "text-[#2563eb] font-bold bg-blue-50" : "text-slate-500 hover:text-[#2563eb] hover:bg-blue-50"
+      pathname === path ? "text-[#2563eb] font-bold bg-blue-50" : "text-black font-bold hover:text-[#2563eb] hover:bg-blue-50"
     }`}>
       <Icon className="w-4 h-4" />
       <span>{name}</span>
@@ -132,11 +132,11 @@ function SubLink({ path, name, icon: Icon, pathname }: { path: string; name: str
 function SectionToggle({ label, icon: Icon, isOpen, onClick }: { label: string; icon: any; isOpen: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
-      isOpen ? "text-[#2563eb] bg-blue-50" : "text-slate-600 hover:text-[#2563eb] hover:bg-blue-50"
+      isOpen ? "text-black bg-blue-50" : "text-black hover:text-[#2563eb] hover:bg-blue-50"
     }`}>
       <div className="flex items-center gap-3">
         <Icon className={`w-5 h-5 ${isOpen ? "text-[#2563eb]" : "group-hover:text-[#2563eb]"}`} />
-        <span className="font-medium">{label}</span>
+        <span className="font-black">{label}</span>
       </div>
       {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
     </button>
@@ -275,9 +275,9 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
         <div className="p-6 pb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 text-white">
-              <span className="text-xl font-bold">NS</span>
+              <span className="text-xl font-black text-black">NS</span>
             </div>
-            <h2 className="text-xl font-black tracking-tight uppercase text-slate-900">NSkill India</h2>
+            <h2 className="text-xl font-black tracking-tight uppercase text-black">NSkill India</h2>
           </div>
           <button onClick={() => setIsMobileSidebarOpen(false)}
             className="md:hidden p-2 rounded-lg text-slate-400 hover:text-[#2563eb] hover:bg-blue-50 transition-colors">
@@ -286,7 +286,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
         </div>
 
         <nav className="flex-1 px-6 pb-4 overflow-y-auto">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">
+          <p className="text-[11px] font-black text-black uppercase tracking-widest mb-4 px-2">
             {isStudent ? "Student Panel" : isTrainer ? "Trainer Panel" : isAssociate ? "Associate Panel" : (user?.role === "Super Admin" || user?.role === "Admin" ? "Super Admin Dashboard" : "Admin Panel")}
           </p>
 
@@ -294,20 +294,20 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             {showDashboard && (
               <li>
                 <Link href="/dashboard" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  pathname === "/dashboard" ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/30" : "text-slate-500 hover:text-[#2563eb] hover:bg-blue-50"
+                  pathname === "/dashboard" ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/30" : "text-black hover:text-[#2563eb] hover:bg-blue-50"
                 }`}>
                   <LayoutDashboard className={`w-5 h-5 ${pathname === "/dashboard" ? "text-white" : "group-hover:text-[#2563eb]"}`} />
-                  <span className="font-medium">Dashboard</span>
+                  <span className={`font-black ${pathname === "/dashboard" ? "text-white" : "text-black"}`}>Dashboard</span>
                 </Link>
               </li>
             )}
             {showPayments && (
               <li>
                 <Link href="/dashboard/payments" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  pathname === "/dashboard/payments" ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/30" : "text-slate-500 hover:text-[#2563eb] hover:bg-blue-50"
+                  pathname === "/dashboard/payments" ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/30" : "text-black hover:text-[#2563eb] hover:bg-blue-50"
                 }`}>
                   <CreditCard className={`w-5 h-5 ${pathname === "/dashboard/payments" ? "text-white" : "group-hover:text-[#2563eb]"}`} />
-                  <span className="font-medium">Payment</span>
+                  <span className={`font-black ${pathname === "/dashboard/payments" ? "text-white" : "text-black"}`}>Payment</span>
                 </Link>
               </li>
             )}
@@ -334,11 +334,11 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
             <div className="space-y-1 mt-1">
               <button onClick={() => setIsSettingsMenuOpen(v => !v)}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  isSettingsMenuOpen ? "text-[#2563eb] bg-blue-50" : "text-slate-600 hover:text-[#2563eb] hover:bg-blue-50"
+                  isSettingsMenuOpen ? "text-black bg-blue-50" : "text-black hover:text-[#2563eb] hover:bg-blue-50"
                 }`}>
                 <div className="flex items-center gap-3">
                   <Settings className={`w-5 h-5 ${isSettingsMenuOpen ? "text-[#2563eb]" : "group-hover:rotate-45 group-hover:text-[#2563eb] transition-transform duration-500"}`} />
-                  <span className="font-medium">Website Settings</span>
+                  <span className="font-black">Website Settings</span>
                 </div>
                 {isSettingsMenuOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </button>
@@ -347,7 +347,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                   {visibleSettingsItems.map(item => (
                     <li key={item.name}>
                       <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                        isSettingActive(item.name) ? "text-[#2563eb] font-bold bg-blue-50" : "text-slate-500 hover:text-[#2563eb] hover:bg-blue-50"
+                        isSettingActive(item.name) ? "text-[#2563eb] font-bold bg-blue-50" : "text-black font-bold hover:text-[#2563eb] hover:bg-blue-50"
                       }`}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.name}</span>
@@ -400,7 +400,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                       return (
                         <li key={item.name}>
                           <button onClick={() => setIsOpen(!isOpen)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                            isOpen ? "text-orange-600 bg-orange-50" : "text-slate-600 hover:text-orange-600 hover:bg-orange-50"
+                            isOpen ? "text-orange-600 bg-orange-50 font-bold" : "text-black font-bold hover:text-orange-600 hover:bg-orange-50"
                           }`}>
                             <div className="flex items-center gap-3"><item.icon className="w-4 h-4" /><span>{item.name}</span></div>
                             {isOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -410,7 +410,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                               {item.children?.map(sub => (
                                 <li key={sub.name}>
                                   <Link href={sub.path!} className={`flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all duration-300 ${
-                                    pathname === sub.path ? "text-orange-600 font-bold bg-orange-50" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
+                                    pathname === sub.path ? "text-orange-600 font-bold bg-orange-50" : "text-black font-bold hover:text-orange-600 hover:bg-orange-50"
                                   }`}>
                                     <sub.icon className="w-3.5 h-3.5" /><span>{sub.name}</span>
                                   </Link>
@@ -439,7 +439,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                       return (
                         <li key={item.name}>
                           <button onClick={() => setIsClassStatusOpen(v => !v)} className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                            isClassStatusOpen ? "text-orange-600 bg-orange-50" : "text-slate-600 hover:text-orange-600 hover:bg-orange-50"
+                            isClassStatusOpen ? "text-orange-600 bg-orange-50 font-bold" : "text-black font-bold hover:text-orange-600 hover:bg-orange-50"
                           }`}>
                             <div className="flex items-center gap-3"><item.icon className="w-4 h-4" /><span>{item.name}</span></div>
                             {isClassStatusOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -449,7 +449,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
                               {item.children?.map(sub => (
                                 <li key={sub.name}>
                                   <Link href={sub.path!} className={`flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all duration-300 ${
-                                    pathname === sub.path ? "text-orange-600 font-bold bg-orange-50" : "text-slate-500 hover:text-orange-600 hover:bg-orange-50"
+                                    pathname === sub.path ? "text-orange-600 font-bold bg-orange-50" : "text-black font-bold hover:text-orange-600 hover:bg-orange-50"
                                   }`}>
                                     <sub.icon className="w-3.5 h-3.5" /><span>{sub.name}</span>
                                   </Link>
@@ -559,8 +559,13 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
         </header>
 
         <main className="p-4 md:p-10 flex-1 overflow-y-auto">
-          <div className="max-w-6xl mx-auto">{children}</div>
+          <div className="max-w-6xl mx-auto min-h-full pb-8">{children}</div>
         </main>
+        
+        {/* Footer */}
+        <footer className="bg-white border-t border-slate-100 py-4 px-6 text-center text-sm font-medium text-black shadow-sm">
+          Copyright © 2026 All rights reserved | <span className="text-black font-bold">by</span> <a href="https://devspectra.com" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors">DevSpectra</a>
+        </footer>
       </div>
     </div>
   );

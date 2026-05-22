@@ -105,14 +105,14 @@ export default function BackgroundImagesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Background Images</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Background Images</h1>
+          <p className="text-slate-500 text-sm mt-1 font-medium">
             Upload and manage background images for student ID cards
           </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition-all"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm px-5 py-2.5 rounded-xl font-bold tracking-wide hover:from-blue-700 hover:to-blue-800 shadow-md transition-all"
         >
           <Plus className="w-4 h-4" />
           {showForm ? "Cancel" : "Add Image"}
@@ -140,24 +140,24 @@ export default function BackgroundImagesPage() {
 
       {/* Upload Form */}
       {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Upload New Background Image</h2>
+        <div className="bg-white border border-blue-100 rounded-3xl p-6 md:p-8 mb-6 shadow-sm">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">Upload New Background Image</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-1 block">Image Name</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 block">Image Name</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Blue Theme ID Background"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none"
+                className="w-full border border-blue-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all text-slate-900"
               />
             </div>
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-1 block">Category</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 block">Category</label>
           <select
   value={form.category}
   onChange={(e) => setForm({ ...form, category: e.target.value })}
-  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none bg-white"
+  className="w-full border border-blue-100 rounded-xl px-4 py-3 text-sm outline-none bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all text-slate-900"
 >
   <option value="ID Card">ID Card</option>
   <option value="Fees Receipt">Fees Receipt</option>
@@ -170,8 +170,8 @@ export default function BackgroundImagesPage() {
 
           {/* File Upload */}
           <div
-            className={`border-2 border-dashed rounded-xl px-4 py-8 text-center cursor-pointer transition-all mb-4 ${
-              file ? "border-blue-400 bg-blue-50" : "border-gray-200 bg-gray-50 hover:border-gray-300"
+            className={`border-2 border-dashed rounded-2xl px-4 py-8 text-center cursor-pointer transition-all mb-4 ${
+              file ? "border-blue-400 bg-blue-50/50" : "border-blue-200 bg-blue-50/30 hover:border-blue-400 hover:bg-blue-50"
             }`}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -185,22 +185,22 @@ export default function BackgroundImagesPage() {
             {file ? (
               <div>
                 <div className="text-4xl mb-2">🖼️</div>
-                <p className="text-sm font-semibold text-gray-800">{file.name}</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-sm font-bold text-slate-900">{file.name}</p>
+                <p className="text-xs text-slate-500 mt-1">
                   {(file.size / 1024).toFixed(0)} KB · Click to change
                 </p>
                 {/* Preview */}
                 <img
                   src={URL.createObjectURL(file)}
                   alt="preview"
-                  className="mt-3 mx-auto max-h-32 rounded-lg object-contain border border-gray-200"
+                  className="mt-3 mx-auto max-h-32 rounded-xl object-contain border border-blue-100 shadow-sm"
                 />
               </div>
             ) : (
               <div>
-                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-gray-600">Click to upload image</p>
-                <p className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — Max 10MB</p>
+                <Upload className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-800">Click to upload image</p>
+                <p className="text-xs text-slate-500 mt-1">JPG, PNG, WEBP — Max 10MB</p>
               </div>
             )}
           </div>
@@ -208,7 +208,7 @@ export default function BackgroundImagesPage() {
           <button
             onClick={handleUpload}
             disabled={uploading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-60 transition-all"
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3.5 rounded-xl text-sm font-black tracking-widest uppercase hover:from-blue-700 hover:to-blue-800 shadow-md disabled:opacity-60 transition-all"
           >
             {uploading ? "Uploading..." : "Upload Image"}
           </button>
@@ -217,12 +217,12 @@ export default function BackgroundImagesPage() {
 
       {/* Images Grid */}
       {loading ? (
-        <div className="text-center py-20 text-gray-400">Loading images...</div>
+        <div className="text-center py-20 text-slate-500 font-bold">Loading images...</div>
       ) : images.length === 0 ? (
-        <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+        <div className="text-center py-20 bg-blue-50/50 rounded-3xl border-2 border-dashed border-blue-200">
           <div className="text-5xl mb-4">🖼️</div>
-          <p className="text-gray-400 font-medium">No background images uploaded yet.</p>
-          <p className="text-gray-400 text-sm mt-1">Click "Add Image" to upload your first background.</p>
+          <p className="text-slate-600 font-bold">No background images uploaded yet.</p>
+          <p className="text-slate-500 text-sm mt-1 font-medium">Click "Add Image" to upload your first background.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -353,7 +353,7 @@ export default function StudentEnquiryForm() {
                         <div className="flex justify-between items-center relative z-10 mb-8">
                             <div>
                                 <h2 className="text-3xl font-black tracking-tight">{isEditing ? "Edit Enquiry" : "Student Enquiry"}</h2>
-                                <p className="text-orange-300 font-bold mt-1 uppercase text-xs tracking-[0.1em]">
+                                <p className="text-blue-300 font-bold mt-1 uppercase text-xs tracking-[0.1em]">
                                     {isEditing ? "Update: " + (formData.student_name||"") : steps[currentStep].title}
                                 </p>
                             </div>
@@ -369,12 +369,12 @@ export default function StudentEnquiryForm() {
                                         else if (idx > currentStep) { if (validateStep(currentStep)) setCurrentStep(idx); }
                                         else { setCurrentStep(idx); }
                                     }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap min-w-fit ${currentStep===idx?"bg-orange-500 text-white shadow-lg":"text-orange-200/40 hover:text-white hover:bg-white/5"}`}>
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap min-w-fit ${currentStep===idx?"bg-blue-600 text-white shadow-lg":"text-blue-200/40 hover:text-white hover:bg-white/5"}`}>
                                     <span className="text-[11px] font-black uppercase tracking-widest">{idx+1}. {s.title}</span>
                                 </button>
                             ))}
                         </div>
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl z-0"/>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl z-0"/>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-8 md:p-12">
@@ -386,12 +386,12 @@ export default function StudentEnquiryForm() {
                             </button>
                             {currentStep < steps.length - 1 ? (
                                 <button type="button" onClick={nextStep}
-                                    className="flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-slate-900 text-white hover:bg-orange-700 transition-all">
+                                    className="flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-slate-900 text-white hover:bg-blue-700 transition-all">
                                     Next Step <ChevronRight size={16}/>
                                 </button>
                             ) : (
                                 <button type="submit" disabled={isSubmitting}
-                                    className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-orange-500 text-white hover:bg-orange-600 transition-all">
+                                    className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-blue-600 text-white hover:bg-blue-700 transition-all">
                                     {isSubmitting ? "Submitting..." : isEditing ? "Update Record" : "Finish & Send"} <Send size={16}/>
                                 </button>
                             )}
@@ -419,7 +419,7 @@ export default function StudentEnquiryForm() {
 
                         {isLoadingList ? (
                             <div className="flex flex-col items-center py-12 gap-4">
-                                <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"/>
+                                <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"/>
                                 <p className="font-bold text-slate-400">Loading...</p>
                             </div>
                         ) : enquiries.length === 0 ? (
@@ -446,7 +446,7 @@ export default function StudentEnquiryForm() {
                                     <tbody>
                                         {enquiries.map(enq => (
                                             <tr key={enq.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                <td className="py-4 px-3 font-mono font-black text-orange-500 text-sm">{enq.enquiry_id}</td>
+                                                <td className="py-4 px-3 font-mono font-black text-blue-600 text-sm">{enq.enquiry_id}</td>
                                                 <td className="py-4 px-3 font-bold text-slate-800">{enq.student_name}</td>
                                                 <td className="py-4 px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">{enq.associate_name||"Admin"}</td>
                                                 <td className="py-4 px-3 text-sm font-medium text-slate-600">{enq.course_interested||"—"}</td>
@@ -462,7 +462,7 @@ export default function StudentEnquiryForm() {
                                                 {/* ── Enquiry Date ← NEW ── */}
                                                 <td className="py-4 px-3 text-xs font-bold text-slate-500 whitespace-nowrap">
                                                     <span className="flex items-center gap-1.5">
-                                                        <Calendar size={12} className="text-orange-400"/>
+                                                        <Calendar size={12} className="text-blue-500"/>
                                                         {enq.enquiry_date ? fmtDate(enq.enquiry_date) : fmtDate(enq.created_at)}
                                                     </span>
                                                 </td>
@@ -485,7 +485,7 @@ export default function StudentEnquiryForm() {
                                                     <div className="flex gap-2">
                                                         {user?.role === "Admin" && (
                                                             <button onClick={() => setSelectedEnquiry(enq)}
-                                                                className="p-2 bg-orange-50 text-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition-all" title="View">
+                                                                className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="View">
                                                                 <Eye size={16}/>
                                                             </button>
                                                         )}
@@ -545,8 +545,8 @@ export default function StudentEnquiryForm() {
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                            <span className="px-3 py-1 bg-orange-50 text-orange-500 rounded-full text-[10px] font-black uppercase tracking-wider">Enquiry</span>
-                                            <span className="text-orange-500 font-mono font-black text-xs">#{selectedEnquiry.enquiry_id}</span>
+                                            <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-wider">Enquiry</span>
+                                            <span className="text-blue-600 font-mono font-black text-xs">#{selectedEnquiry.enquiry_id}</span>
                                             <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase ${
                                                 selectedEnquiry.interest_level==="High"?"bg-emerald-100 text-emerald-700":
                                                 selectedEnquiry.interest_level==="Medium"?"bg-amber-100 text-amber-700":

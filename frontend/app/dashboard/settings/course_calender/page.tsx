@@ -204,12 +204,12 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
   /* shared input style */
   const inputStyle = {
     width: "100%",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "#ffffff",
+    border: "1.5px solid #e2e8f0",
     borderRadius: "12px",
     padding: "10px 14px",
     fontSize: "14px",
-    color: "#ffffff",
+    color: "#1e293b",
     outline: "none",
   } as React.CSSProperties;
 
@@ -222,22 +222,19 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
       <div
         className="w-full max-w-md rounded-2xl p-6 relative overflow-hidden"
         style={{
-          background: "linear-gradient(160deg, #0a1628 0%, #0d1f3c 100%)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)",
+          background: "#ffffff",
+          border: "1.5px solid #dbeafe",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.12)",
         }}
       >
-        {/* top gloss */}
-        <div className="absolute inset-x-0 top-0 h-[35%] pointer-events-none rounded-t-2xl"
-          style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%)" }} />
 
-        <h2 className="text-base font-bold mb-5" style={{ color: "#ffffff" }}>
+        <h2 className="text-base font-bold mb-5" style={{ color: "#1e293b" }}>
           {event ? "Edit session" : "Add new session"}
         </h2>
 
         {error && (
           <div className="mb-4 p-3 rounded-xl text-xs border"
-            style={{ background: "rgba(127,29,29,0.3)", borderColor: "rgba(248,113,113,0.3)", color: "#fca5a5" }}>
+            style={{ background: "#fef2f2", borderColor: "#fecaca", color: "#dc2626" }}>
             {error}
           </div>
         )}
@@ -245,7 +242,7 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
         {/* Title */}
         <div className="mb-4">
           <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "rgba(255,255,255,0.45)" }}>
+            style={{ color: "#64748b" }}>
             Session title
           </label>
           <input
@@ -260,7 +257,7 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
         {/* Description */}
         <div className="mb-4">
           <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "rgba(255,255,255,0.45)" }}>
+            style={{ color: "#64748b" }}>
             Description
           </label>
           <textarea
@@ -275,7 +272,7 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
         {/* Course */}
         <div className="mb-4">
           <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "rgba(255,255,255,0.45)" }}>
+            style={{ color: "#64748b" }}>
             Course
           </label>
           {!addingNew ? (
@@ -285,17 +282,17 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
                 onChange={(e) => setCourseName(e.target.value)}
                 style={{ ...inputStyle, flex: 1 }}
               >
-                {allCourses.map((c) => <option key={c} value={c} style={{ background: "#0a1628" }}>{c}</option>)}
-                {allCourses.length === 0 && <option value="" style={{ background: "#0a1628" }}>No courses yet</option>}
+                {allCourses.map((c) => <option key={c} value={c} style={{ background: "#ffffff" }}>{c}</option>)}
+                {allCourses.length === 0 && <option value="" style={{ background: "#ffffff" }}>No courses yet</option>}
               </select>
               <button
                 type="button"
                 onClick={() => setAddingNew(true)}
                 className="px-3 py-2 rounded-xl text-xs font-semibold transition"
                 style={{
-                  border: "1px dashed rgba(255,255,255,0.2)",
-                  color: "rgba(255,255,255,0.55)",
-                  background: "transparent",
+                  border: "1.5px dashed #bfdbfe",
+                  color: "#2563eb",
+                  background: "#eff6ff",
                 }}
               >
                 + New
@@ -316,9 +313,9 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
                 onClick={() => setAddingNew(false)}
                 className="px-3 py-2 rounded-xl text-xs font-semibold transition"
                 style={{
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  color: "rgba(255,255,255,0.5)",
-                  background: "rgba(255,255,255,0.04)",
+                  border: "1.5px solid #e2e8f0",
+                  color: "#64748b",
+                  background: "#f8fafc",
                 }}
               >
                 ← Back
@@ -330,16 +327,16 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
         {/* Batch */}
         <div className="mb-4">
           <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "rgba(255,255,255,0.45)" }}>
+            style={{ color: "#64748b" }}>
             Batch
           </label>
           <div className="flex gap-2">
             {(["batch1", "batch2", "both"] as EventType[]).map((b) => {
               const isActive = eventType === b;
               let activeStyle = {};
-              if (isActive && b === "batch1") activeStyle = { background: "linear-gradient(135deg,#1d4ed8,#2563eb)", border: "1px solid rgba(96,165,250,0.5)", color: "#fff" };
-              else if (isActive && b === "batch2") activeStyle = { background: "linear-gradient(135deg,#5b21b6,#7c3aed)", border: "1px solid rgba(167,139,250,0.5)", color: "#fff" };
-              else if (isActive) activeStyle = { background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff" };
+              if (isActive && b === "batch1") activeStyle = { background: "linear-gradient(135deg,#1d4ed8,#2563eb)", border: "1.5px solid #93c5fd", color: "#fff" };
+              else if (isActive && b === "batch2") activeStyle = { background: "linear-gradient(135deg,#1e40af,#3b82f6)", border: "1.5px solid #93c5fd", color: "#fff" };
+              else if (isActive) activeStyle = { background: "#2563eb", border: "1.5px solid #3b82f6", color: "#fff" };
               return (
                 <button
                   key={b}
@@ -347,9 +344,9 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
                   onClick={() => setEventType(b)}
                   className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
                   style={isActive ? activeStyle : {
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "rgba(255,255,255,0.5)",
+                    background: "#f8fafc",
+                    border: "1.5px solid #e2e8f0",
+                    color: "#64748b",
                   }}
                 >
                   {b === "batch1" ? "Batch 1" : b === "batch2" ? "Batch 2" : "Both"}
@@ -362,7 +359,7 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
         {/* Week */}
         <div className="mb-3">
           <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "rgba(255,255,255,0.45)" }}>
+            style={{ color: "#64748b" }}>
             Week
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -375,13 +372,13 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
                   onClick={() => setWeek(w)}
                   className="py-2 rounded-xl text-xs font-semibold transition-all"
                   style={isActive ? {
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    color: "#ffffff",
+                    background: "#dbeafe",
+                    border: "1.5px solid #93c5fd",
+                    color: "#1d4ed8",
                   } : {
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: "rgba(255,255,255,0.45)",
+                    background: "#f8fafc",
+                    border: "1.5px solid #e2e8f0",
+                    color: "#64748b",
                   }}
                 >
                   {WEEK_LABEL[w]}
@@ -394,14 +391,14 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
         {/* Date preview */}
         <div className="mb-6 px-3 py-2 rounded-xl text-xs"
           style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(255,255,255,0.5)",
+            background: "#eff6ff",
+            border: "1.5px solid #bfdbfe",
+            color: "#64748b",
           }}>
           📅 Dates:{" "}
-          <span style={{ color: "#ffffff", fontWeight: 600 }}>{preview.start}</span>
+          <span style={{ color: "#1e293b", fontWeight: 600 }}>{preview.start}</span>
           {" → "}
-          <span style={{ color: "#ffffff", fontWeight: 600 }}>{preview.end}</span>
+          <span style={{ color: "#1e293b", fontWeight: 600 }}>{preview.end}</span>
         </div>
 
         {/* Actions */}
@@ -411,9 +408,9 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "rgba(255,255,255,0.6)",
+              background: "#f8fafc",
+              border: "1.5px solid #e2e8f0",
+              color: "#64748b",
             }}
           >
             Cancel
@@ -429,9 +426,9 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
               color: "#ffffff",
               boxShadow: "0 4px 14px rgba(30,64,175,0.4)",
             } : {
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.25)",
+              background: "#f1f5f9",
+              border: "1.5px solid #e2e8f0",
+              color: "#94a3b8",
               cursor: "not-allowed",
             }}
           >
@@ -514,9 +511,9 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen" style={{
-      background: "linear-gradient(160deg, #060d1f 0%, #0a1628 30%, #0d1f3c 60%, #091628 100%)",
+      background: "linear-gradient(160deg, #f8fafc 0%, #eff6ff 50%, #f1f5f9 100%)",
       fontFamily: "'DM Sans', sans-serif",
-      color: "#ffffff",
+      color: "#1e293b",
     }}>
 
       <style>{`
@@ -524,49 +521,34 @@ export default function AdminPage() {
         * { font-family: 'DM Sans', sans-serif; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.25); }
+        input::placeholder, textarea::placeholder { color: #94a3b8; }
         input:focus, textarea:focus, select:focus {
           outline: none;
-          border-color: rgba(96,165,250,0.5) !important;
+          border-color: #93c5fd !important;
           box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
         }
       `}</style>
 
-      {/* ── Ambient blobs ── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(30,64,175,0.25) 0%, transparent 65%)" }} />
-        <div className="absolute top-1/2 -right-32 w-[400px] h-[400px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(14,116,144,0.18) 0%, transparent 65%)" }} />
-        <div className="absolute bottom-0 left-1/3 w-[350px] h-[350px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(30,58,138,0.22) 0%, transparent 65%)" }} />
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
-            radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
-            radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,0.35) 0%, transparent 100%),
-            radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
-            radial-gradient(1px 1px at 25% 85%, rgba(255,255,255,0.25) 0%, transparent 100%)`
-        }} />
-      </div>
-
       {/* ── Header ── */}
       <header className="sticky top-0 z-20 border-b"
         style={{
-          background: "rgba(6,13,31,0.75)",
+          background: "rgba(255,255,255,0.92)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
-          borderColor: "rgba(255,255,255,0.07)",
+          borderColor: "#dbeafe",
         }}>
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold tracking-tight" style={{ color: "#ffffff" }}>⚙️ Admin Panel</h1>
-            <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-              Skill Training · FY 2026–2027 · Manage sessions
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-10 bg-gradient-to-b from-blue-600 to-blue-800 rounded-full"></div>
+            <div>
+              <h1 className="text-lg font-bold tracking-tight" style={{ color: "#1e293b" }}>⚙️ Admin Panel</h1>
+              <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>
+                Skill Training · FY 2026–2027 · Manage sessions
+              </p>
+            </div>
           </div>
           {loading && (
-            <span className="text-xs animate-pulse" style={{ color: "rgba(255,255,255,0.35)" }}>Syncing with DB…</span>
+            <span className="text-xs animate-pulse" style={{ color: "#93c5fd" }}>Syncing with DB…</span>
           )}
         </div>
 
@@ -581,20 +563,16 @@ export default function AdminPage() {
                   onClick={() => setActiveMonthIdx(i)}
                   className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative overflow-hidden"
                   style={isActive ? {
-                    background: "linear-gradient(135deg, rgba(30,64,175,0.9) 0%, rgba(14,116,144,0.85) 50%, rgba(30,58,138,0.9) 100%)",
-                    border: "1px solid rgba(96,165,250,0.5)",
+                    background: "linear-gradient(135deg, #1d4ed8, #2563eb)",
+                    border: "1.5px solid #93c5fd",
                     color: "#ffffff",
-                    boxShadow: "0 4px 20px rgba(30,64,175,0.5), inset 0 1px 0 rgba(255,255,255,0.2)",
+                    boxShadow: "0 4px 16px rgba(37,99,235,0.35)",
                   } : {
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    color: "rgba(255,255,255,0.6)",
+                    background: "#ffffff",
+                    border: "1.5px solid #e2e8f0",
+                    color: "#64748b",
                   }}
                 >
-                  {isActive && (
-                    <span className="absolute inset-x-0 top-0 h-[45%] rounded-t-xl pointer-events-none"
-                      style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 100%)" }} />
-                  )}
                   {m.slice(0, 3)} &apos;{String(y).slice(2)}
                 </button>
               );
@@ -604,7 +582,7 @@ export default function AdminPage() {
 
         {/* Tab switcher */}
         <div className="max-w-5xl mx-auto px-6 pb-3 flex gap-2 border-t pt-2 mt-1"
-          style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          style={{ borderColor: "#eff6ff" }}>
           {(["sessions", "courses"] as const).map((t) => {
             const isActive = tab === t;
             return (
@@ -614,13 +592,13 @@ export default function AdminPage() {
                 className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
                 style={isActive ? {
                   background: "linear-gradient(135deg, #1d4ed8, #2563eb)",
-                  border: "1px solid rgba(96,165,250,0.4)",
+                  border: "1.5px solid #93c5fd",
                   color: "#ffffff",
-                  boxShadow: "0 4px 14px rgba(37,99,235,0.4)",
+                  boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
                 } : {
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  color: "rgba(255,255,255,0.55)",
+                  background: "#ffffff",
+                  border: "1.5px solid #e2e8f0",
+                  color: "#64748b",
                 }}
               >
                 {t === "sessions" ? "📅 Sessions" : "📚 Courses"}
@@ -634,7 +612,7 @@ export default function AdminPage() {
 
         {error && (
           <div className="mb-4 p-3 rounded-2xl text-sm border"
-            style={{ background: "rgba(127,29,29,0.3)", backdropFilter: "blur(10px)", borderColor: "rgba(248,113,113,0.3)", color: "#fca5a5" }}>
+            style={{ background: "#fef2f2", borderColor: "#fecaca", color: "#dc2626" }}>
             ⚠️ {error} —{" "}
             <button onClick={loadEvents} className="underline font-semibold">Retry</button>
           </div>
@@ -654,33 +632,30 @@ export default function AdminPage() {
                 <div key={card.label}
                   className="rounded-2xl p-4 relative overflow-hidden"
                   style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                    backdropFilter: "blur(16px)",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
+                    background: "#ffffff",
+                    border: "1.5px solid #dbeafe",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                   }}>
-                  <div className="absolute inset-x-0 top-0 h-[40%] rounded-t-2xl pointer-events-none"
-                    style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%)" }} />
                   <div className="text-2xl mb-1">{card.icon}</div>
-                  <div className="text-2xl font-bold" style={{ color: "#ffffff" }}>{card.value}</div>
-                  <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>{card.label}</div>
+                  <div className="text-2xl font-bold" style={{ color: "#1e293b" }}>{card.value}</div>
+                  <div className="text-xs mt-0.5" style={{ color: "#64748b" }}>{card.label}</div>
                 </div>
               ))}
             </div>
 
             {/* Section header */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
+              <h2 className="text-sm font-semibold" style={{ color: "#475569" }}>
                 Sessions · {month} {year}
               </h2>
               <button
                 onClick={handleAdd}
                 className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95"
                 style={{
-                  background: "linear-gradient(135deg, #059669, #10b981)",
-                  border: "1px solid rgba(52,211,153,0.4)",
+                  background: "linear-gradient(135deg, #1d4ed8, #2563eb)",
+                  border: "1.5px solid #93c5fd",
                   color: "#ffffff",
-                  boxShadow: "0 4px 14px rgba(5,150,105,0.4)",
+                  boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
                 }}
               >
                 <span className="text-base leading-none">+</span> Add session
@@ -690,19 +665,18 @@ export default function AdminPage() {
             {/* Table card */}
             <div className="rounded-2xl overflow-hidden"
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.09)",
-                backdropFilter: "blur(20px)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)",
+                background: "#ffffff",
+                border: "1.5px solid #dbeafe",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
               }}>
               {loading ? (
-                <div className="py-16 text-center text-sm animate-pulse" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <div className="py-16 text-center text-sm animate-pulse" style={{ color: "#93c5fd" }}>
                   Loading sessions from database…
                 </div>
               ) : monthEvents.length === 0 ? (
-                <div className="py-16 text-center text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
+                <div className="py-16 text-center text-sm" style={{ color: "#94a3b8" }}>
                   No sessions for {month} {year}.{" "}
-                  <button onClick={handleAdd} className="underline font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  <button onClick={handleAdd} className="underline font-semibold" style={{ color: "#2563eb" }}>
                     + Add session
                   </button>
                 </div>
@@ -710,11 +684,11 @@ export default function AdminPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.03)" }}>
+                      <tr className="border-b" style={{ borderColor: "#eff6ff", background: "#f8fafc" }}>
                         {["#", "Title", "Course", "Batch", "Week", "Dates", "Actions"].map((h) => (
                           <th key={h}
                             className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide"
-                            style={{ color: "rgba(255,255,255,0.35)" }}>
+                            style={{ color: "#94a3b8" }}>
                             {h}
                           </th>
                         ))}
@@ -729,16 +703,16 @@ export default function AdminPage() {
                           <tr key={ev.id}
                             className="border-t transition-colors"
                             style={{
-                              borderColor: "rgba(255,255,255,0.05)",
+                              borderColor: "#f1f5f9",
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "#f8fafc")}
                             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                           >
-                            <td className="px-4 py-3 text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{idx + 1}</td>
+                            <td className="px-4 py-3 text-xs" style={{ color: "#94a3b8" }}>{idx + 1}</td>
                             <td className="px-4 py-3">
-                              <p className="font-semibold truncate max-w-[160px]" style={{ color: "#ffffff" }}>{ev.title}</p>
+                              <p className="font-semibold truncate max-w-[160px]" style={{ color: "#1e293b" }}>{ev.title}</p>
                               {ev.description && (
-                                <p className="text-xs truncate max-w-[160px]" style={{ color: "rgba(255,255,255,0.4)" }}>{ev.description}</p>
+                                <p className="text-xs truncate max-w-[160px]" style={{ color: "#94a3b8" }}>{ev.description}</p>
                               )}
                             </td>
                             <td className="px-4 py-3">
@@ -749,7 +723,7 @@ export default function AdminPage() {
                                   style={{
                                     backgroundColor: palette.bgColor,
                                     borderColor:     palette.borderColor,
-                                    color:           "#ffffff",
+                                    color:           "#1e293b",
                                   }}>
                                   {ev.course_name}
                                 </span>
@@ -759,18 +733,18 @@ export default function AdminPage() {
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
                                 style={
                                   ev.event_type === "batch1"
-                                    ? { background: "rgba(37,99,235,0.25)", border: "1px solid rgba(96,165,250,0.35)", color: "#ffffff" }
+                                    ? { background: "#dbeafe", border: "1px solid #93c5fd", color: "#1d4ed8" }
                                     : ev.event_type === "batch2"
-                                    ? { background: "rgba(124,58,237,0.25)", border: "1px solid rgba(167,139,250,0.35)", color: "#ffffff" }
-                                    : { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff" }
+                                    ? { background: "#e0e7ff", border: "1px solid #a5b4fc", color: "#4338ca" }
+                                    : { background: "#f1f5f9", border: "1px solid #e2e8f0", color: "#475569" }
                                 }>
                                 {batchLabel}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                            <td className="px-4 py-3 text-sm" style={{ color: "#475569" }}>
                               {WEEK_LABEL[week]}
                             </td>
-                            <td className="px-4 py-3 text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            <td className="px-4 py-3 text-xs" style={{ color: "#94a3b8" }}>
                               {ev.start_date} → {ev.end_date}
                             </td>
                             <td className="px-4 py-3">
@@ -778,9 +752,9 @@ export default function AdminPage() {
                                 <button
                                   onClick={() => handleEdit(ev)}
                                   className="px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
-                                  style={{ background: "rgba(245,158,11,0.2)", border: "1px solid rgba(245,158,11,0.3)", color: "#fbbf24" }}
-                                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(245,158,11,0.3)")}
-                                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(245,158,11,0.2)")}
+                                  style={{ background: "#dbeafe", border: "1px solid #93c5fd", color: "#2563eb" }}
+                                  onMouseEnter={(e) => (e.currentTarget.style.background = "#bfdbfe")}
+                                  onMouseLeave={(e) => (e.currentTarget.style.background = "#dbeafe")}
                                 >
                                   Edit
                                 </button>
@@ -788,9 +762,9 @@ export default function AdminPage() {
                                   onClick={() => ev.id && handleDelete(ev.id)}
                                   disabled={deletingId === ev.id}
                                   className="px-3 py-1 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
-                                  style={{ background: "rgba(220,38,38,0.2)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171" }}
-                                  onMouseEnter={(e) => { if (deletingId !== ev.id) e.currentTarget.style.background = "rgba(220,38,38,0.3)"; }}
-                                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.2)")}
+                                  style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
+                                  onMouseEnter={(e) => { if (deletingId !== ev.id) e.currentTarget.style.background = "#fee2e2"; }}
+                                  onMouseLeave={(e) => (e.currentTarget.style.background = "#fef2f2")}
                                 >
                                   {deletingId === ev.id ? "…" : "Delete"}
                                 </button>
@@ -811,18 +785,18 @@ export default function AdminPage() {
         {tab === "courses" && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
+              <h2 className="text-sm font-semibold" style={{ color: "#475569" }}>
                 All courses{" "}
-                <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}>({allCourses.length})</span>
+                <span style={{ color: "#94a3b8", fontWeight: 400 }}>({allCourses.length})</span>
               </h2>
               <button
                 onClick={handleAdd}
                 className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95"
                 style={{
-                  background: "linear-gradient(135deg, #059669, #10b981)",
-                  border: "1px solid rgba(52,211,153,0.4)",
+                  background: "linear-gradient(135deg, #1d4ed8, #2563eb)",
+                  border: "1.5px solid #93c5fd",
                   color: "#ffffff",
-                  boxShadow: "0 4px 14px rgba(5,150,105,0.4)",
+                  boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
                 }}
               >
                 <span className="text-base leading-none">+</span> Add session
@@ -830,13 +804,13 @@ export default function AdminPage() {
             </div>
 
             {loading ? (
-              <div className="py-16 text-center text-sm animate-pulse" style={{ color: "rgba(255,255,255,0.35)" }}>Loading…</div>
+              <div className="py-16 text-center text-sm animate-pulse" style={{ color: "#93c5fd" }}>Loading…</div>
             ) : allCourses.length === 0 ? (
               <div className="py-16 text-center text-sm rounded-2xl"
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  color: "rgba(255,255,255,0.3)",
+                  background: "#ffffff",
+                  border: "1.5px solid #dbeafe",
+                  color: "#94a3b8",
                 }}>
                 No courses yet. Add a session to create a course.
               </div>
@@ -846,20 +820,17 @@ export default function AdminPage() {
                   <div key={c.name}
                     className="rounded-2xl border p-4 relative overflow-hidden"
                     style={{
-                      backgroundColor: c.palette.bgColor,
+                      backgroundColor: "#ffffff",
                       borderColor:     c.palette.borderColor,
-                      backdropFilter:  "blur(12px)",
-                      boxShadow:       "inset 0 1px 0 rgba(255,255,255,0.08)",
+                      boxShadow:       "0 2px 8px rgba(0,0,0,0.04)",
                     }}>
-                    <div className="absolute inset-x-0 top-0 h-[40%] rounded-t-2xl pointer-events-none"
-                      style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%)" }} />
                     <div className="flex items-center gap-2 mb-3">
                       <span className="w-3 h-3 rounded-full flex-shrink-0"
                         style={{ backgroundColor: c.palette.dotColor, boxShadow: `0 0 6px ${c.palette.dotColor}80` }} />
-                      <p className="text-sm font-bold truncate" style={{ color: "#ffffff" }}>{c.name}</p>
+                      <p className="text-sm font-bold truncate" style={{ color: "#1e293b" }}>{c.name}</p>
                     </div>
                     <div className="h-px mb-3" style={{ background: `${c.palette.dotColor}40` }} />
-                    <div className="flex gap-4 text-xs justify-between items-center" style={{ color: "rgba(255,255,255,0.55)" }}>
+                    <div className="flex gap-4 text-xs justify-between items-center" style={{ color: "#64748b" }}>
                       <div className="flex gap-4">
                         <span>📅 {c.total} sessions</span>
                         <span style={{ color: "#60a5fa" }}>B1: {c.batch1}</span>
@@ -873,9 +844,9 @@ export default function AdminPage() {
                           await loadEvents();
                         }}
                         className="px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
-                        style={{ background: "rgba(220,38,38,0.2)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.35)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.2)")}
+                        style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "#fee2e2")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "#fef2f2")}
                       >
                         Delete
                       </button>

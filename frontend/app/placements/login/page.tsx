@@ -138,22 +138,22 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
     error
       ? "border-red-400"
       : val
-      ? "border-indigo-500"
-      : "border-[#e0e0f0]";
+      ? "border-blue-600"
+      : "border-slate-200";
 
   return (
     /* Wrapper */
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#1a1a3e] to-[#0f3460] p-4 sm:p-8 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-8 overflow-hidden">
 
       {/* Blobs */}
-      <div className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.25)_0%,transparent_70%)]" />
-      <div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.2)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.1)_0%,transparent_70%)]" />
 
       {/* Card */}
-      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-[820px] rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.4)]">
+      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-[820px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200">
 
         {/* ── LEFT PANEL ── */}
-        <div className="md:w-[44%] bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 p-8 md:p-10 flex flex-col gap-6 justify-between">
+        <div className="md:w-[44%] bg-blue-600 p-8 md:p-10 flex flex-col gap-6 justify-between">
 
           {/* Logo */}
           <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
           {/* Register btn */}
           <button
-            className="w-fit px-5 py-2.5 bg-white text-indigo-600 text-sm font-semibold rounded-xl cursor-pointer border-none"
+            className="w-fit px-5 py-2.5 bg-white text-blue-600 text-sm font-semibold rounded-xl cursor-pointer border-none"
             onClick={() => router.push("/placements/register")}
           >
             Register for free →
@@ -207,7 +207,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
             {step === "login" && (
               <>
                 <div>
-                  <h2 className="text-[#1e1e2e] text-2xl font-semibold mb-1">Welcome back</h2>
+                  <h2 className="text-[#0b1f3a] text-2xl font-semibold mb-1">Welcome back</h2>
                   <p className="text-gray-400 text-sm">Login to access your account</p>
                 </div>
 
@@ -220,7 +220,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                     placeholder="Enter your email or username"
                     value={form.email}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-sm text-[#1e1e2e] bg-[#fafafe] outline-none transition-colors ${inputBorder(form.email, tried && !form.email)}`}
+                    className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-sm text-[#0b1f3a] bg-slate-50 outline-none transition-colors ${inputBorder(form.email, tried && !form.email)}`}
                   />
                   {tried && !form.email && <p className="text-[11px] text-red-400 mt-0.5">Email cannot be empty</p>}
                 </div>
@@ -235,7 +235,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                       placeholder="Enter your password"
                       value={form.password}
                       onChange={handleChange}
-                      className={`w-full px-3 py-2.5 pr-11 rounded-xl border-[1.5px] text-sm text-[#1e1e2e] bg-[#fafafe] outline-none transition-colors ${inputBorder(form.password, tried && !form.password)}`}
+                      className={`w-full px-3 py-2.5 pr-11 rounded-xl border-[1.5px] text-sm text-[#0b1f3a] bg-slate-50 outline-none transition-colors ${inputBorder(form.password, tried && !form.password)}`}
                     />
                     <button
                       type="button"
@@ -262,7 +262,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 {/* Forgot */}
                 <div className="flex justify-end -mt-1">
                   <span
-                    className="text-xs text-indigo-500 font-medium cursor-pointer"
+                    className="text-xs text-blue-600 font-medium cursor-pointer"
                     onClick={() => { setStep("forgot"); setFpError(""); }}
                   >
                     Forgot password?
@@ -271,7 +271,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
                 <button
                   onClick={handleLogin}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[15px] font-semibold border-none cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white text-[15px] font-semibold border-none cursor-pointer"
                 >
                   Login
                 </button>
@@ -284,11 +284,11 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 <div>
                   <button
                     onClick={() => setStep("login")}
-                    className="bg-none border-none text-indigo-500 text-sm font-medium cursor-pointer p-0 mb-2 block"
+                    className="bg-none border-none text-blue-600 text-sm font-medium cursor-pointer p-0 mb-2 block"
                   >
                     ← Back to login
                   </button>
-                  <h2 className="text-[#1e1e2e] text-2xl font-semibold mb-1">Forgot password?</h2>
+                  <h2 className="text-[#0b1f3a] text-2xl font-semibold mb-1">Forgot password?</h2>
                   <p className="text-gray-400 text-sm">Enter your registered email to receive an OTP</p>
                 </div>
 
@@ -299,7 +299,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                     placeholder="Enter your email"
                     value={fpEmail}
                     onChange={(e) => setFpEmail(e.target.value)}
-                    className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-sm text-[#1e1e2e] bg-[#fafafe] outline-none transition-colors ${inputBorder(fpEmail, !!fpError)}`}
+                    className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-sm text-[#0b1f3a] bg-slate-50 outline-none transition-colors ${inputBorder(fpEmail, !!fpError)}`}
                   />
                   {fpError && <p className="text-[11px] text-red-400 mt-0.5">{fpError}</p>}
                 </div>
@@ -307,7 +307,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 <button
                   onClick={handleSendOtp}
                   disabled={fpLoading}
-                  className={`w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[15px] font-semibold border-none cursor-pointer transition-opacity ${fpLoading ? "opacity-70" : ""}`}
+                  className={`w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-semibold border-none cursor-pointer transition-opacity ${fpLoading ? "opacity-70" : ""}`}
                 >
                   {fpLoading ? "Sending OTP..." : "Send OTP"}
                 </button>
@@ -320,11 +320,11 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 <div>
                   <button
                     onClick={() => setStep("forgot")}
-                    className="bg-none border-none text-indigo-500 text-sm font-medium cursor-pointer p-0 mb-2 block"
+                    className="bg-none border-none text-blue-600 text-sm font-medium cursor-pointer p-0 mb-2 block"
                   >
                     ← Back
                   </button>
-                  <h2 className="text-[#1e1e2e] text-2xl font-semibold mb-1">Enter OTP</h2>
+                  <h2 className="text-[#0b1f3a] text-2xl font-semibold mb-1">Enter OTP</h2>
                   <p className="text-gray-400 text-sm">
                     We sent a 6-digit OTP to <strong>{fpEmail}</strong>
                   </p>
@@ -342,8 +342,8 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-[22px] font-bold text-[#1e1e2e] rounded-xl border-[1.5px] outline-none transition-all ${
-                        digit ? "border-indigo-500 bg-indigo-50" : "border-[#e0e0f0] bg-[#fafafe]"
+                      className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-[22px] font-bold text-[#0b1f3a] rounded-xl border-[1.5px] outline-none transition-all ${
+                        digit ? "border-blue-600 bg-blue-50" : "border-slate-200 bg-slate-50"
                       }`}
                       style={{ height: "52px" }}
                     />
@@ -355,7 +355,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 <button
                   onClick={handleVerifyOtp}
                   disabled={fpLoading}
-                  className={`w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[15px] font-semibold border-none cursor-pointer transition-opacity ${fpLoading ? "opacity-70" : ""}`}
+                  className={`w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-semibold border-none cursor-pointer transition-opacity ${fpLoading ? "opacity-70" : ""}`}
                 >
                   {fpLoading ? "Verifying..." : "Verify OTP"}
                 </button>
@@ -365,7 +365,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                   {resendTimer > 0 ? (
                     <span className="text-gray-300 font-medium">Resend in {resendTimer}s</span>
                   ) : (
-                    <span className="text-indigo-500 font-semibold cursor-pointer" onClick={handleSendOtp}>
+                    <span className="text-blue-600 font-semibold cursor-pointer" onClick={handleSendOtp}>
                       Resend OTP
                     </span>
                   )}
@@ -377,7 +377,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
             {step === "reset" && (
               <>
                 <div>
-                  <h2 className="text-[#1e1e2e] text-2xl font-semibold mb-1">Set new password</h2>
+                  <h2 className="text-[#0b1f3a] text-2xl font-semibold mb-1">Set new password</h2>
                   <p className="text-gray-400 text-sm">Choose a strong password for your account</p>
                 </div>
 
@@ -390,7 +390,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                       placeholder="Enter new password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className={`w-full px-3 py-2.5 pr-11 rounded-xl border-[1.5px] text-sm text-[#1e1e2e] bg-[#fafafe] outline-none transition-colors ${inputBorder(newPassword)}`}
+                      className={`w-full px-3 py-2.5 pr-11 rounded-xl border-[1.5px] text-sm text-[#0b1f3a] bg-slate-50 outline-none transition-colors ${inputBorder(newPassword)}`}
                     />
                     <button
                       type="button"
@@ -421,12 +421,12 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                     placeholder="Re-enter new password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-sm text-[#1e1e2e] bg-[#fafafe] outline-none transition-colors ${
+                    className={`w-full px-3 py-2.5 rounded-xl border-[1.5px] text-sm text-[#0b1f3a] bg-slate-50 outline-none transition-colors ${
                       confirmPassword
                         ? confirmPassword === newPassword
                           ? "border-green-400"
                           : "border-red-400"
-                        : "border-[#e0e0f0]"
+                        : "border-slate-200"
                     }`}
                   />
                   {confirmPassword && confirmPassword !== newPassword && (
@@ -442,7 +442,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 <button
                   onClick={handleResetPassword}
                   disabled={fpLoading}
-                  className={`w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[15px] font-semibold border-none cursor-pointer transition-opacity ${fpLoading ? "opacity-70" : ""}`}
+                  className={`w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-semibold border-none cursor-pointer transition-opacity ${fpLoading ? "opacity-70" : ""}`}
                 >
                   {fpLoading ? "Resetting..." : "Reset Password"}
                 </button>
@@ -455,12 +455,12 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white text-3xl font-bold flex items-center justify-center mb-2">
                   ✓
                 </div>
-                <h2 className="text-[#1e1e2e] text-2xl font-semibold">Password reset!</h2>
+                <h2 className="text-[#0b1f3a] text-2xl font-semibold">Password reset!</h2>
                 <p className="text-gray-400 text-sm">
                   Your password has been successfully changed. You can now login.
                 </p>
                 <button
-                  className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[15px] font-semibold border-none cursor-pointer"
+                  className="mt-4 w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white text-[15px] font-semibold border-none cursor-pointer"
                   onClick={() => {
                     setStep("login");
                     setFpEmail("");

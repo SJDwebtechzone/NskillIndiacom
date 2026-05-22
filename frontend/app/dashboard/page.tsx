@@ -34,13 +34,13 @@ function StatCard({
 }) {
   const colors: Record<string, string> = {
     blue:   "bg-blue-50 text-blue-600",
-    emerald:"bg-emerald-50 text-emerald-600",
-    amber:  "bg-amber-50 text-amber-600",
+    emerald:"bg-blue-100 text-blue-700",
+    amber:  "bg-blue-50 text-blue-500",
     red:    "bg-red-50 text-red-600",
-    purple: "bg-purple-50 text-purple-600",
-    cyan:   "bg-cyan-50 text-cyan-600",
-    orange: "bg-orange-50 text-orange-600",
-    pink:   "bg-pink-50 text-pink-600",
+    purple: "bg-blue-100 text-blue-800",
+    cyan:   "bg-blue-50 text-blue-600",
+    orange: "bg-blue-50 text-blue-600",
+    pink:   "bg-blue-100 text-blue-700",
   };
   return (
     <div className={`bg-white rounded-2xl p-6 shadow-sm border ${alert ? "border-red-200" : "border-slate-50"} relative overflow-hidden group hover:shadow-md transition-all`}>
@@ -68,14 +68,14 @@ function StatusCard({
 }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
   const barColors: Record<string, string> = {
-    blue:   "bg-blue-500",
-    emerald:"bg-emerald-500",
-    amber:  "bg-amber-500",
+    blue:   "bg-blue-600",
+    emerald:"bg-blue-400",
+    amber:  "bg-blue-300",
   };
   const textColors: Record<string, string> = {
     blue:   "text-blue-600",
-    emerald:"text-emerald-600",
-    amber:  "text-amber-600",
+    emerald:"text-blue-500",
+    amber:  "text-blue-400",
   };
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-50">
@@ -257,10 +257,10 @@ export default function DashboardPage() {
               {c.pending_fees_count} Pending Fees
             </button>
           )}
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100">
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
+          <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-xl shadow-sm border border-blue-100">
+            <TrendingUp className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-bold text-slate-700">
-              Revenue: <span className="text-emerald-500">{fmtR(c.revenue_this_month ?? 0)}</span>
+              Revenue: <span className="text-blue-600 font-black">{fmtR(c.revenue_this_month ?? 0)}</span>
             </span>
           </div>
         </div>
@@ -304,9 +304,9 @@ export default function DashboardPage() {
                 contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
               />
               <Legend wrapperStyle={{ fontSize: 12, fontWeight: 600 }} />
-              <Bar dataKey="enquiries"  name="Enquiries"  fill="#8b5cf6" radius={[4,4,0,0]} />
-              <Bar dataKey="admissions" name="Admissions" fill="#3b82f6" radius={[4,4,0,0]} />
-              <Bar dataKey="associates" name="Associates" fill="#10b981" radius={[4,4,0,0]} />
+              <Bar dataKey="enquiries"  name="Enquiries"  fill="#93c5fd" radius={[4,4,0,0]} />
+              <Bar dataKey="admissions" name="Admissions" fill="#2563eb" radius={[4,4,0,0]} />
+              <Bar dataKey="associates" name="Associates" fill="#1d4ed8" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -324,7 +324,7 @@ export default function DashboardPage() {
                 formatter={(v: any) => [fmtR(v), "Revenue"]}
                 contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
               />
-              <Bar dataKey="revenue" name="Revenue" fill="#10b981" radius={[4,4,0,0]} />
+              <Bar dataKey="revenue" name="Revenue" fill="#2563eb" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -378,8 +378,8 @@ label={({ name, percent }: any) =>
                 contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
               />
               <Legend wrapperStyle={{ fontSize: 12, fontWeight: 600 }} />
-              <Line type="monotone" dataKey="leads"    name="Leads"    stroke="#8b5cf6" strokeWidth={2.5} dot={{ r: 4 }} />
-              <Line type="monotone" dataKey="bookings" name="Bookings" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="leads"    name="Leads"    stroke="#2563eb" strokeWidth={2.5} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="bookings" name="Bookings" stroke="#93c5fd" strokeWidth={2.5} dot={{ r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -392,12 +392,12 @@ label={({ name, percent }: any) =>
         <div className="bg-white rounded-2xl shadow-sm border border-slate-50 overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-violet-50 rounded-xl flex items-center justify-center">
-                <Activity className="w-4 h-4 text-violet-600" />
+              <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
+                <Activity className="w-4 h-4 text-blue-600" />
               </div>
               <h3 className="font-black text-slate-800">Recent Demo Bookings</h3>
             </div>
-            <span className="text-xs font-bold text-violet-600 bg-violet-50 px-3 py-1 rounded-lg">
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
               Latest 5
             </span>
           </div>
