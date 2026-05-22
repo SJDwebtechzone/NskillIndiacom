@@ -564,7 +564,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
         
         {/* Footer */}
         <footer className="bg-white border-t border-slate-100 py-4 px-6 text-center text-sm font-medium text-black shadow-sm">
-          Copyright © 2026 All rights reserved | <span className="text-black font-bold">by</span> <a href="https://devspectra.com" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors">DevSpectra</a>
+          Copyright © 2026 All rights reserved | <span className="text-black font-bold">by</span> <a href="https://devspectra.in/" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors">DevSpectra</a>
         </footer>
       </div>
     </div>
