@@ -52,7 +52,10 @@ const PORT = process.env.PORT || 5000;
 
 // ── Middleware ─────────────────────────────────────────────────────────────────
 // ── Middleware ─────────────────────────────────────────────────────────────────
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ 
+  origin: process.env.FRONTEND_URL || "http://localhost:3000", 
+  credentials: true 
+}));
 app.use(express.json({ limit: "10mb" }));              // ← add limit
 app.use(express.urlencoded({ extended: true, limit: "10mb" })); // ← add limit
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
