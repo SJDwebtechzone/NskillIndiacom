@@ -89,33 +89,13 @@ const WhyUsSection = () => {
 
             {/* ================= RIGHT IMAGE ================= */}
             <div className="relative h-full min-h-[420px] overflow-hidden">
-
-              {/* Ken Burns Effect */}
-              <motion.img
+              <img
                 src="/images/about/why.jpeg"
                 alt="Why Choose Us"
                 className="absolute inset-0 w-full h-full object-cover object-center brightness-110"
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
               />
-
               {/* Dark Overlay - reduced for brightness */}
               <div className="absolute inset-0 bg-black/10" />
-
-              {/* Light Sweep */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
-              />
-
-              {/* Glow Pulse */}
-              <motion.div
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-72 h-40 bg-blue-500/20 blur-3xl rounded-full"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              />
-
             </div>
 
           </div>
