@@ -434,7 +434,8 @@ const Chatbot: React.FC = () => {
     const isRestricted = pathname ? (
         pathname.toLowerCase().startsWith("/dashboard") ||
         pathname.toLowerCase().startsWith("/login") ||
-        pathname.toLowerCase().startsWith("/admin")
+        pathname.toLowerCase().startsWith("/admin") ||
+        pathname.toLowerCase().startsWith("/associate/register")
     ) : false;
 
     if (isRestricted) return null;

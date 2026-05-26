@@ -14,6 +14,16 @@ import {
   Clock,
   ChevronDown,
   Briefcase,
+  Snowflake,
+  Zap,
+  Wrench,
+  Flame,
+  Home,
+  Settings,
+  Award,
+  Shield,
+  Droplets,
+  ChevronRight,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -39,6 +49,18 @@ const CATEGORY_ORDER = [
   "Safety",
   "Oil & Gas",
 ];
+
+const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
+  "HVAC & Refrigeration": Snowflake,
+  "Electrical": Zap,
+  "Plumbing": Wrench,
+  "Welding": Flame,
+  "Home Appliance": Home,
+  "MEP": Settings,
+  "Quality": Award,
+  "Safety": Shield,
+  "Oil & Gas": Droplets,
+};
 
 
 
@@ -80,6 +102,7 @@ const Navbar = () => {
   const [isCoursesMenuOpen, setIsCoursesMenuOpen] = useState(false);
   const [skillTrainingMenu, setSkillTrainingMenu] = useState<CategoryMenu[]>([]);
   const [menuLoading, setMenuLoading] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const coursesMenuRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -169,16 +192,16 @@ const Navbar = () => {
     setIsCoursesMenuOpen(false);
   };
 
-  // ── Close on scroll ───────────────────────────────────────────────────────
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsCoursesMenuOpen(false);
-    };
-    if (isCoursesMenuOpen) {
-      window.addEventListener("scroll", handleScroll, { passive: true });
-    }
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isCoursesMenuOpen]);
+  // ── Close on scroll (Disabled to keep mega menu visible during scrolling) ──
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setIsCoursesMenuOpen(false);
+  //   };
+  //   if (isCoursesMenuOpen) {
+  //     window.addEventListener("scroll", handleScroll, { passive: true });
+  //   }
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [isCoursesMenuOpen]);
 
   if (pathname?.startsWith("/login") || pathname?.startsWith("/dashboard")) {
     return null;
@@ -343,8 +366,11 @@ const Navbar = () => {
                         }`}
                     >
                       {/* ── Course list ── */}
-                      <div className="bg-white rounded-[40px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
-                        <div className="p-4 px-6 bg-gradient-to-br from-white to-slate-50/50">
+                      <div
+                        className="bg-white rounded-[40px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden max-h-[80vh] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden"
+                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                      >
+                        <div className="p-5 px-7 bg-gradient-to-br from-white to-slate-50/50">
 
                           {menuLoading ? (
                             <div className="flex items-center justify-center py-12 text-slate-400">
@@ -359,26 +385,74 @@ const Navbar = () => {
                               No courses available
                             </div>
                           ) : (
-                            <div className="grid grid-cols-4 gap-x-8 gap-y-12 py-6">
-                              {skillTrainingMenu.map((section, index) => (
-                                <div key={index} className="space-y-2">
-                                  <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5">
-                                    <div className="w-1 h-4 bg-blue-600 rounded-full" />
-                                    <h4 className="text-base font-black tracking-wide uppercase text-blue-600 hover:text-red-600 transition-colors cursor-default">
-                                      {section.title}
-                                    </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6 py-6">
+                              {skillTrainingMenu.map((section, index) => {
+                                const IconComponent = CATEGORY_ICONS[section.title] ?? Settings;
+                                const hasMore = section.items.length > 5;
+                                const isExpanded = !!expandedCategories[section.title];
+                                const visibleItems = isExpanded ? section.items : section.items.slice(0, 5);
+                                return (
+                                  <div
+                                    key={index}
+                                    className="bg-white border border-slate-100/80 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:border-blue-100 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full"
+                                  >
+                                    <div>
+                                      {/* Header */}
+                                      <div className="flex items-center gap-3.5 mb-5 pb-3 border-b border-slate-100/80">
+                                        <div className="w-11 h-11 rounded-xl bg-blue-50/80 flex items-center justify-center text-blue-600 shrink-0 border border-blue-100/50">
+                                          <IconComponent size={20} strokeWidth={2.5} />
+                                        </div>
+                                        <h4 className="text-xs font-black tracking-wide uppercase text-blue-600 leading-snug cursor-default">
+                                          {section.title}
+                                        </h4>
+                                      </div>
+                                      
+                                      {/* Course list */}
+                                      <ul className="space-y-2.5">
+                                        {visibleItems.map((course, i) => (
+                                          <li key={i} className="flex items-start gap-1.5">
+                                            <span className="text-slate-400 mt-1 select-none shrink-0 text-[10px]">•</span>
+                                            <Link
+                                              href={`/courses/${course.id}`}
+                                              className="text-[11px] font-bold uppercase tracking-tight text-slate-600 hover:text-blue-600 transition-colors leading-relaxed block"
+                                              onClick={closeMegaMenu}
+                                            >
+                                              {course.name}
+                                            </Link>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                      {hasMore && (
+                                        <button
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setExpandedCategories(prev => ({
+                                              ...prev,
+                                              [section.title]: !prev[section.title]
+                                            }));
+                                          }}
+                                          className="text-[10px] font-black text-blue-600 hover:text-blue-700 mt-3 flex items-center gap-1 transition-colors uppercase cursor-pointer"
+                                        >
+                                          {isExpanded ? "Show Less" : `+ ${section.items.length - 5} More`}
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    {/* View More Button */}
+                                    <Link
+                                      href={`/courses?category=${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                                      className="w-full flex items-center justify-between px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all mt-6 shadow-[0_4px_12px_rgba(37,99,235,0.12)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.22)] hover:-translate-y-0.5"
+                                      onClick={closeMegaMenu}
+                                    >
+                                      <span>View More Details</span>
+                                      <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0">
+                                        <ChevronRight size={12} strokeWidth={3} />
+                                      </div>
+                                    </Link>
                                   </div>
-                                  <ul className="grid grid-cols-1 gap-0.5">
-                                    {section.items.map((course, i) => (
-                                      <CourseLink
-                                        key={i}
-                                        course={course}
-                                        onClose={closeMegaMenu}
-                                      />
-                                    ))}
-                                  </ul>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           )}
 
