@@ -429,7 +429,7 @@ export default function StudentAdmissionForm() {
                             className="w-full px-6 py-4 bg-white border border-slate-300 rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 font-black text-xl text-center tracking-widest text-[#0b1f3a]"
                         />
                         {errors.enquiry_id && <span className="text-red-500 text-sm font-bold">{errors.enquiry_id}</span>}
-                        <button type="button" onClick={handleSearch} disabled={isSearching || !searchId}
+                        <button type="button" onClick={() => handleSearch()} disabled={isSearching || !searchId}
                             className="w-full py-4 bg-blue-500 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                             {isSearching ? "Searching..." : "Fetch Details"}
                         </button>
