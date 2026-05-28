@@ -335,12 +335,14 @@ export default function StudentEnquiryForm() {
                 <div className="flex bg-slate-100 p-1 rounded-2xl">
                     <button
                         onClick={() => { setViewMode("form"); setIsEditing(false); setEditId(null); setFormData(emptyForm); setCurrentStep(0); }}
-                        className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${viewMode==="form"?"bg-slate-900 text-white":"text-slate-500 hover:text-slate-800"}`}>
+                        style={{ color: viewMode==="form" ? "#ffffff" : "#64748b" }}
+                        className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${viewMode==="form"?"bg-slate-900":"hover:bg-slate-200"}`}>
                         <PlusCircle size={18}/> New Enquiry
                     </button>
                     <button
                         onClick={() => setViewMode("list")}
-                        className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${viewMode==="list"?"bg-slate-900 text-white":"text-slate-500 hover:text-slate-800"}`}>
+                        style={{ color: viewMode==="list" ? "#ffffff" : "#64748b" }}
+                        className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${viewMode==="list"?"bg-slate-900":"hover:bg-slate-200"}`}>
                         <List size={18}/> View List
                     </button>
                 </div>
@@ -352,8 +354,8 @@ export default function StudentEnquiryForm() {
                     <div className="bg-slate-900 px-8 pt-10 pb-6 text-white relative overflow-hidden">
                         <div className="flex justify-between items-center relative z-10 mb-8">
                             <div>
-                                <h2 className="text-3xl font-black tracking-tight">{isEditing ? "Edit Enquiry" : "Student Enquiry"}</h2>
-                                <p className="text-blue-300 font-bold mt-1 uppercase text-xs tracking-[0.1em]">
+                                <h2 className="text-3xl font-black tracking-tight" style={{ color: "#ffffff" }}>{isEditing ? "Edit Enquiry" : "Student Enquiry"}</h2>
+                                <p className="font-bold mt-1 uppercase text-xs tracking-[0.1em]" style={{ color: "#93c5fd" }}>
                                     {isEditing ? "Update: " + (formData.student_name||"") : steps[currentStep].title}
                                 </p>
                             </div>
@@ -369,7 +371,8 @@ export default function StudentEnquiryForm() {
                                         else if (idx > currentStep) { if (validateStep(currentStep)) setCurrentStep(idx); }
                                         else { setCurrentStep(idx); }
                                     }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap min-w-fit ${currentStep===idx?"bg-blue-600 text-white shadow-lg":"text-blue-200/40 hover:text-white hover:bg-white/5"}`}>
+                                    style={{ color: currentStep===idx ? "#ffffff" : "rgba(147,197,253,0.5)" }}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap min-w-fit ${currentStep===idx?"bg-blue-600 shadow-lg":"hover:bg-white/5"}`}>
                                     <span className="text-[11px] font-black uppercase tracking-widest">{idx+1}. {s.title}</span>
                                 </button>
                             ))}
@@ -381,17 +384,20 @@ export default function StudentEnquiryForm() {
                         {renderStepContent()}
                         <div className="mt-12 flex justify-between items-center pt-8 border-t border-slate-100">
                             <button type="button" onClick={prevStep} disabled={currentStep===0}
-                                className="flex items-center gap-2 px-6 py-3 font-bold uppercase text-[10px] text-slate-400 disabled:opacity-0 transition-all">
+                                style={{ color: "#94a3b8" }}
+                                className="flex items-center gap-2 px-6 py-3 font-bold uppercase text-[10px] disabled:opacity-0 transition-all">
                                 <ChevronLeft size={16}/> Back
                             </button>
                             {currentStep < steps.length - 1 ? (
                                 <button type="button" onClick={nextStep}
-                                    className="flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-slate-900 text-white hover:bg-blue-700 transition-all">
+                                    style={{ color: "#ffffff" }}
+                                    className="flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-slate-900 hover:bg-blue-700 transition-all">
                                     Next Step <ChevronRight size={16}/>
                                 </button>
                             ) : (
                                 <button type="submit" disabled={isSubmitting}
-                                    className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-blue-600 text-white hover:bg-blue-700 transition-all">
+                                    style={{ color: "#ffffff" }}
+                                    className="flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-blue-600 hover:bg-blue-700 transition-all">
                                     {isSubmitting ? "Submitting..." : isEditing ? "Update Record" : "Finish & Send"} <Send size={16}/>
                                 </button>
                             )}

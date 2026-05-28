@@ -5,7 +5,7 @@ import {
   Eye, Check, AlertCircle, Clock, Loader2,
   Search, RefreshCw, X, CheckCircle, XCircle,
   User, BookOpen, Phone, Calendar, MessageSquare,
-  Shield, Filter,
+  Shield, Filter, Trash2,
 } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -399,6 +399,22 @@ export default function MonitorApprovalsPage() {
     setTimeout(() => setSuccess(""), 3000);
   };
 
+  const deleteAdmission = async (id: number, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete the admission for "${name}"?\nThis action is permanent.`)) return;
+    try {
+      const res = await fetch(`${API}/api/admissions/${id}`, {
+        method: "DELETE",
+        headers,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete admission");
+      fetchStudents();
+    } catch (err: any) {
+      console.error(err);
+      alert(`❌ ${err.message ?? "Failed to delete admission"}`);
+    }
+  };
+
   // ── Filter ───────────────────────────────────────────────────────────────────
   const filtered = students.filter(s => {
     const matchSearch = !search ||
@@ -603,13 +619,22 @@ export default function MonitorApprovalsPage() {
                       </td>
 
                       <td className="px-4 py-3.5">
-                        <button
-                          onClick={() => setSelected(s)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition"
-                        >
-                          <Eye className="w-3 h-3" />
-                          {vs === "Pending Review" ? "Review" : "Update"}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelected(s)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition"
+                          >
+                            <Eye className="w-3 h-3" />
+                            {vs === "Pending Review" ? "Review" : "Update"}
+                          </button>
+                          <button
+                            onClick={() => deleteAdmission(s.id, s.full_name)}
+                            className="flex items-center justify-center p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition"
+                            title="Delete Admission"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

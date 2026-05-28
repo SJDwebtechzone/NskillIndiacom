@@ -128,7 +128,7 @@ const ContactPage: React.FC = () => {
     <div className="bg-gray-50 min-h-screen">
 
       {/* ── Page Header ── */}
-      <div className="relative h-[280px] md:h-[400px] flex items-start pt-8 md:pt-12 overflow-hidden">
+      <div className="relative min-h-[280px] md:h-[350px] lg:h-[400px] flex items-start pt-12 md:pt-20 overflow-hidden py-8 md:py-0">
         <img
           src="/images/contact/contactus.png"
           alt="Contact Us"
@@ -150,7 +150,7 @@ const ContactPage: React.FC = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-[#0f172a] text-5xl md:text-6xl font-black mb-4 uppercase tracking-tight"
+              className="text-[#0f172a] text-3xl sm:text-4xl md:text-6xl font-black mb-3 md:mb-4 uppercase tracking-tight"
             >
               Contact Us
             </motion.h1>
@@ -158,7 +158,7 @@ const ContactPage: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-slate-600 text-lg md:text-xl font-bold"
+              className="text-slate-600 text-base md:text-xl font-bold"
             >
               We&apos;re here to help you
             </motion.p>
@@ -436,7 +436,7 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Captcha */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="bg-gray-100 px-6 py-3 border border-dashed border-gray-400 rounded font-serif italic text-2xl tracking-[0.3em] text-gray-800 select-none shadow-inner min-w-[140px] text-center">
                     {captcha}
@@ -454,7 +454,7 @@ const ContactPage: React.FC = () => {
                   type="text" placeholder="Enter Captcha"
                   value={captchaInput}
                   onChange={(e) => setCaptchaInput(e.target.value)}
-                  className="px-4 py-3 bg-white border border-gray-300 rounded focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none w-48 text-gray-900"
+                  className="px-4 py-3 bg-white border border-gray-300 rounded focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none w-full sm:w-48 text-gray-900"
                 />
               </div>
 

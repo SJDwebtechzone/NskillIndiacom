@@ -54,6 +54,21 @@ export default function AdminPlacementsPage() {
     }
   };
 
+  const deletePlacement = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this placement record?")) return;
+    try {
+      const res = await fetch(`${API}/api/placement-feedback/placement/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to delete placement");
+      fetchPlacements();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to delete placement");
+    }
+  };
+
   const filtered = placements.filter((p) => {
     const matchSearch =
       p.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -156,18 +171,26 @@ export default function AdminPlacementsPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                {p.offer_letter_url ? (
-                  <a
-                    href={`${API}${p.offer_letter_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 text-xs font-semibold hover:underline flex items-center gap-1"
+                <div className="flex items-center gap-4">
+                  {p.offer_letter_url ? (
+                    <a
+                      href={`${API}${p.offer_letter_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 text-xs font-semibold hover:underline flex items-center gap-1"
+                    >
+                      📄 View Offer Letter
+                    </a>
+                  ) : (
+                    <span className="text-xs text-gray-400">No offer letter uploaded</span>
+                  )}
+                  <button
+                    onClick={() => deletePlacement(p.id)}
+                    className="text-red-500 hover:text-red-700 text-xs font-semibold flex items-center gap-1 border border-transparent hover:border-red-100 rounded px-2 py-1 transition-all"
                   >
-                    📄 View Offer Letter
-                  </a>
-                ) : (
-                  <span className="text-xs text-gray-400">No offer letter uploaded</span>
-                )}
+                    🗑️ Delete
+                  </button>
+                </div>
 
                 {p.status === "pending" && (
                   <div className="flex gap-2">

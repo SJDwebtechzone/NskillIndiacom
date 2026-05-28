@@ -225,9 +225,9 @@ const Navbar = () => {
       {/* ══════════════════════════════════════════
           TOP BAR — Logo + Info + Login
       ══════════════════════════════════════════ */}
-      <div className="bg-white border-b border-slate-100 py-3 px-6 xl:px-12">
+      <div className="bg-white border-b border-slate-100 py-3 px-4 md:px-6 xl:px-12">
         <div className="w-full flex items-center justify-between gap-4">
-
+          
           {/* LEFT — Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image
@@ -235,44 +235,38 @@ const Navbar = () => {
               alt="NSKILL Logo"
               width={260}
               height={64}
-              className="object-contain h-[56px] md:h-[68px] w-auto"
+              className="object-contain h-[40px] sm:h-[48px] md:h-[60px] lg:h-[68px] w-auto"
               style={{ width: 'auto' }}
               priority
             />
           </Link>
 
-          {/* CENTER — Business Hours + Phones + Email */}
-          <div className="hidden md:flex items-center gap-6 flex-1 justify-center">
-
+          {/* CENTER — Business Hours + Phones + Email (HIDDEN ON MOBILE, SHOWS ON DESKTOP) */}
+          <div className="hidden md:flex items-center gap-4 lg:gap-5 flex-1 justify-center">
+            
             {/* Business Hours */}
-            <div className="flex items-center gap-2 text-[#0f172a] font-bold text-lg whitespace-nowrap">
-              <Clock size={20} className="text-[#2563eb] shrink-0" strokeWidth={2.5} />
-              <span>Business Hours : 9.30 am to 7.00 pm</span>
+            <div className="flex items-center gap-1.5 text-[#0f172a] font-medium text-[13px] lg:text-[15px] whitespace-nowrap">
+              <Clock size={15} className="text-[#2563eb] shrink-0" strokeWidth={2} />
+              <span>Business Hours: 9.30 am to 7.00 pm</span>
             </div>
 
-            <span className="text-slate-300 font-normal text-lg">|</span>
+            <span className="hidden md:inline text-slate-300 font-normal text-base">|</span>
 
             {/* Phones */}
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-[#0f172a] font-medium text-lg whitespace-nowrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-                </svg>
-                <a href="tel:09884209774" className="hover:text-[#2563eb] transition-colors">+91 98842 09774</a>
-              </div>
-              <div className="flex items-center gap-2 text-[#0f172a] font-medium text-lg whitespace-nowrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-                </svg>
-                <a href="tel:08056063023" className="hover:text-[#2563eb] transition-colors">+91 80560 63023</a>
-              </div>
+            <div className="flex items-center gap-1.5 text-[#0f172a] font-medium text-[13px] lg:text-[15px] whitespace-nowrap">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .9h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.76a16 16 0 006.15 6.15l1.22-1.22a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              <a href="tel:09884209774" className="hover:text-[#2563eb] transition-colors">+91 98842 09774</a>
+              <span className="text-slate-300 font-light">,</span>
+              <a href="tel:08056063023" className="hover:text-[#2563eb] transition-colors">+91 80560 63023</a>
             </div>
 
-            <span className="text-slate-300 font-normal text-lg">|</span>
+            <span className="hidden md:inline text-slate-300 font-normal text-base">|</span>
 
             {/* Email */}
-            <div className="flex items-center gap-2 text-[#0f172a] font-medium text-lg whitespace-nowrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+            <div className="flex items-center gap-1.5 text-[#0f172a] font-medium text-[13px] lg:text-[15px] whitespace-nowrap">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
               </svg>
@@ -281,41 +275,44 @@ const Navbar = () => {
 
           </div>
 
-          {/* Login Button */}
-          <div className="flex items-center">
+          {/* RIGHT — Login Access Button (shows on all screens) */}
+          <div className="flex items-center shrink-0">
             <div
               className="relative"
               onMouseEnter={() => setIsLoginMenuOpen(true)}
               onMouseLeave={() => setIsLoginMenuOpen(false)}
             >
-              <button className="flex items-center gap-2 bg-[#2563eb] text-white font-bold text-[15px] px-5 py-3 rounded-[10px] whitespace-nowrap shrink-0 transition-transform hover:-translate-y-0.5 shadow-[0_8px_20px_rgba(37,99,235,0.2)]">
-                <Lock size={16} strokeWidth={2.5} />
-                LOGIN ACCESS
+              <button 
+                onClick={() => setIsLoginMenuOpen(!isLoginMenuOpen)}
+                className="flex items-center gap-1.5 md:gap-2 bg-[#2563eb] text-white font-bold text-[12px] sm:text-[14px] md:text-[15px] px-3.5 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-[10px] whitespace-nowrap transition-transform hover:-translate-y-0.5 shadow-[0_8px_20px_rgba(37,99,235,0.2)]"
+              >
+                <Lock size={14} className="shrink-0" strokeWidth={2.5} />
+                LOGIN
               </button>
 
               <div
-                className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${isLoginMenuOpen
+                className={`absolute right-0 mt-2 w-48 sm:w-56 bg-white rounded-lg shadow-2xl z-50 border border-gray-100 overflow-hidden transition-all duration-300 ${isLoginMenuOpen
                     ? "opacity-100 translate-y-0 visible"
                     : "opacity-0 -translate-y-2 invisible"
                   }`}
               >
-                <div className="p-2">
+                <div className="p-1.5 sm:p-2">
                   {[
-                    { href: "/login/admin", icon: <User size={16} />, bg: "bg-blue-100", text: "text-blue-600", label: "Admin" },
-                    { href: "/login/associate", icon: <Users size={16} />, bg: "bg-green-100", text: "text-green-600", label: "Associate" },
-                    { href: "/login/student", icon: <GraduationCap size={16} />, bg: "bg-purple-100", text: "text-purple-600", label: "Student" },
-                    { href: "/login/trainer", icon: <Briefcase size={16} />, bg: "bg-orange-100", text: "text-orange-600", label: "Trainer" },
+                    { href: "/login/admin", icon: <User size={14} />, bg: "bg-blue-100", text: "text-blue-600", label: "Admin" },
+                    { href: "/login/associate", icon: <Users size={14} />, bg: "bg-green-100", text: "text-green-600", label: "Associate" },
+                    { href: "/login/student", icon: <GraduationCap size={14} />, bg: "bg-purple-100", text: "text-purple-600", label: "Student" },
+                    { href: "/login/trainer", icon: <Briefcase size={14} />, bg: "bg-orange-100", text: "text-orange-600", label: "Trainer" },
                   ].map(({ href, icon, bg, text, label }) => (
                     <Link
                       key={label}
                       href={href}
-                      className="flex items-center space-x-3 px-4 py-3 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
+                      className="flex items-center space-x-2.5 px-3 py-2.5 hover:bg-blue-50 rounded-md text-gray-700 hover:text-blue-700 transition"
                       onClick={() => setIsLoginMenuOpen(false)}
                     >
-                      <div className={`w-8 h-8 rounded-full ${bg} flex items-center justify-center ${text}`}>
+                      <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${bg} flex items-center justify-center ${text} shrink-0`}>
                         {icon}
                       </div>
-                      <span className="font-semibold text-sm">{label}</span>
+                      <span className="font-semibold text-xs sm:text-sm">{label}</span>
                     </Link>
                   ))}
                 </div>
@@ -394,12 +391,12 @@ const Navbar = () => {
                                 return (
                                   <div
                                     key={index}
-                                    className="bg-white border border-slate-100/80 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:border-blue-100 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full"
+                                    className="bg-blue-50/40 border border-blue-100/50 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:bg-blue-50/80 hover:border-blue-200 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full"
                                   >
                                     <div>
                                       {/* Header */}
                                       <div className="flex items-center gap-3.5 mb-5 pb-3 border-b border-slate-100/80">
-                                        <div className="w-11 h-11 rounded-xl bg-blue-50/80 flex items-center justify-center text-blue-600 shrink-0 border border-blue-100/50">
+                                        <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-blue-600 shrink-0 border border-blue-100/70 shadow-sm">
                                           <IconComponent size={20} strokeWidth={2.5} />
                                         </div>
                                         <h4 className="text-xs font-black tracking-wide uppercase text-blue-600 leading-snug cursor-default">
@@ -442,11 +439,11 @@ const Navbar = () => {
                                     {/* View More Button */}
                                     <Link
                                       href={`/courses?category=${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                                      className="w-full flex items-center justify-between px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all mt-6 shadow-[0_4px_12px_rgba(37,99,235,0.12)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.22)] hover:-translate-y-0.5"
+                                      className="w-full flex items-center justify-between px-4 py-2.5 bg-white hover:bg-blue-50 text-blue-600 border border-blue-100/60 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all mt-6 shadow-sm hover:-translate-y-0.5"
                                       onClick={closeMegaMenu}
                                     >
                                       <span>View More Details</span>
-                                      <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0">
+                                      <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-sm shrink-0">
                                         <ChevronRight size={12} strokeWidth={3} />
                                       </div>
                                     </Link>

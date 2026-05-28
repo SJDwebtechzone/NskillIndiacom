@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { Briefcase, Search, Mail, Calendar, Hash, Shield, Users, Eye, Key, X, Copy, CheckCircle2, BookOpen } from "lucide-react";
+import { Briefcase, Search, Mail, Calendar, Hash, Shield, Users, Eye, Key, X, Copy, CheckCircle2, BookOpen, Trash2 } from "lucide-react";
 
 interface StaffMember {
   id: number;
@@ -53,6 +53,8 @@ export default function StaffPage() {
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [resetCreds, setResetCreds] = useState<{username: string, password: string} | null>(null);
   const [resetting, setResetting] = useState(false);
 
@@ -178,6 +180,29 @@ export default function StaffPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!selectedStaff) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${selectedStaff.id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast("✅ Staff deleted successfully");
+        setShowDeleteModal(false);
+        load();
+      } else {
+        showToast(`❌ ${data.message || "Failed to delete"}`);
+      }
+    } catch {
+      showToast("❌ Server error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     showToast("📋 Copied to clipboard");
@@ -288,6 +313,15 @@ export default function StaffPage() {
                   >
                     <BookOpen size={14} />
                   </button>
+                  {(can("Staff / Trainee", "delete") || can("Manage Users", "delete")) && (
+                    <button
+                      onClick={() => { setSelectedStaff(member); setShowDeleteModal(true); }}
+                      className="p-1.5 bg-slate-50 text-slate-400 hover:text-red-600 rounded-lg border border-slate-100 transition-colors"
+                      title="Delete User"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -503,7 +537,7 @@ export default function StaffPage() {
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setShowResetModal(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Cancel</button>
-                  <button onClick={handleResetPassword} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20">
+                  <button onClick={handleResetPassword} className="flex-1 bg-amber-50 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20">
                     {resetting ? "Wait..." : "Generate"}
                   </button>
                 </div>
@@ -530,6 +564,34 @@ export default function StaffPage() {
                 <button onClick={() => setShowResetModal(false)} className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl">Done & Close</button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedStaff && (
+        <div className="modal-overlay">
+          <div className="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl relative animate-up">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                  <Trash2 size={20} className="text-red-600" />
+                </div>
+                <h2 className="text-xl font-black text-slate-800">Delete Account</h2>
+              </div>
+              <button onClick={() => setShowDeleteModal(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400"><X size={20} /></button>
+            </div>
+            <div className="space-y-6">
+              <p className="text-sm font-medium text-slate-500 leading-relaxed">
+                Are you sure you want to delete <span className="text-slate-950 font-bold">{selectedStaff.name}</span>? This action is permanent and cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button onClick={() => setShowDeleteModal(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Cancel</button>
+                <button onClick={handleDelete} disabled={deleting} className="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-red-600/20 active:scale-95 disabled:opacity-50">
+                  {deleting ? "Deleting..." : "Delete Account"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

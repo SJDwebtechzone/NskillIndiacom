@@ -239,7 +239,7 @@ function CoursesPageContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-black text-lg font-bold leading-relaxed whitespace-nowrap"
+            className="text-black text-lg font-bold leading-relaxed whitespace-normal"
           >
             Industry-Recognized Certifications With 100% Hands-On Practical Training In State-Of-The-Art Labs.
           </motion.p>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   Play, CheckCircle, StopCircle, Loader2,
-  Search, Check, RefreshCw, Filter, X,
+  Search, Check, RefreshCw, Filter, X, Trash2,
 } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -113,6 +113,22 @@ export default function NTSCClassStatusPage() {
       alert(err.message ?? "Failed to update batch");
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const deleteAdmission = async (id: number, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete the admission for "${name}"?\nThis action is permanent.`)) return;
+    try {
+      const res = await fetch(`${API}/api/admissions/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete admission");
+      fetchStudents();
+    } catch (err: any) {
+      console.error(err);
+      alert(`❌ ${err.message ?? "Failed to delete admission"}`);
     }
   };
 
@@ -325,7 +341,7 @@ export default function NTSCClassStatusPage() {
 
                     {/* Action buttons */}
                     <td className="px-4 py-3.5">
-                      <div className="flex gap-1.5 flex-wrap">
+                      <div className="flex gap-1.5 flex-wrap items-center">
                         {s.status !== "Ongoing" && (
                           <button
                             onClick={() => updateStatus(s.id, "Ongoing", s.full_name)}
@@ -356,6 +372,13 @@ export default function NTSCClassStatusPage() {
                             Discontinue
                           </button>
                         )}
+                        <button
+                          onClick={() => deleteAdmission(s.id, s.full_name)}
+                          className="flex items-center justify-center p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition ml-1"
+                          title="Delete Admission"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>

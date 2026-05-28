@@ -14,6 +14,7 @@ interface Job {
   mode?: string;
   openBadge?: string;
   description: string;
+  skills?: string;
 }
 
 function getInitials(name: string) {

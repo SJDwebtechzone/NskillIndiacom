@@ -103,20 +103,29 @@ export default function BackgroundImagesPage() {
   return (
     <div className="py-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Background Images</h1>
-          <p className="text-slate-500 text-sm mt-1 font-medium">
-            Upload and manage background images for student ID cards
-          </p>
+      <div className="relative p-8 bg-gradient-to-br from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb] rounded-[2.5rem] text-white overflow-hidden shadow-2xl mb-8">
+        <div className="relative z-10 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center text-lg">🖼️</div>
+              <span style={{ color: "#bfdbfe" }} className="font-black uppercase text-[10px] tracking-[0.25em]">Dashboard</span>
+            </div>
+            <h1 className="text-3xl font-black tracking-tight" style={{ color: "#ffffff" }}>Background Images</h1>
+            <p className="text-sm mt-1 font-medium" style={{ color: "#93c5fd" }}>
+              Upload and manage background images for student ID cards
+            </p>
+          </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            style={{ color: showForm ? "#ffffff" : "#1d4ed8", background: showForm ? "rgba(255,255,255,0.15)" : "#ffffff" }}
+            className="flex items-center gap-2 text-sm px-6 py-3 rounded-2xl font-black tracking-widest uppercase hover:opacity-90 border border-white/20 shadow-md transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            {showForm ? "Cancel" : "Add Image"}
+          </button>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm px-5 py-2.5 rounded-xl font-bold tracking-wide hover:from-blue-700 hover:to-blue-800 shadow-md transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          {showForm ? "Cancel" : "Add Image"}
-        </button>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl z-0" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-300/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl z-0" />
       </div>
 
       {/* Active image notice */}
@@ -208,7 +217,8 @@ export default function BackgroundImagesPage() {
           <button
             onClick={handleUpload}
             disabled={uploading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3.5 rounded-xl text-sm font-black tracking-widest uppercase hover:from-blue-700 hover:to-blue-800 shadow-md disabled:opacity-60 transition-all"
+            style={{ color: "#ffffff" }}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 py-3.5 rounded-xl text-sm font-black tracking-widest uppercase hover:from-blue-700 hover:to-blue-800 shadow-md disabled:opacity-60 transition-all"
           >
             {uploading ? "Uploading..." : "Upload Image"}
           </button>
@@ -279,12 +289,13 @@ export default function BackgroundImagesPage() {
                 {!image.is_active ? (
                   <button
                     onClick={() => handleSetActive(image.id)}
-                    className="w-full text-sm border border-blue-200 text-blue-600 py-2 rounded-lg hover:bg-blue-50 font-semibold transition-all"
+                    style={{ color: "#2563eb" }}
+                    className="w-full text-sm border border-blue-200 py-2 rounded-lg hover:bg-blue-50 font-semibold transition-all"
                   >
                    ✅ Set as Active for {image.category}
                   </button>
                 ) : (
-                  <div className="w-full text-sm bg-green-50 text-green-700 py-2 rounded-lg font-semibold text-center border border-green-200">
+                  <div style={{ color: "#16a34a" }} className="w-full text-sm bg-green-50 py-2 rounded-lg font-semibold text-center border border-green-200">
                     ✓ Currently Active
                   </div>
                 )}

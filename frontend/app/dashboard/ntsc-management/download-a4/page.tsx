@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   Printer, Search, Loader2, Eye,
-  RefreshCw, FileText, User, Filter,
+  RefreshCw, FileText, User, Filter, Trash2,
 } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -420,6 +420,22 @@ export default function DownloadA4Page() {
     }, 300);
   };
 
+  const deleteAdmission = async (id: number, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete the admission for "${name}"?\nThis action is permanent.`)) return;
+    try {
+      const res = await fetch(`${API}/api/admissions/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete admission");
+      fetchStudents();
+    } catch (err: any) {
+      console.error(err);
+      alert(`❌ ${err.message ?? "Failed to delete admission"}`);
+    }
+  };
+
   const filtered = students.filter(s =>
     !search ||
     s.full_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -563,17 +579,26 @@ export default function DownloadA4Page() {
                     </td>
 
                     <td className="px-4 py-3.5">
-                      <button
-                        onClick={() => handlePrint(s)}
-                        disabled={printing === s.id}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-blue-200"
-                      >
-                        {printing === s.id
-                          ? <Loader2 className="w-3 h-3 animate-spin" />
-                          : <Printer className="w-3 h-3" />
-                        }
-                        {printing === s.id ? "Opening..." : "Print / PDF"}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handlePrint(s)}
+                          disabled={printing === s.id}
+                          className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-blue-200"
+                        >
+                          {printing === s.id
+                            ? <Loader2 className="w-3 h-3 animate-spin" />
+                            : <Printer className="w-3 h-3" />
+                          }
+                          {printing === s.id ? "Opening..." : "Print / PDF"}
+                        </button>
+                        <button
+                          onClick={() => deleteAdmission(s.id, s.full_name)}
+                          className="flex items-center justify-center p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition"
+                          title="Delete Admission"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

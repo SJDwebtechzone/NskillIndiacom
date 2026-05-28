@@ -189,8 +189,8 @@ const team = [
 // ];
 
 const iconBtn =
-  "w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 " +
-  "hover:bg-[#7c3aed] hover:text-white hover:border-[#7c3aed] hover:-translate-y-1 hover:shadow-md " +
+  "w-10 h-10 flex items-center justify-center rounded-xl border border-blue-100 bg-blue-50/50 text-blue-600 " +
+  "hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:-translate-y-1 hover:shadow-md " +
   "transition-all duration-200";
 
 const TeamSection = () => {
@@ -216,7 +216,7 @@ const TeamSection = () => {
         >
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="w-8 h-px bg-slate-300" />
-            <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-slate-400">
+            <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-black">
               Meet the people
             </span>
             <span className="w-8 h-px bg-slate-300" />
@@ -224,7 +224,7 @@ const TeamSection = () => {
 
           <h2 className="mb-5">Our Team</h2>
 
-          <p className="text-slate-500 max-w-xl mx-auto text-base font-light leading-relaxed">
+          <p className="text-black max-w-xl mx-auto text-base font-normal leading-relaxed">
            NTSC has a competent team of people from various specialities like Lean, safety, Electrical (Domestic and Industry), HVAC, HR management, soft skills, etc. The team is headed by,
           </p>
         </motion.div>
@@ -290,7 +290,7 @@ const TeamSection = () => {
                     {member.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200"
+                        className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-black border border-slate-300"
                       >
                         {tag}
                       </span>
@@ -302,7 +302,7 @@ const TeamSection = () => {
                 <div className="w-full h-px bg-slate-100 mb-4" />
 
                 {/* Description */}
-                <p className="text-sm text-slate-500 text-center leading-relaxed mb-6 flex-1 font-light line-clamp-4">
+                <p className="text-sm text-black text-center leading-relaxed mb-6 flex-1 font-normal line-clamp-4">
                   {member.desc}
                 </p>
 

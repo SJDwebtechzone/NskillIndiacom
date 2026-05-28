@@ -47,19 +47,19 @@ router.get(
                 r.name as role_name, r.id as role_id
          FROM users u
          LEFT JOIN roles r ON u.role_id = r.id
+         WHERE (u.status IS NULL OR u.status <> 'Deleted')
       `;
       let params = [];
 
-   if (role) {
-  if (role === 'staff') {
-    // fetch both trainer and staff roles
-    query += ` WHERE LOWER(r.name) IN ('trainer', 'staff')`;
-  } else {
-    query += ` WHERE LOWER(r.name) = LOWER($1)`;
-    params.push(role);
-  }
-}
-
+      if (role) {
+        if (role === 'staff') {
+          // fetch both trainer and staff roles
+          query += ` AND LOWER(r.name) IN ('trainer', 'staff')`;
+        } else {
+          query += ` AND LOWER(r.name) = LOWER($1)`;
+          params.push(role);
+        }
+      }
       query += ` ORDER BY u.created_at DESC`;
 
       const result = await pool.query(query, params);
@@ -232,21 +232,62 @@ router.put(
 router.delete(
   "/:id",
   authMiddleware,
-  checkPermission("Manage Users", "delete"),
-  async (req, res) => {
+  async (req, res, next) => {
+    if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") {
+      return next();
+    }
     try {
       const result = await pool.query(
-        "DELETE FROM users WHERE id = $1 RETURNING id",
-        [req.params.id]
+        `SELECT can_delete FROM permissions 
+         WHERE role_id = $1 AND module IN ('Manage Users', 'Staff / Trainee') AND can_delete = true`,
+        [req.user.roleId]
       );
-
-      if (result.rows.length === 0)
+      if (result.rows.length === 0) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      next();
+    } catch (err) {
+      console.error("Delete user permission check error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  },
+  async (req, res) => {
+    try {
+      // 1. Get user details first (needed for email update to avoid unique constraints on email for new registrations)
+      const userRes = await pool.query("SELECT email FROM users WHERE id = $1", [req.params.id]);
+      if (userRes.rows.length === 0) {
         return res.status(404).json({ message: "User not found" });
+      }
+      const email = userRes.rows[0].email;
+      const deletedEmail = `${email}_deleted_${Date.now()}`;
+
+      // 2. Perform soft delete
+      const result = await pool.query(
+        "UPDATE users SET status = 'Deleted', email = $1 WHERE id = $2 RETURNING id",
+        [deletedEmail, req.params.id]
+      );
 
       res.json({ message: "User deleted successfully" });
     } catch (err) {
       console.error("Delete user error:", err);
-      res.status(500).json({ message: "Server error" });
+      // Write error to diagnostic file
+      try {
+        const fs = require("fs");
+        const path = require("path");
+        const errorLogPath = path.join(__dirname, "../db_error.txt");
+        const logContent = JSON.stringify({
+          message: err.message,
+          code: err.code,
+          detail: err.detail,
+          table: err.table,
+          constraint: err.constraint,
+          stack: err.stack
+        }, null, 2);
+        fs.writeFileSync(errorLogPath, logContent, "utf8");
+      } catch (logErr) {
+        console.error("Failed to write diagnostic error log:", logErr);
+      }
+      res.status(500).json({ message: "Server error", error: err.message });
     }
   }
 );

@@ -14,7 +14,7 @@ const services = [
     bg: "from-indigo-500 to-[#0b1f3a]",
     gridColor: "#a5b4fc",
     href: "/courses",
-    desc: "Skill development has been considered one of the critical aspects for job creation in India. India has unique demographic advantage with more than 60% of the population is in young age group. But to get dividend from such large work force, employability must be improved. As per current statistics only 10% of the fresh graduates are employable and rest of the 90% lack skills required for eligible to be hired by corporate. Here at NTSC, we provide the required skill training for you to achieve the required professional skillset for any domain",
+    desc: "Skill development has been considered one of the critical aspects for job creation in India. India has unique demographic advantage with more than 60% of the population is in young age group. But to get dividend from such large work force, employability must be improved. As per current statistics only 10% of the fresh graduates are employable and rest of the 90% lack skills required for eligible to be hired by corporate. Here at NTSC, we provide the required skill training for you to achieve the required professional skillset for any domain.",
   },
   {
     id: "corporate-training",
@@ -103,12 +103,12 @@ const AboutSection = () => {
             </div>
             <p className="text-slate-600 leading-relaxed text-justify">
               NIILE Solution is established in 2012 in Kundrathur, Chennai to offer{" "}
-              <strong className="text-blue-600">Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
+              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
               services. NIILE serves world-renowned organizations from Hydrocarbon, Power, Steel, Cement and Heavy Infrastructure industries involved in Construction, Commissioning, Operation and Maintenance activities.
             </p>
             <p className="text-slate-500 leading-relaxed text-justify">
               As a strategic expansion aligning with the Skill India Mission, NIILE Solutions started{" "}
-              <strong className="text-blue-600">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
+              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
               near Kundrathur, Chennai during 2018 — to train unemployed youth, school and college finishers and dropouts in various skill-based trades for domestic and overseas employment.
             </p>
           </div>
@@ -129,12 +129,12 @@ const AboutSection = () => {
             </div>
             <p className="text-slate-600 leading-relaxed text-justify">
               NTSC training focuses on various skills like{" "}
-              <strong className="text-[#0b1f3a]">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
+              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
               and Civil construction skills such as Carpentry, Masonry, Plumbing, Bar-Bending, and a host of other trades. NTSC also offers customized courses for corporates on Behavioural, Leadership and Technical skills.
             </p>
             <p className="text-slate-500 leading-relaxed text-justify">
               NTSC's facility complies with NSDC requirements and is accredited by various State and Central Government bodies like{" "}
-              <strong className="text-[#0b1f3a]">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
+              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
               etc. The certifications help students avail opportunities for job and entrepreneurship.
             </p>
           </div>

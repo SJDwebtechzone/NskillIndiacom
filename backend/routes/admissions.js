@@ -385,18 +385,95 @@ router.patch("/:id", authMiddleware, uploadFields, async (req, res) => {
 
 // Delete admission — Admin only (DELETE /:id)
 router.delete("/:id", authMiddleware, async (req, res) => {
+    const client = await pool.connect();
     try {
         if (req.user.roleName !== "Admin" && req.user.roleName !== "Super Admin") {
             return res.status(403).json({ error: "Access denied. Admin only." });
         }
         const { id } = req.params;
-        await pool.query("DELETE FROM associate_referral_points WHERE admission_id = $1", [id]);
-        const result = await pool.query("DELETE FROM student_admissions WHERE id = $1 RETURNING *", [id]);
-        if (result.rows.length === 0) return res.status(404).json({ error: "Admission not found" });
-        res.json({ message: "Admission deleted successfully", deleted: result.rows[0] });
+
+        await client.query("BEGIN");
+
+        // 1. Get admission record first
+        const admRes = await client.query("SELECT * FROM student_admissions WHERE id = $1", [id]);
+        if (admRes.rows.length === 0) {
+            await client.query("ROLLBACK");
+            return res.status(404).json({ error: "Admission not found" });
+        }
+        const admission = admRes.rows[0];
+
+        // 2. Delete from referencing tables
+        await client.query("DELETE FROM associate_referral_points WHERE admission_id = $1", [id]);
+        await client.query("DELETE FROM attendance WHERE admission_id = $1", [id]);
+        await client.query("DELETE FROM face_embeddings WHERE admission_id = $1", [id]);
+        await client.query("DELETE FROM assessment_submissions WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM finaltest_attempts WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM posttest_attempts WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM practical_submissions WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM pretest_attempts WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM student_feedback WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM student_google_reviews WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM student_marks WHERE student_id = $1", [id]);
+        
+        // Retrieve and delete offer letters from placements
+        const placementResult = await client.query("SELECT offer_letter_url FROM student_placements WHERE student_id = $1", [id]);
+        for (const row of placementResult.rows) {
+            if (row.offer_letter_url) {
+                const filePath = path.join(__dirname, '..', row.offer_letter_url);
+                if (fs.existsSync(filePath)) {
+                    try { fs.unlinkSync(filePath); } catch (e) {}
+                }
+            }
+        }
+        await client.query("DELETE FROM student_placements WHERE student_id = $1", [id]);
+        await client.query("DELETE FROM student_videos WHERE student_id = $1", [id]);
+
+        // Delete from student_admissions
+        await client.query("DELETE FROM student_admissions WHERE id = $1", [id]);
+
+        // Delete associated user login if matches email
+        if (admission.email_id) {
+            await client.query("DELETE FROM users WHERE LOWER(email) = LOWER($1)", [admission.email_id]);
+        }
+
+        await client.query("COMMIT");
+
+        // 3. Delete physical files on disk for student admissions
+        const fileFields = [
+            'photo_url',
+            'has_aadhaar_file',
+            'has_edu_certs_file',
+            'has_passport_file',
+            'has_resume_file',
+            'has_address_proof_file',
+            'has_photos_file'
+        ];
+
+        fileFields.forEach(field => {
+            const fileUrl = admission[field];
+            if (fileUrl && typeof fileUrl === 'string') {
+                const filePath = path.join(__dirname, '..', fileUrl);
+                if (fs.existsSync(filePath)) {
+                    try {
+                        fs.unlinkSync(filePath);
+                    } catch (unlinkErr) {
+                        console.error(`Failed to delete file ${filePath}:`, unlinkErr.message);
+                    }
+                }
+            }
+        });
+
+        res.json({ message: "Admission deleted successfully", deleted: admission });
     } catch (err) {
+        try {
+            await client.query("ROLLBACK");
+        } catch (rollbackErr) {
+            console.error("Rollback failed:", rollbackErr.message);
+        }
         console.error("Delete admission error:", err.message);
-        res.status(500).json({ error: "Server Error" });
+        res.status(500).json({ error: `Server Error: ${err.message}` });
+    } finally {
+        client.release();
     }
 });
 // GET /my-profile — get logged in student's profile for ID card

@@ -128,12 +128,23 @@ export default function AdminReferralPaymentPage() {
                     <div className="flex flex-wrap gap-3 items-center">
                         {/* Status filter */}
                         <div className="flex rounded-xl overflow-hidden border border-slate-200">
-                            {(["all", "pending", "settled"] as const).map(s => (
-                                <button key={s} onClick={() => setStatusFilter(s)}
-                                    className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === s ? 'bg-[#0b1f3a] text-white' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>
-                                    {s}
-                                </button>
-                            ))}
+                            {(["all", "pending", "settled"] as const).map(s => {
+                                const activeColors: Record<string, { bg: string; color: string }> = {
+                                    all:     { bg: "#2563eb", color: "#ffffff" },
+                                    pending: { bg: "#f59e0b", color: "#ffffff" },
+                                    settled: { bg: "#16a34a", color: "#ffffff" },
+                                };
+                                const isActive = statusFilter === s;
+                                return (
+                                    <button key={s} onClick={() => setStatusFilter(s)}
+                                        style={isActive
+                                            ? { background: activeColors[s].bg, color: activeColors[s].color }
+                                            : { background: "#ffffff", color: "#94a3b8" }}
+                                        className="px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-90">
+                                        {s}
+                                    </button>
+                                );
+                            })}
                         </div>
                         {/* Search */}
                         <div className="relative">

@@ -87,7 +87,7 @@ export default function AssociateDashboard() {
                     <p className="text-blue-200 font-bold uppercase text-[10px] tracking-[0.2em]">Manage your enquiries, admissions, and referral earnings</p>
                     
                     <div className="mt-8 flex flex-wrap gap-4">
-                        <Link href="/dashboard/associate-management/enquiry" className="px-6 py-3 bg-white text-blue-700 hover:bg-blue-50 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+                        <Link href="/dashboard/associate-management/enquiry" className="px-6 py-3 bg-white !text-blue-700 hover:bg-blue-50 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2" style={{ color: "#1d4ed8" }}>
                            <UserPlus size={16} /> New Enquiry
                         </Link>
                         <Link href="/dashboard/associate-management/admission" className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">

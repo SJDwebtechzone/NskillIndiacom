@@ -223,6 +223,15 @@ router.delete("/:id", authMiddleware, async (req, res) => {
             return res.status(403).json({ error: "Access denied. Admin only." });
         }
         const { id } = req.params;
+
+        // Get enquiry_id first
+        const enqRes = await pool.query("SELECT enquiry_id FROM student_enquiries WHERE id = $1", [id]);
+        if (enqRes.rows.length > 0) {
+            const enquiryId = enqRes.rows[0].enquiry_id;
+            // Set enquiry_id to NULL in admissions to satisfy foreign key
+            await pool.query("UPDATE student_admissions SET enquiry_id = NULL WHERE enquiry_id = $1", [enquiryId]);
+        }
+
         const result = await pool.query("DELETE FROM student_enquiries WHERE id = $1 RETURNING *", [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Enquiry not found" });
@@ -230,7 +239,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         res.json({ message: "Enquiry deleted successfully", deleted: result.rows[0] });
     } catch (err) {
         console.error("Delete enquiry error:", err.message);
-        res.status(500).json({ error: "Server Error" });
+        res.status(500).json({ error: `Server Error: ${err.message}` });
     }
 });
 

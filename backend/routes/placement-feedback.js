@@ -131,6 +131,31 @@ router.patch('/placement/:id/status', async (req, res) => {
   }
 });
 
+// DELETE /api/placement-feedback/placement/:id — admin deletes placement record
+router.delete('/placement/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Get offer letter URL to delete file from disk
+    const fileResult = await pool.query(
+      `SELECT offer_letter_url FROM student_placements WHERE id = $1`,
+      [id]
+    );
+    const fileUrl = fileResult.rows[0]?.offer_letter_url;
+    if (fileUrl) {
+      const filePath = path.join(__dirname, '..', fileUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    await pool.query(`DELETE FROM student_placements WHERE id = $1`, [id]);
+    res.json({ message: 'Placement deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete placement' });
+  }
+});
+
 // ── FEEDBACK & TESTIMONIAL ROUTES ─────────────────────────────────────────────
 
 // POST /api/placement-feedback/feedback — student submits feedback

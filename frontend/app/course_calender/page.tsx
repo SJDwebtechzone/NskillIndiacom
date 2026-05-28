@@ -200,30 +200,36 @@ export default function StudentCalendar() {
         .cal-cell {
           border-bottom: 1px solid #e2e8f0;
           border-right: 1px solid #e2e8f0;
-          min-height: 110px;
-          padding: 10px;
+          min-height: 50px;
+          padding: 6px;
           transition: background 0.15s;
+        }
+        @media (min-width: 640px) {
+          .cal-cell {
+            min-height: 110px;
+            padding: 10px;
+          }
         }
         .cal-cell:hover { background: #f8fafc !important; }
       `}</style>
 
       {/* ── Page Banner ── */}
-      <div className="relative h-[280px] md:h-[400px] flex items-center overflow-hidden bg-white mb-8">
+      <div className="relative min-h-[380px] md:h-[350px] lg:h-[400px] flex items-center overflow-hidden bg-white mb-8 py-8 md:py-0">
         <AnimatedCalendarBanner />
         <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb] z-20" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 w-full">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-6 w-full">
                   {/* Header Text */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <div className="inline-flex items-center gap-2 bg-[#dbeafe] border border-[#bfdbfe] rounded-full px-4 py-1 mb-4 shadow-sm">
+              <div className="inline-flex items-center gap-2 bg-[#dbeafe] border border-[#bfdbfe] rounded-full px-4 py-1 mb-3 md:mb-4 shadow-sm">
                 <span className="text-[#2563eb] text-[11px] font-black tracking-widest uppercase">FY 2026–2027</span>
               </div>
-              <h1 className="text-[#0f172a] text-4xl md:text-5xl font-black uppercase tracking-tight mb-3">
+              <h1 className="text-[#0f172a] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 md:mb-3">
                 Course Calendar
               </h1>
             </motion.div>
@@ -233,18 +239,18 @@ export default function StudentCalendar() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="flex items-center gap-4 bg-white rounded-2xl px-5 py-3 border border-slate-200 shadow-sm"
+              className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-2 sm:gap-4 bg-white rounded-2xl px-4 py-2.5 sm:px-5 sm:py-3 border border-slate-200 shadow-sm"
             >
               <button
                 onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
                 disabled={monthIdx === 0}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-xl shadow-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-lg sm:text-xl shadow-sm"
               >‹</button>
-              <span className="min-w-[140px] text-center text-[17px] font-black text-[#0f172a]">{month} {year}</span>
+              <span className="min-w-[110px] sm:min-w-[140px] text-center text-[15px] sm:text-[17px] font-black text-[#0f172a]">{month} {year}</span>
               <button
-                onClick={() => setMonthIdx((i) => Math.max(MONTHS_FY.length - 1, i + 1))}
+                onClick={() => setMonthIdx((i) => Math.min(MONTHS_FY.length - 1, i + 1))}
                 disabled={monthIdx === MONTHS_FY.length - 1}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-xl shadow-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-lg sm:text-xl shadow-sm"
               >›</button>
             </motion.div>
           </div>
@@ -254,7 +260,7 @@ export default function StudentCalendar() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-            className="flex gap-3 mt-12 overflow-x-auto scrollbar-hide pb-2 pt-1"
+            className="flex gap-3 mt-6 md:mt-12 overflow-x-auto scrollbar-hide pb-2 pt-1"
           >
             {MONTHS_FY.map(({ month: m, year: y }, i) => {
               const isActive = monthIdx === i;
@@ -547,7 +553,7 @@ export default function StudentCalendar() {
           {/* Day headers */}
           <div className="grid grid-cols-7 bg-[#0b1f3a]">
             {WEEK_DAYS.map((d) => (
-              <div key={d} className="py-4 text-center text-[17px] font-black uppercase tracking-widest text-white">{d}</div>
+              <div key={d} className="py-2 sm:py-4 text-center text-xs sm:text-[17px] font-black uppercase tracking-normal sm:tracking-widest text-white">{d}</div>
             ))}
           </div>
 
@@ -597,7 +603,8 @@ export default function StudentCalendar() {
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-col gap-1">
+                    {/* Desktop/Tablet view: Event details text */}
+                    <div className="hidden sm:flex flex-col gap-1">
                       {dayEvents.slice(0, 2).map((ev, idx) => {
                         const p = getCourseColor(ev.course_name, allCourses);
                         return (
@@ -618,6 +625,21 @@ export default function StudentCalendar() {
                       {dayEvents.length > 2 && (
                         <span className="text-[11px] pl-1 font-medium text-slate-400">+{dayEvents.length - 2} more</span>
                       )}
+                    </div>
+
+                    {/* Mobile view: Color dot indicators */}
+                    <div className="flex sm:hidden flex-wrap gap-1 justify-center mt-1">
+                      {dayEvents.map((ev, idx) => {
+                        const p = getCourseColor(ev.course_name, allCourses);
+                        return (
+                          <span
+                            key={idx}
+                            className="w-2.5 h-2.5 rounded-full inline-block border border-white shadow-sm flex-shrink-0"
+                            style={{ backgroundColor: p.dotColor }}
+                            title={ev.course_name}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 );

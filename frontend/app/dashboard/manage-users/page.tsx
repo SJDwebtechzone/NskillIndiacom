@@ -111,8 +111,11 @@ export default function ManageUsersPage() {
           <p className="text-slate-500 font-medium mt-1">View and manage all system users.</p>
         </div>
         {can("Manage Users", "add") && (
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all active:scale-95">
-            <Plus className="w-4 h-4" />
+          <button 
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+            style={{ color: "white" }}
+          >
+            <Plus className="w-4 h-4" style={{ color: "white" }} />
             Add User
           </button>
         )}
@@ -135,12 +138,16 @@ export default function ManageUsersPage() {
             <button
               key={role}
               onClick={() => setRoleFilter(role)}
-              style={roleFilter === role && role !== "ALL" ? { background: rc(role).bg, color: rc(role).text } : {}}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+              style={
                 roleFilter === role
                   ? role === "ALL"
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "border-transparent"
+                    ? { background: "#2563eb", color: "white", borderColor: "#2563eb" }
+                    : { background: rc(role).bg, color: rc(role).text, borderColor: "transparent" }
+                  : {}
+              }
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                roleFilter === role
+                  ? "border-transparent"
                   : "bg-white text-slate-500 border-slate-200 hover:border-blue-300"
               }`}
             >
