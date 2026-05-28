@@ -233,7 +233,7 @@ router.delete(
   "/:id",
   authMiddleware,
   async (req, res, next) => {
-    if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") {
+    if (req.user.roleName === "ADMIN" || req.user.roleName === "NTSC_ADMIN") {
       return next();
     }
     try {
