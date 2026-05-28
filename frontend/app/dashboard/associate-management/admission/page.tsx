@@ -868,7 +868,7 @@ export default function StudentAdmissionForm() {
                                 {steps.map((s, idx) => (
                                     <button key={s.id} type="button"
                                         onClick={() => {
-                                            if (user?.role==="NTSC_ADMIN"||user?.role==="ADMIN") { setCurrentStep(idx); }
+                                            if (user?.role==="Super Admin"||user?.role==="Admin") { setCurrentStep(idx); }
                                             else if (idx > currentStep) { if (validateStep(currentStep)) setCurrentStep(idx); }
                                             else { setCurrentStep(idx); }
                                         }}
