@@ -313,7 +313,6 @@ export default function PlacementPage() {
                       <p className="text-[16px] font-medium text-[#4b5563] line-clamp-3 leading-relaxed border-l-4 border-[#eff1f6] pl-6 group-hover:border-[#2f55e4] transition-all">
                         {job.description}
                       </p>
-                      
                       <div>
                         <p className="text-[12px] font-black text-[#7c829c] uppercase tracking-wider mb-3">Key Skills</p>
                         <div className="flex flex-wrap gap-2">
@@ -324,7 +323,7 @@ export default function PlacementPage() {
                           ))}
                         </div>
                       </div>
-                    </div>
+                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-[#f6f7fb] gap-4">
                       <div className="flex items-center gap-3 text-[14px] font-bold text-[#7c829c]">
