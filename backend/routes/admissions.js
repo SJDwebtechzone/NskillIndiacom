@@ -126,7 +126,7 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
                 has_aadhaar_file, has_edu_certs_file, has_passport_file, has_resume_file, has_address_proof_file, has_photos_file,
                 student_declaration, parent_declaration, placement_ack, overseas_disclaimer,
                 discipline_ack, photo_consent, refund_policy_ack, data_privacy_ack, final_undertaking,
-                emergency_contact_name, emergency_contact_number, emergency_authorized,
+                emergency_contact_name, emergency_contact_relationship, emergency_contact_number, emergency_authorized,
                 admission_number, batch_allotted, verified_by, authorized_signature_by,
                 created_by_id
             ) VALUES (
@@ -143,9 +143,9 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
                 $62, $63, $64, $65, $66, $67,
                 $68, $69, $70, $71,
                 $72, $73, $74, $75, $76,
-                $77, $78, $79,
-                $80, $81, $82, $83,
-                $84
+                $77, $78, $79, $80,
+                $81, $82, $83, $84,
+                $85
             ) RETURNING *`;
 
         const values = [
@@ -162,7 +162,7 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
             getFilePath('has_aadhaar_file'), getFilePath('has_edu_certs_file'), getFilePath('has_passport_file'), getFilePath('has_resume_file'), getFilePath('has_address_proof_file'), getFilePath('has_photos_file'),
             toBool(data.student_declaration), toBool(data.parent_declaration), toBool(data.placement_ack), toBool(data.overseas_disclaimer),
             toBool(data.discipline_ack), toBool(data.photo_consent), toBool(data.refund_policy_ack), toBool(data.data_privacy_ack), toBool(data.final_undertaking),
-            data.emergency_contact_name, data.emergency_contact_number, toBool(data.emergency_authorized),
+            data.emergency_contact_name, toStr(data.emergency_contact_relationship), data.emergency_contact_number, toBool(data.emergency_authorized),
             toStr(data.admission_number || data.enquiry_id), toStr(data.batch_allotted), toStr(data.verified_by), toStr(data.authorized_signature_by),
             userId
         ];
@@ -347,10 +347,14 @@ router.patch("/:id", authMiddleware, uploadFields, async (req, res) => {
 
         const setClauseParts = fields.map((f, i) => `${f} = $${i + 1}`);
         const numericFields = ['course_fees', 'total_fees', 'paid_fees', 'instalment_1', 'instalment_2', 'instalment_3', 'instalment_4', 'balance_amount', 'age'];
+        const dateFields = ['dob', 'passport_validity', 'counselling_date', 'payment_date', 'admission_date', 'enquiry_date', 'follow_up_date'];
         const values = fields.map(f => {
             if (numericFields.includes(f)) {
                 const p = parseFloat(data[f]);
                 return isNaN(p) ? 0 : p;
+            }
+            if (dateFields.includes(f)) {
+                return (data[f] && typeof data[f] === 'string' && data[f].trim() !== "" ? data[f] : null);
             }
             return data[f];
         });

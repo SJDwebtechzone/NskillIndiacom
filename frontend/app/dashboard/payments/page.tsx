@@ -299,7 +299,9 @@ function ViewPaymentModal({
             ))}
           </div>
 
-          <button onClick={onClose} className="w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-700 transition">
+          <button onClick={onClose}
+            style={{ color: "#ffffff", backgroundColor: "#1e293b" }}
+            className="w-full py-3 rounded-xl font-bold text-sm hover:bg-slate-700 transition">
             Close
           </button>
         </div>

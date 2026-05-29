@@ -89,10 +89,10 @@ export default function StudentManagementDashboard() {
           </p>
           {isStudent && (
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/dashboard/student-management/attendance" className="px-6 py-3 bg-white text-blue-700 hover:bg-blue-50 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+              <Link href="/dashboard/student-management/attendance" style={{ color: "#1d4ed8", backgroundColor: "#ffffff" }} className="px-6 py-3 hover:bg-blue-50 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
                 <ClipboardList size={15} /> My Attendance
               </Link>
-              <Link href="/dashboard/student-management/results" className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+              <Link href="/dashboard/student-management/results" style={{ color: "#ffffff" }} className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
                 <Award size={15} /> My Results
               </Link>
             </div>

@@ -470,7 +470,9 @@ function EnquiryModal({ enq, onClose }: { enq: any; onClose: () => void }) {
           </div>
         </div>
         <div className="px-6 py-4 border-t border-slate-100 shrink-0 flex justify-end">
-          <button onClick={onClose} className="px-6 py-2.5 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-700 transition">
+          <button onClick={onClose}
+            style={{ color: "#ffffff", backgroundColor: "#1e293b" }}
+            className="px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition">
             Close
           </button>
         </div>
@@ -646,7 +648,9 @@ function AdmissionModal({ adm, onClose }: { adm: any; onClose: () => void }) {
         </div>
 
         <div className="px-6 py-4 border-t border-slate-100 shrink-0 flex justify-end">
-          <button onClick={onClose} className="px-6 py-2.5 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-700 transition">
+          <button onClick={onClose}
+            style={{ color: "#ffffff", backgroundColor: "#1e293b" }}
+            className="px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition">
             Close
           </button>
         </div>

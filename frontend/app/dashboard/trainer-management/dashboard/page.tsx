@@ -59,10 +59,10 @@ export default function TraineeManagementDashboard() {
             Manage classes, attendance, tests & training content
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link href="/dashboard/trainer-management/attendance" className="px-6 py-3 bg-white text-blue-700 hover:bg-blue-50 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+            <Link href="/dashboard/trainer-management/attendance" style={{ color: "#1d4ed8", backgroundColor: "#ffffff" }} className="px-6 py-3 hover:bg-blue-50 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
               <Activity size={15} /> Attendance Status
             </Link>
-            <Link href="/dashboard/trainer-management/class-status/ongoing" className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+            <Link href="/dashboard/trainer-management/class-status/ongoing" style={{ color: "#ffffff" }} className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2">
               <Play size={15} /> Ongoing Classes
             </Link>
           </div>

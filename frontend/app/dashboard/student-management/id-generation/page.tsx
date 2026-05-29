@@ -95,7 +95,7 @@ const getValidUntil = (admissionDate: string) => {
         scale: 3,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#0b1f3a",
+        backgroundColor: "#1e3a8a",
         imageTimeout: 15000,
         onclone: (clonedDoc) => {
           const images = clonedDoc.querySelectorAll("img");
@@ -149,7 +149,7 @@ const getValidUntil = (admissionDate: string) => {
   ref={cardRef}
   className="relative w-[320px] rounded-3xl overflow-hidden shadow-2xl"
   style={{
-    background: "linear-gradient(135deg, #0b1f3a 0%, #1a3a6b 50%, #0b1f3a 100%)",
+    background: "linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%)",
     minHeight: "520px",
   }}
 >
@@ -169,7 +169,7 @@ const getValidUntil = (admissionDate: string) => {
   {/* Dark overlay */}
   <div
     className="absolute inset-0"
-    style={{ background: "linear-gradient(135deg, rgba(11,31,58,0.95) 0%, rgba(26,58,107,0.95) 100%)" }}
+    style={{ background: "linear-gradient(135deg, rgba(30,58,138,0.92) 0%, rgba(37,99,235,0.92) 100%)" }}
   />
 
         {/* Card Content */}

@@ -162,9 +162,10 @@ function PendingFeesPopup({
           </p>
           <button
             onClick={onClose}
-            className="bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition"
+            style={{ color: "#ffffff", backgroundColor: "#1e293b" }}
+            className="px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition"
           >
-            Dismiss
+            <span style={{ color: "#ffffff" }}>Dismiss</span>
           </button>
         </div>
       </div>

@@ -455,7 +455,8 @@ export default function StaffPage() {
 
             <button
               onClick={() => setShowAssignModal(false)}
-              className="w-full mt-6 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+              style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+              className="w-full mt-6 py-3 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
             >
               Done
             </button>
@@ -561,7 +562,7 @@ export default function StaffPage() {
                     <button onClick={() => copyToClipboard(resetCreds.password)} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-amber-600"><Copy size={16} /></button>
                   </div>
                 </div>
-                <button onClick={() => setShowResetModal(false)} className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl">Done & Close</button>
+                <button onClick={() => setShowResetModal(false)} style={{ color: "#ffffff", backgroundColor: "#0f172a" }} className="w-full py-4 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl">Done & Close</button>
               </div>
             )}
           </div>

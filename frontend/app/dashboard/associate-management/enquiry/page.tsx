@@ -625,10 +625,12 @@ export default function StudentEnquiryForm() {
 
                                 <div className="mt-8 pt-6 border-t border-slate-100 flex gap-4">
                                     <button onClick={() => setSelectedEnquiry(null)}
-                                        className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-all">Close</button>
+                                        style={{ color: "#475569", backgroundColor: "#f1f5f9" }}
+                                        className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-200 transition-all">Close</button>
                                     {user?.role !== "Associate" && (
                                         <button onClick={() => { handleEdit(selectedEnquiry); setSelectedEnquiry(null); }}
-                                            className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-700 transition-all">Edit Record</button>
+                                            style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                                            className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-700 transition-all">Edit Record</button>
                                     )}
                                 </div>
                             </div>
@@ -653,7 +655,10 @@ export default function StudentEnquiryForm() {
                                 </>
                             )}
                             <button onClick={() => { setIsSuccess(false); window.location.reload(); }}
-                                className="mt-8 w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[10px]">Back to Dashboard</button>
+                                style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                                className="mt-8 w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all hover:bg-slate-800">
+                                Back to Dashboard
+                            </button>
                         </motion.div>
                     </motion.div>
                 )}

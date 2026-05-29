@@ -58,7 +58,6 @@ const courseManagementItems = [
 ];
 
 const associateManagementItems = [
-  { name: "Dashboard",             path: "/dashboard/associate-management/dashboard",         module: "Associate Dashboard",   icon: DashboardIcon },
   { name: "Enquiry Form",          path: "/dashboard/associate-management/enquiry",           module: "Enquiry Form",          icon: ClipboardList },
   { name: "Admission Form",        path: "/dashboard/associate-management/admission",         module: "Admission Form",        icon: UserCheck     },
   { name: "Referral Fee Tracking", path: "/dashboard/associate-management/referral-tracking", module: "Referral Fee Tracking", icon: DollarSign    },
@@ -235,6 +234,13 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const isAssociate = user?.role === "Associate" || user?.roleName === "Associate";
 
   const showDashboard = isAdmin(user) || permissions?.["Dashboard"]?.view || isStudent || isTrainer || isAssociate;
+  const getDashboardPath = () => {
+    if (isStudent) return "/dashboard/student-management/dashboard";
+    if (isTrainer) return "/dashboard/trainer-management/dashboard";
+    if (isAssociate) return "/dashboard/associate-management/dashboard";
+    return "/dashboard";
+  };
+  const dashboardPath = getDashboardPath();
   const showPayments  = isAdmin(user) || permissions?.["Payments"]?.view;
 
   // ── Visible items — re-computed every render when permissions change ────────
@@ -317,11 +323,11 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
           <ul className="space-y-1">
             {showDashboard && (
               <li>
-                <Link href="/dashboard" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                  pathname === "/dashboard" ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/30" : "text-black hover:text-[#2563eb] hover:bg-blue-50"
+                <Link href={dashboardPath} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                  pathname === dashboardPath ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/30" : "text-black hover:text-[#2563eb] hover:bg-blue-50"
                 }`}>
-                  <LayoutDashboard className={`w-5 h-5 ${pathname === "/dashboard" ? "text-white" : "group-hover:text-[#2563eb]"}`} />
-                  <span className={`font-black ${pathname === "/dashboard" ? "text-white" : "text-black"}`}>Dashboard</span>
+                  <LayoutDashboard className={`w-5 h-5 ${pathname === dashboardPath ? "text-white" : "group-hover:text-[#2563eb]"}`} />
+                  <span className={`font-black ${pathname === dashboardPath ? "text-white" : "text-black"}`}>Dashboard</span>
                 </Link>
               </li>
             )}

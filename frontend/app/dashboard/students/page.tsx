@@ -425,7 +425,8 @@ export default function StudentsPage() {
                   <button
                     disabled={!selectedAdmId || generating}
                     onClick={handleCreateCredentials}
-                    className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                    className="w-full py-4 hover:bg-black text-white rounded-2xl font-black text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {generating ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Generate One-Time Credentials"}
                   </button>
@@ -449,7 +450,7 @@ export default function StudentsPage() {
                       <Copy className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 cursor-pointer hover:text-emerald-500" onClick={() => copyToClipboard(createdCreds.password)} />
                     </div>
                   </div>
-                  <button onClick={() => setShowAddModal(false)} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-sm transition-all">Done</button>
+                  <button onClick={() => setShowAddModal(false)} style={{ color: "#ffffff", backgroundColor: "#059669" }} className="w-full py-4 hover:bg-emerald-700 text-white rounded-2xl font-black text-sm transition-all">Done</button>
                 </div>
               )}
             </div>
@@ -501,7 +502,8 @@ export default function StudentsPage() {
               </div>
               <button 
                 onClick={() => setShowViewModal(false)}
-                className="w-full mt-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all"
+                style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                className="w-full mt-8 py-4 rounded-2xl font-black text-sm hover:bg-black transition-all"
               >
                 Close View
               </button>
@@ -542,7 +544,8 @@ export default function StudentsPage() {
               <button 
                 disabled={generating}
                 onClick={handleUpdate}
-                className="w-full mt-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-blue-600/20"
+                style={{ color: "#ffffff", backgroundColor: "#2563eb" }}
+                className="w-full mt-8 py-4 hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-blue-600/20"
               >
                 {generating ? "Updating..." : "Save Changes"}
               </button>
@@ -573,7 +576,8 @@ export default function StudentsPage() {
                   <button 
                     disabled={generating}
                     onClick={handleResetPassword}
-                    className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-black text-sm transition-all"
+                    style={{ color: "#ffffff", backgroundColor: "#d97706" }}
+                    className="w-full py-4 hover:bg-amber-600 text-white rounded-2xl font-black text-sm transition-all"
                   >
                     {generating ? "Generating..." : "Generate New Password"}
                   </button>
@@ -589,7 +593,9 @@ export default function StudentsPage() {
                     <p className="text-sm font-bold text-slate-800">{createdCreds.password}</p>
                     <Copy className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 cursor-pointer hover:text-emerald-500" onClick={() => copyToClipboard(createdCreds.password)} />
                   </div>
-                  <button onClick={() => setShowResetModal(false)} className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-sm transition-all font-bold">Close</button>
+                  <button onClick={() => setShowResetModal(false)}
+                      style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                      className="w-full py-4 rounded-2xl font-black text-sm transition-all font-bold hover:bg-black">Close</button>
                 </div>
               )}
             </div>
@@ -614,7 +620,8 @@ export default function StudentsPage() {
                 <button 
                   disabled={generating}
                   onClick={handleDelete}
-                  className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-red-600/20"
+                  style={{ color: "#ffffff", backgroundColor: "#dc2626" }}
+                  className="flex-1 py-4 hover:bg-red-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-red-600/20"
                 >
                   {generating ? "..." : "Delete"}
                 </button>

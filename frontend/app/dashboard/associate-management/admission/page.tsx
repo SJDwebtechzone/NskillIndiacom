@@ -32,6 +32,21 @@ const steps = [
     { id: "N",      title: "Office Use",        icon: FileText     },
 ];
 
+const mapQualification = (val: string) => {
+    if (!val) return "";
+    const lower = val.toLowerCase().trim();
+    if (lower.includes("dropout") || lower.includes("school")) return "School Dropout";
+    if (lower.includes("10th") || lower.includes("12th") || lower.includes("sslc") || lower.includes("hsc") || lower.includes("matric")) return "10th / 12th";
+    if (lower.includes("iti") || lower.includes("diploma") || lower.includes("polytechnic")) return "ITI / Diploma";
+    if (lower.includes("degree") || lower.includes("engineering") || lower.includes("bsc") || lower.includes("be") || lower.includes("btech") || lower.includes("bcom") || lower.includes("ba") || lower.includes("bca") || lower.includes("msc") || lower.includes("me") || lower.includes("mba") || lower.includes("post graduate") || lower.includes("graduate")) return "Degree / Engineering";
+    
+    const standardOptions = ["School Dropout", "10th / 12th", "ITI / Diploma", "Degree / Engineering"];
+    const found = standardOptions.find(o => o.toLowerCase() === lower);
+    if (found) return found;
+    
+    return "";
+};
+
 export default function StudentAdmissionForm() {
     const [viewMode,          setViewMode]          = useState<"form"|"list">("form");
     const [admissions,        setAdmissions]        = useState<any[]>([]);
@@ -246,7 +261,7 @@ export default function StudentAdmissionForm() {
                 pin_code:               data.perm_pin            || "",
                 parent_name:            data.father_name         || "",
                 parent_mobile:          data.parent_contact      || "",
-                highest_qualification:  data.highest_qualification || "",
+                highest_qualification:  mapQualification(data.highest_qualification || ""),
                 year_of_passing:        data.year_of_passing     || "",
                 institution_name:       data.institution_name    || "",
                 course_interested:      data.course_interested   || "",
@@ -280,6 +295,7 @@ export default function StudentAdmissionForm() {
         if (user?.role === "Associate") { alert("Associates cannot edit admissions."); return; }
         setFormData({
             ...emptyForm, ...adm,
+            highest_qualification: mapQualification(adm.highest_qualification || ""),
             dob:              adm.dob              ? adm.dob.split("T")[0]              : "",
             passport_validity:adm.passport_validity? adm.passport_validity.split("T")[0]: "",
             counselling_date: adm.counselling_date ? adm.counselling_date.split("T")[0] : "",
@@ -499,7 +515,8 @@ export default function StudentAdmissionForm() {
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><GraduationCap className="text-blue-500" size={18}/> Education Details</h4>
                         <SelectField label="22. Highest Qualification" name="highest_qualification" value={formData.highest_qualification}
-                            options={["","School Dropout","10th / 12th","ITI / Diploma","Degree / Engineering"]} onChange={handleChange} compulsory error={errors.highest_qualification} />
+                            options={["", "School Dropout", "10th / 12th", "ITI / Diploma", "Degree / Engineering"]} onChange={handleChange} compulsory error={errors.highest_qualification} />
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <InputField label="23. Year of Passing"  name="year_of_passing"  value={formData.year_of_passing}  onChange={handleChange} compulsory error={errors.year_of_passing}  />
                             <InputField label="24. Institution Name" name="institution_name" value={formData.institution_name} onChange={handleChange} compulsory error={errors.institution_name} />
@@ -529,7 +546,12 @@ export default function StudentAdmissionForm() {
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><BookOpen className="text-blue-500" size={18}/> Course Selection</h4>
                         {/* ── Course Interested → DROPDOWN ── */}
                         <SelectField label="31. Course Interested In" name="course_interested" value={formData.course_interested}
-                            options={COURSE_OPTIONS} onChange={handleChange} compulsory error={errors.course_interested} />
+                            options={
+                                COURSE_OPTIONS.includes(formData.course_interested)
+                                ? COURSE_OPTIONS
+                                : [...COURSE_OPTIONS, formData.course_interested]
+                            }
+                            onChange={handleChange} compulsory error={errors.course_interested} />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <SelectField label="32. Course Level" name="course_level" value={formData.course_level}
                                 options={["Basic","Diploma","Advanced","International"]} onChange={handleChange} compulsory />
@@ -628,16 +650,17 @@ export default function StudentAdmissionForm() {
                                 </div>
                             </div>
 
-                            <div className="mt-4 p-4 bg-slate-900 rounded-xl flex justify-between items-center shadow-lg">
-                                <span className="text-blue-200 font-bold uppercase text-xs tracking-widest">59. Balance Payable Amount</span>
+                            <div className="mt-4 p-4 rounded-xl flex justify-between items-center shadow-lg" style={{ backgroundColor: "#0f172a" }}>
+                                <span className="font-bold uppercase text-xs tracking-widest" style={{ color: "#93c5fd" }}>59. Balance Payable Amount</span>
                                 {can("Associate Management","edit") ? (
                                     <input name="balance_amount" value={formData.balance_amount} onChange={handleChange}
-                                        className="bg-white/10 text-white text-2xl font-black w-32 outline-none text-right border-b border-white/20" />
+                                        style={{ color: "#ffffff", backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                                        className="text-2xl font-black w-32 outline-none text-right border-b border-white/20" />
                                 ) : (
-                                    <span className="text-white text-2xl font-black">₹ {parseFloat(formData.balance_amount||0).toLocaleString("en-IN")}</span>
+                                    <span className="text-2xl font-black" style={{ color: "#ffffff" }}>₹ {parseFloat(formData.balance_amount||0).toLocaleString("en-IN")}</span>
                                 )}
                             </div>
-                            <p className="text-[10px] text-blue-500 font-bold mt-2 flex items-center gap-1"><AlertTriangle size={12}/> Auto-points (10%) added once balance is 0.</p>
+                            <p className="text-xs font-bold mt-2 flex items-center gap-1.5" style={{ color: "#1e3a8a" }}><AlertTriangle size={14} style={{ color: "#2563eb" }}/> Auto-points (10%) added once balance is 0.</p>
                         </div>
                     </div>
                 </div>
@@ -660,8 +683,8 @@ export default function StudentAdmissionForm() {
                     <div className="space-y-4">
                         <h4 className="font-black text-slate-800 uppercase tracking-widest text-xs flex items-center gap-2"><ShieldCheck className="text-blue-500" size={16}/> Declarations</h4>
                         <div className="space-y-3">
-                            <CheckboxField label="L. Student Declaration (Rules & Discipline)"  name="student_declaration" checked={formData.student_declaration} onChange={handleChange} compulsory error={errors.student_declaration} />
-                            <CheckboxField label="M. Parent / Guardian Declaration (Consent)"  name="parent_declaration"  checked={formData.parent_declaration}  onChange={handleChange} compulsory error={errors.parent_declaration}  />
+                            <CheckboxField label="Student Declaration (Rules & Discipline)"  name="student_declaration" checked={formData.student_declaration} onChange={handleChange} compulsory error={errors.student_declaration} />
+                            <CheckboxField label="Parent / Guardian Declaration (Consent)"  name="parent_declaration"  checked={formData.parent_declaration}  onChange={handleChange} compulsory error={errors.parent_declaration}  />
                             <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                                 <p className="text-[11px] font-bold text-blue-800 mb-2">Placement Assistance: Performance dependent. Overseas subject to Visa/Medical.</p>
                                 <CheckboxField label="Placement Assistance Acknowledgement" name="placement_ack" checked={formData.placement_ack} onChange={handleChange} compulsory error={errors.placement_ack} />
@@ -692,8 +715,8 @@ export default function StudentAdmissionForm() {
                             <CheckboxField label="Authorize NTSC for Emergency Contact" name="emergency_authorized" checked={formData.emergency_authorized} onChange={handleChange} compulsory error={errors.emergency_authorized} />
                         </div>
 
-                        <div className="p-6 bg-slate-900 rounded-2xl border border-white/10 shadow-2xl">
-                            <h5 className="font-black text-blue-200 text-[10px] uppercase tracking-widest mb-4">10. Student Undertaking</h5>
+                        <div className="p-6 rounded-2xl border border-white/10 shadow-2xl" style={{ backgroundColor: "#0f172a" }}>
+                            <h5 className="font-black text-[10px] uppercase tracking-widest mb-4" style={{ color: "#93c5fd" }}>10. Student Undertaking</h5>
                             <CheckboxField label="I confirm that I have read all terms & conditions and voluntarily join NTSC Skill Centre." name="final_undertaking" checked={formData.final_undertaking} onChange={handleChange} compulsory error={errors.final_undertaking} dark />
                         </div>
                     </div>
@@ -1081,10 +1104,12 @@ export default function StudentAdmissionForm() {
 
                                 <div className="mt-10 pt-6 border-t border-slate-100 flex gap-4">
                                     <button onClick={() => setSelectedAdmission(null)}
-                                        className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-200 transition-all">Close</button>
+                                        style={{ color: "#475569", backgroundColor: "#f1f5f9" }}
+                                        className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-200 transition-all">Close</button>
                                     {user?.role !== "Associate" && (
                                         <button onClick={() => { handleEdit(selectedAdmission); setSelectedAdmission(null); }}
-                                            className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-blue-800 transition-all">Edit Record</button>
+                                            style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                                            className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-blue-800 transition-all">Edit Record</button>
                                     )}
                                 </div>
                             </div>
@@ -1105,7 +1130,9 @@ export default function StudentAdmissionForm() {
                             </div>
                             <h3 className="text-3xl font-black text-slate-800">Admission Confirmed!</h3>
                             <p className="text-slate-500 font-bold mt-4 uppercase text-[10px] tracking-widest">Points added after full payment.</p>
-                            <button onClick={() => setIsSuccess(false)} className="mt-10 w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs">Close</button>
+                            <button onClick={() => setIsSuccess(false)}
+                                style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                                className="mt-10 w-full py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-slate-800 transition-all">Close</button>
                         </motion.div>
                     </motion.div>
                 )}
@@ -1171,17 +1198,27 @@ const TextAreaField = ({ label, name, value, onChange, error="", compulsory=fals
     </div>
 );
 
-const CheckboxField = ({ label, name, checked, onChange, error="", compulsory=false, dark=false }: any) => (
-    <label className={`flex items-start gap-4 p-4 border transition-all cursor-pointer group w-full rounded-2xl ${dark?"bg-white/5 border-white/10 hover:bg-white/10":"bg-slate-50 border-slate-200 hover:bg-white hover:border-blue-300"}`}>
-        <input type="checkbox" name={name} checked={checked||false} onChange={onChange} className="mt-1 w-5 h-5 rounded-lg text-blue-500 border-slate-400 cursor-pointer"/>
-        <div className="flex flex-col">
-            <span className={`text-[11px] uppercase tracking-widest font-black leading-tight ${error?"text-red-600":dark?"text-blue-100":"text-slate-700"} group-hover:text-blue-500 transition-colors`}>
-                {label} {compulsory && <span className="text-red-500">*</span>}
-            </span>
-            {error && <span className="text-[9px] text-red-500 font-black uppercase mt-1">{error}</span>}
-        </div>
-    </label>
-);
+const CheckboxField = ({ label, name, checked, onChange, error="", compulsory=false, dark=false }: any) => {
+    const textColor = error ? "#dc2626" : (dark ? "#e2e8f0" : "#334155");
+    return (
+        <label 
+            style={{ 
+                backgroundColor: dark ? "rgba(255, 255, 255, 0.05)" : undefined,
+                borderColor: dark ? "rgba(255, 255, 255, 0.1)" : undefined
+            }}
+            className={`flex items-start gap-4 p-4 border transition-all cursor-pointer group w-full rounded-2xl ${dark?"hover:bg-white/10":"bg-slate-50 border-slate-200 hover:bg-white hover:border-blue-300"}`}>
+            <input type="checkbox" name={name} checked={checked||false} onChange={onChange} className="mt-1 w-5 h-5 rounded-lg text-blue-500 border-slate-400 cursor-pointer"/>
+            <div className="flex flex-col">
+                <span 
+                    style={{ color: textColor }}
+                    className="text-[11px] uppercase tracking-widest font-black leading-tight group-hover:text-blue-500 transition-colors">
+                    {label} {compulsory && <span className="text-red-500">*</span>}
+                </span>
+                {error && <span className="text-[9px] text-red-500 font-black uppercase mt-1">{error}</span>}
+            </div>
+        </label>
+    );
+};
 
 const FileField = ({ label, name, value, onChange, error="", compulsory=false }: any) => (
     <div className="flex flex-col gap-1.5 w-full">

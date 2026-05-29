@@ -64,3 +64,45 @@ error: INSERT has more expressions than target columns
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:164:24
 
+[2026-05-29T10:26:58.282Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
+[2026-05-29T10:27:10.236Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
+[2026-05-29T10:27:14.465Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
+[2026-05-29T10:27:17.886Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
+[2026-05-29T10:28:07.701Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
+[2026-05-29T10:48:11.248Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
+[2026-05-29T10:48:54.057Z] PATCH Error: invalid input syntax for type date: ""
+error: invalid input syntax for type date: ""
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
+
