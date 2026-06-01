@@ -99,11 +99,24 @@ export default function StudentAdmissionForm() {
     };
 
     const [formData, setFormData] = useState<any>(emptyForm);
+    const [courses, setCourses] = useState<any[]>([]);
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem("token");
         return { Authorization: `Bearer ${token}` };
     };
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/courses`);
+                setCourses(res.data || []);
+            } catch (err) {
+                console.error("Error fetching courses:", err);
+            }
+        };
+        fetchCourses();
+    }, []);
 
     useEffect(() => {
         if (viewMode === "list") fetchAdmissions();
@@ -602,7 +615,22 @@ export default function StudentAdmissionForm() {
                             <InputField label="47. Enquiry Date" name="enquiry_date" type="date" value={formData.enquiry_date} onChange={handleChange} compulsory error={errors.enquiry_date} />
                         </div>
 
-                        <InputField label="48. Course Name" name="course_name" value={formData.course_name} onChange={handleChange} compulsory error={errors.course_name} />
+                        <SelectField
+                            label="48. Course Name"
+                            name="course_name"
+                            value={formData.course_name}
+                            options={(() => {
+                                const apiTitles = courses.map((c: any) => c.title).filter(Boolean);
+                                const allOptions = Array.from(new Set(["", ...apiTitles]));
+                                if (formData.course_name && !allOptions.includes(formData.course_name)) {
+                                    allOptions.push(formData.course_name);
+                                }
+                                return allOptions;
+                            })()}
+                            onChange={handleChange}
+                            compulsory
+                            error={errors.course_name}
+                        />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <InputField label="49. Course Fees"  name="course_fees"  type="number" value={formData.course_fees}  onChange={handleChange} compulsory />
                             <InputField label="50. Total Fees"   name="total_fees"   type="number" value={formData.total_fees}   onChange={handleChange} compulsory />

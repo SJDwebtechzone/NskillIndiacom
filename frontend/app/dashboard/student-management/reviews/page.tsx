@@ -238,8 +238,7 @@ export default function StudentReviewsPage() {
             <button
               onClick={handleReviewSubmit}
               disabled={savingReview}
-              style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
-              className="w-full py-2.5 rounded-lg text-sm font-semibold hover:bg-black disabled:opacity-60 transition-all"
+              className="w-full py-2.5 rounded-lg text-sm font-semibold bg-[#2563eb] text-white hover:bg-[#1d4ed8] disabled:opacity-60 transition-all"
             >
               {savingReview ? "Submitting..." : existingReview ? "Update Review" : "Submit Review"}
             </button>
@@ -351,8 +350,7 @@ export default function StudentReviewsPage() {
             <button
               onClick={handleVideoSubmit}
               disabled={savingVideo}
-              style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
-              className="w-full py-2.5 rounded-lg text-sm font-semibold hover:bg-black disabled:opacity-60 transition-all"
+              className="w-full py-2.5 rounded-lg text-sm font-semibold bg-[#2563eb] text-white hover:bg-[#1d4ed8] disabled:opacity-60 transition-all"
             >
               {savingVideo ? `Uploading... ${uploadProgress}%` : existingVideo ? "Replace Video" : "Submit Video"}
             </button>

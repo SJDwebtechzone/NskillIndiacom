@@ -3,15 +3,16 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Mail, Linkedin, Phone } from "lucide-react";
+import { textAlign } from "html2canvas/dist/types/css/property-descriptors/text-align";
 const team = [
     {
     name: "V.P. Sivasankar",
     role: "Director",
-    image: "/images/team/sivasankar.jpg",
+    image: "/images/team/sivasankar.jpeg",
     email: "sivasankar.vps@gmail.com",
     linkedin: "https://www.linkedin.com/in/sivasankar-v-p-593a7a44/",
     phone: "#",
-    desc: "Mechanical Engr, 15 years of experience, Consultant & Trainer for QMS, EMS, Safety, NDT & Energy Management",
+    desc: "BE.Mech and M.Tech in Industrial Safety with >18 years of experience. Consultant, Auditor & Trainer for QMS, SMS, Welding, NDT & Energy Management.",
     tags: ["QMS", "Safety", "NDT"],  // ← add
   },
   {
@@ -21,7 +22,7 @@ const team = [
     email: "trsriram@nskillindia.com",
     linkedin: "https://www.linkedin.com/in/trsriramsmme/",
     phone: "#",
-    desc: "Electronics Engr, 32 years of experience, Consultant & Trainer for Strategic Management, LEAN, TPM, SCM, QMS, EMS, SMS",
+    desc: "Electrical & Electronics Engineer with 35 >years of experience. Consultant, Auditor & Trainer for Strategic Management, LEAN 5S, TPM, SCM, QMS, EMS, SMS & IATF Standards.",
     tags: ["Strategic Management", "LEAN", "TPM"],  // ← add
   },
   {
@@ -31,7 +32,7 @@ const team = [
     email: "karthik@career-tree.in",
     linkedin: "https://www.linkedin.com/in/karthikeyan-s-93b2544/",
     phone: "#",
-    desc: "Graduate in BusinessAdmn& PG in Social Work (PM&IR), 18 years of experience, HR Specialist & Certified Trainer in Competency Management and Balanced Score Card",
+    desc: "Grad in Bus Admin & Masters in Social Work (PM & IR) with >21 years of experience. HR Specialist & Certified Trainer in Competency Management and Balanced Score Card.",
     tags: ["HR", "Competency Management"],  // ← add
   },
 ];
@@ -250,7 +251,7 @@ const TeamSection = () => {
                     <img
                       src={member.image}
                       alt={member.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       onError={(e) => {
                         // Fallback to initials if image fails
                         const target = e.currentTarget;
@@ -302,7 +303,7 @@ const TeamSection = () => {
                 <div className="w-full h-px bg-slate-100 mb-4" />
 
                 {/* Description */}
-                <p className="text-sm text-black text-center leading-relaxed mb-6 flex-1 font-normal line-clamp-4">
+                <p className="text-sm text-black text-justify leading-relaxed mb-6 flex-1 font-normal line-clamp-4">
                   {member.desc}
                 </p>
 

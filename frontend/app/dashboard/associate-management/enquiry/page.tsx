@@ -495,8 +495,15 @@ export default function StudentEnquiryForm() {
                                                                 <Eye size={16}/>
                                                             </button>
                                                         )}
-                                                        <button onClick={() => router.push(`/dashboard/associate-management/admission?enquiry_id=${enq.enquiry_id}`)}
-                                                            className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all" title="Create Admission">
+                                                        <button 
+                                                            disabled={enq.is_admitted}
+                                                            onClick={() => !enq.is_admitted && router.push(`/dashboard/associate-management/admission?enquiry_id=${enq.enquiry_id}`)}
+                                                            className={`p-2 rounded-lg transition-all ${
+                                                                enq.is_admitted 
+                                                                    ? "bg-slate-100 text-slate-400 cursor-not-allowed opacity-50" 
+                                                                    : "bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                                                            }`} 
+                                                            title={enq.is_admitted ? "Admission Already Done" : "Create Admission"}>
                                                             <UserCheck size={16}/>
                                                         </button>
                                                         {can("Associate Management","edit") && user?.role !== "Associate" && (

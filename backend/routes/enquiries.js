@@ -121,7 +121,8 @@ router.post("/public", async (req, res) => {
 router.get("/", authMiddleware, async (req, res) => {
     try {
         let query = `
-            SELECT se.*, u.name as associate_name 
+            SELECT se.*, u.name as associate_name,
+                   (SELECT EXISTS (SELECT 1 FROM student_admissions sa WHERE sa.enquiry_id = se.enquiry_id)) as is_admitted
             FROM student_enquiries se
             LEFT JOIN users u ON se.created_by_id = u.id
         `;
