@@ -80,6 +80,24 @@ export default function TrainerAttendancePage() {
   const [batch, setBatch]   = useState("");
   const [course, setCourse] = useState("");
   const [method, setMethod] = useState<Method>("qr");
+  const [coursesList, setCoursesList] = useState<{ id: number; title: string }[]>([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch(`${API}/api/courses/all`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const data = await res.json();
+        if (data.courses) {
+          setCoursesList(data.courses);
+        }
+      } catch (err) {
+        console.error("Failed to load courses:", err);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   /* students */
   const [students, setStudents]         = useState<StudentAttendance[]>([]);
@@ -344,12 +362,18 @@ export default function TrainerAttendancePage() {
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Course</label>
-              <input
+              <select
                 value={course}
                 onChange={e => setCourse(e.target.value)}
-                placeholder="e.g. Full Stack Web Development"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+              >
+                <option value="">Select a course...</option>
+                {coursesList.map((c) => (
+                  <option key={c.id} value={c.title}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
