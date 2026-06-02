@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Briefcase, Building2, TrendingUp, Users } from "lucide-react";
 
 export default function PlacementsPage() {
@@ -99,18 +100,26 @@ export default function PlacementsPage() {
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row md:flex-col lg:flex-row items-center gap-4 lg:gap-6 w-full md:w-auto mt-8 md:mt-0">
             {/* QR Code */}
-            <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/20 backdrop-blur-sm w-full md:w-auto">
-              <div className="bg-white p-2 rounded-xl shadow-md shrink-0">
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent("https://nskillindia.com/placements/recommended-jobs")}`} 
-                  alt="QR Code" 
-                  className="w-12 h-12 sm:w-14 sm:h-14"
-                />
+            <div className="flex flex-col gap-2 w-full md:w-auto">
+              <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/20 backdrop-blur-sm">
+                <div className="bg-white p-2 rounded-xl shadow-md shrink-0">
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent("https://nskillindia.com/placements/recommended-jobs")}`} 
+                    alt="QR Code" 
+                    className="w-12 h-12 sm:w-14 sm:h-14"
+                  />
+                </div>
+                <div className="text-left">
+                  <p className="text-[13px] font-black text-white uppercase tracking-wider mb-1">Recommended Jobs</p>
+                  <p className="text-[12px] text-blue-100 leading-normal max-w-[160px] sm:max-w-[180px]">Scan this QR to view jobs curated for you</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-[13px] font-black text-white uppercase tracking-wider mb-1">Recommended Jobs</p>
-                <p className="text-[12px] text-blue-100 leading-normal max-w-[160px] sm:max-w-[180px]">Scan this QR to view jobs curated for you</p>
-              </div>
+              <Link 
+                href="/placements/recommended-jobs"
+                className="text-[12px] text-white/70 hover:text-white transition-colors font-bold flex items-center gap-1 self-start ml-2 underline underline-offset-4 decoration-white/20"
+              >
+                Or click here to view jobs →
+              </Link>
             </div>
 
             <button 
