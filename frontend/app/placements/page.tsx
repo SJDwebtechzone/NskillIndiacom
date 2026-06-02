@@ -45,7 +45,7 @@ export default function PlacementsPage() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-slate-600 text-base md:text-xl font-bold mb-6 md:mb-8"
             >
-              Connect with top companies and accelerate your career growth with our placement assistance.
+              Connect with top companies and accelerate your career growth with our jobs assistance.
             </motion.p>
             <motion.button
               initial={{ opacity: 0, y: 20 }}
@@ -54,7 +54,7 @@ export default function PlacementsPage() {
               onClick={() => router.push("/placements/register")}
               className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-3 sm:px-8 sm:py-3.5 rounded-full font-bold text-base sm:text-lg transition-all shadow-lg hover:shadow-xl active:scale-95"
             >
-              Register for Placements
+              Register for Jobs
             </motion.button>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function PlacementsPage() {
       {/* ── Content Section ── */}
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-black text-[#0f172a] mb-4">Why Choose Our Placement Cell?</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-[#0f172a] mb-4">Why Choose Our Jobs Cell?</h2>
           <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">We bridge the gap between skilled candidates and industry requirements through practical technical training, dedicated placement support, and strong corporate tie-ups.</p>
         </div>
 

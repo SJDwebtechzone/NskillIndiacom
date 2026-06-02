@@ -7,6 +7,7 @@ import Footer from "./components/footer";
 import CoursePopup from "./components/CoursePopup";
 import Chatbot from "./components/Chatbot";
 import FloatingContact from "./components/FloatingContact";
+import ScrollRestoration from "./components/ScrollRestoration";
 import { AuthProvider } from "@/app/context/AuthContext"; // ✅ ADDED
 
 const geistSans = Geist({
@@ -91,7 +92,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
- <html lang="en">
+ <html lang="en" className="scroll-smooth">
   {/* <head>
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/icon.png" type="image/png" />
@@ -142,6 +143,7 @@ export default function RootLayout({
         />
 
         <AuthProvider>
+          <ScrollRestoration />
           <Navbar />
           {children}
           <Footer />
