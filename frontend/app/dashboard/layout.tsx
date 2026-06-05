@@ -30,7 +30,7 @@ const userManagementItems = [
   { name: "NTSC Admin",      path: "/dashboard/ntsc-admin",   module: "NTSC Admin",      icon: ShieldCheck   },
   { name: "Associate",       path: "/dashboard/associate",    module: "Associate",       icon: UserCheck     },
   { name: "Students",        path: "/dashboard/students",     module: "Students",        icon: GraduationCap },
-  { name: "Staff / Trainer", path: "/dashboard/staff",        module: "Staff / Trainer", icon: Briefcase     },
+  { name: "Staff / Trainer", path: "/dashboard/staff",        module: "Staff / Trainee", icon: Briefcase     },
   { name: "Manage Users",    path: "/dashboard/manage-users", module: "Manage Users",    icon: UserCog       },
   { name: "Manage Roles",    path: "/dashboard/manage-roles", module: "Manage Roles",    icon: KeyRound      },
 ];
@@ -164,7 +164,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const { user, permissions, logout, loading } = useAuth();
+  const { user, permissions, logout, loading, can } = useAuth();
 
   // ── Sidebar open states — lazy init from pathname ──────────────────────────
   const [isUserMenuOpen,          setIsUserMenuOpen]          = useState(() => inPath(pathname, "/ntsc-admin","/associate","/students","/staff","/manage-users","/manage-roles"));
@@ -226,14 +226,13 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
     u?.role === "Super Admin" || u?.role === "Admin" ||
     u?.roleName === "Super Admin" || u?.roleName === "Admin";
 
-  const hasPerm = (modName: string) =>
-    isAdmin(user) || permissions?.[modName]?.view;
+  const hasPerm = (modName: string) => can(modName, "view");
 
   const isStudent = user?.role === "Student" || user?.roleName === "Student";
   const isTrainer = user?.role === "Trainer" || user?.roleName === "Trainer";
   const isAssociate = user?.role === "Associate" || user?.roleName === "Associate";
 
-  const showDashboard = isAdmin(user) || permissions?.["Dashboard"]?.view || isStudent || isTrainer || isAssociate;
+  const showDashboard = isStudent || isTrainer || isAssociate || can("Dashboard", "view");
   const getDashboardPath = () => {
     if (isStudent) return "/dashboard/student-management/dashboard";
     if (isTrainer) return "/dashboard/trainer-management/dashboard";
@@ -241,17 +240,17 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
     return "/dashboard";
   };
   const dashboardPath = getDashboardPath();
-  const showPayments  = isAdmin(user) || permissions?.["Payments"]?.view;
+  const showPayments  = can("Payments", "view");
 
   // ── Visible items — re-computed every render when permissions change ────────
-  const visibleUserItems      = isAdmin(user) ? userManagementItems.filter(i => hasPerm(i.module)) : [];
-  const visibleSettingsItems  = isAdmin(user) ? websiteSettingsItems.filter(i => hasPerm(i.module)) : [];
-  const visibleCourseItems    = isAdmin(user) ? courseManagementItems.filter(i => hasPerm(i.module)) : [];
-  const visibleAssociateItems = isAssociate ? associateManagementItems : (isAdmin(user) ? associateManagementItems.filter(i => hasPerm(i.module)) : []);
-  const visibleStudentItems   = isStudent ? studentManagementItems : (isAdmin(user) ? studentManagementItems.filter(i => hasPerm(i.module)) : []);
-  const visibleTraineeItems   = isTrainer ? traineeManagementItems : (isAdmin(user) ? traineeManagementItems.filter(i => hasPerm(i.module)) : []);
-  const visibleNTSCItems      = isAdmin(user) ? ntscManagementItems.filter(i => hasPerm(i.module)) : [];
-  const visibleBgItems        = isAdmin(user) ? backgroundImagesItems.filter(i => hasPerm(i.module)) : [];
+  const visibleUserItems      = userManagementItems.filter(i => hasPerm(i.module));
+  const visibleSettingsItems  = websiteSettingsItems.filter(i => hasPerm(i.module));
+  const visibleCourseItems    = courseManagementItems.filter(i => hasPerm(i.module));
+  const visibleAssociateItems = isAssociate ? associateManagementItems : associateManagementItems.filter(i => hasPerm(i.module));
+  const visibleStudentItems   = isStudent ? studentManagementItems : studentManagementItems.filter(i => hasPerm(i.module));
+  const visibleTraineeItems   = isTrainer ? traineeManagementItems : traineeManagementItems.filter(i => hasPerm(i.module));
+  const visibleNTSCItems      = ntscManagementItems.filter(i => hasPerm(i.module));
+  const visibleBgItems        = backgroundImagesItems.filter(i => hasPerm(i.module));
 
   const getInitials = (name: string) =>
     name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);

@@ -57,11 +57,11 @@ const StudentLogin = () => {
       const role = data.user?.role ?? "";
 
       if (role === "Student") {
-        router.push("/dashboard/student-management/dashboard");
+        window.location.href = "/dashboard/student-management/dashboard";
       } else if (role === "trainee" || role === "Staff") {
-        router.push("/dashboard/trainer-management/dashboard");
+        window.location.href = "/dashboard/trainer-management/dashboard";
       } else {
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
 
     } catch (err: any) {

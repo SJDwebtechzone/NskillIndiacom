@@ -174,7 +174,7 @@ const AdminLogin = () => {
             localStorage.setItem("user",        JSON.stringify(res.data.user));
             localStorage.setItem("permissions", JSON.stringify(res.data.permissions));
 
-            router.push("/dashboard");
+            window.location.href = "/dashboard";
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Invalid email or password");

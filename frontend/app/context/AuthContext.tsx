@@ -109,6 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   /* ── Permission check ───────────────────────────── */
+  const slugify = (name: string) =>
+    name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
   const can = (
     module: string,
     action: "view" | "add" | "edit" | "delete"
@@ -118,7 +121,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user?.role     === "Super Admin" || user?.role     === "Admin" ||
       user?.roleName === "Super Admin" || user?.roleName === "Admin"
     ) return true;
-    return permissions[module]?.[action] === true;
+    const slug = slugify(module);
+    return permissions[slug]?.[action] === true;
   };
 
   return (
