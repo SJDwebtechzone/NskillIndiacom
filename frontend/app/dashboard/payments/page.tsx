@@ -15,6 +15,25 @@ const fmtDate = (d: string) =>
 const fmtAmt = (n: any) =>
   `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
+const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
+  if (!refField) return { mode: defaultMode, date: defaultDate, ref: "—" };
+  const parts = refField.split(" | ");
+  if (parts.length === 3) {
+    return { mode: parts[0], date: parts[1], ref: parts[2] };
+  }
+  const colonParts = refField.split(":");
+  if (colonParts.length >= 2) {
+    const mode = colonParts[0].trim();
+    if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(mode)) {
+      return { mode, date: defaultDate, ref: colonParts.slice(1).join(":").trim() || "—" };
+    }
+  }
+  if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(refField.trim())) {
+    return { mode: refField.trim(), date: defaultDate, ref: "—" };
+  }
+  return { mode: defaultMode, date: defaultDate, ref: refField };
+};
+
 function getToken() {
   return typeof window !== "undefined" ? localStorage.getItem("token") ?? "" : "";
 }
@@ -66,13 +85,45 @@ function RecordPaymentModal({
     try {
       const newPaid    = Number(student.paid_fees || 0) + amt;
       const newBalance = balance - amt;
-      await onSave(student.id, {
+      const refString  = `${mode} | ${date} | ${refNo || "—"}`;
+      
+      const payload: any = {
         paid_fees:      newPaid,
         balance_amount: newBalance,
         payment_mode:   mode,
         payment_ref_no: refNo || null,
         payment_date:   date,
-      });
+      };
+
+      // Freeze previous instalments to lock their current modes and dates so they never change
+      if (Number(student.instalment_1) && (!student.instalment_1_ref || !student.instalment_1_ref.includes(" | "))) {
+        payload.instalment_1_ref = `${student.payment_mode || "Cash"} | ${student.payment_date || new Date().toISOString().split("T")[0]} | ${student.instalment_1_ref || "—"}`;
+      }
+      if (Number(student.instalment_2) && (!student.instalment_2_ref || !student.instalment_2_ref.includes(" | "))) {
+        payload.instalment_2_ref = `${student.payment_mode || "Cash"} | ${student.payment_date || new Date().toISOString().split("T")[0]} | ${student.instalment_2_ref || "—"}`;
+      }
+      if (Number(student.instalment_3) && (!student.instalment_3_ref || !student.instalment_3_ref.includes(" | "))) {
+        payload.instalment_3_ref = `${student.payment_mode || "Cash"} | ${student.payment_date || new Date().toISOString().split("T")[0]} | ${student.instalment_3_ref || "—"}`;
+      }
+      if (Number(student.instalment_4) && (!student.instalment_4_ref || !student.instalment_4_ref.includes(" | "))) {
+        payload.instalment_4_ref = `${student.payment_mode || "Cash"} | ${student.payment_date || new Date().toISOString().split("T")[0]} | ${student.instalment_4_ref || "—"}`;
+      }
+
+      if (!Number(student.instalment_1)) {
+        payload.instalment_1 = amt;
+        payload.instalment_1_ref = refString;
+      } else if (!Number(student.instalment_2)) {
+        payload.instalment_2 = amt;
+        payload.instalment_2_ref = refString;
+      } else if (!Number(student.instalment_3)) {
+        payload.instalment_3 = amt;
+        payload.instalment_3_ref = refString;
+      } else if (!Number(student.instalment_4)) {
+        payload.instalment_4 = amt;
+        payload.instalment_4_ref = refString;
+      }
+
+      await onSave(student.id, payload);
       onClose();
     } catch (err: any) {
       setError(err.message ?? "Failed to save");
@@ -84,10 +135,10 @@ function RecordPaymentModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden border border-slate-100">
 
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
               <Plus className="w-5 h-5 text-emerald-600" />
@@ -102,7 +153,7 @@ function RecordPaymentModal({
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
 
           {/* Fee summary */}
           <div className="grid grid-cols-3 gap-3">
@@ -235,8 +286,8 @@ function ViewPaymentModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden border border-slate-100">
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
           <div>
             <h3 className="font-black text-slate-800">{student.full_name}</h3>
             <p className="text-xs text-slate-400">{student.course_name || student.course_interested}</p>
@@ -245,7 +296,7 @@ function ViewPaymentModal({
             <X className="w-4 h-4 text-slate-500" />
           </button>
         </div>
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
 
           {/* Status badge */}
           <div className="flex items-center justify-between">
@@ -268,19 +319,46 @@ function ViewPaymentModal({
               { label: "Course Fees",    value: fmtAmt(student.course_fees),    bold: false },
               { label: "Total Fees",     value: fmtAmt(student.total_fees),     bold: false },
               { label: "Paid Fees",      value: fmtAmt(student.paid_fees),      bold: false, green: true },
-              { label: "Instalment 1",   value: fmtAmt(student.instalment_1),   bold: false },
-              { label: "Instalment 2",   value: fmtAmt(student.instalment_2),   bold: false },
-              { label: "Balance Due",    value: fmtAmt(student.balance_amount), bold: true,  red: Number(student.balance_amount) > 0 },
-            ].map(({ label, value, bold, green, red }) => (
-              <div key={label} className={`flex items-center justify-between px-4 py-3 rounded-xl ${
-                red ? "bg-red-50 border border-red-100" : green ? "bg-emerald-50 border border-emerald-100" : "bg-slate-50"
-              }`}>
+            ].map(({ label, value, bold, green }) => (
+              <div key={label} className={`flex items-center justify-between px-4 py-3 rounded-xl ${green ? "bg-emerald-50 border border-emerald-100" : "bg-slate-50"}`}>
                 <p className="text-sm font-semibold text-slate-600">{label}</p>
-                <p className={`text-sm font-black ${red ? "text-red-600" : green ? "text-emerald-600" : "text-slate-800"}`}>
+                <p className={`text-sm font-black ${green ? "text-emerald-600" : "text-slate-800"}`}>
                   {value}
                 </p>
               </div>
             ))}
+
+            {/* Instalments list */}
+            {[
+              ["Instalment 1", student.instalment_1, student.instalment_1_ref],
+              ["Instalment 2", student.instalment_2, student.instalment_2_ref],
+              ["Instalment 3", student.instalment_3, student.instalment_3_ref],
+              ["Instalment 4", student.instalment_4, student.instalment_4_ref],
+            ].filter(([_, amt]) => Number(amt) > 0).map(([label, amt, refField]) => {
+              const parsed = parseRefField(refField, student.payment_mode || "Cash", student.payment_date);
+              const dateStr = parsed.date ? new Date(parsed.date).toLocaleDateString("en-IN") : "";
+              return (
+                <div key={label} className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div>
+                    <p className="text-xs font-bold text-slate-600">{label}</p>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                      {parsed.mode} {dateStr ? `· ${dateStr}` : ""} {parsed.ref && parsed.ref !== "—" ? `· Ref: ${parsed.ref}` : ""}
+                    </p>
+                  </div>
+                  <p className="text-sm font-black text-slate-800">
+                    {fmtAmt(amt)}
+                  </p>
+                </div>
+              );
+            })}
+
+            {/* Balance Due */}
+            <div className={`flex items-center justify-between px-4 py-3 rounded-xl ${Number(student.balance_amount) > 0 ? "bg-red-50 border border-red-100" : "bg-slate-50"}`}>
+              <p className="text-sm font-bold text-slate-600">Balance Due</p>
+              <p className={`text-sm font-black ${Number(student.balance_amount) > 0 ? "text-red-600" : "text-slate-800"}`}>
+                {fmtAmt(student.balance_amount)}
+              </p>
+            </div>
           </div>
 
           {/* Payment info */}

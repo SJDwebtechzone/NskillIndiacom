@@ -19,7 +19,32 @@ interface StudentFeeData {
   payment_date: string;
   instalment_1: number;
   instalment_2: number;
+  instalment_3?: number;
+  instalment_4?: number;
+  instalment_1_ref?: string;
+  instalment_2_ref?: string;
+  instalment_3_ref?: string;
+  instalment_4_ref?: string;
 }
+
+const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
+  if (!refField) return { mode: defaultMode, date: defaultDate, ref: "—" };
+  const parts = refField.split(" | ");
+  if (parts.length === 3) {
+    return { mode: parts[0], date: parts[1], ref: parts[2] };
+  }
+  const colonParts = refField.split(":");
+  if (colonParts.length >= 2) {
+    const mode = colonParts[0].trim();
+    if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(mode)) {
+      return { mode, date: defaultDate, ref: colonParts.slice(1).join(":").trim() || "—" };
+    }
+  }
+  if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(refField.trim())) {
+    return { mode: refField.trim(), date: defaultDate, ref: "—" };
+  }
+  return { mode: defaultMode, date: defaultDate, ref: refField };
+};
 
 interface CompanyInfo {
   company_name: string;
@@ -148,8 +173,9 @@ export default function FeesReceiptPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] text-gray-400">
-        Loading receipt...
+      <div className="p-6 text-center py-20">
+        <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-4"></div>
+        <p className="text-gray-500 font-medium">Loading receipt details...</p>
       </div>
     );
   }
@@ -163,9 +189,8 @@ export default function FeesReceiptPage() {
     );
   }
 
-  // Build payments list
   const payments = [];
-  if (student.paid_fees > 0 && student.instalment_1 === 0 && student.instalment_2 === 0) {
+  if (student.paid_fees > 0 && !student.instalment_1 && !student.instalment_2 && !student.instalment_3 && !student.instalment_4) {
     payments.push({
       sno: 1,
       description: "Course Fee Payment",
@@ -176,26 +201,50 @@ export default function FeesReceiptPage() {
     });
   } else {
     if (student.instalment_1 > 0) {
+      const p = parseRefField(student.instalment_1_ref || "", student.payment_mode || "Cash", student.payment_date);
       payments.push({
         sno: 1,
         description: "Instalment 1",
         amount: student.instalment_1,
-        mode: student.payment_mode,
-        ref: student.payment_ref_no,
-        date: student.payment_date,
+        mode: p.mode,
+        ref: p.ref,
+        date: p.date,
       });
     }
     if (student.instalment_2 > 0) {
+      const p = parseRefField(student.instalment_2_ref || "", student.payment_mode || "Cash", student.payment_date);
       payments.push({
         sno: 2,
         description: "Instalment 2",
         amount: student.instalment_2,
-        mode: student.payment_mode,
-        ref: student.payment_ref_no,
-        date: student.payment_date,
+        mode: p.mode,
+        ref: p.ref,
+        date: p.date,
       });
     }
-    const remaining = student.paid_fees - student.instalment_1 - student.instalment_2;
+    if (student.instalment_3 && student.instalment_3 > 0) {
+      const p = parseRefField(student.instalment_3_ref || "", student.payment_mode || "Cash", student.payment_date);
+      payments.push({
+        sno: 3,
+        description: "Instalment 3",
+        amount: student.instalment_3,
+        mode: p.mode,
+        ref: p.ref,
+        date: p.date,
+      });
+    }
+    if (student.instalment_4 && student.instalment_4 > 0) {
+      const p = parseRefField(student.instalment_4_ref || "", student.payment_mode || "Cash", student.payment_date);
+      payments.push({
+        sno: 4,
+        description: "Instalment 4",
+        amount: student.instalment_4,
+        mode: p.mode,
+        ref: p.ref,
+        date: p.date,
+      });
+    }
+    const remaining = student.paid_fees - (student.instalment_1 || 0) - (student.instalment_2 || 0) - (student.instalment_3 || 0) - (student.instalment_4 || 0);
     if (remaining > 0) {
       payments.push({
         sno: payments.length + 1,

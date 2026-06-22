@@ -204,8 +204,35 @@ export default function StaffPage() {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    showToast("📋 Copied to clipboard");
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast("📋 Copied to clipboard"))
+        .catch(() => fallbackCopyToClipboard(text));
+    } else {
+      fallbackCopyToClipboard(text);
+    }
+  };
+
+  const fallbackCopyToClipboard = (text: string) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      if (successful) {
+        showToast("📋 Copied to clipboard");
+      } else {
+        showToast("❌ Failed to copy");
+      }
+    } catch {
+      showToast("❌ Failed to copy");
+    }
   };
 
   if (!can("Staff / Trainee", "view")) {

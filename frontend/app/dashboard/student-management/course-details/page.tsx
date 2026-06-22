@@ -20,36 +20,53 @@ interface CourseFeesData {
   payment_date: string;
   instalment_1: number;
   instalment_2: number;
+  instalment_3?: number;
+  instalment_4?: number;
+  instalment_1_ref?: string;
+  instalment_2_ref?: string;
+  instalment_3_ref?: string;
+  instalment_4_ref?: string;
   // Trainer & Course
   trainer_name: string;
   duration: string;
 }
+
+const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
+  if (!refField) return { mode: defaultMode, date: defaultDate, ref: "—" };
+  const parts = refField.split(" | ");
+  if (parts.length === 3) {
+    return { mode: parts[0], date: parts[1], ref: parts[2] };
+  }
+  const colonParts = refField.split(":");
+  if (colonParts.length >= 2) {
+    const mode = colonParts[0].trim();
+    if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(mode)) {
+      return { mode, date: defaultDate, ref: colonParts.slice(1).join(":").trim() || "—" };
+    }
+  }
+  if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(refField.trim())) {
+    return { mode: refField.trim(), date: defaultDate, ref: "—" };
+  }
+  return { mode: defaultMode, date: defaultDate, ref: refField };
+};
 
 export default function CourseFeesDetailsPage() {
   const [data, setData] = useState<CourseFeesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const API = process.env.NEXT_PUBLIC_API_URL;
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API}/api/admissions/course-fees-details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const result = await res.json();
-        if (result.data) setData(result.data);
-        else setError(result.error || "Data not found.");
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load course details.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    const token = localStorage.getItem("token") ?? "";
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admissions/my-fees`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => {
+        if (!r.ok) throw new Error("Failed to load fee details");
+        return r.json();
+      })
+      .then(d => setData(d))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -66,8 +83,9 @@ export default function CourseFeesDetailsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] text-gray-400">
-        Loading details...
+      <div className="p-6 text-center py-20">
+        <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-4"></div>
+        <p className="text-gray-500 font-medium">Loading your course details...</p>
       </div>
     );
   }
@@ -86,9 +104,23 @@ export default function CourseFeesDetailsPage() {
     : 0;
 
   const payments = [];
-  if (data.instalment_1 > 0) payments.push({ label: "Instalment 1", amount: data.instalment_1, date: data.payment_date, mode: data.payment_mode });
-  if (data.instalment_2 > 0) payments.push({ label: "Instalment 2", amount: data.instalment_2, date: data.payment_date, mode: data.payment_mode });
-  const remaining = data.paid_fees - data.instalment_1 - data.instalment_2;
+  if (data.instalment_1 > 0) {
+    const p = parseRefField(data.instalment_1_ref || "", data.payment_mode || "Cash", data.payment_date);
+    payments.push({ label: "Instalment 1", amount: data.instalment_1, date: p.date, mode: p.mode });
+  }
+  if (data.instalment_2 > 0) {
+    const p = parseRefField(data.instalment_2_ref || "", data.payment_mode || "Cash", data.payment_date);
+    payments.push({ label: "Instalment 2", amount: data.instalment_2, date: p.date, mode: p.mode });
+  }
+  if (data.instalment_3 && data.instalment_3 > 0) {
+    const p = parseRefField(data.instalment_3_ref || "", data.payment_mode || "Cash", data.payment_date);
+    payments.push({ label: "Instalment 3", amount: data.instalment_3, date: p.date, mode: p.mode });
+  }
+  if (data.instalment_4 && data.instalment_4 > 0) {
+    const p = parseRefField(data.instalment_4_ref || "", data.payment_mode || "Cash", data.payment_date);
+    payments.push({ label: "Instalment 4", amount: data.instalment_4, date: p.date, mode: p.mode });
+  }
+  const remaining = data.paid_fees - (Number(data.instalment_1) || 0) - (Number(data.instalment_2) || 0) - (Number(data.instalment_3) || 0) - (Number(data.instalment_4) || 0);
   if (remaining > 0) payments.push({ label: "Additional Payment", amount: remaining, date: data.payment_date, mode: data.payment_mode });
   if (payments.length === 0 && data.paid_fees > 0) {
     payments.push({ label: "Full Payment", amount: data.paid_fees, date: data.payment_date, mode: data.payment_mode });

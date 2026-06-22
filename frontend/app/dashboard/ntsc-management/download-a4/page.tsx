@@ -13,6 +13,25 @@ const fmtDate = (d: string) =>
 const fmtAmt = (n: any) =>
   n ? `₹${Number(n).toLocaleString("en-IN")}` : "₹0";
 
+const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
+  if (!refField) return { mode: defaultMode, date: defaultDate, ref: "—" };
+  const parts = refField.split(" | ");
+  if (parts.length === 3) {
+    return { mode: parts[0], date: parts[1], ref: parts[2] };
+  }
+  const colonParts = refField.split(":");
+  if (colonParts.length >= 2) {
+    const mode = colonParts[0].trim();
+    if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(mode)) {
+      return { mode, date: defaultDate, ref: colonParts.slice(1).join(":").trim() || "—" };
+    }
+  }
+  if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(refField.trim())) {
+    return { mode: refField.trim(), date: defaultDate, ref: "—" };
+  }
+  return { mode: defaultMode, date: defaultDate, ref: refField };
+};
+
 // ─── A4 Print Page ─────────────────────────────────────────────────────────────
 function openPrintPage(student: any) {
   const backendBase = API ?? "http://localhost:5000";
@@ -30,16 +49,21 @@ function openPrintPage(student: any) {
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
-      font-size: 11px;
+      font-size: 10px;
       color: #1a1a1a;
       background: white;
+      line-height: 1.15;
     }
     .page {
       width: 210mm;
-      min-height: 297mm;
-      padding: 12mm 14mm;
+      height: 297mm;
+      padding: 8mm 10mm;
       margin: 0 auto;
       background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
     }
 
     /* Header */
@@ -47,77 +71,77 @@ function openPrintPage(student: any) {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 3px solid #1e3a6e;
-      padding-bottom: 10px;
-      margin-bottom: 12px;
+      border-bottom: 2px solid #1e3a6e;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left { display: flex; align-items: center; gap: 10px; }
     .logo-box {
-      width: 56px; height: 56px;
+      width: 48px; height: 48px;
       background: #1e3a6e;
-      border-radius: 8px;
+      border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 18px; font-weight: 900;
+      color: white; font-size: 16px; font-weight: 900;
     }
-    .institute-name { font-size: 16px; font-weight: 900; color: #1e3a6e; }
-    .institute-sub  { font-size: 10px; color: #666; margin-top: 2px; }
+    .institute-name { font-size: 14px; font-weight: 900; color: #1e3a6e; }
+    .institute-sub  { font-size: 9px; color: #666; margin-top: 1px; }
     .form-title {
-      font-size: 13px; font-weight: 700;
+      font-size: 11px; font-weight: 700;
       color: #1e3a6e; text-align: right;
     }
     .adm-no {
-      font-size: 10px; color: #666;
-      text-align: right; margin-top: 2px;
+      font-size: 9px; color: #666;
+      text-align: right; margin-top: 1px;
     }
 
     /* Photo box */
     .top-row {
       display: flex;
-      gap: 12px;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 8px;
     }
     .photo-box {
-      width: 90px; height: 110px;
+      width: 80px; height: 95px;
       border: 1px solid #ccc;
       border-radius: 4px;
       overflow: hidden;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: #f5f5f5;
-      font-size: 10px; color: #999;
+      font-size: 9px; color: #999;
     }
     .photo-box img { width: 100%; height: 100%; object-fit: cover; }
     .top-info { flex: 1; }
 
     /* Section */
     .section {
-      margin-bottom: 10px;
+      margin-bottom: 7px;
     }
     .section-title {
       background: #1e3a6e;
       color: white;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 4px 8px;
-      margin-bottom: 6px;
+      padding: 3px 6px;
+      margin-bottom: 4px;
       border-radius: 2px;
     }
 
     /* Grid */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px 12px; }
-    .field  { padding: 3px 0; border-bottom: 1px dotted #ddd; }
-    .field-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
-    .field-value { font-size: 11px; font-weight: 600; color: #1a1a1a; margin-top: 1px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px 10px; }
+    .field  { padding: 2px 0; border-bottom: 1px dotted #ddd; }
+    .field-label { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
+    .field-value { font-size: 10px; font-weight: 600; color: #1a1a1a; margin-top: 0.5px; }
 
     /* Fee table */
     .fee-table { width: 100%; border-collapse: collapse; }
     .fee-table th, .fee-table td {
       border: 1px solid #ddd;
-      padding: 4px 8px;
-      font-size: 10px;
+      padding: 3px 6px;
+      font-size: 9px;
       text-align: left;
     }
     .fee-table th {
@@ -132,43 +156,43 @@ function openPrintPage(student: any) {
     .decl-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 4px;
+      gap: 3px;
     }
     .decl-item {
       display: flex; align-items: center; gap: 4px;
-      font-size: 9px; color: #555;
+      font-size: 8px; color: #555;
     }
-    .tick { color: #27ae60; font-size: 12px; }
-    .cross { color: #ccc; font-size: 12px; }
+    .tick { color: #27ae60; font-size: 10px; }
+    .cross { color: #ccc; font-size: 10px; }
 
     /* Signatures */
     .sig-row {
-      display: flex; gap: 20px;
-      margin-top: 16px;
+      display: flex; gap: 15px;
+      margin-top: 10px;
       border-top: 1px solid #ddd;
-      padding-top: 12px;
+      padding-top: 8px;
     }
     .sig-box { flex: 1; text-align: center; }
     .sig-line {
       border-top: 1px solid #333;
-      margin: 24px 10px 4px;
+      margin: 16px 10px 3px;
     }
-    .sig-label { font-size: 9px; color: #666; }
+    .sig-label { font-size: 8px; color: #666; }
 
     /* Footer */
     .page-footer {
-      margin-top: 16px;
-      border-top: 2px solid #1e3a6e;
-      padding-top: 6px;
+      margin-top: 10px;
+      border-top: 1.5px solid #1e3a6e;
+      padding-top: 4px;
       display: flex;
       justify-content: space-between;
-      font-size: 9px;
+      font-size: 8.5px;
       color: #888;
     }
 
     @media print {
       body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-      .page { padding: 10mm 12mm; }
+      .page { padding: 8mm 10mm; }
       @page { size: A4; margin: 0; }
     }
   </style>
@@ -279,18 +303,14 @@ function openPrintPage(student: any) {
 
   <!-- Fee Details -->
   <div class="section">
-    <div class="section-title">Fee Details</div>
-    <table class="fee-table">
+    <div class="section-title">Fee Summary</div>
+    <table class="fee-table" style="margin-bottom: 8px;">
       <thead>
         <tr>
           <th>Course Fees</th>
           <th>Total Fees</th>
           <th>Paid Fees</th>
-          <th>Instalment 1</th>
-          <th>Instalment 2</th>
           <th>Balance Due</th>
-          <th>Payment Mode</th>
-          <th>Payment Date</th>
         </tr>
       </thead>
       <tbody>
@@ -298,14 +318,42 @@ function openPrintPage(student: any) {
           <td>${fmtAmt(student.course_fees)}</td>
           <td>${fmtAmt(student.total_fees)}</td>
           <td>${fmtAmt(student.paid_fees)}</td>
-          <td>${fmtAmt(student.instalment_1)}</td>
-          <td>${fmtAmt(student.instalment_2)}</td>
           <td class="${Number(student.balance_amount) > 0 ? "highlight" : "cleared"}">
             ${Number(student.balance_amount) > 0 ? fmtAmt(student.balance_amount) : "Cleared"}
           </td>
-          <td>${student.payment_mode || "—"}</td>
-          <td>${fmtDate(student.payment_date)}</td>
         </tr>
+      </tbody>
+    </table>
+
+    <div class="section-title" style="margin-top: 8px;">Payment Instalments</div>
+    <table class="fee-table">
+      <thead>
+        <tr>
+          <th>Payment Row</th>
+          <th>Amount</th>
+          <th>Reference No</th>
+          <th>Payment Mode</th>
+          <th>Payment Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${[
+          ["Instalment 1", student.instalment_1, student.instalment_1_ref],
+          ["Instalment 2", student.instalment_2, student.instalment_2_ref],
+          ["Instalment 3", student.instalment_3, student.instalment_3_ref],
+          ["Instalment 4", student.instalment_4, student.instalment_4_ref],
+        ].filter(([_, amt]) => Number(amt) > 0).map(([label, amt, ref]) => {
+          const parsed = parseRefField(ref, student.payment_mode || "Cash", student.payment_date);
+          return `
+            <tr>
+              <td style="font-weight: bold;">${label}</td>
+              <td>${fmtAmt(amt)}</td>
+              <td>${parsed.ref}</td>
+              <td>${parsed.mode}</td>
+              <td>${fmtDate(parsed.date)}</td>
+            </tr>
+          `;
+        }).join("")}
       </tbody>
     </table>
   </div>

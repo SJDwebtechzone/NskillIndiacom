@@ -85,6 +85,10 @@ export default function StudentAdmissionForm() {
         instalment_2: "0", instalment_2_ref: "",
         instalment_3: "0", instalment_3_ref: "",
         instalment_4: "0", instalment_4_ref: "",
+        instalment_1_mode: "Cash", instalment_1_date: "", instalment_1_ref_only: "",
+        instalment_2_mode: "Cash", instalment_2_date: "", instalment_2_ref_only: "",
+        instalment_3_mode: "Cash", instalment_3_date: "", instalment_3_ref_only: "",
+        instalment_4_mode: "Cash", instalment_4_date: "", instalment_4_ref_only: "",
         balance_amount: "0",
         has_aadhaar_file: null, has_edu_certs_file: null, has_passport_file: null,
         has_resume_file: null, has_address_proof_file: null, has_photos_file: null,
@@ -306,6 +310,31 @@ export default function StudentAdmissionForm() {
 
     const handleEdit = (adm: any) => {
         if (user?.role === "Associate") { alert("Associates cannot edit admissions."); return; }
+        
+        const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
+            if (!refField) return { mode: defaultMode, date: defaultDate, ref: "" };
+            const parts = refField.split(" | ");
+            if (parts.length === 3) {
+                return { mode: parts[0], date: parts[1], ref: parts[2] };
+            }
+            const colonParts = refField.split(":");
+            if (colonParts.length >= 2) {
+                const mode = colonParts[0].trim();
+                if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(mode)) {
+                    return { mode, date: defaultDate, ref: colonParts.slice(1).join(":").trim() || "" };
+                }
+            }
+            if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(refField.trim())) {
+                return { mode: refField.trim(), date: defaultDate, ref: "" };
+            }
+            return { mode: defaultMode, date: defaultDate, ref: refField };
+        };
+
+        const inst1Parsed = parseRefField(adm.instalment_1_ref || "", adm.payment_mode || "Cash", adm.payment_date || "");
+        const inst2Parsed = parseRefField(adm.instalment_2_ref || "", adm.payment_mode || "Cash", adm.payment_date || "");
+        const inst3Parsed = parseRefField(adm.instalment_3_ref || "", adm.payment_mode || "Cash", adm.payment_date || "");
+        const inst4Parsed = parseRefField(adm.instalment_4_ref || "", adm.payment_mode || "Cash", adm.payment_date || "");
+
         setFormData({
             ...emptyForm, ...adm,
             highest_qualification: mapQualification(adm.highest_qualification || ""),
@@ -315,6 +344,22 @@ export default function StudentAdmissionForm() {
             payment_date:     adm.payment_date     ? adm.payment_date.split("T")[0]     : "",
             enquiry_date:     adm.enquiry_date     ? adm.enquiry_date.split("T")[0]     : "",
             admission_date:   adm.admission_date   ? adm.admission_date.split("T")[0]   : "",
+            
+            instalment_1_mode: inst1Parsed.mode,
+            instalment_1_date: inst1Parsed.date ? inst1Parsed.date.split("T")[0] : "",
+            instalment_1_ref_only: inst1Parsed.ref === "—" ? "" : inst1Parsed.ref,
+            
+            instalment_2_mode: inst2Parsed.mode,
+            instalment_2_date: inst2Parsed.date ? inst2Parsed.date.split("T")[0] : "",
+            instalment_2_ref_only: inst2Parsed.ref === "—" ? "" : inst2Parsed.ref,
+            
+            instalment_3_mode: inst3Parsed.mode,
+            instalment_3_date: inst3Parsed.date ? inst3Parsed.date.split("T")[0] : "",
+            instalment_3_ref_only: inst3Parsed.ref === "—" ? "" : inst3Parsed.ref,
+            
+            instalment_4_mode: inst4Parsed.mode,
+            instalment_4_date: inst4Parsed.date ? inst4Parsed.date.split("T")[0] : "",
+            instalment_4_ref_only: inst4Parsed.ref === "—" ? "" : inst4Parsed.ref,
         });
         setEditId(adm.id);
         setIsEditing(true);
@@ -429,7 +474,27 @@ export default function StudentAdmissionForm() {
         if (!validateAllSteps()) return;
         setIsSubmitting(true);
         const data = new FormData();
-        Object.keys(formData).forEach(k => { if (formData[k] !== null && formData[k] !== undefined) data.append(k, formData[k]); });
+        
+        // Compile helper fields into standard instalment ref strings
+        const compiledForm = { ...formData };
+        if (Number(compiledForm.instalment_1) > 0) {
+            compiledForm.instalment_1_ref = `${compiledForm.instalment_1_mode || compiledForm.payment_mode || "Cash"} | ${compiledForm.instalment_1_date || compiledForm.payment_date || new Date().toISOString().split("T")[0]} | ${compiledForm.instalment_1_ref_only || "—"}`;
+        }
+        if (Number(compiledForm.instalment_2) > 0) {
+            compiledForm.instalment_2_ref = `${compiledForm.instalment_2_mode || compiledForm.payment_mode || "Cash"} | ${compiledForm.instalment_2_date || compiledForm.payment_date || new Date().toISOString().split("T")[0]} | ${compiledForm.instalment_2_ref_only || "—"}`;
+        }
+        if (Number(compiledForm.instalment_3) > 0) {
+            compiledForm.instalment_3_ref = `${compiledForm.instalment_3_mode || compiledForm.payment_mode || "Cash"} | ${compiledForm.instalment_3_date || compiledForm.payment_date || new Date().toISOString().split("T")[0]} | ${compiledForm.instalment_3_ref_only || "—"}`;
+        }
+        if (Number(compiledForm.instalment_4) > 0) {
+            compiledForm.instalment_4_ref = `${compiledForm.instalment_4_mode || compiledForm.payment_mode || "Cash"} | ${compiledForm.instalment_4_date || compiledForm.payment_date || new Date().toISOString().split("T")[0]} | ${compiledForm.instalment_4_ref_only || "—"}`;
+        }
+
+        Object.keys(compiledForm).forEach(k => { 
+            if (compiledForm[k] !== null && compiledForm[k] !== undefined) {
+                data.append(k, compiledForm[k]); 
+            } 
+        });
         try {
             if (isEditing && editId) {
                 await axios.patch(`${API_BASE}/admissions/${editId}`, data, { headers: { ...getAuthHeaders(), "Content-Type": "multipart/form-data" } });
@@ -656,25 +721,33 @@ export default function StudentAdmissionForm() {
                                 <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
                                     <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">55. Installment - 1</p>
                                     <InputField label="Amount"           name="instalment_1"     type="number" value={formData.instalment_1}     onChange={handleChange} />
-                                    <InputField label="Payment Reference" name="instalment_1_ref"             value={formData.instalment_1_ref} onChange={handleChange} placeholder="UTR / Ref No" />
+                                    <SelectField label="Payment Mode" name="instalment_1_mode" value={formData.instalment_1_mode || "Cash"} options={["Cash", "UPI", "Bank Transfer", "Cheque", "DD", "Card"]} onChange={handleChange} />
+                                    <InputField label="Payment Date" name="instalment_1_date" type="date" value={formData.instalment_1_date} onChange={handleChange} />
+                                    <InputField label="Payment Reference" name="instalment_1_ref_only"             value={formData.instalment_1_ref_only} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                                 {/* Installment 2 */}
                                 <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
                                     <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">56. Installment - 2</p>
                                     <InputField label="Amount"           name="instalment_2"     type="number" value={formData.instalment_2}     onChange={handleChange} />
-                                    <InputField label="Payment Reference" name="instalment_2_ref"             value={formData.instalment_2_ref} onChange={handleChange} placeholder="UTR / Ref No" />
+                                    <SelectField label="Payment Mode" name="instalment_2_mode" value={formData.instalment_2_mode || "Cash"} options={["Cash", "UPI", "Bank Transfer", "Cheque", "DD", "Card"]} onChange={handleChange} />
+                                    <InputField label="Payment Date" name="instalment_2_date" type="date" value={formData.instalment_2_date} onChange={handleChange} />
+                                    <InputField label="Payment Reference" name="instalment_2_ref_only"             value={formData.instalment_2_ref_only} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                                 {/* Installment 3 */}
                                 <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
                                     <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">57. Installment - 3</p>
                                     <InputField label="Amount"           name="instalment_3"     type="number" value={formData.instalment_3}     onChange={handleChange} />
-                                    <InputField label="Payment Reference" name="instalment_3_ref"             value={formData.instalment_3_ref} onChange={handleChange} placeholder="UTR / Ref No" />
+                                    <SelectField label="Payment Mode" name="instalment_3_mode" value={formData.instalment_3_mode || "Cash"} options={["Cash", "UPI", "Bank Transfer", "Cheque", "DD", "Card"]} onChange={handleChange} />
+                                    <InputField label="Payment Date" name="instalment_3_date" type="date" value={formData.instalment_3_date} onChange={handleChange} />
+                                    <InputField label="Payment Reference" name="instalment_3_ref_only"             value={formData.instalment_3_ref_only} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                                 {/* Installment 4 */}
                                 <div className="p-4 bg-white rounded-2xl border border-blue-100 space-y-3">
                                     <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">58. Installment - 4</p>
                                     <InputField label="Amount"           name="instalment_4"     type="number" value={formData.instalment_4}     onChange={handleChange} />
-                                    <InputField label="Payment Reference" name="instalment_4_ref"             value={formData.instalment_4_ref} onChange={handleChange} placeholder="UTR / Ref No" />
+                                    <SelectField label="Payment Mode" name="instalment_4_mode" value={formData.instalment_4_mode || "Cash"} options={["Cash", "UPI", "Bank Transfer", "Cheque", "DD", "Card"]} onChange={handleChange} />
+                                    <InputField label="Payment Date" name="instalment_4_date" type="date" value={formData.instalment_4_date} onChange={handleChange} />
+                                    <InputField label="Payment Reference" name="instalment_4_ref_only"             value={formData.instalment_4_ref_only} onChange={handleChange} placeholder="UTR / Ref No" />
                                 </div>
                             </div>
 

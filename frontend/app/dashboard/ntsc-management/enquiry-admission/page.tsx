@@ -408,6 +408,25 @@ const fmtDate = (d: string) =>
 const fmtAmt  = (n: any) =>
   n ? `₹${Number(n).toLocaleString("en-IN")}` : "₹0";
 
+const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
+  if (!refField) return { mode: defaultMode, date: defaultDate, ref: "—" };
+  const parts = refField.split(" | ");
+  if (parts.length === 3) {
+    return { mode: parts[0], date: parts[1], ref: parts[2] };
+  }
+  const colonParts = refField.split(":");
+  if (colonParts.length >= 2) {
+    const mode = colonParts[0].trim();
+    if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(mode)) {
+      return { mode, date: defaultDate, ref: colonParts.slice(1).join(":").trim() || "—" };
+    }
+  }
+  if (["Cash", "UPI", "Card", "Bank Transfer", "Cheque", "DD"].includes(refField.trim())) {
+    return { mode: refField.trim(), date: defaultDate, ref: "—" };
+  }
+  return { mode: defaultMode, date: defaultDate, ref: refField };
+};
+
 function Badge({ label, color }: { label: string; color: string }) {
   const map: Record<string, string> = {
     blue:   "bg-blue-100 text-blue-700",
@@ -577,11 +596,6 @@ function AdmissionModal({ adm, onClose }: { adm: any; onClose: () => void }) {
                 { label: "Total Fees",     value: fmtAmt(adm.total_fees),     color: "slate"  },
                 { label: "Paid Fees",      value: fmtAmt(adm.paid_fees),      color: "green"  },
                 { label: "Balance Due",    value: fmtAmt(adm.balance_amount), color: Number(adm.balance_amount) > 0 ? "red" : "green" },
-                { label: "Instalment 1",   value: fmtAmt(adm.instalment_1),   color: "slate"  },
-                { label: "Instalment 2",   value: fmtAmt(adm.instalment_2),   color: "slate"  },
-                { label: "Payment Mode",   value: adm.payment_mode,           color: "slate"  },
-                { label: "Payment Date",   value: fmtDate(adm.payment_date),  color: "slate"  },
-                { label: "Reference No",   value: adm.payment_ref_no || "—",  color: "slate"  },
               ].map(({ label, value, color }) => (
                 <div key={label} className={`flex items-center justify-between px-4 py-3 rounded-xl ${
                   color === "red"   ? "bg-red-50 border border-red-100"     :
@@ -596,6 +610,31 @@ function AdmissionModal({ adm, onClose }: { adm: any; onClose: () => void }) {
                   }`}>{value}</p>
                 </div>
               ))}
+
+              {/* Dynamic Instalment Rows */}
+              <div className="border-t border-slate-100 pt-3 space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5 px-1">Payment Breakdown</p>
+                {[
+                  ["Instalment 1", adm.instalment_1, adm.instalment_1_ref],
+                  ["Instalment 2", adm.instalment_2, adm.instalment_2_ref],
+                  ["Instalment 3", adm.instalment_3, adm.instalment_3_ref],
+                  ["Instalment 4", adm.instalment_4, adm.instalment_4_ref],
+                ].filter(([_, amt]) => Number(amt) > 0).map(([label, amt, refField]) => {
+                  const parsed = parseRefField(refField, adm.payment_mode || "Cash", adm.payment_date);
+                  const dateStr = parsed.date ? new Date(parsed.date).toLocaleDateString("en-IN") : "";
+                  return (
+                    <div key={label} className="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <div>
+                        <p className="text-xs font-bold text-slate-600">{label}</p>
+                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                          {parsed.mode} {dateStr ? `· ${dateStr}` : ""} {parsed.ref && parsed.ref !== "—" ? `· Ref: ${parsed.ref}` : ""}
+                        </p>
+                      </div>
+                      <p className="text-sm font-black text-slate-800">{fmtAmt(amt)}</p>
+                    </div>
+                  );
+                })}
+              </div>
 
               {Number(adm.balance_amount) > 0 && (
                 <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-2">
