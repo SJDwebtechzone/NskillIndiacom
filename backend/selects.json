@@ -1,0 +1,1442 @@
+[
+  {
+    "file": "admissions.js",
+    "line": 32,
+    "content": "FROM users u"
+  },
+  {
+    "file": "admissions.js",
+    "line": 45,
+    "content": "const check = await pool.query(\"SELECT id, is_settled FROM associate_referral_points WHERE admission_id = $1\", [admissionData.id]);"
+  },
+  {
+    "file": "admissions.js",
+    "line": 77,
+    "content": "FROM users u"
+  },
+  {
+    "file": "admissions.js",
+    "line": 84,
+    "content": "// ── Approved Associates from career_counsellors ──────────────────────────"
+  },
+  {
+    "file": "admissions.js",
+    "line": 87,
+    "content": "FROM career_counsellors"
+  },
+  {
+    "file": "admissions.js",
+    "line": 238,
+    "content": "FROM student_admissions sa"
+  },
+  {
+    "file": "admissions.js",
+    "line": 260,
+    "content": "FROM associate_referral_points rp"
+  },
+  {
+    "file": "admissions.js",
+    "line": 295,
+    "content": "FROM associate_referral_points arp"
+  },
+  {
+    "file": "admissions.js",
+    "line": 330,
+    "content": "const result = await pool.query(\"SELECT * FROM student_admissions WHERE enquiry_id = $1\", [req.params.enquiry_id]);"
+  },
+  {
+    "file": "admissions.js",
+    "line": 361,
+    "content": "SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email)"
+  },
+  {
+    "file": "admissions.js",
+    "line": 363,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 366,
+    "content": "SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email)"
+  },
+  {
+    "file": "admissions.js",
+    "line": 388,
+    "content": "const existingRes = await pool.query(\"SELECT course_fees, discount_fee, paid_fees, discount_remark FROM student_admissions WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "admissions.js",
+    "line": 484,
+    "content": "const admRes = await client.query(\"SELECT * FROM student_admissions WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "admissions.js",
+    "line": 491,
+    "content": "// 2. Delete from referencing tables"
+  },
+  {
+    "file": "admissions.js",
+    "line": 506,
+    "content": "// Retrieve and delete offer letters from placements"
+  },
+  {
+    "file": "admissions.js",
+    "line": 507,
+    "content": "const placementResult = await client.query(\"SELECT offer_letter_url FROM student_placements WHERE student_id = $1\", [id]);"
+  },
+  {
+    "file": "admissions.js",
+    "line": 519,
+    "content": "// Delete from student_admissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 577,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "admissions.js",
+    "line": 586,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 612,
+    "content": "// Get email from users table"
+  },
+  {
+    "file": "admissions.js",
+    "line": 614,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "admissions.js",
+    "line": 628,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 655,
+    "content": "// Get email from users table"
+  },
+  {
+    "file": "admissions.js",
+    "line": 657,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "admissions.js",
+    "line": 674,
+    "content": "FROM student_admissions sa"
+  },
+  {
+    "file": "admissions.js",
+    "line": 703,
+    "content": "// Get email from users"
+  },
+  {
+    "file": "admissions.js",
+    "line": 705,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "admissions.js",
+    "line": 715,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 733,
+    "content": "`SELECT passed FROM pretest_attempts"
+  },
+  {
+    "file": "admissions.js",
+    "line": 742,
+    "content": "`SELECT passed FROM finaltest_attempts"
+  },
+  {
+    "file": "admissions.js",
+    "line": 751,
+    "content": "`SELECT id FROM posttest_attempts"
+  },
+  {
+    "file": "admissions.js",
+    "line": 759,
+    "content": "`SELECT id FROM assessment_submissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 767,
+    "content": "`SELECT id FROM practical_submissions"
+  },
+  {
+    "file": "admissions.js",
+    "line": 775,
+    "content": "`SELECT id FROM student_google_reviews"
+  },
+  {
+    "file": "admissions.js",
+    "line": 783,
+    "content": "`SELECT id FROM student_feedback"
+  },
+  {
+    "file": "admissions.js",
+    "line": 794,
+    "content": "FROM attendance WHERE admission_id = $1`,"
+  },
+  {
+    "file": "admissions.js",
+    "line": 803,
+    "content": "`SELECT id FROM student_placements"
+  },
+  {
+    "file": "apllied_jobs.js",
+    "line": 46,
+    "content": "\"SELECT * FROM media ORDER BY uploaded_at DESC\""
+  },
+  {
+    "file": "apllied_jobs.js",
+    "line": 63,
+    "content": "\"SELECT * FROM media WHERE id = $1\","
+  },
+  {
+    "file": "apllied_jobs.js",
+    "line": 71,
+    "content": "// delete file from folder"
+  },
+  {
+    "file": "assessments.js",
+    "line": 30,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "assessments.js",
+    "line": 36,
+    "content": "FROM courses c"
+  },
+  {
+    "file": "assessments.js",
+    "line": 56,
+    "content": "`SELECT * FROM assessments"
+  },
+  {
+    "file": "assessments.js",
+    "line": 127,
+    "content": "FROM assessment_submissions s"
+  },
+  {
+    "file": "assessments.js",
+    "line": 170,
+    "content": "`SELECT sa.id, sa.course_name FROM student_admissions sa"
+  },
+  {
+    "file": "assessments.js",
+    "line": 186,
+    "content": "FROM assessments a"
+  },
+  {
+    "file": "assessments.js",
+    "line": 209,
+    "content": "`SELECT sa.id FROM student_admissions sa"
+  },
+  {
+    "file": "assessments.js",
+    "line": 221,
+    "content": "`SELECT id FROM assessment_submissions"
+  },
+  {
+    "file": "associate.js",
+    "line": 145,
+    "content": "FROM career_counsellors ORDER BY created_at DESC`"
+  },
+  {
+    "file": "associate.js",
+    "line": 181,
+    "content": "`SELECT ${field} FROM career_counsellors WHERE id = $1`,"
+  },
+  {
+    "file": "associate.js",
+    "line": 224,
+    "content": "FROM career_counsellors WHERE id = $1`,"
+  },
+  {
+    "file": "associate.js",
+    "line": 334,
+    "content": "\"SELECT id, full_name, email FROM career_counsellors WHERE id = $1\","
+  },
+  {
+    "file": "associate.js",
+    "line": 353,
+    "content": "const roleResult = await pool.query(\"SELECT id FROM roles WHERE name = $1\", [\"Associate\"]);"
+  },
+  {
+    "file": "attendance.js",
+    "line": 28,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "attendance.js",
+    "line": 58,
+    "content": "FROM attendance a"
+  },
+  {
+    "file": "attendance.js",
+    "line": 172,
+    "content": "FROM attendance"
+  },
+  {
+    "file": "attendance.js",
+    "line": 195,
+    "content": "SELECT is_active FROM attendance_sessions WHERE id = $1"
+  },
+  {
+    "file": "attendance.js",
+    "line": 291,
+    "content": "SELECT id FROM attendance_sessions"
+  },
+  {
+    "file": "attendance.js",
+    "line": 332,
+    "content": "FROM qr_tokens qt"
+  },
+  {
+    "file": "attendance.js",
+    "line": 405,
+    "content": "\"SELECT email FROM users WHERE id = $1\", [userId]"
+  },
+  {
+    "file": "attendance.js",
+    "line": 415,
+    "content": "\"SELECT id, full_name, admission_number FROM student_admissions WHERE email_id = $1 LIMIT 1\","
+  },
+  {
+    "file": "attendance.js",
+    "line": 427,
+    "content": "FROM attendance"
+  },
+  {
+    "file": "attendance.js",
+    "line": 467,
+    "content": "FROM attendance a"
+  },
+  {
+    "file": "attendance.js",
+    "line": 489,
+    "content": "\"SELECT email, name FROM users WHERE id = $1\", [userId]"
+  },
+  {
+    "file": "attendance.js",
+    "line": 506,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "attendance.js",
+    "line": 547,
+    "content": "\"SELECT email FROM users WHERE id = $1\", [userId]"
+  },
+  {
+    "file": "attendance.js",
+    "line": 555,
+    "content": "`SELECT id FROM student_admissions WHERE email_id = $1 AND status IN ${ACTIVE_STATUSES} LIMIT 1`,"
+  },
+  {
+    "file": "attendance.js",
+    "line": 587,
+    "content": "\"SELECT email FROM users WHERE id = $1\", [userId]"
+  },
+  {
+    "file": "attendance.js",
+    "line": 594,
+    "content": "\"SELECT id FROM student_admissions WHERE email_id = $1 LIMIT 1\","
+  },
+  {
+    "file": "attendance.js",
+    "line": 602,
+    "content": "\"SELECT id FROM face_embeddings WHERE admission_id = $1\","
+  },
+  {
+    "file": "attendance.js",
+    "line": 628,
+    "content": "FROM face_embeddings fe"
+  },
+  {
+    "file": "attendance.js",
+    "line": 663,
+    "content": "FROM attendance"
+  },
+  {
+    "file": "attendance.js",
+    "line": 687,
+    "content": "\"SELECT is_active FROM attendance_sessions WHERE id = $1\","
+  },
+  {
+    "file": "auth.js",
+    "line": 14,
+    "content": "//     \"SELECT * FROM users WHERE email=$1\","
+  },
+  {
+    "file": "auth.js",
+    "line": 69,
+    "content": "FROM   users u"
+  },
+  {
+    "file": "auth.js",
+    "line": 101,
+    "content": "FROM   permissions"
+  },
+  {
+    "file": "auth.js",
+    "line": 172,
+    "content": "FROM users u"
+  },
+  {
+    "file": "background-images.js",
+    "line": 16,
+    "content": "`SELECT * FROM background_images ORDER BY created_at DESC`"
+  },
+  {
+    "file": "background-images.js",
+    "line": 34,
+    "content": "`SELECT * FROM background_images"
+  },
+  {
+    "file": "background-images.js",
+    "line": 41,
+    "content": "`SELECT * FROM background_images"
+  },
+  {
+    "file": "background-images.js",
+    "line": 50,
+    "content": "`SELECT * FROM background_images WHERE is_active = true LIMIT 1`"
+  },
+  {
+    "file": "background-images.js",
+    "line": 54,
+    "content": "`SELECT * FROM background_images ORDER BY created_at DESC LIMIT 1`"
+  },
+  {
+    "file": "background-images.js",
+    "line": 92,
+    "content": "`SELECT category FROM background_images WHERE id = $1`,"
+  },
+  {
+    "file": "background-images.js",
+    "line": 125,
+    "content": "`SELECT image_url FROM background_images WHERE id = $1`,"
+  },
+  {
+    "file": "bookings.js",
+    "line": 41,
+    "content": "// ── Get course name from DB ───────────────────────────────────────────────"
+  },
+  {
+    "file": "bookings.js",
+    "line": 46,
+    "content": "\"SELECT title FROM courses WHERE id = $1\","
+  },
+  {
+    "file": "bookings.js",
+    "line": 79,
+    "content": "FROM bookings b"
+  },
+  {
+    "file": "classStatus.js",
+    "line": 22,
+    "content": "FROM student_admissions sa"
+  },
+  {
+    "file": "contact_info.js",
+    "line": 57,
+    "content": "\"SELECT * FROM contact_info ORDER BY id DESC LIMIT 1\""
+  },
+  {
+    "file": "contact_info.js",
+    "line": 71,
+    "content": "await db.query(\"DELETE FROM contact_info\");"
+  },
+  {
+    "file": "contact_info.js",
+    "line": 95,
+    "content": "\"SELECT * FROM contact_locations ORDER BY sort_order ASC, id ASC\""
+  },
+  {
+    "file": "contact_info.js",
+    "line": 111,
+    "content": "\"SELECT * FROM contact_locations WHERE id = $1\", [id]"
+  },
+  {
+    "file": "contact_info.js",
+    "line": 295,
+    "content": "<p style=\"color: #a0b4cc; margin: 0; font-size: 13px;\">This email was sent from the N-Skill Training website contact form.</p>"
+  },
+  {
+    "file": "contact_info.js",
+    "line": 314,
+    "content": "const result = await db.query(\"SELECT * FROM enquiry_info ORDER BY id DESC\");"
+  },
+  {
+    "file": "courseEvent.js",
+    "line": 7,
+    "content": "const result = await db.query(\"SELECT * FROM course_events ORDER BY start_date ASC\");"
+  },
+  {
+    "file": "courses.js",
+    "line": 14,
+    "content": "FROM courses ORDER BY category, title`;"
+  },
+  {
+    "file": "courses.js",
+    "line": 20,
+    "content": "FROM courses WHERE LOWER(category) = LOWER($1) ORDER BY title`;"
+  },
+  {
+    "file": "courses.js",
+    "line": 35,
+    "content": "`SELECT id, title, trainer_id FROM courses ORDER BY title`"
+  },
+  {
+    "file": "courses.js",
+    "line": 64,
+    "content": "\"SELECT * FROM courses WHERE slug = $1\","
+  },
+  {
+    "file": "courses.js",
+    "line": 82,
+    "content": "\"SELECT * FROM courses WHERE id = $1\","
+  },
+  {
+    "file": "dashboard.js",
+    "line": 13,
+    "content": "(SELECT COUNT(*) FROM student_admissions)::int                                     AS total_students,"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 14,
+    "content": "(SELECT COUNT(*) FROM users u"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 17,
+    "content": "(SELECT COUNT(*) FROM student_enquiries)::int                                      AS total_enquiries,"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 18,
+    "content": "(SELECT COUNT(*) FROM student_admissions)::int                                     AS total_admissions,"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 19,
+    "content": "(SELECT COUNT(*) FROM student_enquiries"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 21,
+    "content": "(SELECT COUNT(DISTINCT admission_id) FROM associate_referral_points)::int          AS associate_admissions,"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 23,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 25,
+    "content": "(SELECT COUNT(*) FROM student_admissions WHERE balance_amount > 0)::int            AS pending_fees_count,"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 27,
+    "content": "FROM student_admissions WHERE balance_amount > 0)::numeric                        AS pending_fees_amount"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 42,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 54,
+    "content": "FROM generate_series("
+  },
+  {
+    "file": "dashboard.js",
+    "line": 62,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 68,
+    "content": "FROM student_enquiries"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 74,
+    "content": "FROM users u"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 82,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 102,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 113,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 131,
+    "content": "FROM bookings b"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 145,
+    "content": "FROM leads l"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 157,
+    "content": "FROM generate_series("
+  },
+  {
+    "file": "dashboard.js",
+    "line": 165,
+    "content": "FROM leads"
+  },
+  {
+    "file": "dashboard.js",
+    "line": 171,
+    "content": "FROM bookings"
+  },
+  {
+    "file": "enquiries.js",
+    "line": 8,
+    "content": "const result = await pool.query(\"SELECT MAX(CAST(SUBSTRING(enquiry_id FROM 4) AS INTEGER)) as max_id FROM student_enquiries WHERE enquiry_id LIKE 'ENQ%'\");"
+  },
+  {
+    "file": "enquiries.js",
+    "line": 17,
+    "content": "const userId = req.user.id; // From authMiddleware"
+  },
+  {
+    "file": "enquiries.js",
+    "line": 126,
+    "content": "(SELECT EXISTS (SELECT 1 FROM student_admissions sa WHERE sa.enquiry_id = se.enquiry_id)) as is_admitted"
+  },
+  {
+    "file": "enquiries.js",
+    "line": 127,
+    "content": "FROM student_enquiries se"
+  },
+  {
+    "file": "enquiries.js",
+    "line": 204,
+    "content": "const result = await pool.query(\"SELECT * FROM student_enquiries WHERE enquiry_id = $1\", [req.params.enquiry_id]);"
+  },
+  {
+    "file": "enquiries.js",
+    "line": 230,
+    "content": "const enqRes = await pool.query(\"SELECT enquiry_id FROM student_enquiries WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 24,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 30,
+    "content": "FROM courses c"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 49,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 68,
+    "content": "// ← Get email from users table using decoded.id"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 70,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 83,
+    "content": "`SELECT course_name FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 109,
+    "content": "// Get email from users table"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 111,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 118,
+    "content": "`SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 128,
+    "content": "`SELECT * FROM finaltest_attempts WHERE student_id = $1 AND course_name = $2 ORDER BY submitted_at DESC LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 150,
+    "content": "// Get email from users table"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 152,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 159,
+    "content": "`SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 168,
+    "content": "`SELECT id, correct_ans FROM finaltest_questions WHERE course_name = $1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 173,
+    "content": "console.log('Questions from DB:', questions); // ← check this"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 186,
+    "content": "`SELECT pass_percent FROM finaltest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 229,
+    "content": "`SELECT * FROM finaltest_questions WHERE id = $1`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 275,
+    "content": "`SELECT * FROM finaltest_questions WHERE course_name = $1 ORDER BY created_at DESC`,"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 309,
+    "content": "FROM finaltest_attempts fa"
+  },
+  {
+    "file": "finaltest.js",
+    "line": 327,
+    "content": "`SELECT * FROM finaltest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "infrastructure.js",
+    "line": 46,
+    "content": "\"SELECT * FROM media ORDER BY uploaded_at DESC\""
+  },
+  {
+    "file": "infrastructure.js",
+    "line": 63,
+    "content": "\"SELECT * FROM media WHERE id = $1\","
+  },
+  {
+    "file": "infrastructure.js",
+    "line": 71,
+    "content": "// delete file from folder"
+  },
+  {
+    "file": "jobs.js",
+    "line": 12,
+    "content": "const result = await pool.query(\"SELECT * FROM jobs ORDER BY id DESC\");"
+  },
+  {
+    "file": "jobs.js",
+    "line": 82,
+    "content": "FROM job_applications ja"
+  },
+  {
+    "file": "jobs.js",
+    "line": 98,
+    "content": "\"SELECT resume_filename, resume_data, resume_mimetype FROM job_applications WHERE id = $1\","
+  },
+  {
+    "file": "leads.js",
+    "line": 24,
+    "content": "// ── Get course details from DB if not passed in request ───────────────────"
+  },
+  {
+    "file": "leads.js",
+    "line": 31,
+    "content": "\"SELECT title, brochure_url FROM courses WHERE id = $1\","
+  },
+  {
+    "file": "leads.js",
+    "line": 69,
+    "content": "FROM leads l"
+  },
+  {
+    "file": "leads.js",
+    "line": 84,
+    "content": "// Get course brochure_url from DB if not passed"
+  },
+  {
+    "file": "leads.js",
+    "line": 91,
+    "content": "\"SELECT title, brochure_url FROM courses WHERE id = $1\","
+  },
+  {
+    "file": "marks.js",
+    "line": 24,
+    "content": "FROM student_admissions ORDER BY full_name`"
+  },
+  {
+    "file": "marks.js",
+    "line": 29,
+    "content": "`SELECT title FROM courses WHERE trainer_id = $1`,"
+  },
+  {
+    "file": "marks.js",
+    "line": 41,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "marks.js",
+    "line": 62,
+    "content": "`SELECT id, full_name, email_id, course_name FROM student_admissions WHERE id = $1`,"
+  },
+  {
+    "file": "marks.js",
+    "line": 73,
+    "content": "`SELECT score, total FROM pretest_attempts"
+  },
+  {
+    "file": "marks.js",
+    "line": 86,
+    "content": "`SELECT score, total FROM finaltest_attempts"
+  },
+  {
+    "file": "marks.js",
+    "line": 99,
+    "content": "`SELECT score, total FROM posttest_attempts"
+  },
+  {
+    "file": "marks.js",
+    "line": 115,
+    "content": "FROM attendance WHERE admission_id = $1`,"
+  },
+  {
+    "file": "marks.js",
+    "line": 128,
+    "content": "FROM practical_submissions"
+  },
+  {
+    "file": "marks.js",
+    "line": 138,
+    "content": "FROM assessment_submissions"
+  },
+  {
+    "file": "marks.js",
+    "line": 198,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "marks.js",
+    "line": 204,
+    "content": "`SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,"
+  },
+  {
+    "file": "marks.js",
+    "line": 211,
+    "content": "`SELECT * FROM student_marks WHERE student_id = $1`,"
+  },
+  {
+    "file": "my-profile-route.js",
+    "line": 10,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "my-profile-route.js",
+    "line": 19,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "otp.js",
+    "line": 69,
+    "content": "// OTP verified — remove from store"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 11,
+    "content": "// Helper to get student admission id from token"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 14,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 20,
+    "content": "`SELECT id, full_name, course_name, photo_url FROM student_admissions"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 71,
+    "content": "`SELECT * FROM student_placements WHERE student_id = $1 ORDER BY submitted_at DESC`,"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 86,
+    "content": "FROM student_placements sp"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 117,
+    "content": "// Get offer letter URL to delete file from disk"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 119,
+    "content": "`SELECT offer_letter_url FROM student_placements WHERE id = $1`,"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 159,
+    "content": "`SELECT id FROM student_feedback WHERE student_id = $1`,"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 206,
+    "content": "`SELECT * FROM student_feedback WHERE student_id = $1`,"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 221,
+    "content": "FROM student_feedback sf"
+  },
+  {
+    "file": "placement-feedback.js",
+    "line": 238,
+    "content": "FROM student_feedback sf"
+  },
+  {
+    "file": "placementLogin.js",
+    "line": 50,
+    "content": "FROM placement_users pu"
+  },
+  {
+    "file": "placementLogin.js",
+    "line": 95,
+    "content": "const result = await pool.query(\"SELECT * FROM placement_users WHERE email = $1\", [email]);"
+  },
+  {
+    "file": "posttest.js",
+    "line": 29,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "posttest.js",
+    "line": 35,
+    "content": "FROM courses c"
+  },
+  {
+    "file": "posttest.js",
+    "line": 54,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "posttest.js",
+    "line": 72,
+    "content": "`SELECT course_name FROM student_admissions WHERE email_id = ("
+  },
+  {
+    "file": "posttest.js",
+    "line": 73,
+    "content": "SELECT email FROM users WHERE id = $1"
+  },
+  {
+    "file": "posttest.js",
+    "line": 95,
+    "content": "`SELECT sa.id FROM student_admissions sa"
+  },
+  {
+    "file": "posttest.js",
+    "line": 103,
+    "content": "`SELECT score, total, passed, file_url, file_type, review_note, status FROM posttest_attempts"
+  },
+  {
+    "file": "posttest.js",
+    "line": 129,
+    "content": "`SELECT sa.id FROM student_admissions sa"
+  },
+  {
+    "file": "posttest.js",
+    "line": 141,
+    "content": "`SELECT id, correct_ans, is_upload FROM posttest_questions WHERE course_name = $1`,"
+  },
+  {
+    "file": "posttest.js",
+    "line": 154,
+    "content": "`SELECT id FROM posttest_attempts WHERE student_id = $1 AND course_name = $2 LIMIT 1`,"
+  },
+  {
+    "file": "posttest.js",
+    "line": 183,
+    "content": "// Filter out upload questions from total"
+  },
+  {
+    "file": "posttest.js",
+    "line": 191,
+    "content": "`SELECT pass_percent FROM posttest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "posttest.js",
+    "line": 242,
+    "content": "`SELECT * FROM posttest_questions WHERE id = $1`, [qId]"
+  },
+  {
+    "file": "posttest.js",
+    "line": 325,
+    "content": "`SELECT * FROM posttest_questions"
+  },
+  {
+    "file": "posttest.js",
+    "line": 331,
+    "content": "`SELECT * FROM posttest_questions"
+  },
+  {
+    "file": "posttest.js",
+    "line": 383,
+    "content": "FROM posttest_attempts pa"
+  },
+  {
+    "file": "posttest.js",
+    "line": 402,
+    "content": "`SELECT * FROM posttest_config WHERE course_name = $1`, [courseName]"
+  },
+  {
+    "file": "practical.js",
+    "line": 26,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "practical.js",
+    "line": 32,
+    "content": "FROM courses c"
+  },
+  {
+    "file": "practical.js",
+    "line": 52,
+    "content": "`SELECT * FROM practical_tasks"
+  },
+  {
+    "file": "practical.js",
+    "line": 73,
+    "content": "`SELECT COUNT(*) FROM practical_tasks"
+  },
+  {
+    "file": "practical.js",
+    "line": 134,
+    "content": "FROM practical_submissions ps"
+  },
+  {
+    "file": "practical.js",
+    "line": 177,
+    "content": "`SELECT sa.id, sa.course_name FROM student_admissions sa"
+  },
+  {
+    "file": "practical.js",
+    "line": 193,
+    "content": "FROM practical_tasks t"
+  },
+  {
+    "file": "practical.js",
+    "line": 227,
+    "content": "`SELECT sa.id FROM student_admissions sa"
+  },
+  {
+    "file": "practical.js",
+    "line": 239,
+    "content": "`SELECT id FROM practical_submissions"
+  },
+  {
+    "file": "pretest.js",
+    "line": 8,
+    "content": "// Landing page — distinct courses from student_admissions"
+  },
+  {
+    "file": "pretest.js",
+    "line": 14,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "pretest.js",
+    "line": 45,
+    "content": "FROM courses c"
+  },
+  {
+    "file": "pretest.js",
+    "line": 68,
+    "content": "`SELECT * FROM pretest_questions WHERE course_name = $1 ORDER BY id`,"
+  },
+  {
+    "file": "pretest.js",
+    "line": 106,
+    "content": "`SELECT * FROM pretest_questions WHERE id = $1`,"
+  },
+  {
+    "file": "pretest.js",
+    "line": 160,
+    "content": "`SELECT * FROM pretest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "pretest.js",
+    "line": 205,
+    "content": "`SELECT course_name FROM student_admissions WHERE email_id = ("
+  },
+  {
+    "file": "pretest.js",
+    "line": 206,
+    "content": "SELECT email FROM users WHERE id = $1"
+  },
+  {
+    "file": "pretest.js",
+    "line": 236,
+    "content": "`SELECT sa.id FROM student_admissions sa"
+  },
+  {
+    "file": "pretest.js",
+    "line": 250,
+    "content": "`SELECT id, correct_ans FROM pretest_questions WHERE course_name = $1`,"
+  },
+  {
+    "file": "pretest.js",
+    "line": 265,
+    "content": "// ── Get pass percentage from config ──"
+  },
+  {
+    "file": "pretest.js",
+    "line": 267,
+    "content": "`SELECT pass_percent FROM pretest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "pretest.js",
+    "line": 298,
+    "content": "// ── Get admission id from users table ──"
+  },
+  {
+    "file": "pretest.js",
+    "line": 300,
+    "content": "`SELECT sa.id FROM student_admissions sa"
+  },
+  {
+    "file": "pretest.js",
+    "line": 313,
+    "content": "`SELECT score, total, passed FROM pretest_attempts"
+  },
+  {
+    "file": "pretest.js",
+    "line": 373,
+    "content": "FROM pretest_attempts pa"
+  },
+  {
+    "file": "reviews.js",
+    "line": 7,
+    "content": "// Helper to get student from token"
+  },
+  {
+    "file": "reviews.js",
+    "line": 10,
+    "content": "`SELECT email FROM users WHERE id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 17,
+    "content": "FROM student_admissions"
+  },
+  {
+    "file": "reviews.js",
+    "line": 50,
+    "content": "`SELECT id FROM student_google_reviews WHERE student_id = $1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 99,
+    "content": "`SELECT * FROM student_google_reviews WHERE student_id = $1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 114,
+    "content": "FROM student_google_reviews r"
+  },
+  {
+    "file": "reviews.js",
+    "line": 131,
+    "content": "FROM student_google_reviews r"
+  },
+  {
+    "file": "reviews.js",
+    "line": 179,
+    "content": "`SELECT id FROM student_videos WHERE student_id = $1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 218,
+    "content": "`SELECT * FROM student_videos WHERE student_id = $1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 233,
+    "content": "FROM student_videos v"
+  },
+  {
+    "file": "reviews.js",
+    "line": 249,
+    "content": "FROM student_videos v"
+  },
+  {
+    "file": "reviews.js",
+    "line": 281,
+    "content": "`SELECT google_review_link FROM contact_info LIMIT 1`"
+  },
+  {
+    "file": "reviews.js",
+    "line": 313,
+    "content": "`SELECT id FROM student_justdial_reviews WHERE student_id = $1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 361,
+    "content": "`SELECT * FROM student_justdial_reviews WHERE student_id = $1`,"
+  },
+  {
+    "file": "reviews.js",
+    "line": 376,
+    "content": "FROM student_justdial_reviews r"
+  },
+  {
+    "file": "reviews.js",
+    "line": 393,
+    "content": "FROM student_justdial_reviews r"
+  },
+  {
+    "file": "reviews.js",
+    "line": 425,
+    "content": "`SELECT justdial_review_link FROM contact_info LIMIT 1`"
+  },
+  {
+    "file": "roles.js",
+    "line": 10,
+    "content": "\"SELECT * FROM roles ORDER BY created_at DESC\""
+  },
+  {
+    "file": "roles.js",
+    "line": 23,
+    "content": "\"SELECT * FROM roles WHERE id = $1\", [id]"
+  },
+  {
+    "file": "roles.js",
+    "line": 37,
+    "content": "FROM modules m"
+  },
+  {
+    "file": "settings.js",
+    "line": 18,
+    "content": "const result = await pool.query(\"SELECT * FROM banners ORDER BY display_order ASC\");"
+  },
+  {
+    "file": "settings.js",
+    "line": 48,
+    "content": "const banner = await pool.query(\"SELECT image_url FROM banners WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "settings.js",
+    "line": 89,
+    "content": "FROM popups"
+  },
+  {
+    "file": "settings.js",
+    "line": 121,
+    "content": "const popup = await pool.query(\"SELECT video_url FROM popups WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "settings.js",
+    "line": 189,
+    "content": "const result = await pool.query(\"SELECT * FROM latest_news ORDER BY created_at DESC\");"
+  },
+  {
+    "file": "settings.js",
+    "line": 218,
+    "content": "const news = await pool.query(\"SELECT image_url FROM latest_news WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "settings.js",
+    "line": 247,
+    "content": "const result = await pool.query(\"SELECT id, name as title, logo_url as image_url, created_at FROM accreditations ORDER BY created_at DESC\");"
+  },
+  {
+    "file": "settings.js",
+    "line": 274,
+    "content": "const item = await pool.query(\"SELECT logo_url as image_url FROM accreditations WHERE id = $1\", [id]);"
+  },
+  {
+    "file": "settings.js",
+    "line": 292,
+    "content": "const result = await pool.query(\"SELECT * FROM contact_info ORDER BY id LIMIT 1\");"
+  },
+  {
+    "file": "settings.js",
+    "line": 308,
+    "content": "const check = await pool.query(\"SELECT id FROM contact_info LIMIT 1\");"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 13,
+    "content": "`SELECT * FROM pretest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 29,
+    "content": "const studentId = req.user?.id; // from your auth middleware"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 33,
+    "content": "FROM pretest_attempts"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 59,
+    "content": "`SELECT total_qs, time_limit FROM pretest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 67,
+    "content": "FROM pretest_questions"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 99,
+    "content": "`SELECT id, correct_ans FROM pretest_questions WHERE id = ANY($1)`,"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 109,
+    "content": "`SELECT total_qs, pass_percent FROM pretest_config WHERE course_name = $1`,"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 161,
+    "content": "FROM pretest_attempts pa"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 178,
+    "content": "FROM pretest_answers pan"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 203,
+    "content": "// Step 1: Find student's enrolled course from admissions table"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 205,
+    "content": "`SELECT course_name FROM admissions WHERE user_id = $1 LIMIT 1`,"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 222,
+    "content": "FROM pretest_config pc"
+  },
+  {
+    "file": "student-pretest.js",
+    "line": 224,
+    "content": "SELECT * FROM pretest_attempts"
+  },
+  {
+    "file": "users.js",
+    "line": 48,
+    "content": "FROM users u"
+  },
+  {
+    "file": "users.js",
+    "line": 74,
+    "content": "// POST create user from admission"
+  },
+  {
+    "file": "users.js",
+    "line": 85,
+    "content": "\"SELECT full_name, email_id FROM student_admissions WHERE id = $1\","
+  },
+  {
+    "file": "users.js",
+    "line": 96,
+    "content": "const roleRes = await pool.query(\"SELECT id FROM roles WHERE LOWER(name) = 'student'\");"
+  },
+  {
+    "file": "users.js",
+    "line": 145,
+    "content": "\"SELECT id FROM users WHERE email = $1\","
+  },
+  {
+    "file": "users.js",
+    "line": 241,
+    "content": "`SELECT can_delete FROM permissions"
+  },
+  {
+    "file": "users.js",
+    "line": 257,
+    "content": "const userRes = await pool.query(\"SELECT email FROM users WHERE id = $1\", [req.params.id]);"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 22,
+    "content": "`SELECT sa.id, sa.course_name FROM student_admissions sa"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 66,
+    "content": "(SELECT COUNT(*) FROM weekly_test_submissions wts WHERE wts.request_id = wtr.id) AS submission_count"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 67,
+    "content": "FROM weekly_test_requests wtr"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 146,
+    "content": "FROM weekly_test_submissions wts"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 197,
+    "content": "FROM weekly_test_requests wtr"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 223,
+    "content": "`SELECT * FROM weekly_test_requests WHERE id = $1 AND course_name = $2 AND is_active = true`,"
+  },
+  {
+    "file": "weekly-test.js",
+    "line": 245,
+    "content": "`SELECT id FROM weekly_test_submissions WHERE request_id = $1 AND student_id = $2`,"
+  }
+]

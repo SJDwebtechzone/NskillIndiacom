@@ -54,7 +54,7 @@ export default function TrainerPostTestQuestionsPage() {
   };
 
   const handleDelete = async (qId: number) => {
-    if (!confirm('Delete this question?')) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     const token = localStorage.getItem('token');
     await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/admin/posttest/questions/${qId}`,

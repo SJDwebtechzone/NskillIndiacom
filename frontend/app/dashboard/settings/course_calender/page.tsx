@@ -488,7 +488,7 @@ export default function AdminPage() {
   }));
 
   async function handleDelete(id: number) {
-    if (!window.confirm("Delete this session?")) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     setDeletingId(id);
     try {
       await deleteEvent(id);
@@ -838,7 +838,7 @@ export default function AdminPage() {
                       </div>
                       <button
                         onClick={async () => {
-                          if (!window.confirm(`Delete all sessions for "${c.name}"?`)) return;
+                          if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
                           const ids = events.filter((e) => e.course_name === c.name && e.id).map((e) => e.id!);
                           for (const id of ids) { try { await deleteEvent(id); } catch {} }
                           await loadEvents();

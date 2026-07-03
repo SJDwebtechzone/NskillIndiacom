@@ -23,6 +23,7 @@ export default function RecommendedJobsPage() {
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [partners, setPartners] = useState<any[]>([]);
   const router = useRouter();
   const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
@@ -34,6 +35,11 @@ export default function RecommendedJobsPage() {
         setFilteredJobs(data || []);
       })
       .catch((err) => console.error("Error fetching jobs:", err));
+
+    fetch(`${API}/api/partners`)
+      .then((res) => res.json())
+      .then((data) => setPartners(data || []))
+      .catch((err) => console.error("Error fetching partners:", err));
 
     // Show popup after 1 second initially
     const timer = setTimeout(() => {
@@ -215,6 +221,94 @@ export default function RecommendedJobsPage() {
           )}
         </div>
       </div>
+
+      {/* ── PARTNERS SECTION ── */}
+      {partners.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 md:px-10 mt-20 relative z-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-[#0f172a] mb-4">Our Corporate Partners</h2>
+            <p className="text-lg text-slate-500 font-medium">Top companies hiring our skilled candidates.</p>
+          </div>
+          <div className="relative overflow-hidden w-full py-2">
+            <div className="flex animate-scroll-left pause-on-hover w-max">
+              {/* Block 1 (First 50%) */}
+              <div className="flex gap-6 pr-6">
+                {[...partners, ...partners, ...partners].map((partner, i) => {
+                  const inner = (
+                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow flex items-center justify-center w-40 h-24">
+                      <img src={partner.company_logo} alt={partner.company_name} className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105" title={partner.company_name} />
+                    </div>
+                  );
+                  return partner.website_url ? (
+                    <a key={`r1a-${partner.id}-${i}`} href={partner.website_url} target="_blank" rel="noreferrer" className="block shrink-0">
+                      {inner}
+                    </a>
+                  ) : (
+                    <div key={`r1a-${partner.id}-${i}`} className="shrink-0">{inner}</div>
+                  );
+                })}
+              </div>
+              {/* Block 2 (Second 50%) */}
+              <div className="flex gap-6 pr-6">
+                {[...partners, ...partners, ...partners].map((partner, i) => {
+                  const inner = (
+                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow flex items-center justify-center w-40 h-24">
+                      <img src={partner.company_logo} alt={partner.company_name} className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105" title={partner.company_name} />
+                    </div>
+                  );
+                  return partner.website_url ? (
+                    <a key={`r1b-${partner.id}-${i}`} href={partner.website_url} target="_blank" rel="noreferrer" className="block shrink-0">
+                      {inner}
+                    </a>
+                  ) : (
+                    <div key={`r1b-${partner.id}-${i}`} className="shrink-0">{inner}</div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="relative overflow-hidden w-full py-2 mt-2">
+            <div className="flex animate-scroll-right pause-on-hover w-max">
+              {/* Block 1 (First 50%) */}
+              <div className="flex gap-6 pr-6">
+                {[...partners, ...partners, ...partners].reverse().map((partner, i) => {
+                  const inner = (
+                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow flex items-center justify-center w-40 h-24">
+                      <img src={partner.company_logo} alt={partner.company_name} className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105" title={partner.company_name} />
+                    </div>
+                  );
+                  return partner.website_url ? (
+                    <a key={`r2a-${partner.id}-${i}`} href={partner.website_url} target="_blank" rel="noreferrer" className="block shrink-0">
+                      {inner}
+                    </a>
+                  ) : (
+                    <div key={`r2a-${partner.id}-${i}`} className="shrink-0">{inner}</div>
+                  );
+                })}
+              </div>
+              {/* Block 2 (Second 50%) */}
+              <div className="flex gap-6 pr-6">
+                {[...partners, ...partners, ...partners].reverse().map((partner, i) => {
+                  const inner = (
+                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow flex items-center justify-center w-40 h-24">
+                      <img src={partner.company_logo} alt={partner.company_name} className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105" title={partner.company_name} />
+                    </div>
+                  );
+                  return partner.website_url ? (
+                    <a key={`r2b-${partner.id}-${i}`} href={partner.website_url} target="_blank" rel="noreferrer" className="block shrink-0">
+                      {inner}
+                    </a>
+                  ) : (
+                    <div key={`r2b-${partner.id}-${i}`} className="shrink-0">{inner}</div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* ── PROFILE PROMPT FLOATING CARD (BESIDE) ── */}
       {showPopup && (

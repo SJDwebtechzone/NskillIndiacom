@@ -12,25 +12,8 @@ const { authMiddleware, checkPermission } = require("../middleware/authMiddlewar
 // ✅ Same SECRET as authMiddleware
 const SECRET = process.env.JWT_SECRET || "mysecret";
 
-// ── Multer ─────────────────────────────────────────────────────────────────────
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const u = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${file.fieldname}-${u}${path.extname(file.originalname)}`);
-  },
-});
-const fileFilter = (req, file, cb) => {
-  const ok = [".pdf", ".jpg", ".jpeg", ".png"];
-  ok.includes(path.extname(file.originalname).toLowerCase())
-    ? cb(null, true)
-    : cb(new Error("Only PDF/JPG/PNG allowed"));
-};
-const upload    = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
-const docUpload = upload.fields([
+const { handleFileUpload } = require("../utils/fileUpload");
+const docUpload = handleFileUpload([
   { name: "file_photo",           maxCount: 1 },
   { name: "file_aadhaar_copy",    maxCount: 1 },
   { name: "file_pan_copy",        maxCount: 1 },
@@ -159,7 +142,9 @@ router.get(
                 city, district, state, status,
                 (password_hash IS NOT NULL) AS has_password,
                 created_at
-         FROM career_counsellors ORDER BY created_at DESC`
+         FROM career_counsellors 
+         WHERE (is_deleted = false OR is_deleted IS NULL)
+         ORDER BY created_at DESC`
       );
       res.json({ data: r.rows, total: r.rowCount });
     } catch (err) {
@@ -195,7 +180,7 @@ router.get("/:id/files/:field", async (req, res) => {
     const decoded = jwt.verify(token, SECRET);
 
     const r = await pool.query(
-      `SELECT ${field} FROM career_counsellors WHERE id = $1`,
+      `SELECT ${field} FROM career_counsellors WHERE id = $1 AND (is_deleted = false OR is_deleted IS NULL)`,
       [id]
     );
     if (!r.rowCount) return res.status(404).json({ error: "Associate not found." });
@@ -238,7 +223,8 @@ router.get(
           bank_account_holder, bank_name_branch, account_number, ifsc_code,
           additional_info, consent_agreed, consent_place, consent_date,
           status, (password_hash IS NOT NULL) AS has_password, created_at
-         FROM career_counsellors WHERE id = $1`,
+         FROM career_counsellors 
+         WHERE id = $1 AND (is_deleted = false OR is_deleted IS NULL)`,
         [req.params.id]
       );
       if (!r.rowCount) return res.status(404).json({ error: "Not found." });
@@ -348,7 +334,7 @@ router.post(
   async (req, res) => {
     try {
       const result = await pool.query(
-        "SELECT id, full_name, email FROM career_counsellors WHERE id = $1",
+        "SELECT id, full_name, email FROM career_counsellors WHERE id = $1 AND (is_deleted = false OR is_deleted IS NULL)",
         [req.params.id]
       );
       if (!result.rowCount)
@@ -405,7 +391,7 @@ router.delete(
   async (req, res) => {
     try {
       const r = await pool.query(
-        "DELETE FROM career_counsellors WHERE id = $1 RETURNING id, full_name",
+        "UPDATE career_counsellors SET is_deleted = true, deleted_at = NOW() WHERE id = $1 RETURNING id, full_name",
         [req.params.id]
       );
       if (!r.rowCount) return res.status(404).json({ error: "Not found." });

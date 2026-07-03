@@ -1,188 +1,337 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
-import { useAuth } from '@/app/context/AuthContext';
+import { useState, useRef, useEffect } from 'react';
+import { UploadCloud, File, Video, CheckCircle2, X, Clock, FileText } from 'lucide-react';
+import { ValidatedFileInput } from "@/components/ValidatedFileInput";
 
-interface Question {
+interface PosttestQuestion {
   id: number;
+  course_name: string;
   question: string;
-  option_a: string;
-  option_b: string;
-  option_c: string;
-  option_d: string;
+  is_upload: boolean;
+  upload_type: 'document' | 'video' | 'both';
 }
-interface Answer { [questionId: number]: string; }
 
-export default function StudentPostTestPage() {
-  const { user } = useAuth();
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [answers, setAnswers] = useState<Answer>({});
+interface AttemptStatus {
+  attempted: boolean;
+  score?: number;
+  total?: number;
+  passed?: boolean;
+  file_url?: string;
+  file_type?: string;
+  status?: string;
+  review_note?: string;
+}
+
+export default function StudentWeeklyTestUploadPage() {
   const [courseName, setCourseName] = useState('');
+  const [uploadRequest, setUploadRequest] = useState<PosttestQuestion | null>(null);
+  const [attemptStatus, setAttemptStatus] = useState<AttemptStatus | null>(null);
+  
   const [loading, setLoading] = useState(true);
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
-  const [passed, setPassed] = useState<boolean | null>(null);
-  const [total, setTotal] = useState(0);
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [error, setError] = useState('');
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Upload states
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadSuccess, setUploadSuccess] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const API = process.env.NEXT_PUBLIC_API_URL;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   useEffect(() => {
-    if (questions.length > 0 && !submitted) {
-      timerRef.current = setInterval(() => setTimeElapsed(p => p + 1), 1000);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [questions, submitted]);
+    fetchData();
+  }, []);
 
-  useEffect(() => { fetchStudentCourse(); }, []);
-
-  const fetchStudentCourse = async () => {
+  const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const courseRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/posttest/student/course`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      setLoading(true);
+      setError('');
+      
+      // 1. Get Course
+      const courseRes = await fetch(`${API}/api/admin/posttest/student/course`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!courseRes.ok) throw new Error('Could not fetch student course');
       const courseData = await courseRes.json();
-      if (!courseData.course_name) { setError('No course found. Contact admin.'); setLoading(false); return; }
       setCourseName(courseData.course_name);
 
-      const attemptRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/posttest/student/attempt-status?course_name=${encodeURIComponent(courseData.course_name)}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const attemptData = await attemptRes.json();
-      if (attemptData.attempted) {
-        setScore(attemptData.score); setTotal(attemptData.total); setPassed(attemptData.passed);
-        setSubmitted(true); setLoading(false); return;
+      // 2. Get Questions to see if there's an upload request
+      const questionsRes = await fetch(`${API}/api/admin/posttest/${courseData.course_name}/questions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (questionsRes.ok) {
+        const questionsData = await questionsRes.json();
+        const uploadQ = questionsData.questions?.find((q: any) => q.is_upload);
+        if (uploadQ) setUploadRequest(uploadQ);
       }
 
-      const qRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/posttest/${encodeURIComponent(courseData.course_name)}/questions`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const qData = await qRes.json();
-      setQuestions(qData.questions || []);
-    } catch (err) { setError('Failed to load post-test.'); }
-    finally { setLoading(false); }
+      // 3. Get Attempt Status
+      const attemptRes = await fetch(`${API}/api/admin/posttest/student/attempt-status?course_name=${encodeURIComponent(courseData.course_name)}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (attemptRes.ok) {
+        const attemptData = await attemptRes.json();
+        setAttemptStatus(attemptData);
+      }
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAnswer = (questionId: number, option: string) => {
-    setAnswers(prev => ({...prev, [questionId]: option}));
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFileSelect(e.target.files[0]);
+    }
+  };
+
+  const handleFileSelect = (selectedFile: File) => {
+    setUploadError('');
+    if (!uploadRequest) return;
+
+    const isVideo = selectedFile.type.startsWith('video/');
+    const isValidVideo = ['video/mp4', 'video/webm', 'video/quicktime'].includes(selectedFile.type);
+    const isValidDoc = [
+      'application/pdf', 
+      'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain'
+    ].includes(selectedFile.type);
+
+    if (uploadRequest.upload_type === 'video' && !isVideo) {
+      setUploadError('This test requires a video upload.');
+      return;
+    }
+    if (uploadRequest.upload_type === 'document' && isVideo) {
+      setUploadError('This test requires a document upload.');
+      return;
+    }
+    if (!isValidVideo && !isValidDoc) {
+      setUploadError('Please upload a valid Document or Video format.');
+      return;
+    }
+
+    setFile(selectedFile);
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    setSubmitting(true);
+    if (!file || !uploadRequest) return;
+    setUploading(true);
+    setUploadError('');
+    setUploadProgress(0);
+
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/posttest/student/submit`,
-        { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ course_name: courseName, answers, time_taken: timeElapsed }) }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed');
-      setScore(data.score); setTotal(data.total); setPassed(data.passed); setSubmitted(true);
-    } catch (err) { setError('Failed to submit. Try again.'); }
-    finally { setSubmitting(false); }
+      const formData = new FormData();
+      formData.append('weekly_test_file', file);
+      formData.append('course_name', courseName);
+      
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+        };
+        xhr.open("POST", `${API}/api/admin/posttest/student/submit`);
+        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(JSON.parse(xhr.responseText).error || "Failed to upload"));
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send(formData);
+      });
+
+      setUploadSuccess('Your test was submitted successfully!');
+      setTimeout(() => {
+        setUploadSuccess('');
+        setFile(null);
+        fetchData();
+      }, 2000);
+    } catch (err: any) {
+      setUploadError(err.message || 'An error occurred during upload.');
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const formatTime = (s: number) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600" />
+      </div>
+    );
+  }
 
-  if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600" /></div>;
+  if (error) {
+    return <div className="p-6 text-red-500 bg-red-50 rounded-xl m-6 border border-red-100">{error}</div>;
+  }
 
-  if (error) return (
-    <div className="flex flex-col items-center justify-center h-64 gap-4">
-      <div className="text-5xl">⚠️</div>
-      <p className="text-gray-500 text-center">{error}</p>
-    </div>
-  );
-
-  if (submitted && score !== null) return (
-    <div className="max-w-md mx-auto mt-16">
-      <div className={`rounded-2xl p-8 text-center shadow-lg border-2 ${passed ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-        <div className="text-6xl mb-4">{passed ? '🎉' : '😞'}</div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">{passed ? 'Congratulations!' : 'Better Luck Next Time'}</h2>
-       <p className="text-gray-500 mb-6">{passed ? 'You passed the weekly test.' : 'You did not meet the passing criteria.'}</p>
-        <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-          <p className="text-sm text-gray-400 mb-1">Your Score</p>
-          <p className={`text-5xl font-black mb-1 ${passed ? 'text-green-600' : 'text-red-500'}`}>
-            {score}<span className="text-2xl text-gray-400">/{total}</span>
-          </p>
-          <p className="text-sm text-gray-400">{total > 0 ? Math.round((score/total)*100) : 0}% correct</p>
-        </div>
-        <div className="bg-white rounded-xl px-4 py-3 text-sm text-gray-500 mb-4">
-          Course: <span className="font-semibold text-purple-600">{courseName}</span>
-        </div>
-        <div className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold ${passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-          {passed ? '✅ PASSED' : '❌ FAILED'}
+  if (!uploadRequest) {
+    return (
+      <div className="p-6 md:p-10 max-w-4xl mx-auto space-y-8 min-h-screen bg-slate-50/50">
+        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+          <div className="text-5xl mb-4">📝</div>
+          <p className="text-slate-500 font-bold text-lg">No weekly test requested yet.</p>
         </div>
       </div>
-    </div>
-  );
-
-  if (questions.length === 0) return (
-    <div className="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-      <div className="text-5xl mb-4">📋</div>
-      <p className="text-gray-400 text-lg font-medium">No weekly test questions available yet.</p>
-      <p className="text-gray-400 text-sm mt-2">Course: <span className="font-semibold text-purple-500">{courseName}</span></p>
-    </div>
-  );
-
-  const answeredCount = Object.keys(answers).length;
-  const allAnswered = answeredCount === questions.length;
+    );
+  }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Weekly Test</h1>
-          <p className="text-gray-500 text-sm mt-1">Course: <span className="font-semibold text-purple-600">{courseName}</span></p>
-        </div>
-        <div className="bg-purple-50 border border-purple-200 rounded-xl px-4 py-2 text-center">
-          <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest">Time</p>
-          <p className="text-xl font-black text-purple-600">{formatTime(timeElapsed)}</p>
-        </div>
+    <div className="p-6 md:p-10 max-w-4xl mx-auto space-y-8 min-h-screen bg-slate-50/50">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3 mb-2">
+          <UploadCloud size={28} className="text-purple-600" />
+          My Weekly Test
+        </h1>
+        <p className="text-slate-500 font-medium">
+          Requested Format: <span className="font-bold text-slate-700 capitalize">{uploadRequest.upload_type}</span>
+        </p>
       </div>
 
-      <div className="mb-6">
-        <div className="flex justify-between text-xs text-gray-400 mb-1 font-medium">
-          <span>{answeredCount} of {questions.length} answered</span>
-          <span>{Math.round((answeredCount/questions.length)*100)}%</span>
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
+        
+        {/* Trainer Instructions */}
+        <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100">
+          <h3 className="font-bold text-purple-900 mb-1">Trainer's Request:</h3>
+          <p className="text-purple-700 text-sm">{uploadRequest.question}</p>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-2">
-          <div className="bg-purple-500 h-2 rounded-full transition-all duration-300" style={{width: `${(answeredCount/questions.length)*100}%`}} />
-        </div>
-      </div>
 
-      <div className="space-y-6">
-        {questions.map((q, index) => (
-          <div key={q.id} className={`bg-white border rounded-xl p-5 shadow-sm transition-all ${answers[q.id] ? 'border-purple-200' : 'border-gray-200'}`}>
-            <p className="font-semibold text-gray-800 mb-4">
-              <span className="text-purple-500 mr-2">Q{index + 1}.</span>{q.question}
-            </p>
-            <div className="space-y-2">
-              {(['a','b','c','d'] as const).map(opt => (
-                <label key={opt} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${answers[q.id] === opt ? 'border-purple-400 bg-purple-50 shadow-sm' : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'}`}>
-                  <input type="radio" name={`q_${q.id}`} value={opt} checked={answers[q.id] === opt} onChange={() => handleAnswer(q.id, opt)} className="accent-purple-600" />
-                  <span className={`text-sm font-bold uppercase mr-1 ${answers[q.id] === opt ? 'text-purple-500' : 'text-gray-400'}`}>{opt}.</span>
-                  <span className="text-gray-700 text-sm">{q[`option_${opt}` as keyof Question]}</span>
-                </label>
-              ))}
+        {/* Previous Submission Status */}
+        {attemptStatus?.attempted && attemptStatus.file_url && (
+          <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+            <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <CheckCircle2 className="text-emerald-500" size={20} />
+              Your Current Submission
+            </h3>
+            <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100">
+              <a href={`${API}${attemptStatus.file_url}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-blue-600 font-bold hover:underline text-sm">
+                {attemptStatus.file_type === 'video' ? <Video size={16} /> : <FileText size={16} />}
+                View Uploaded {attemptStatus.file_type}
+              </a>
+              <span className={`px-2 py-1 text-xs font-bold rounded-lg uppercase tracking-wider ${
+                attemptStatus.status === 'reviewed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+              }`}>
+                {attemptStatus.status === 'reviewed' ? 'Reviewed' : 'Pending Review'}
+              </span>
             </div>
+            {attemptStatus.review_note && (
+              <div className="mt-3 bg-amber-50 text-amber-800 p-3 rounded-xl text-sm border border-amber-200">
+                <span className="font-bold block mb-1">Trainer's Note:</span>
+                {attemptStatus.review_note}
+              </div>
+            )}
+            <p className="text-xs text-slate-400 mt-3 text-center">Uploading a new file below will replace your current submission.</p>
           </div>
-        ))}
-      </div>
+        )}
 
-      <div className="mt-8 sticky bottom-6">
-        <button
-          onClick={handleSubmit}
-          disabled={!allAnswered || submitting}
-          className={`w-full font-bold py-4 rounded-xl transition-all text-white shadow-lg ${allAnswered && !submitting ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-200' : 'bg-gray-300 cursor-not-allowed'}`}
-        >
-          {submitting ? 'Submitting...' : allAnswered ? 'Submit Weekly Test ✓' : `Answer all questions (${answeredCount}/${questions.length})`}
-        </button>
+        {/* Upload Area */}
+        {uploadSuccess ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
+            <CheckCircle2 size={64} className="text-emerald-500" />
+            <h2 className="text-2xl font-bold text-slate-800">{uploadSuccess}</h2>
+          </div>
+        ) : (
+          <>
+            {uploadError && (
+              <div className="p-4 bg-red-50 text-red-600 rounded-xl font-medium border border-red-100 text-sm flex items-start gap-3">
+                <span className="text-lg">⚠️</span>
+                <p className="mt-0.5">{uploadError}</p>
+              </div>
+            )}
+
+            <div 
+              className={`border-2 border-dashed rounded-3xl p-12 text-center transition-all ${
+                file ? 'border-purple-200 bg-purple-50/30' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400 cursor-pointer'
+              }`}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onClick={() => !file && fileInputRef.current?.click()}
+            >
+              <ValidatedFileInput 
+                fileType="any"
+                ref={fileInputRef as any} 
+                onChange={handleFileChange} 
+                className="hidden" 
+              />
+
+              {!file ? (
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-400">
+                    <UploadCloud size={32} />
+                  </div>
+                  <div>
+                    <p className="text-slate-800 font-bold text-lg">Click or drag file to upload</p>
+                    <p className="text-slate-500 font-medium text-sm mt-1">Please ensure the file matches the requested format.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between bg-white p-6 rounded-2xl border border-purple-100 shadow-sm relative group cursor-default" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center gap-4 text-left">
+                    <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center">
+                      {file.type.startsWith('video/') ? <Video size={24} /> : <File size={24} />}
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-800 truncate max-w-[200px] sm:max-w-xs">{file.name}</p>
+                      <p className="text-xs text-slate-500 font-medium mt-1">
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={removeFile} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {uploading && uploadProgress > 0 && (
+              <div className="w-full">
+                <div className="flex justify-between text-xs text-slate-500 mb-1 font-bold">
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="bg-purple-600 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-4 border-t border-slate-100">
+              <button
+                onClick={handleSubmit}
+                disabled={!file || uploading}
+                className={`px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${
+                  !file || uploading 
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20 active:scale-95'
+                }`}
+              >
+                {uploading ? 'Uploading...' : 'Submit Test'}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

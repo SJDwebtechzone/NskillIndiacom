@@ -21,12 +21,12 @@ router.get('/trainer/students', async (req, res) => {
       // Admin sees all students
       result = await pool.query(
         `SELECT id, full_name, email_id, course_name 
-         FROM student_admissions ORDER BY full_name`
+         FROM student_admissions WHERE is_deleted = false ORDER BY full_name`
       );
     } else {
       // Trainer sees only their course students
       const coursesResult = await pool.query(
-        `SELECT title FROM courses WHERE trainer_id = $1`,
+        `SELECT title FROM courses WHERE trainer_id = $1 AND is_deleted = false`,
         [trainerId]
       );
 
@@ -39,7 +39,7 @@ router.get('/trainer/students', async (req, res) => {
       result = await pool.query(
         `SELECT id, full_name, email_id, course_name 
          FROM student_admissions 
-         WHERE course_name = ANY($1)
+         WHERE course_name = ANY($1) AND is_deleted = false
          ORDER BY full_name`,
         [courses]
       );
@@ -59,7 +59,7 @@ router.get('/student/:studentId', async (req, res) => {
 
     // 1. Get student info
     const studentResult = await pool.query(
-      `SELECT id, full_name, email_id, course_name FROM student_admissions WHERE id = $1`,
+      `SELECT id, full_name, email_id, course_name FROM student_admissions WHERE id = $1 AND is_deleted = false`,
       [studentId]
     );
     if (studentResult.rows.length === 0) {
@@ -71,7 +71,7 @@ router.get('/student/:studentId', async (req, res) => {
     // 2. Pre-test marks (out of 10)
     const pretestResult = await pool.query(
       `SELECT score, total FROM pretest_attempts 
-       WHERE student_id = $1 AND course_name = $2 
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false
        ORDER BY submitted_at DESC LIMIT 1`,
       [studentId, courseName]
     );
@@ -84,7 +84,7 @@ router.get('/student/:studentId', async (req, res) => {
     // 3. Post-test marks (out of 15)
     const posttestResult = await pool.query(
       `SELECT score, total FROM finaltest_attempts 
-       WHERE student_id = $1 AND course_name = $2 
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false
        ORDER BY submitted_at DESC LIMIT 1`,
       [studentId, courseName]
     );
@@ -97,7 +97,7 @@ router.get('/student/:studentId', async (req, res) => {
     // 4. Weekly test marks (out of 20)
     const weeklyResult = await pool.query(
       `SELECT score, total FROM posttest_attempts 
-       WHERE student_id = $1 AND course_name = $2 
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false
        ORDER BY submitted_at DESC LIMIT 1`,
       [studentId, courseName]
     );
@@ -112,7 +112,7 @@ router.get('/student/:studentId', async (req, res) => {
       `SELECT 
          COUNT(*) FILTER (WHERE status = 'Present') as present_count,
          COUNT(*) FILTER (WHERE status IS NOT NULL AND status != '') as total_count
-       FROM attendance WHERE admission_id = $1`,
+       FROM attendance WHERE admission_id = $1 AND is_deleted = false`,
       [studentId]
     );
     let attendanceMarks = 0;
@@ -126,7 +126,7 @@ router.get('/student/:studentId', async (req, res) => {
     const practicalResult = await pool.query(
       `SELECT COALESCE(SUM(marks), 0) as total_marks
        FROM practical_submissions 
-       WHERE student_id = $1 AND status = 'verified'`,
+       WHERE student_id = $1 AND status = 'verified' AND is_deleted = false`,
       [studentId]
     );
     const rawPractical = parseFloat(practicalResult.rows[0]?.total_marks || 0);
@@ -136,7 +136,7 @@ router.get('/student/:studentId', async (req, res) => {
     const assessmentResult = await pool.query(
       `SELECT COALESCE(SUM(marks), 0) as total_marks
        FROM assessment_submissions 
-       WHERE student_id = $1 AND status = 'verified'`,
+       WHERE student_id = $1 AND status = 'verified' AND is_deleted = false`,
       [studentId]
     );
     const rawAssessment = parseFloat(assessmentResult.rows[0]?.total_marks || 0);
@@ -195,20 +195,20 @@ router.get('/my-marks', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
 
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
 
     const studentResult = await pool.query(
-      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
     const studentId = studentResult.rows[0]?.id;
     if (!studentId) return res.status(404).json({ error: 'Student not found' });
 
     const marksResult = await pool.query(
-      `SELECT * FROM student_marks WHERE student_id = $1`,
+      `SELECT * FROM student_marks WHERE student_id = $1 AND is_deleted = false`,
       [studentId]
     );
 

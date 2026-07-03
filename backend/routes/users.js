@@ -38,16 +38,40 @@ const router = express.Router();
 router.get(
   "/",
   authMiddleware,
-  checkPermission("Manage Users", "view"),
   async (req, res) => {
     try {
       const { role } = req.query; // role name (e.g. STUDENT, Associate, Admin)
+
+      // Check permissions manually based on role
+      const roleLower = (req.user.roleName || "").toLowerCase();
+      if (roleLower !== "admin" && roleLower !== "super admin" && roleLower !== "super_admin") {
+        let allowedModules = ["Manage Users"];
+        if (role === 'student') allowedModules.push("Students");
+        else if (role === 'staff') allowedModules.push("Staff / Trainee");
+        else if (role === 'ntsc-admin' || role === 'Admin') allowedModules.push("NTSC Admin");
+
+        const permCheck = await pool.query(
+          `SELECT can_view FROM permissions WHERE role_id = $1 AND module = ANY($2::text[]) AND can_view = true`,
+          [req.user.roleId, allowedModules]
+        );
+
+        if (permCheck.rows.length === 0) {
+          console.log(`Returning 403 - Missing manual view permission for one of: ${allowedModules.join(", ")}`);
+          console.log(`----------------\n`);
+          return res.status(403).json({ success: false, message: `Access denied: Missing view permission for modules: ${allowedModules.join(", ")}` });
+        }
+        
+        console.log(`Permission Check (Manual Users.js): Passed`);
+        console.log(`----------------\n`);
+      }
+
       let query = `
         SELECT u.id, u.name, u.email, u.status, u.created_at, u.phone_number, u.dob,
                 r.name as role_name, r.id as role_id
          FROM users u
-         LEFT JOIN roles r ON u.role_id = r.id
-         WHERE (u.status IS NULL OR u.status <> 'Deleted')
+         LEFT JOIN roles r ON u.role_id = r.id AND r.is_deleted = false
+         WHERE (u.status IS NULL OR u.status <> 'Deleted') AND u.is_deleted = false
+         AND u.id NOT IN (SELECT id FROM placement_users)
       `;
       let params = [];
 
@@ -75,14 +99,22 @@ router.get(
 router.post(
   "/from-admission",
   authMiddleware,
-  checkPermission("Manage Users", "add"),
+  async (req, res, next) => {
+    if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") return next();
+    const perm = await pool.query(
+      "SELECT can_add FROM permissions WHERE role_id=$1 AND module IN ('Manage Users', 'Students') AND can_add = true",
+      [req.user.roleId]
+    );
+    if (perm.rows.length === 0) return res.status(403).json({ message: "Access denied" });
+    next();
+  },
   async (req, res) => {
     try {
       const { admission_id } = req.body;
 
       // 1. Fetch admission details
       const admRes = await pool.query(
-        "SELECT full_name, email_id FROM student_admissions WHERE id = $1",
+        "SELECT full_name, email_id FROM student_admissions WHERE id = $1 AND is_deleted = false",
         [admission_id]
       );
       if (admRes.rows.length === 0)
@@ -93,7 +125,7 @@ router.post(
       const name = admission.full_name;
 
       // 2. Fetch Student role id
-      const roleRes = await pool.query("SELECT id FROM roles WHERE LOWER(name) = 'student'");
+      const roleRes = await pool.query("SELECT id FROM roles WHERE LOWER(name) = 'student' AND is_deleted = false");
       const roleId = roleRes.rows[0]?.id;
       if (!roleId)
         return res.status(500).json({ message: "Student role not found in database." });
@@ -142,7 +174,7 @@ router.post(
 
       // Check if email already exists
       const existing = await pool.query(
-        "SELECT id FROM users WHERE email = $1",
+        "SELECT id FROM users WHERE email = $1 AND is_deleted = false",
         [email]
       );
       if (existing.rows.length > 0)
@@ -175,7 +207,15 @@ router.post(
 router.put(
   "/:id",
   authMiddleware,
-  checkPermission("Manage Users", "edit"),
+  async (req, res, next) => {
+    if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") return next();
+    const perm = await pool.query(
+      "SELECT can_edit FROM permissions WHERE role_id=$1 AND module IN ('Manage Users', 'Students', 'Staff / Trainee', 'NTSC Admin') AND can_edit = true",
+      [req.user.roleId]
+    );
+    if (perm.rows.length === 0) return res.status(403).json({ message: "Access denied" });
+    next();
+  },
   async (req, res) => {
     try {
       const { name, email, role_id, status } = req.body;
@@ -206,7 +246,15 @@ router.put(
 router.put(
   "/:id/reset-password",
   authMiddleware,
-  checkPermission("Manage Users", "edit"),
+  async (req, res, next) => {
+    if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") return next();
+    const perm = await pool.query(
+      "SELECT can_edit FROM permissions WHERE role_id=$1 AND module IN ('Manage Users', 'Students', 'Staff / Trainee', 'NTSC Admin') AND can_edit = true",
+      [req.user.roleId]
+    );
+    if (perm.rows.length === 0) return res.status(403).json({ message: "Access denied" });
+    next();
+  },
   async (req, res) => {
     try {
       const plainPassword = generatePassword();
@@ -239,7 +287,7 @@ router.delete(
     try {
       const result = await pool.query(
         `SELECT can_delete FROM permissions 
-         WHERE role_id = $1 AND module IN ('Manage Users', 'Staff / Trainee') AND can_delete = true`,
+         WHERE role_id = $1 AND module IN ('Manage Users', 'Staff / Trainee', 'Students', 'NTSC Admin') AND can_delete = true AND is_deleted = false`,
         [req.user.roleId]
       );
       if (result.rows.length === 0) {
@@ -254,17 +302,23 @@ router.delete(
   async (req, res) => {
     try {
       // 1. Get user details first (needed for email update to avoid unique constraints on email for new registrations)
-      const userRes = await pool.query("SELECT email FROM users WHERE id = $1", [req.params.id]);
+      const userRes = await pool.query("SELECT email FROM users WHERE id = $1 AND is_deleted = false", [req.params.id]);
       if (userRes.rows.length === 0) {
         return res.status(404).json({ message: "User not found" });
       }
       const email = userRes.rows[0].email;
       const deletedEmail = `${email}_deleted_${Date.now()}`;
 
-      // 2. Perform soft delete
+      // 2. Unassign any courses if this user was a trainer
+      await pool.query(
+        "UPDATE courses SET trainer_id = NULL WHERE trainer_id = $1",
+        [req.params.id]
+      );
+
+      // 3. Perform soft delete
       const result = await pool.query(
-        "UPDATE users SET status = 'Deleted', email = $1 WHERE id = $2 RETURNING id",
-        [deletedEmail, req.params.id]
+        "UPDATE users SET status = 'Deleted', email = $1, is_deleted = true, deleted_at = NOW(), deleted_by = $3 WHERE id = $2 RETURNING id",
+        [deletedEmail, req.params.id, req.user.id]
       );
 
       res.json({ message: "User deleted successfully" });

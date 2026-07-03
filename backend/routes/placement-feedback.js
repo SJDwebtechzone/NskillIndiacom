@@ -6,40 +6,19 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// ── Multer for offer letter uploads ──────────────────────────────────────────
-const uploadDir = path.join(__dirname, '../uploads/offer-letters');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-  fileFilter: (req, file, cb) => {
-    const allowed = ['.pdf', '.jpg', '.jpeg', '.png'];
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (allowed.includes(ext)) cb(null, true);
-    else cb(new Error('Only PDF, JPG, PNG files allowed'));
-  },
-});
+const { handleSingleUpload } = require('../utils/fileUpload');
 
 // Helper to get student admission id from token
 const getStudentFromToken = async (decoded) => {
   const userResult = await pool.query(
-    `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+    `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
     [decoded.id]
   );
   const email = userResult.rows[0]?.email;
   if (!email) return null;
   const studentResult = await pool.query(
     `SELECT id, full_name, course_name, photo_url FROM student_admissions 
-     WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+     WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
     [email]
   );
   return studentResult.rows[0] || null;
@@ -48,7 +27,7 @@ const getStudentFromToken = async (decoded) => {
 // ── PLACEMENT ROUTES ──────────────────────────────────────────────────────────
 
 // POST /api/placement-feedback/placement — student submits placement
-router.post('/placement', upload.single('offer_letter'), async (req, res) => {
+router.post('/placement', handleSingleUpload('offer_letter'), async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
   try {
@@ -89,7 +68,7 @@ router.get('/placement/my', async (req, res) => {
     if (!student) return res.status(404).json({ error: 'Student not found' });
 
     const result = await pool.query(
-      `SELECT * FROM student_placements WHERE student_id = $1 ORDER BY submitted_at DESC`,
+      `SELECT * FROM student_placements WHERE student_id = $1 AND is_deleted = false ORDER BY submitted_at DESC`,
       [student.id]
     );
     res.json({ placements: result.rows });
@@ -106,6 +85,7 @@ router.get('/placement/all', async (req, res) => {
       `SELECT sp.*, sa.full_name, sa.email_id, sa.photo_url
        FROM student_placements sp
        JOIN student_admissions sa ON sa.id = sp.student_id
+       WHERE sp.is_deleted = false
        ORDER BY sp.submitted_at DESC`
     );
     res.json({ placements: result.rows });
@@ -137,7 +117,7 @@ router.delete('/placement/:id', async (req, res) => {
     const { id } = req.params;
     // Get offer letter URL to delete file from disk
     const fileResult = await pool.query(
-      `SELECT offer_letter_url FROM student_placements WHERE id = $1`,
+      `SELECT offer_letter_url FROM student_placements WHERE id = $1 AND is_deleted = false`,
       [id]
     );
     const fileUrl = fileResult.rows[0]?.offer_letter_url;
@@ -148,7 +128,7 @@ router.delete('/placement/:id', async (req, res) => {
       }
     }
 
-    await pool.query(`DELETE FROM student_placements WHERE id = $1`, [id]);
+    await pool.query(`UPDATE student_placements SET is_deleted = true, deleted_at = NOW() WHERE id = $1`, [id]);
     res.json({ message: 'Placement deleted successfully' });
   } catch (err) {
     console.error(err);
@@ -158,8 +138,8 @@ router.delete('/placement/:id', async (req, res) => {
 
 // ── FEEDBACK & TESTIMONIAL ROUTES ─────────────────────────────────────────────
 
-// POST /api/placement-feedback/feedback — student submits feedback
-router.post('/feedback', async (req, res) => {
+// POST /api/placement-feedback/feedback — student submits feedback (with optional testimonial video)
+router.post('/feedback', handleSingleUpload('testimonial_video'), async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
   try {
@@ -171,25 +151,37 @@ router.post('/feedback', async (req, res) => {
 
     const { rating, feedback_text, testimonial } = req.body;
 
+    const testimonial_video_url = req.file
+      ? `/uploads/testimonial-videos/${req.file.filename}`
+      : null;
+
     // Check if already submitted
     const existing = await pool.query(
-      `SELECT id FROM student_feedback WHERE student_id = $1`,
+      `SELECT id FROM student_feedback WHERE student_id = $1 AND is_deleted = false`,
       [student.id]
     );
     if (existing.rows.length > 0) {
-      // Update existing
-      await pool.query(
-        `UPDATE student_feedback SET rating=$1, feedback_text=$2, testimonial=$3, 
-         status='pending', submitted_at=NOW() WHERE student_id=$4`,
-        [rating, feedback_text, testimonial, student.id]
-      );
+      // Update existing (only update video_url if a new file was uploaded)
+      if (testimonial_video_url) {
+        await pool.query(
+          `UPDATE student_feedback SET rating=$1, feedback_text=$2, testimonial=$3, 
+           testimonial_video_url=$4, status='pending', submitted_at=NOW() WHERE student_id=$5`,
+          [rating, feedback_text, testimonial, testimonial_video_url, student.id]
+        );
+      } else {
+        await pool.query(
+          `UPDATE student_feedback SET rating=$1, feedback_text=$2, testimonial=$3, 
+           status='pending', submitted_at=NOW() WHERE student_id=$4`,
+          [rating, feedback_text, testimonial, student.id]
+        );
+      }
     } else {
       // Insert new
       await pool.query(
         `INSERT INTO student_feedback 
-          (student_id, course_name, rating, feedback_text, testimonial, photo_url)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [student.id, student.course_name, rating, feedback_text, testimonial, student.photo_url]
+          (student_id, course_name, rating, feedback_text, testimonial, testimonial_video_url, photo_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [student.id, student.course_name, rating, feedback_text, testimonial, testimonial_video_url, student.photo_url]
       );
     }
 
@@ -212,7 +204,7 @@ router.get('/feedback/my', async (req, res) => {
     if (!student) return res.status(404).json({ error: 'Student not found' });
 
     const result = await pool.query(
-      `SELECT * FROM student_feedback WHERE student_id = $1`,
+      `SELECT * FROM student_feedback WHERE student_id = $1 AND is_deleted = false`,
       [student.id]
     );
     res.json({ feedback: result.rows[0] || null });
@@ -229,6 +221,7 @@ router.get('/feedback/all', async (req, res) => {
       `SELECT sf.*, sa.full_name, sa.email_id
        FROM student_feedback sf
        JOIN student_admissions sa ON sa.id = sf.student_id
+       WHERE sf.is_deleted = false
        ORDER BY sf.submitted_at DESC`
     );
     res.json({ feedback: result.rows });
@@ -246,7 +239,7 @@ router.get('/testimonials/approved', async (req, res) => {
               sf.course_name, sa.full_name
        FROM student_feedback sf
        JOIN student_admissions sa ON sa.id = sf.student_id
-       WHERE sf.status = 'approved'
+       WHERE sf.status = 'approved' AND sf.is_deleted = false
        ORDER BY sf.submitted_at DESC`
     );
     res.json({ testimonials: result.rows });

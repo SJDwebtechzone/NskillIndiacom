@@ -111,7 +111,7 @@ router.put('/trainer/tasks/:taskId', authMiddleware, async (req, res) => {
 router.delete('/trainer/tasks/:taskId', authMiddleware, async (req, res) => {
   const { taskId } = req.params;
   try {
-    await pool.query(`DELETE FROM practical_tasks WHERE id=$1`, [taskId]);
+    await pool.query(`UPDATE practical_tasks SET is_deleted = true, deleted_at = NOW() WHERE id=$1`, [taskId]);
     res.json({ success: true });
   } catch (err) {
     console.error(err);

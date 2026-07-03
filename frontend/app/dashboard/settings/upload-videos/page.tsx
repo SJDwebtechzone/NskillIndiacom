@@ -48,7 +48,7 @@ export default function InfrastructureSettings() {
   useEffect(() => { fetchMedia(); }, []);
 
   const handleDeleteMedia = async (id: number) => {
-    if (!window.confirm("Delete this file?")) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     setDeletingId(id);
     try {
       await fetch(`${API}/api/infrastructure/media/${id}`, { method: "DELETE" });
@@ -236,11 +236,10 @@ export default function InfrastructureSettings() {
             <div className="mt-4 inline-flex items-center gap-2 bg-white border border-blue-100 shadow-sm rounded-full px-4 py-1.5">
               <span className="text-blue-600 text-xs font-semibold">⚡ All files upload at the same time</span>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
+            <ValidatedFileInput
+              ref={fileInputRef as any}
+              fileType="any"
               multiple
-              accept="image/*,video/*"
               onChange={handleFileChange}
               className="hidden"
             />

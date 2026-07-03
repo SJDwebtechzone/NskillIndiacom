@@ -10,21 +10,21 @@ router.get("/stats", async (req, res) => {
     // ── 1. Core counts ─────────────────────────────────────────────────────────
     const countsQuery = await pool.query(`
       SELECT
-        (SELECT COUNT(*) FROM student_admissions)::int                                     AS total_students,
+        (SELECT COUNT(*) FROM student_admissions WHERE is_deleted = false)::int                                     AS total_students,
         (SELECT COUNT(*) FROM users u
          JOIN roles r ON u.role_id = r.id
-         WHERE r.name = 'Associate')::int                                                  AS total_associates,
-        (SELECT COUNT(*) FROM student_enquiries)::int                                      AS total_enquiries,
-        (SELECT COUNT(*) FROM student_admissions)::int                                     AS total_admissions,
+         WHERE r.name = 'Associate' AND u.is_deleted = false)::int                                                  AS total_associates,
+        (SELECT COUNT(*) FROM student_enquiries WHERE is_deleted = false)::int                                      AS total_enquiries,
+        (SELECT COUNT(*) FROM student_admissions WHERE is_deleted = false)::int                                     AS total_admissions,
         (SELECT COUNT(*) FROM student_enquiries
-         WHERE referred_by IS NULL OR TRIM(referred_by) = '')::int                         AS direct_enquiries,
-        (SELECT COUNT(DISTINCT admission_id) FROM associate_referral_points)::int          AS associate_admissions,
+         WHERE (referred_by IS NULL OR TRIM(referred_by) = '') AND is_deleted = false)::int                         AS direct_enquiries,
+        (SELECT COUNT(DISTINCT admission_id) FROM associate_referral_points WHERE is_deleted = false)::int          AS associate_admissions,
         (SELECT COALESCE(SUM(paid_fees), 0)
          FROM student_admissions
-         WHERE DATE_TRUNC('month', payment_date) = DATE_TRUNC('month', NOW()))::numeric    AS revenue_this_month,
-        (SELECT COUNT(*) FROM student_admissions WHERE balance_amount > 0)::int            AS pending_fees_count,
+         WHERE DATE_TRUNC('month', payment_date) = DATE_TRUNC('month', NOW()) AND is_deleted = false)::numeric    AS revenue_this_month,
+        (SELECT COUNT(*) FROM student_admissions WHERE balance_amount > 0 AND is_deleted = false)::int            AS pending_fees_count,
         (SELECT COALESCE(SUM(balance_amount), 0)
-         FROM student_admissions WHERE balance_amount > 0)::numeric                        AS pending_fees_amount
+         FROM student_admissions WHERE balance_amount > 0 AND is_deleted = false)::numeric                        AS pending_fees_amount
     `);
 
     // ── 2. Student status ──────────────────────────────────────────────────────
@@ -40,6 +40,7 @@ router.get("/stats", async (req, res) => {
           WHERE batch_allotted IS NULL OR TRIM(batch_allotted) = ''
         )::int AS pending
       FROM student_admissions
+      WHERE is_deleted = false
     `);
 
     // ── 3. Monthly trends — last 6 months (fixed: renamed "asc" → "assoc") ────
@@ -60,12 +61,14 @@ router.get("/stats", async (req, res) => {
       LEFT JOIN (
         SELECT DATE_TRUNC('month', created_at) AS m, COUNT(*) AS cnt
         FROM student_admissions
+        WHERE is_deleted = false
         GROUP BY m
       ) adm ON adm.m = month_series
 
       LEFT JOIN (
         SELECT DATE_TRUNC('month', created_at) AS m, COUNT(*) AS cnt
         FROM student_enquiries
+        WHERE is_deleted = false
         GROUP BY m
       ) enq ON enq.m = month_series
 
@@ -73,14 +76,14 @@ router.get("/stats", async (req, res) => {
         SELECT DATE_TRUNC('month', u.created_at) AS m, COUNT(*) AS cnt
         FROM users u
         JOIN roles r ON u.role_id = r.id
-        WHERE r.name = 'Associate'
+        WHERE r.name = 'Associate' AND u.is_deleted = false
         GROUP BY m
       ) assoc ON assoc.m = month_series
 
       LEFT JOIN (
         SELECT DATE_TRUNC('month', payment_date) AS m, SUM(paid_fees) AS amount
         FROM student_admissions
-        WHERE payment_date IS NOT NULL
+        WHERE payment_date IS NOT NULL AND is_deleted = false
         GROUP BY m
       ) rev ON rev.m = month_series
 
@@ -100,7 +103,7 @@ router.get("/stats", async (req, res) => {
         admission_number,
         batch_allotted
       FROM student_admissions
-      WHERE balance_amount > 0
+      WHERE balance_amount > 0 AND is_deleted = false
       ORDER BY balance_amount DESC
       LIMIT 20
     `);
@@ -113,6 +116,7 @@ router.get("/stats", async (req, res) => {
       FROM student_admissions
       WHERE course_interested IS NOT NULL
         AND TRIM(course_interested) != ''
+        AND is_deleted = false
       GROUP BY course_interested
       ORDER BY count DESC
       LIMIT 10
@@ -130,6 +134,7 @@ router.get("/stats", async (req, res) => {
         b.created_at
       FROM bookings b
       LEFT JOIN courses c ON b.course_id = c.id
+      WHERE b.is_deleted = false
       ORDER BY b.created_at DESC
       LIMIT 5
     `);
@@ -144,6 +149,7 @@ router.get("/stats", async (req, res) => {
         l.created_at
       FROM leads l
       LEFT JOIN courses c ON l.course_id = c.id
+      WHERE l.is_deleted = false
       ORDER BY l.created_at DESC
       LIMIT 5
     `);
@@ -163,12 +169,14 @@ router.get("/stats", async (req, res) => {
       LEFT JOIN (
         SELECT DATE_TRUNC('month', created_at) AS m, COUNT(*) AS cnt
         FROM leads
+        WHERE is_deleted = false
         GROUP BY m
       ) ld ON ld.m = month_series
 
       LEFT JOIN (
         SELECT DATE_TRUNC('month', created_at) AS m, COUNT(*) AS cnt
         FROM bookings
+        WHERE is_deleted = false
         GROUP BY m
       ) bk ON bk.m = month_series
 

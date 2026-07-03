@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 export default function StudentFeedbackPage() {
   const [form, setForm] = useState({
@@ -7,14 +8,17 @@ export default function StudentFeedbackPage() {
     feedback_text: "",
     testimonial: "",
   });
+  const [testimonialVideoFile, setTestimonialVideoFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [existing, setExisting] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const API = process.env.NEXT_PUBLIC_API_URL;
+  const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchFeedback = async () => {
@@ -44,17 +48,39 @@ export default function StudentFeedbackPage() {
     if (!form.feedback_text || !form.testimonial) {
       setError("Please fill in all fields."); return;
     }
-    setSaving(true); setError(""); setSuccess("");
+    setSaving(true); setError(""); setSuccess(""); setUploadProgress(0);
+
     try {
-      const res = await fetch(`${API}/api/placement-feedback/feedback`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
+      const formData = new FormData();
+      formData.append("rating", String(form.rating));
+      formData.append("feedback_text", form.feedback_text);
+      formData.append("testimonial", form.testimonial);
+      if (testimonialVideoFile) {
+        formData.append("testimonial_video", testimonialVideoFile);
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+        };
+        xhr.open("POST", `${API}/api/placement-feedback/feedback`);
+        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else {
+            try { reject(new Error(JSON.parse(xhr.responseText).error || "Failed to submit")); }
+            catch { reject(new Error("Failed to submit")); }
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send(formData);
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to submit");
+
       setSuccess(existing ? "Feedback updated successfully!" : "Feedback submitted successfully!");
       setExisting({ ...form, status: "pending" });
+      setTestimonialVideoFile(null);
+      setUploadProgress(0);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -73,7 +99,7 @@ export default function StudentFeedbackPage() {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Feedback & Testimonial</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Feedback &amp; Testimonial</h1>
         <p className="text-gray-500 text-sm mt-1">
           Share your experience — approved testimonials will appear on our home page
         </p>
@@ -145,7 +171,7 @@ export default function StudentFeedbackPage() {
         </div>
 
         {/* Testimonial */}
-        <div className="mb-6">
+        <div className="mb-5">
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
             Testimonial *
             <span className="text-gray-400 font-normal ml-1">(will appear on home page if approved)</span>
@@ -162,12 +188,76 @@ export default function StudentFeedbackPage() {
           </p>
         </div>
 
+        {/* Testimonial Video Upload */}
+        <div className="mb-6">
+          <label className="text-sm font-semibold text-gray-700 mb-1 block">
+            Testimonial Video
+            <span className="text-gray-400 font-normal ml-1">(optional — share a video testimonial)</span>
+          </label>
+          <div
+            className={`border-2 border-dashed rounded-xl px-4 py-8 cursor-pointer text-center transition-all ${
+              testimonialVideoFile ? "border-green-400 bg-green-50" : "border-gray-200 bg-gray-50 hover:border-gray-300"
+            }`}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <ValidatedFileInput
+              ref={fileInputRef as any}
+              fileType="video"
+              className="hidden"
+              onChange={(e) => setTestimonialVideoFile(e.target.files?.[0] || null)}
+            />
+            {testimonialVideoFile ? (
+              <div>
+                <div className="text-4xl mb-2">🎬</div>
+                <p className="text-sm font-semibold text-gray-800">{testimonialVideoFile.name}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {(testimonialVideoFile.size / (1024 * 1024)).toFixed(1)} MB · Click to change
+                </p>
+              </div>
+            ) : existing?.testimonial_video_url ? (
+              <div>
+                <div className="text-4xl mb-2">✅</div>
+                <p className="text-sm font-semibold text-gray-700">Video already uploaded</p>
+                <p className="text-xs text-gray-400 mt-1">Click to upload a new testimonial video</p>
+              </div>
+            ) : (
+              <div>
+                <div className="text-4xl mb-2">🎥</div>
+                <p className="text-sm font-semibold text-gray-600">Click to upload your testimonial video</p>
+                <p className="text-xs text-gray-400 mt-1">MP4, MOV, WEBM — Max 100MB</p>
+              </div>
+            )}
+          </div>
+
+          {/* Upload Progress */}
+          {saving && uploadProgress > 0 && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Uploading video...</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-2">
+                <div
+                  className="bg-green-500 h-2 rounded-full transition-all"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
         <button
           onClick={handleSubmit}
           disabled={saving}
           className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-60 transition-all"
         >
-          {saving ? "Submitting..." : existing ? "Update Feedback" : "Submit Feedback & Testimonial"}
+          {saving
+            ? uploadProgress > 0
+              ? `Uploading... ${uploadProgress}%`
+              : "Submitting..."
+            : existing
+            ? "Update Feedback"
+            : "Submit Feedback & Testimonial"}
         </button>
       </div>
     </div>

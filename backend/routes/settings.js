@@ -8,41 +8,14 @@ const fs = require("fs");
 // ── Use env variable for backend URL ──────────────────────────────────────────
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 
-// --- Multer Configuration ---
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const dir = "uploads/banners/";
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-
-const upload = multer({ storage: storage });
-
-// --- Popups Video Storage ---
-const popupStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const dir = "uploads/popups/";
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-const uploadPopup = multer({ storage: popupStorage });
+const { handleSingleUpload } = require("../utils/fileUpload");
 
 // --- Banners ---
 
 // Get all banners
 router.get("/banners", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM banners ORDER BY display_order ASC");
+        const result = await pool.query("SELECT * FROM banners WHERE is_deleted = false ORDER BY display_order ASC");
         res.json(result.rows);
     } catch (err) {
         console.error("[banners] DB error:", err.message);
@@ -51,7 +24,7 @@ router.get("/banners", async (req, res) => {
 });
 
 // Add a banner with image upload
-router.post("/banners", upload.single("image"), async (req, res) => {
+router.post("/banners", handleSingleUpload("image"), async (req, res) => {
     try {
         const { title, display_order } = req.body;
         // ✅ FIXED — was hardcoded http://localhost:5000
@@ -72,7 +45,7 @@ router.post("/banners", upload.single("image"), async (req, res) => {
 router.delete("/banners/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const banner = await pool.query("SELECT image_url FROM banners WHERE id = $1", [id]);
+        const banner = await pool.query("SELECT image_url FROM banners WHERE id = $1 AND is_deleted = false", [id]);
         if (banner.rows.length > 0 && banner.rows[0].image_url) {
             const filename = banner.rows[0].image_url.split('/').pop();
             const filepath = path.join(__dirname, '../uploads/banners', filename);
@@ -80,7 +53,7 @@ router.delete("/banners/:id", async (req, res) => {
                 fs.unlinkSync(filepath);
             }
         }
-        await pool.query("DELETE FROM banners WHERE id = $1", [id]);
+        await pool.query("UPDATE banners SET is_deleted = true, deleted_at = NOW() WHERE id = $1", [id]);
         res.json({ message: "Banner deleted" });
     } catch (err) {
         console.error(err.message);
@@ -114,6 +87,7 @@ router.get("/popups", async (req, res) => {
                    description, course_id, is_active, 
                    manual_override, placement 
             FROM popups 
+            WHERE is_deleted = false
             ORDER BY created_at DESC
         `);
         res.json(result.rows);
@@ -124,7 +98,7 @@ router.get("/popups", async (req, res) => {
 });
 
 // Add a popup with video upload
-router.post("/popups", uploadPopup.single("video"), async (req, res) => {
+router.post("/popups", handleSingleUpload("video"), async (req, res) => {
     try {
         const { title, description, course_id, manual_override, placement } = req.body;
         // ✅ FIXED — was hardcoded http://localhost:5000
@@ -145,13 +119,13 @@ router.post("/popups", uploadPopup.single("video"), async (req, res) => {
 router.delete("/popups/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const popup = await pool.query("SELECT video_url FROM popups WHERE id = $1", [id]);
+        const popup = await pool.query("SELECT video_url FROM popups WHERE id = $1 AND is_deleted = false", [id]);
         if (popup.rows.length > 0 && popup.rows[0].video_url) {
             const filename = popup.rows[0].video_url.split('/').pop();
             const filepath = path.join(__dirname, '../uploads/popups', filename);
             if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
         }
-        await pool.query("DELETE FROM popups WHERE id = $1", [id]);
+        await pool.query("UPDATE popups SET is_deleted = true, deleted_at = NOW() WHERE id = $1", [id]);
         res.json({ message: "Popup deleted" });
     } catch (err) {
         console.error(err.message);
@@ -213,7 +187,7 @@ const uploadNews = multer({ storage: newsStorage });
 // Get all news
 router.get("/news", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM latest_news ORDER BY created_at DESC");
+        const result = await pool.query("SELECT * FROM latest_news WHERE is_deleted = false ORDER BY created_at DESC");
         res.json(result.rows);
     } catch (err) {
         console.error("[news] DB error:", err.message);
@@ -242,13 +216,13 @@ router.post("/news", uploadNews.single("image"), async (req, res) => {
 router.delete("/news/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const news = await pool.query("SELECT image_url FROM latest_news WHERE id = $1", [id]);
+        const news = await pool.query("SELECT image_url FROM latest_news WHERE id = $1 AND is_deleted = false", [id]);
         if (news.rows.length > 0 && news.rows[0].image_url) {
             const filename = news.rows[0].image_url.split('/').pop();
             const filepath = path.join(__dirname, '../uploads/news', filename);
             if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
         }
-        await pool.query("DELETE FROM latest_news WHERE id = $1", [id]);
+        await pool.query("UPDATE latest_news SET is_deleted = true, deleted_at = NOW() WHERE id = $1", [id]);
         res.json({ message: "News deleted" });
     } catch (err) {
         console.error(err.message);
@@ -271,7 +245,7 @@ const uploadAccreditations = multer({ storage: accreditationsStorage });
 
 router.get("/accreditations", async (req, res) => {
     try {
-        const result = await pool.query("SELECT id, name as title, logo_url as image_url, created_at FROM accreditations ORDER BY created_at DESC");
+        const result = await pool.query("SELECT id, name as title, logo_url as image_url, created_at FROM accreditations WHERE is_deleted = false ORDER BY created_at DESC");
         res.json(result.rows);
     } catch (err) {
         console.error("[accreditations] DB error:", err.message);
@@ -298,13 +272,13 @@ router.post("/accreditations", uploadAccreditations.single("image"), async (req,
 router.delete("/accreditations/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const item = await pool.query("SELECT logo_url as image_url FROM accreditations WHERE id = $1", [id]);
+        const item = await pool.query("SELECT logo_url as image_url FROM accreditations WHERE id = $1 AND is_deleted = false", [id]);
         if (item.rows.length > 0 && item.rows[0].image_url) {
             const filename = item.rows[0].image_url.split('/').pop();
             const filepath = path.join(__dirname, '../uploads/accreditations', filename);
             if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
         }
-        await pool.query("DELETE FROM accreditations WHERE id = $1", [id]);
+        await pool.query("UPDATE accreditations SET is_deleted = true, deleted_at = NOW() WHERE id = $1", [id]);
         res.json({ message: "Deleted" });
     } catch (err) {
         console.error(err.message);

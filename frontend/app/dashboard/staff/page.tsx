@@ -613,9 +613,17 @@ export default function StaffPage() {
               <p className="text-sm font-medium text-slate-500 leading-relaxed">
                 Are you sure you want to delete <span className="text-slate-950 font-bold">{selectedStaff.name}</span>? This action is permanent and cannot be undone.
               </p>
+              {selectedStaff.role_name?.toLowerCase() === 'trainer' && allCourses.some(c => c.trainer_id === selectedStaff.id) && (
+                <p className="text-sm font-bold text-red-600 bg-red-50 p-3 rounded-xl border border-red-100">
+                  * Unassign Course then delete the Trainer
+                </p>
+              )}
               <div className="flex gap-3">
                 <button onClick={() => setShowDeleteModal(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Cancel</button>
-                <button onClick={handleDelete} disabled={deleting} className="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-red-600/20 active:scale-95 disabled:opacity-50">
+                <button 
+                  onClick={handleDelete} 
+                  disabled={deleting || (selectedStaff.role_name?.toLowerCase() === 'trainer' && allCourses.some(c => c.trainer_id === selectedStaff.id))} 
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-red-600/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                   {deleting ? "Deleting..." : "Delete Account"}
                 </button>
               </div>

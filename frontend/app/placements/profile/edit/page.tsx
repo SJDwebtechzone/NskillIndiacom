@@ -1,4 +1,5 @@
 "use client";
+import ValidatedFileInput from '@/components/ValidatedFileInput';
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -254,7 +255,7 @@ export default function ProfileEditPage() {
                 )}
                 <button onClick={() => document.getElementById('photo-input')?.click()} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold text-sm">Change</button>
               </div>
-              <input type="file" id="photo-input" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} />
+              <ValidatedFileInput fileType="image" id="photo-input" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
             </div>
 
             <div className="flex-1 space-y-4">
@@ -569,7 +570,7 @@ export default function ProfileEditPage() {
                 <p className="text-[12px] font-bold text-[#7c829c] text-center sm:text-left">
                   Supported formats: doc, docx, rtf, pdf, up to 2MB
                 </p>
-                <input type="file" id="resume-input" className="hidden" accept=".pdf,.doc,.docx,.rtf" onChange={e => handleFileUpload(e, 'assessment')} />
+                <ValidatedFileInput fileType="any" id="resume-input" className="hidden" onChange={e => handleFileUpload(e, 'assessment')} />
               </div>
             </SectionCard>
 

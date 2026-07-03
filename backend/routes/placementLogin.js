@@ -8,35 +8,27 @@ const SECRET = process.env.JWT_SECRET || "mysecret";
 
 const resetOtpStore = new Map();
 
-const sendResetEmail = async (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS
-    }
-  });
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+const sendResetEmail = async (email, otp) => {
   const mailOptions = {
-    from: `"N-Skill Placement" <${process.env.MAIL_USER}>`,
+    from: process.env.EMAIL_FROM || "no-reply@nskillindia.com",
     to: email,
-    subject: "Your Password Reset OTP",
+    subject: "Your NSkill India Password Reset OTP",
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-        <h2 style="color: #2f55e4; text-align: center;">Password Reset Verification</h2>
-        <p>Hello,</p>
-        <p>You requested to reset your password for the N-Skill Placement Portal. Use the following 6-digit OTP to proceed:</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #111827; background: #f6f7fb; padding: 10px 20px; border-radius: 8px;">${otp}</span>
-        </div>
-        <p>This OTP is valid for 10 minutes. If you did not request this, please ignore this email.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-        <p style="font-size: 12px; color: #7c829c; text-align: center;">© N-Skill Training Institute</p>
-      </div>
+      <p>Your NSkill India Password Reset OTP</p>
+      <p><strong>${otp}</strong></p>
+      <p>This OTP is valid for 10 minutes.</p>
+      <p>If you did not request this password reset, please ignore this email.</p>
     `
   };
 
-  return transporter.sendMail(mailOptions);
+  const data = await resend.emails.send(mailOptions);
+  if (data.error) {
+    throw new Error(data.error.message);
+  }
+  return data;
 };
 
 // ✅ LOGIN
@@ -49,7 +41,7 @@ router.post("/login", async (req, res) => {
       `SELECT pu.*, u.id AS main_user_id 
        FROM placement_users pu
        LEFT JOIN users u ON pu.email = u.email
-       WHERE pu.email = $1`,
+       WHERE (pu.email = $1 OR pu.name = $1) AND pu.is_deleted = false`,
       [email]
     );
 
@@ -92,7 +84,7 @@ router.post("/login", async (req, res) => {
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
-    const result = await pool.query("SELECT * FROM placement_users WHERE email = $1", [email]);
+    const result = await pool.query("SELECT * FROM placement_users WHERE email = $1 AND is_deleted = false", [email]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -100,7 +92,7 @@ router.post("/forgot-password", async (req, res) => {
 
     const user = result.rows[0];
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    resetOtpStore.set(email, { otp, expires: Date.now() + 600000 }); // 10 mins
+    resetOtpStore.set(email, { otp, expires: Date.now() + 600000, verified: false }); // 10 mins
 
     // 1. Send via Email (Primary)
     let emailSent = false;
@@ -109,6 +101,8 @@ router.post("/forgot-password", async (req, res) => {
       emailSent = true;
     } catch (e) {
       console.error("Email send failed:", e.message);
+      // Return the Resend error directly to the frontend so the user knows exactly why it's failing
+      return res.status(500).json({ error: `Resend Error: ${e.message}` });
     }
 
     // 2. Send via WhatsApp (Secondary/Backup)
@@ -135,14 +129,19 @@ router.post("/verify-otp", async (req, res) => {
   const stored = resetOtpStore.get(email);
 
   if (!stored) return res.status(400).json({ error: "OTP expired or not requested" });
+  if (stored.verified) return res.status(400).json({ error: "OTP already used" });
+  
   if (Date.now() > stored.expires) {
     resetOtpStore.delete(email);
     return res.status(400).json({ error: "OTP expired" });
   }
+  
   if (stored.otp !== otp && otp !== "000000") { // Master OTP for testing
     return res.status(400).json({ error: "Invalid OTP" });
   }
 
+  // Mark as verified
+  resetOtpStore.set(email, { ...stored, verified: true });
   res.json({ message: "OTP verified" });
 });
 
@@ -150,6 +149,12 @@ router.post("/verify-otp", async (req, res) => {
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
+    
+    // Check if OTP was actually verified before resetting
+    const stored = resetOtpStore.get(email);
+    if (!stored || !stored.verified) {
+      return res.status(400).json({ error: "Please verify the OTP first" });
+    }
     
     // Update both tables for consistency
     await pool.query("UPDATE placement_users SET password = $1 WHERE email = $2", [newPassword, email]);

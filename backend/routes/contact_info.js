@@ -54,7 +54,7 @@ initTable();
 router.get("/contact-info", async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT * FROM contact_info ORDER BY id DESC LIMIT 1"
+      "SELECT * FROM contact_info WHERE is_deleted = false ORDER BY id DESC LIMIT 1"
     );
     res.json(result.rows[0] || {});
   } catch (err) {
@@ -92,7 +92,7 @@ router.post("/contact-info", async (req, res) => {
 router.get("/locations", async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT * FROM contact_locations ORDER BY sort_order ASC, id ASC"
+      "SELECT * FROM contact_locations WHERE is_deleted = false ORDER BY sort_order ASC, id ASC"
     );
     res.json(result.rows);
   } catch (err) {
@@ -108,7 +108,7 @@ router.get("/locations/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await db.query(
-      "SELECT * FROM contact_locations WHERE id = $1", [id]
+      "SELECT * FROM contact_locations WHERE id = $1 AND is_deleted = false", [id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Location not found" });
@@ -224,7 +224,7 @@ router.delete("/locations/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await db.query(
-      "DELETE FROM contact_locations WHERE id = $1 RETURNING *", [id]
+      "UPDATE contact_locations SET is_deleted = true, deleted_at = NOW() WHERE id = $1 RETURNING *", [id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Location not found" });
@@ -311,7 +311,7 @@ router.post("/enquiry", async (req, res) => {
 // ==============================
 router.get("/enquiry", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM enquiry_info ORDER BY id DESC");
+    const result = await db.query("SELECT * FROM enquiry_info WHERE is_deleted = false ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: "Fetch failed" });

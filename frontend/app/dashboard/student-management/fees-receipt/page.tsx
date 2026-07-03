@@ -403,6 +403,8 @@ export default function FeesReceiptPage() {
             <div style={{ width: "280px", border: "1px solid #e9ecef", borderRadius: "6px", overflow: "hidden" }}>
               {[
                 { label: "Course Fees", value: formatCurrency(student.course_fees), bold: false },
+                { label: "Discount Fee", value: formatCurrency(student.discount_fee || 0), bold: false },
+                { label: "Discount Remark", value: student.discount_remark || "-", bold: false },
                 { label: "Total Fees", value: formatCurrency(student.total_fees), bold: false },
                 { label: "Amount Paid", value: formatCurrency(student.paid_fees), bold: false, color: "#16a34a" },
                 { label: "Balance Amount", value: formatCurrency(student.balance_amount), bold: true, color: student.balance_amount > 0 ? "#dc2626" : "#16a34a" },

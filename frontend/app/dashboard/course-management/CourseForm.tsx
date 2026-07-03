@@ -6,6 +6,7 @@ import {
   Save, X, Plus, Trash2, Loader2, AlertCircle,
   Upload, Film, Link as LinkIcon, Image as ImageIcon,
 } from "lucide-react";
+import { ValidatedFileInput } from "@/components/ValidatedFileInput";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -332,12 +333,11 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
           First image is the main thumbnail. Recommended: 1200×630px (16:9).
         </p>
 
-        <input
-          type="file"
-          accept="image/*"
+        <ValidatedFileInput
+          fileType="image"
           multiple
           className="hidden"
-          ref={thumbnailInputRef}
+          ref={thumbnailInputRef as any}
           onChange={async (e) => {
             const files = Array.from(e.target.files ?? []);
             if (!files.length) return;
@@ -528,11 +528,10 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
 
               {v.source === "upload" ? (
                 <div>
-                  <input
-                    type="file"
-                    accept="video/*"
+                  <ValidatedFileInput
+                    fileType="video"
                     className="hidden"
-                    ref={el => { fileInputRefs.current[idx] = el; }}
+                    ref={el => { fileInputRefs.current[idx] = el as any; }}
                     onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) handleVideoUpload(idx, file);
@@ -619,11 +618,10 @@ export default function CourseForm({ initialData, courseId }: CourseFormProps) {
         </p>
 
         {/* Hidden file input */}
-        <input
-          type="file"
-          accept="application/pdf"
+        <ValidatedFileInput
+          fileType="pdf"
           className="hidden"
-          ref={brochureInputRef}
+          ref={brochureInputRef as any}
           onChange={e => {
             const file = e.target.files?.[0];
             if (file) handleBrochureUpload(file);

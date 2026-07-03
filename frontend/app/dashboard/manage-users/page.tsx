@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import api from "@/app/lib/axiosInstance";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   Users, Search, Mail, Calendar, Hash, Shield, Plus,
@@ -73,8 +74,8 @@ export default function ManageUsersPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res  = await fetch(API, { headers: getAuthHeaders() });
-      const json = await res.json();
+      const res = await api.get(API);
+      const json = res.data;
       setUsers(json.data || []);
     } catch {
       showToast("❌ Failed to load users");
@@ -85,8 +86,8 @@ export default function ManageUsersPage() {
 
   const loadRoles = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roles`, { headers: getAuthHeaders() });
-      const json = await res.json();
+      const res = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/roles`);
+      const json = res.data;
       setRolesList(json.data || []);
     } catch (err) {
       console.error("Failed to load roles", err);
@@ -156,7 +157,7 @@ export default function ManageUsersPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to update user");
+      if (!(res.status >= 200 && res.status < 300)) throw new Error(data.message || "Failed to update user");
       showToast("✅ User updated successfully");
       setShowEditModal(false);
       load();
@@ -176,12 +177,9 @@ export default function ManageUsersPage() {
     if (!selectedUser) return;
     setDeletingUser(true);
     try {
-      const res = await fetch(`${API}/${selectedUser.id}`, {
-        method: "DELETE",
-        headers: getAuthHeaders(),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to delete user");
+      const res = await api.delete(`${API}/${selectedUser.id}`);
+      const data = res.data;
+      if (!(res.status >= 200 && res.status < 300)) throw new Error(data.message || "Failed to delete user");
       showToast("✅ User deleted successfully");
       setShowDeleteModal(false);
       load();
@@ -429,8 +427,8 @@ export default function ManageUsersPage() {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Trash2 className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-xl font-black text-slate-800 mb-2">Delete User?</h2>
-            <p className="text-sm text-slate-500 font-medium mb-8">This action cannot be undone. User account for <span className="font-bold text-slate-700">{selectedUser.name}</span> will be removed.</p>
+            <h2 className="text-xl font-black text-slate-800 mb-2">Move to Restore?</h2>
+            <p className="text-sm text-slate-500 font-medium mb-8">This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.</p>
             
             <div className="flex gap-3">
               <button 
@@ -445,7 +443,7 @@ export default function ManageUsersPage() {
                 style={{ color: "#ffffff", backgroundColor: "#dc2626" }}
                 className="flex-1 py-4 hover:bg-red-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-red-600/20 active:scale-95"
               >
-                {deletingUser ? "..." : "Delete"}
+                {deletingUser ? "..." : "Move to Restore"}
               </button>
             </div>
           </div>

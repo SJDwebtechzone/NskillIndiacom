@@ -1,4 +1,5 @@
 "use client";
+import ValidatedFileInput from '@/components/ValidatedFileInput';
 
 import { useEffect, useState, useCallback, ChangeEvent } from "react";
 import { useAuth } from "@/app/context/AuthContext";
@@ -728,7 +729,7 @@ const FileCard = ({ field, label, icon, required, file, onChange, onRemove, erro
       transition:"all 0.15s",
     }}>
       <label style={{ cursor:"pointer", display:"block" }}>
-        <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display:"none" }}
+        <ValidatedFileInput fileType="any" style={{ display:"none" }}
           onChange={(e) => {
             const f = e.target.files?.[0] || null;
             if (f && f.size > 5 * 1024 * 1024) { alert(`${label}: File must be under 5MB`); return; }
@@ -995,9 +996,9 @@ const DeleteConfirm = ({ assoc, onClose, onConfirm }: {
         width:"100%", boxShadow:"0 24px 64px rgba(0,0,0,0.18)", textAlign:"center" }}>
         <div style={{ width:52, height:52, borderRadius:14, background:"#fee2e2",
           display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px", fontSize:24 }}>🗑️</div>
-        <h3 style={{ fontSize:"1rem", fontWeight:800, color:"#1e293b" }}>Delete Associate?</h3>
+        <h3 style={{ fontSize:"1rem", fontWeight:800, color:"#1e293b" }}>Move to Restore?</h3>
         <p style={{ fontSize:"0.8rem", color:"#94a3b8", marginTop:6, lineHeight:1.6 }}>
-          Permanently remove <strong style={{ color:"#1e293b" }}>{assoc.full_name}</strong> and all their data?
+          <strong style={{ color:"#1e293b" }}>{assoc.full_name}</strong> can be restored within 30 days. After 30 days it will be permanently deleted automatically.
         </p>
         <div style={{ display:"flex", gap:10, marginTop:22 }}>
           <button onClick={onClose} style={{ flex:1, padding:10, background:"#f8fafc",
@@ -1008,7 +1009,7 @@ const DeleteConfirm = ({ assoc, onClose, onConfirm }: {
             style={{ flex:1, padding:10, background:deleting?"#fca5a5":"#ef4444",
               border:"none", borderRadius:10, fontWeight:700, fontSize:"0.82rem",
               cursor:deleting?"not-allowed":"pointer", color:"#fff", fontFamily:"inherit" }}>
-            {deleting?"Deleting…":"Yes, Delete"}
+            {deleting?"Moving…":"Move to Restore"}
           </button>
         </div>
       </div>
@@ -1178,7 +1179,7 @@ export const AssociateFormModal = ({ existing, onClose, onSaved, isPublic = fals
                     : <><p style={{ fontSize:"0.84rem", fontWeight:600, color:"#1e293b" }}>Upload Profile Photo</p><p style={{ fontSize:"0.72rem", color:"#94a3b8", marginTop:2 }}>Passport size · JPG, PNG · Max 2MB</p></>}
                   <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:10 }}>
                     <label style={{ cursor:"pointer" }}>
-                      <input type="file" accept=".jpg,.jpeg,.png" style={{ display:"none" }} onChange={handlePhotoChange} />
+                      <ValidatedFileInput fileType="image" style={{ display:"none" }} onChange={handlePhotoChange} />
                       <span style={{ display:"inline-block", fontSize:"0.75rem", background:"#2563eb", color:"#fff", padding:"6px 14px", borderRadius:8, fontWeight:700 }}>{files.file_photo ? "Change" : "Choose Photo"}</span>
                     </label>
                     {files.file_photo && <button type="button" onClick={() => { hfc("file_photo",null); setPhotoPreview(null); }} style={{ fontSize:"0.75rem", color:"#ef4444", fontWeight:600, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>Remove</button>}

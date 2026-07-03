@@ -76,7 +76,7 @@ export default function TrainerCoursAssessmentsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this assessment?')) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       const token = localStorage.getItem('token');
       await fetch(

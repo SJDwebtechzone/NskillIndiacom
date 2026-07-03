@@ -56,7 +56,8 @@ const modules = [
 "Download Certificate",   // student downloads certificate
 "Request Certificate",    // student requests manual review
   "NTSC Dashboard", "Download A4 Sheet", "Enquiry / Admission and Document",
-  "Update Class Status", "Monitor Student Changes and Approval"
+  "Update Class Status", "Monitor Student Changes and Approval",
+  "Post Jobs", "Applied Jobs", "Upload Videos", "Reviews & Videos", "course calender", "Partners Section"
 ];
 const slugify = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 interface Task {
   id: number;
@@ -220,11 +221,10 @@ export default function StudentPracticalVideoPage() {
                     {task.status === 'submitted' ? 'Re-upload Video' : 'Upload Practical Video'}
                   </p>
                   <div className="flex items-center gap-3">
-                    <input
-                      type="file"
-                      accept="video/mp4,video/quicktime,video/x-msvideo,video/webm"
+                    <ValidatedFileInput
+                      fileType="video"
                       onChange={e => e.target.files && handleFileChange(task.id, e.target.files[0])}
-                      className="flex-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100"
+                      className="flex-1"
                     />
                     <button
                       onClick={() => handleSubmit(task.id)}

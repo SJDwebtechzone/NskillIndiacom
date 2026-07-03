@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 interface Placement {
   id: number;
@@ -142,10 +143,9 @@ export default function StudentPlacementPage() {
               }`}
               onClick={() => document.getElementById("offer-letter-input")?.click()}
             >
-              <input
+              <ValidatedFileInput
                 id="offer-letter-input"
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
+                fileType="any"
                 className="hidden"
                 onChange={(e) => setOfferLetter(e.target.files?.[0] || null)}
               />

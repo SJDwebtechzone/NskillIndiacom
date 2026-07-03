@@ -85,7 +85,7 @@ export default function BackgroundImagesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this image?")) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       await fetch(`${API}/api/background-images/${id}`, {
         method: "DELETE",
@@ -184,10 +184,9 @@ export default function BackgroundImagesPage() {
             }`}
             onClick={() => fileInputRef.current?.click()}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".jpg,.jpeg,.png,.webp,.gif"
+            <ValidatedFileInput
+              ref={fileInputRef as any}
+              fileType="image"
               className="hidden"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
             />

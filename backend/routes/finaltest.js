@@ -22,14 +22,15 @@ router.get('/trainer/courses', async (req, res) => {
       result = await pool.query(
         `SELECT course_name, COUNT(*) AS student_count
          FROM student_admissions
+         WHERE is_deleted = false
          GROUP BY course_name ORDER BY course_name`
       );
     } else {
       result = await pool.query(
         `SELECT c.title AS course_name, COUNT(sa.id) AS student_count
          FROM courses c
-         LEFT JOIN student_admissions sa ON sa.course_name = c.title
-         WHERE c.trainer_id = $1
+         LEFT JOIN student_admissions sa ON sa.course_name = c.title AND sa.is_deleted = false
+         WHERE c.trainer_id = $1 AND c.is_deleted = false
          GROUP BY c.title ORDER BY c.title`,
         [trainerId]
       );
@@ -47,6 +48,7 @@ router.get('/courses', async (req, res) => {
     const result = await pool.query(
       `SELECT course_name, COUNT(*) as student_count
        FROM student_admissions
+       WHERE is_deleted = false
        GROUP BY course_name ORDER BY course_name`
     );
     res.json({ courses: result.rows });
@@ -67,7 +69,7 @@ router.get('/student/course', async (req, res) => {
 
     // ← Get email from users table using decoded.id
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
 
@@ -80,7 +82,7 @@ router.get('/student/course', async (req, res) => {
 
     // Now find course using that email
     const result = await pool.query(
-      `SELECT course_name FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      `SELECT course_name FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
 
@@ -108,14 +110,14 @@ router.get('/student/attempt-status', async (req, res) => {
 
     // Get email from users table
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
 
     // Get student admission id
     const studentResult = await pool.query(
-      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
     const studentId = studentResult.rows[0]?.id;
@@ -125,7 +127,7 @@ router.get('/student/attempt-status', async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT * FROM finaltest_attempts WHERE student_id = $1 AND course_name = $2 ORDER BY submitted_at DESC LIMIT 1`,
+      `SELECT * FROM finaltest_attempts WHERE student_id = $1 AND course_name = $2 AND is_deleted = false ORDER BY submitted_at DESC LIMIT 1`,
       [studentId, course_name]
     );
     res.json({ attempted: result.rows.length > 0, attempt: result.rows[0] || null });
@@ -149,14 +151,14 @@ router.post('/student/submit', async (req, res) => {
 
     // Get email from users table
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
 
     // Get student admission id
     const studentResult = await pool.query(
-      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
     if (studentResult.rows.length === 0) {
@@ -165,7 +167,7 @@ router.post('/student/submit', async (req, res) => {
     const studentId = studentResult.rows[0].id;
 
     const qResult = await pool.query(
-      `SELECT id, correct_ans FROM finaltest_questions WHERE course_name = $1`,
+      `SELECT id, correct_ans FROM finaltest_questions WHERE course_name = $1 AND is_deleted = false`,
       [course_name]
     );
     const questions = qResult.rows;
@@ -208,7 +210,7 @@ router.delete('/student/reset-attempt', async (req, res) => {
   try {
     const { student_id, course_name } = req.body;
     await pool.query(
-      `DELETE FROM finaltest_attempts WHERE student_id = $1 AND course_name = $2`,
+      `UPDATE finaltest_attempts SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1 AND course_name = $2`,
       [student_id, course_name]
     );
     res.json({ message: 'Attempt reset successfully' });
@@ -226,7 +228,7 @@ router.delete('/student/reset-attempt', async (req, res) => {
 router.get('/questions/:qId', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM finaltest_questions WHERE id = $1`,
+      `SELECT * FROM finaltest_questions WHERE id = $1 AND is_deleted = false`,
       [req.params.qId]
     );
     if (result.rows.length === 0) return res.status(404).json({ error: 'Question not found' });
@@ -255,7 +257,7 @@ router.put('/questions/:qId', async (req, res) => {
 // DELETE /api/admin/posttest/questions/:qId
 router.delete('/questions/:qId', async (req, res) => {
   try {
-    await pool.query(`DELETE FROM finaltest_questions WHERE id = $1`, [req.params.qId]);
+    await pool.query(`UPDATE finaltest_questions SET is_deleted = true, deleted_at = NOW() WHERE id = $1`, [req.params.qId]);
     res.json({ message: 'Question deleted' });
   } catch (err) {
     console.error(err);
@@ -272,7 +274,7 @@ router.get('/:courseName/questions', async (req, res) => {
   try {
     const courseName = decodeURIComponent(req.params.courseName);
     const result = await pool.query(
-      `SELECT * FROM finaltest_questions WHERE course_name = $1 ORDER BY created_at DESC`,
+      `SELECT * FROM finaltest_questions WHERE course_name = $1 AND is_deleted = false ORDER BY created_at DESC`,
       [courseName]
     );
     res.json({ questions: result.rows });
@@ -308,7 +310,7 @@ router.get('/:courseName/attempts', async (req, res) => {
               sa.full_name AS student_name, sa.email_id AS email
        FROM finaltest_attempts fa
        JOIN student_admissions sa ON sa.id = fa.student_id
-       WHERE fa.course_name = $1
+       WHERE fa.course_name = $1 AND fa.is_deleted = false AND sa.is_deleted = false
        ORDER BY fa.submitted_at DESC`,
       [courseName]
     );

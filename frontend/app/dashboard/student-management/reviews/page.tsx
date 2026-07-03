@@ -1,15 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 export default function StudentReviewsPage() {
   const [activeTab, setActiveTab] = useState<"review" | "video">("review");
 
   // Google Review state
-  const [reviewForm, setReviewForm] = useState({ rating: 5, review_text: "", google_review_url: "" });
+  const [reviewForm, setReviewForm] = useState({ rating: 5, review_text: "", google_review_url: "", youtube_subscribed: false });
   const [existingReview, setExistingReview] = useState<any>(null);
   const [savingReview, setSavingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState("");
   const [reviewError, setReviewError] = useState("");
+  const [completionVideoFile, setCompletionVideoFile] = useState<File | null>(null);
+  const [reviewUploadProgress, setReviewUploadProgress] = useState(0);
 
   // Video state
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -45,6 +48,7 @@ export default function StudentReviewsPage() {
             rating: reviewData.review.rating,
             review_text: reviewData.review.review_text,
             google_review_url: reviewData.review.google_review_url || "",
+            youtube_subscribed: reviewData.review.youtube_subscribed || false,
           });
         }
         if (videoData.video) setExistingVideo(videoData.video);
@@ -60,17 +64,36 @@ export default function StudentReviewsPage() {
 
   const handleReviewSubmit = async () => {
     if (!reviewForm.review_text) { setReviewError("Please write your review."); return; }
-    setSavingReview(true); setReviewError(""); setReviewSuccess("");
+    setSavingReview(true); setReviewError(""); setReviewSuccess(""); setReviewUploadProgress(0);
     try {
-      const res = await fetch(`${API}/api/reviews/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(reviewForm),
+      const formData = new FormData();
+      formData.append("rating", String(reviewForm.rating));
+      formData.append("review_text", reviewForm.review_text);
+      formData.append("google_review_url", reviewForm.google_review_url);
+      formData.append("youtube_subscribed", String(reviewForm.youtube_subscribed));
+      if (completionVideoFile) {
+        formData.append("completion_video", completionVideoFile);
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) setReviewUploadProgress(Math.round((e.loaded / e.total) * 100));
+        };
+        xhr.open("POST", `${API}/api/reviews/google`);
+        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(JSON.parse(xhr.responseText).error || "Failed"));
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send(formData);
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed");
+
       setReviewSuccess(existingReview ? "Review updated!" : "Review submitted successfully!");
       setExistingReview({ ...reviewForm, status: "pending" });
+      setCompletionVideoFile(null);
+      setReviewUploadProgress(0);
     } catch (err: any) {
       setReviewError(err.message);
     } finally {
@@ -235,6 +258,72 @@ export default function StudentReviewsPage() {
               />
             </div>
 
+            {/* YouTube Subscribed Checkbox */}
+            <div className="mb-5 flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="youtube_subscribed"
+                checked={reviewForm.youtube_subscribed}
+                onChange={(e) => setReviewForm({ ...reviewForm, youtube_subscribed: e.target.checked })}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="youtube_subscribed" className="text-sm font-semibold text-gray-700">
+                NTSC YouTube Channel Subscribed
+              </label>
+            </div>
+
+            {/* Completion Video Upload */}
+            <div className="mb-5">
+              <label className="text-sm font-semibold text-gray-700 mb-1 block">
+                Course Completion Video
+                <span className="text-gray-400 font-normal ml-1">(optional — upload your course completion review video)</span>
+              </label>
+              <div
+                className={`border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer text-center transition-all ${
+                  completionVideoFile ? "border-blue-400 bg-blue-50" : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                }`}
+                onClick={() => document.getElementById("completion-video-input")?.click()}
+              >
+                <ValidatedFileInput
+                  id="completion-video-input"
+                  fileType="video"
+                  className="hidden"
+                  onChange={(e) => setCompletionVideoFile(e.target.files?.[0] || null)}
+                />
+                {completionVideoFile ? (
+                  <div>
+                    <div className="text-3xl mb-1">🎬</div>
+                    <p className="text-sm font-semibold text-gray-800">{completionVideoFile.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{(completionVideoFile.size / (1024 * 1024)).toFixed(1)} MB · Click to change</p>
+                  </div>
+                ) : existingReview?.completion_video_url ? (
+                  <div>
+                    <div className="text-3xl mb-1">✅</div>
+                    <p className="text-sm font-semibold text-gray-700">Video already uploaded</p>
+                    <p className="text-xs text-gray-400 mt-1">Click to upload a new video</p>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-3xl mb-1">🎥</div>
+                    <p className="text-sm font-semibold text-gray-600">Click to select your completion video</p>
+                    <p className="text-xs text-gray-400 mt-1">MP4, MOV, WEBM — Max 100MB</p>
+                  </div>
+                )}
+              </div>
+              {/* Upload Progress for review video */}
+              {savingReview && reviewUploadProgress > 0 && (
+                <div className="mt-3">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Uploading video...</span>
+                    <span>{reviewUploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${reviewUploadProgress}%` }} />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={handleReviewSubmit}
               disabled={savingReview}
@@ -286,10 +375,9 @@ export default function StudentReviewsPage() {
                 }`}
                 onClick={() => document.getElementById("video-input")?.click()}
               >
-                <input
+                <ValidatedFileInput
                   id="video-input"
-                  type="file"
-                  accept=".mp4,.mov,.avi,.webm,.mkv"
+                  fileType="video"
                   className="hidden"
                   onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
                 />

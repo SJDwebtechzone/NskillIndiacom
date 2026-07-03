@@ -55,7 +55,7 @@ export default function AdminPlacementsPage() {
   };
 
   const deletePlacement = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this placement record?")) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       const res = await fetch(`${API}/api/placement-feedback/placement/${id}`, {
         method: "DELETE",

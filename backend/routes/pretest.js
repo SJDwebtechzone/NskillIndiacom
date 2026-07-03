@@ -12,6 +12,7 @@ router.get('/courses', async (req, res) => {
     const result = await pool.query(`
       SELECT course_name, COUNT(*) as student_count
       FROM student_admissions
+      WHERE is_deleted = false
       GROUP BY course_name
       ORDER BY course_name
     `);
@@ -43,8 +44,8 @@ router.get('/trainer/courses', async (req, res) => {
     const result = await pool.query(
       `SELECT c.title AS course_name, COUNT(sa.id) AS student_count
        FROM courses c
-       LEFT JOIN student_admissions sa ON sa.course_name = c.title
-       WHERE c.trainer_id = $1
+       LEFT JOIN student_admissions sa ON sa.course_name = c.title AND sa.is_deleted = false
+       WHERE c.trainer_id = $1 AND c.is_deleted = false
        GROUP BY c.title
        ORDER BY c.title`,
       [trainerId]
@@ -65,7 +66,7 @@ router.get('/:courseName/questions', async (req, res) => {
   const { courseName } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM pretest_questions WHERE course_name = $1 ORDER BY id`,
+      `SELECT * FROM pretest_questions WHERE course_name = $1 AND is_deleted = false ORDER BY id`,
       [courseName]
     );
     res.json({ questions: result.rows });
@@ -103,7 +104,7 @@ router.get('/questions/:qId', async (req, res) => {
   const { qId } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM pretest_questions WHERE id = $1`,
+      `SELECT * FROM pretest_questions WHERE id = $1 AND is_deleted = false`,
       [qId]
     );
     if (result.rows.length === 0)
@@ -142,7 +143,7 @@ router.put('/questions/:qId', async (req, res) => {
 router.delete('/questions/:qId', async (req, res) => {
   const { qId } = req.params;
   try {
-    await pool.query(`DELETE FROM pretest_questions WHERE id = $1`, [qId]);
+    await pool.query(`UPDATE pretest_questions SET is_deleted = true, deleted_at = NOW() WHERE id = $1`, [qId]);
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -157,7 +158,7 @@ router.get('/:courseName/config', async (req, res) => {
   const { courseName } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM pretest_config WHERE course_name = $1`,
+      `SELECT * FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
       [courseName]
     );
     res.json({ config: result.rows[0] || null });
@@ -203,8 +204,8 @@ router.get('/student/course', async (req, res) => {
 
     const result = await pool.query(
       `SELECT course_name FROM student_admissions WHERE email_id = (
-        SELECT email FROM users WHERE id = $1
-      ) LIMIT 1`,
+        SELECT email FROM users WHERE id = $1 AND is_deleted = false
+      ) AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
 
@@ -235,7 +236,7 @@ router.post('/student/submit', async (req, res) => {
     const studentRes = await pool.query(
       `SELECT sa.id FROM student_admissions sa
        INNER JOIN users u ON u.email = sa.email_id
-       WHERE u.id = $1 LIMIT 1`,
+       WHERE u.id = $1 AND sa.is_deleted = false LIMIT 1`,
       [userId]
     );
 
@@ -247,7 +248,7 @@ router.post('/student/submit', async (req, res) => {
 
     // ── Get correct answers ──
     const result = await pool.query(
-      `SELECT id, correct_ans FROM pretest_questions WHERE course_name = $1`,
+      `SELECT id, correct_ans FROM pretest_questions WHERE course_name = $1 AND is_deleted = false`,
       [course_name]
     );
 
@@ -264,7 +265,7 @@ result.rows.forEach(q => {
 
     // ── Get pass percentage from config ──
     const configRes = await pool.query(
-      `SELECT pass_percent FROM pretest_config WHERE course_name = $1`,
+      `SELECT pass_percent FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
       [course_name]
     );
     const passPercent = configRes.rows[0]?.pass_percent || 50;
@@ -299,7 +300,7 @@ router.get('/student/attempt-status', async (req, res) => {
     const studentRes = await pool.query(
       `SELECT sa.id FROM student_admissions sa
        INNER JOIN users u ON u.email = sa.email_id
-       WHERE u.id = $1 LIMIT 1`,
+       WHERE u.id = $1 AND sa.is_deleted = false LIMIT 1`,
       [decoded.id]
     );
 
@@ -311,7 +312,7 @@ router.get('/student/attempt-status', async (req, res) => {
 
     const result = await pool.query(
       `SELECT score, total, passed FROM pretest_attempts 
-       WHERE student_id = $1 AND course_name = $2 
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false
        ORDER BY submitted_at DESC LIMIT 1`,
       [admissionId, course_name]
     );
@@ -345,8 +346,7 @@ router.delete('/student/reset-attempt', async (req, res) => {
     const { student_admission_id, course_name } = req.body;
 
     await pool.query(
-      `DELETE FROM pretest_attempts 
-       WHERE student_id = $1 AND course_name = $2`,
+      `UPDATE pretest_attempts SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1 AND course_name = $2`,
       [student_admission_id, course_name]
     );
 
@@ -374,7 +374,7 @@ router.get('/:courseName/attempts', async (req, res) => {
        FROM pretest_attempts pa
        INNER JOIN student_admissions sa ON sa.id = pa.student_id
        INNER JOIN users u ON u.email = sa.email_id
-       WHERE pa.course_name = $1
+       WHERE pa.course_name = $1 AND pa.is_deleted = false
        ORDER BY pa.submitted_at DESC`,
       [courseName]
     );

@@ -150,7 +150,7 @@ export default function StudentManagementDashboard() {
         <h2 className="text-lg font-black text-slate-800 mb-4">Quick Access</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <QuickLink href="/dashboard/student-management/attendance"    icon={Activity}     label="Daily Attendance"       desc="View & track class attendance" />
-          <QuickLink href="/dashboard/student-management/my-pretest"    icon={ClipboardList} label="My Pre-Test"            desc="Access your pre-test papers" />
+
           <QuickLink href="/dashboard/student-management/weekly-test"   icon={BarChart2}    label="My Weekly Test"         desc="Weekly assessment results" />
           <QuickLink href="/dashboard/student-management/assessments"   icon={CheckCircle2} label="My Assessment"          desc="Course assessments & scores" />
           <QuickLink href="/dashboard/student-management/results"       icon={Award}        label="My Results"             desc="Final marks and outcomes" />

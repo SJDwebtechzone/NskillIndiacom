@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import api from "@/app/lib/axiosInstance";
 import { useAuth } from "@/app/context/AuthContext";
 import { GraduationCap, Search, Mail, Calendar, Hash, Plus, X, Copy, CheckCircle2, UserPlus, Phone, BookOpen, Eye, Pencil, Key, Trash2, ShieldCheck, AlertCircle, ChevronDown } from "lucide-react";
 
@@ -76,8 +77,8 @@ export default function StudentsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_USERS}?role=student`, { headers: getAuthHeaders() });
-      const json = await res.json();
+      const res = await api.get(`${API_USERS}?role=student`);
+      const json = res.data;
       setStudents(json.data || []);
     } catch {
       showToast("❌ Failed to load students");
@@ -91,9 +92,9 @@ export default function StudentsPage() {
   const loadAdmissions = async () => {
     setLoadingAdmissions(true);
     try {
-      const res = await fetch(`${API_ADMISSIONS}/no-credential`, { headers: getAuthHeaders() });
-      const data = await res.json();
-      if (res.ok) setAdmissions(data);
+      const res = await api.get(`${API_ADMISSIONS}/no-credential`);
+      const data = res.data;
+      if ((res.status >= 200 && res.status < 300)) setAdmissions(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -119,7 +120,7 @@ export default function StudentsPage() {
         body: JSON.stringify({ admission_id: selectedAdmId }),
       });
       const data = await res.json();
-      if (res.ok) {
+      if ((res.status >= 200 && res.status < 300)) {
         setCreatedCreds(data.credentials);
         showToast("✅ Credentials generated successfully");
         load();
@@ -155,7 +156,7 @@ export default function StudentsPage() {
           role_id: 6 // Assuming 6 is Student based on earlier setup
         }),
       });
-      if (res.ok) {
+      if ((res.status >= 200 && res.status < 300)) {
         showToast("✅ Student updated successfully");
         setShowEditModal(false);
         load();
@@ -174,12 +175,9 @@ export default function StudentsPage() {
     if (!selectedStudent) return;
     setGenerating(true);
     try {
-      const res = await fetch(`${API_USERS}/${selectedStudent.id}/reset-password`, {
-        method: "PUT",
-        headers: getAuthHeaders(),
-      });
-      const data = await res.json();
-      if (res.ok) {
+      const res = await api.put(`${API_USERS}/${selectedStudent.id}/reset-password`, {});
+      const data = res.data;
+      if ((res.status >= 200 && res.status < 300)) {
         setCreatedCreds({ username: selectedStudent.email, password: data.plainPassword });
         showToast("✅ Password reset successfully");
       } else {
@@ -196,11 +194,8 @@ export default function StudentsPage() {
     if (!selectedStudent) return;
     setGenerating(true);
     try {
-      const res = await fetch(`${API_USERS}/${selectedStudent.id}`, {
-        method: "DELETE",
-        headers: getAuthHeaders(),
-      });
-      if (res.ok) {
+      const res = await api.delete(`${API_USERS}/${selectedStudent.id}`);
+      if ((res.status >= 200 && res.status < 300)) {
         showToast("✅ Student deleted successfully");
         setShowDeleteModal(false);
         load();

@@ -19,6 +19,10 @@ const COURSE_OPTIONS = [
     "Welding", "MEP", "Safety", "Quality", "Oil & Gas", "Home Appliance",
 ];
 
+const QUALIFICATION_OPTIONS = [
+    "", "School Dropout", "10th / 12th", "ITI / Diploma", "Degree / Engineering",
+];
+
 const steps = [
     { id: "A", title: "Personal Details",    icon: User          },
     { id: "B", title: "Education & Career",  icon: GraduationCap },
@@ -26,9 +30,125 @@ const steps = [
     { id: "D", title: "Counselling Details", icon: BookOpen      },
 ];
 
+// ── Searchable Counsellor Combobox ────────────────────────────────────────────
+const CounsellorSearchField = ({
+    label, counsellors, value, onSelect, error, compulsory = false,
+}: {
+    label?: string;
+    counsellors: { name: string; code: string; type: string }[];
+    value: { name: string; code: string; type: string };
+    onSelect: (c: { name: string; code: string; type: string } | null) => void;
+    error?: string;
+    compulsory?: boolean;
+}) => {
+    const [query, setQuery] = useState("");
+    const [open,  setOpen]  = useState(false);
+    const ref = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const filtered = query.trim()
+        ? counsellors.filter(c =>
+            c.name.toLowerCase().includes(query.toLowerCase()) ||
+            c.code.toLowerCase().includes(query.toLowerCase())
+          )
+        : counsellors;
+
+    const staffList = filtered.filter(c => c.type === "Staff");
+    const assocList = filtered.filter(c => c.type === "Associate");
+    const displayVal = value.name ? `${value.name}  (${value.code})` : "";
+
+    const handleSelect = (c: { name: string; code: string; type: string }) => {
+        onSelect(c); setQuery(""); setOpen(false);
+    };
+    const handleClear = () => { onSelect(null); setQuery(""); setOpen(false); };
+
+    return (
+        <div className="flex flex-col gap-1" ref={ref}>
+            {label && (
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    {label} {compulsory && <span className="text-red-500">*</span>}
+                </label>
+            )}
+            <div className="relative">
+                <input
+                    type="text"
+                    autoComplete="off"
+                    placeholder={displayVal || "Search by name or code…"}
+                    value={open ? query : displayVal}
+                    onFocus={() => { setOpen(true); setQuery(""); }}
+                    onChange={e => { setQuery(e.target.value); setOpen(true); }}
+                    className={`w-full px-3 pr-8 py-2.5 rounded-xl border text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition ${
+                        error ? "border-red-400 bg-red-50" : value.name ? "border-blue-300 bg-blue-50" : "border-slate-200"
+                    }`}
+                />
+                {value.name ? (
+                    <button type="button" onClick={handleClear}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition">
+                        <X size={14}/>
+                    </button>
+                ) : (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                        <Search size={14}/>
+                    </span>
+                )}
+                {open && (
+                    <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-2xl shadow-xl max-h-64 overflow-y-auto">
+                        {filtered.length === 0 ? (
+                            <p className="px-4 py-3 text-xs text-slate-400 font-semibold">No counsellors found</p>
+                        ) : (
+                            <>
+                                {staffList.length > 0 && (
+                                    <div>
+                                        <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-purple-500">── Staff ──</p>
+                                        {staffList.map(c => (
+                                            <button key={c.code} type="button" onClick={() => handleSelect(c)}
+                                                className="w-full flex items-center justify-between px-4 py-2 hover:bg-purple-50 transition text-left">
+                                                <span className="text-sm font-semibold text-slate-800">{c.name}</span>
+                                                <span className="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-lg ml-2 shrink-0">{c.code}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {assocList.length > 0 && (
+                                    <div className={staffList.length > 0 ? "border-t border-slate-100" : ""}>
+                                        <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-green-600">── Associate ──</p>
+                                        {assocList.map(c => (
+                                            <button key={c.code} type="button" onClick={() => handleSelect(c)}
+                                                className="w-full flex items-center justify-between px-4 py-2 hover:bg-green-50 transition text-left">
+                                                <span className="text-sm font-semibold text-slate-800">{c.name}</span>
+                                                <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-lg ml-2 shrink-0">{c.code}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+            {value.name && !open && (
+                <p className="text-xs text-slate-400 font-semibold mt-0.5">
+                    Code: <span className="text-blue-600 font-bold">{value.code}</span>
+                    <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold ${value.type === "Staff" ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
+                        {value.type}
+                    </span>
+                </p>
+            )}
+            {error && <p className="text-xs text-red-500 font-semibold mt-0.5">{error}</p>}
+        </div>
+    );
+};
+
 const emptyForm = {
     student_name: "", gender: "Male", age: "", dob: "", mobile_number: "", whatsapp_number: "", email_id: "",
-    perm_address: "", perm_city: "", perm_state: "", perm_pin: "",
+    perm_address: "", perm_city: "", district: "", perm_state: "", perm_pin: "",
     curr_address: "", curr_city: "", curr_state: "", curr_pin: "",
     highest_qualification: "", year_of_passing: "", institution_name: "",
     career_objective: "Job", preferred_country: "", expected_salary: "", willing_to_work_all_india: "Yes",
@@ -57,6 +177,8 @@ export default function StudentEnquiryForm() {
     const [isEditing,         setIsEditing]         = useState(false);
     const [editId,            setEditId]            = useState<number|null>(null);
     const [formData,          setFormData]          = useState<any>(emptyForm);
+    const [showAssessmentModal, setShowAssessmentModal] = useState(false);
+    const [counsellors, setCounsellors] = useState<{name:string;code:string;type:string}[]>([]);
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem("token");
@@ -67,6 +189,44 @@ export default function StudentEnquiryForm() {
         if (viewMode === "list") fetchEnquiries();
     }, [viewMode]);
 
+    useEffect(() => {
+        const fetchCounsellors = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${API_BASE}/admissions/counsellors`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setCounsellors(res.data || []);
+            } catch (err) {
+                console.error("Error fetching counsellors:", err);
+            }
+        };
+        fetchCounsellors();
+    }, []);
+
+    // ── Re-resolve counsellor when list loads after form is already populated ──
+    useEffect(() => {
+        if (counsellors.length === 0) return;
+        if (!formData.counsellor_name) return;
+
+        const code = formData.counsellor_code || "";
+        const alreadyResolved = /^[AS]\d{5}$/.test(code);
+        if (alreadyResolved) return;
+
+        const matched = counsellors.find((c: any) => c.name === formData.counsellor_name)
+                     || counsellors.find((c: any) => c.name.toLowerCase() === formData.counsellor_name.toLowerCase());
+
+        if (matched) {
+            setFormData((p: any) => ({
+                ...p,
+                counsellor_name: matched.name,
+                counsellor_code: matched.code,
+                counsellor_type: matched.type,
+            }));
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [counsellors]);
+
     const fetchEnquiries = async () => {
         setIsLoadingList(true);
         try {
@@ -74,6 +234,19 @@ export default function StudentEnquiryForm() {
             setEnquiries(res.data);
         } catch (err) { console.error(err); }
         finally { setIsLoadingList(false); }
+    };
+
+    const calculateAge = (dob: string) => {
+        if (!dob) return "";
+        const birth = new Date(dob);
+        if (Number.isNaN(birth.getTime())) return "";
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age -= 1;
+        }
+        return age >= 0 ? String(age) : "";
     };
 
     // ── Excel Export ────────────────────────────────────────────────────────────
@@ -118,7 +291,14 @@ export default function StudentEnquiryForm() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData((prev: any) => ({ ...prev, [name]: value }));
+        if (name === "dob") {
+            setFormData((prev: any) => ({ ...prev, dob: value, age: calculateAge(value) }));
+        } else if (name === "will_attend_test" && value === "Yes") {
+            setShowAssessmentModal(true);
+            setFormData((prev: any) => ({ ...prev, [name]: value }));
+        } else {
+            setFormData((prev: any) => ({ ...prev, [name]: value }));
+        }
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
     };
 
@@ -138,7 +318,7 @@ export default function StudentEnquiryForm() {
     };
 
     const handleDelete = async (enq: any) => {
-        if (!confirm(`Delete enquiry for "${enq.student_name}" (${enq.enquiry_id})?`)) return;
+        if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
         try {
             await axios.delete(`${API_BASE}/enquiries/${enq.id}`, { headers: getAuthHeaders() });
             setEnquiries(prev => prev.filter(e => e.id !== enq.id));
@@ -170,6 +350,8 @@ export default function StudentEnquiryForm() {
         }
         if (stepId === "C") {
             if (!formData.father_name)   newErrors.father_name   = "Required";
+            if (!formData.perm_city) newErrors.perm_city = "City is required";
+            if (!formData.district) newErrors.district = "District is required";
             if (!formData.parent_contact)newErrors.parent_contact= "Required";
             else if (!phone.test(formData.parent_contact)) newErrors.parent_contact = "10 digits required";
         }
@@ -226,7 +408,7 @@ export default function StudentEnquiryForm() {
                     <InputField label="Student Full Name" name="student_name" value={formData.student_name} onChange={handleChange} error={errors.student_name} compulsory />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField label="Gender" name="gender" options={["Male","Female","Other"]} value={formData.gender} onChange={handleChange} />
-                        <InputField label="Age" name="age" type="number" value={formData.age} onChange={handleChange} error={errors.age} compulsory />
+                        <InputField label="Age" name="age" type="number" value={formData.age} onChange={handleChange} error={errors.age} compulsory readOnly />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <InputField label="Date of Birth" name="dob" type="date" value={formData.dob} onChange={handleChange} error={errors.dob} compulsory />
@@ -239,8 +421,9 @@ export default function StudentEnquiryForm() {
                     <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Permanent Address</h4>
                         <TextAreaField label="Address" name="perm_address" value={formData.perm_address} onChange={handleChange} error={errors.perm_address} compulsory />
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                            <InputField label="City"  name="perm_city"  value={formData.perm_city}  onChange={handleChange} error={errors.perm_city} compulsory />
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-3">
+                            <InputField label="1. City/Village / Town"  name="perm_city"  value={formData.perm_city}  onChange={handleChange} error={errors.perm_city} compulsory />
+                            <InputField label="2. District" name="district" value={formData.district} onChange={handleChange} error={errors.district} compulsory />
                             <InputField label="State" name="perm_state" value={formData.perm_state} onChange={handleChange} error={errors.perm_state} compulsory />
                             <InputField label="PIN"   name="perm_pin"   value={formData.perm_pin}   onChange={handleChange} error={errors.perm_pin} compulsory />
                         </div>
@@ -252,7 +435,10 @@ export default function StudentEnquiryForm() {
                     <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Education</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField label="Highest Qualification" name="highest_qualification" value={formData.highest_qualification} onChange={handleChange} error={errors.highest_qualification} compulsory />
+                            <SelectField label="Highest Qualification" name="highest_qualification" options={QUALIFICATION_OPTIONS} value={formData.highest_qualification} onChange={handleChange} error={errors.highest_qualification} compulsory />
+                            {(formData.highest_qualification === "ITI / Diploma" || formData.highest_qualification === "Degree / Engineering") && (
+                                <InputField label="Course Name" name="qualification_course_name" value={formData.qualification_course_name} onChange={handleChange} error={errors.qualification_course_name} compulsory />
+                            )}
                             <InputField label="Year of Passing" name="year_of_passing" type="number" value={formData.year_of_passing} onChange={handleChange} error={errors.year_of_passing} compulsory />
                         </div>
                         <InputField label="Institution Name" name="institution_name" value={formData.institution_name} onChange={handleChange} error={errors.institution_name} compulsory />
@@ -286,10 +472,21 @@ export default function StudentEnquiryForm() {
                     <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Referral</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField label="Referred By"      name="referred_by"     value={formData.referred_by}     onChange={handleChange} />
-                            <InputField label="Counsellor Name"  name="counsellor_name" value={formData.counsellor_name} onChange={handleChange} />
+                            <InputField label="Referred By" name="referred_by" value={formData.referred_by} onChange={handleChange} />
+                            <CounsellorSearchField
+                                label="Counsellor Name & Code"
+                                counsellors={counsellors}
+                                value={{ name: formData.counsellor_name || "", code: formData.counsellor_code || "", type: formData.counsellor_type || "" }}
+                                onSelect={c => {
+                                    if (!c) {
+                                        setFormData((p: any) => ({ ...p, counsellor_name: "", counsellor_code: "", counsellor_type: "" }));
+                                    } else {
+                                        setFormData((p: any) => ({ ...p, counsellor_name: c.name, counsellor_code: c.code, counsellor_type: c.type }));
+                                    }
+                                }}
+                            />
                         </div>
-                        <InputField label="Counsellor Code" name="counsellor_code" value={formData.counsellor_code} onChange={handleChange} />
+
                     </div>
                 </div>
             );
@@ -307,7 +504,7 @@ export default function StudentEnquiryForm() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField label="Interest Level *" name="interest_level" options={["High","Medium","Low"]} value={formData.interest_level} onChange={handleChange} error={errors.interest_level} compulsory />
-                        <SelectField label="Will Attend Test?" name="will_attend_test" options={["Yes","No"]} value={formData.will_attend_test} onChange={handleChange} />
+                        <SelectField label="Willing for Assessment Test *" name="will_attend_test" options={["Yes","No"]} value={formData.will_attend_test} onChange={handleChange} compulsory />
                     </div>
 
                     {/* ── Enquiry Date ── NEW ── */}
@@ -616,7 +813,7 @@ export default function StudentEnquiryForm() {
                                             <DetailItem label="Level"             value={selectedEnquiry.level_of_course} />
                                             <DetailItem label="Training Mode"     value={selectedEnquiry.training_mode} />
                                             <DetailItem label="Batch Timing"      value={selectedEnquiry.batch_timing} />
-                                            <DetailItem label="Will Attend Test?" value={selectedEnquiry.will_attend_test} />
+                                            <DetailItem label="Willing for Assessment Test" value={selectedEnquiry.will_attend_test} />
                                             <DetailItem label="Enquiry Date"      value={selectedEnquiry.enquiry_date ? fmtDate(selectedEnquiry.enquiry_date) : fmtDate(selectedEnquiry.created_at)} />
                                             <DetailItem label="Follow Up Date"    value={selectedEnquiry.follow_up_date ? fmtDate(selectedEnquiry.follow_up_date) : "Not set"} />
                                             <DetailItem label="Counselling Date"  value={selectedEnquiry.counselling_date ? fmtDate(selectedEnquiry.counselling_date) : "—"} />
@@ -641,6 +838,32 @@ export default function StudentEnquiryForm() {
                                     )}
                                 </div>
                             </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ── Assessment Modal ── */}
+            <AnimatePresence>
+                {showAssessmentModal && (
+                    <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+                        className="fixed inset-0 z-50 bg-slate-900/90 flex items-center justify-center p-6">
+                        <motion.div initial={{ scale:0.9 }} animate={{ scale:1 }}
+                            className="bg-white rounded-[3rem] p-12 max-w-md w-full text-center shadow-2xl">
+                            <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6"><UserCheck size={40}/></div>
+                            <h3 className="text-2xl font-black text-slate-800">Assessment Required</h3>
+                            <p className="text-slate-500 font-bold mt-3 text-sm">Complete your OriginBI assessment to proceed.</p>
+                            <p className="text-slate-600 font-bold mt-4 text-xs uppercase tracking-widest">Click the button below to start</p>
+                            <a href="https://pickmycareer.originbi.com/register?ref=L7C4Q6QY" target="_blank" rel="noreferrer"
+                                style={{ color: "#ffffff", backgroundColor: "#0f172a" }}
+                                className="mt-6 inline-block w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-800 transition-all">
+                                Open Assessment Link
+                            </a>
+                            <button onClick={() => setShowAssessmentModal(false)}
+                                style={{ color: "#64748b", backgroundColor: "#f1f5f9" }}
+                                className="mt-3 w-full py-3 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-slate-200 transition-all">
+                                Close
+                            </button>
                         </motion.div>
                     </motion.div>
                 )}

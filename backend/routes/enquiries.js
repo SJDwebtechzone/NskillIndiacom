@@ -40,20 +40,21 @@ router.post("/", authMiddleware, async (req, res) => {
                 student_name, gender, age, dob, mobile_number, whatsapp_number, email_id,
                 perm_address, perm_city, perm_state, perm_pin,
                 curr_address, curr_city, curr_state, curr_pin,
-                highest_qualification, year_of_passing, institution_name,
+                highest_qualification, qualification_course_name, year_of_passing, institution_name,
                 career_objective, preferred_country, expected_salary, willing_to_work_all_india,
                 work_experience, company_name, position, salary, location, skills_trade,
                 father_name, mother_name, parent_contact, parent_occupation,
                 referred_by, counsellor_name, counsellor_code, will_attend_test,
                 course_interested, level_of_course, training_mode, batch_timing,
                 counselling_date, counselling_done_by, interest_level, follow_up_date, remarks,
-                created_by_id
+                created_by_id, district
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                 $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
                 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
                 $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
-                $41, $42, $43, $44, $45, $46, $47, $48, $49
+                $41, $42, $43, $44, $45, $46, $47, $48, $49, $50,
+                $51
             ) RETURNING *`;
 
         const values = [
@@ -61,14 +62,14 @@ router.post("/", authMiddleware, async (req, res) => {
             toStr(data.student_name), toStr(data.gender), toStr(data.age), toDate(data.dob), toStr(data.mobile_number), toStr(data.whatsapp_number), toStr(data.email_id),
             toStr(data.perm_address), toStr(data.perm_city), toStr(data.perm_state), toStr(data.perm_pin),
             toStr(data.curr_address), toStr(data.curr_city), toStr(data.curr_state), toStr(data.curr_pin),
-            toStr(data.highest_qualification), toStr(data.year_of_passing), toStr(data.institution_name),
+            toStr(data.highest_qualification), toStr(data.qualification_course_name), toStr(data.year_of_passing), toStr(data.institution_name),
             toStr(data.career_objective), toStr(data.preferred_country), toStr(data.expected_salary), toStr(data.willing_to_work_all_india),
             toStr(data.work_experience), toStr(data.company_name), toStr(data.position), toStr(data.salary), toStr(data.location), toStr(data.skills_trade),
             toStr(data.father_name), toStr(data.mother_name), toStr(data.parent_contact), toStr(data.parent_occupation),
             toStr(data.referred_by), toStr(data.counsellor_name), toStr(data.counsellor_code), toStr(data.will_attend_test),
             toStr(data.course_interested), toStr(data.level_of_course), toStr(data.training_mode), toStr(data.batch_timing),
             toDate(data.counselling_date), toStr(data.counselling_done_by), toStr(data.interest_level), toDate(data.follow_up_date), toStr(data.remarks),
-            userId
+            userId, toStr(data.district)
         ];
 
         const result = await pool.query(query, values);
@@ -122,13 +123,14 @@ router.get("/", authMiddleware, async (req, res) => {
     try {
         let query = `
             SELECT se.*, u.name as associate_name,
-                   (SELECT EXISTS (SELECT 1 FROM student_admissions sa WHERE sa.enquiry_id = se.enquiry_id)) as is_admitted
+                   (SELECT EXISTS (SELECT 1 FROM student_admissions sa WHERE sa.enquiry_id = se.enquiry_id AND sa.is_deleted = false)) as is_admitted
             FROM student_enquiries se
             LEFT JOIN users u ON se.created_by_id = u.id
+            WHERE se.is_deleted = false
         `;
         let params = [];
         if (req.user.roleName === "Associate") {
-            query += " WHERE se.created_by_id = $1";
+            query += " AND se.created_by_id = $1";
             params.push(req.user.id);
         }
         query += " ORDER BY se.created_at DESC";
@@ -154,13 +156,13 @@ router.patch("/:id", authMiddleware, async (req, res) => {
             'enquiry_date', 'mode_of_enquiry', 'student_name', 'gender', 'age', 'dob',
             'mobile_number', 'whatsapp_number', 'email_id', 'perm_address', 'perm_city',
             'perm_state', 'perm_pin', 'curr_address', 'curr_city', 'curr_state', 'curr_pin',
-            'highest_qualification', 'year_of_passing', 'institution_name', 'career_objective',
+            'highest_qualification', 'qualification_course_name', 'year_of_passing', 'institution_name', 'career_objective',
             'preferred_country', 'expected_salary', 'willing_to_work_all_india', 'work_experience',
             'company_name', 'position', 'salary', 'location', 'skills_trade', 'father_name',
             'mother_name', 'parent_contact', 'parent_occupation', 'referred_by',
             'counsellor_name', 'counsellor_code', 'will_attend_test', 'course_interested',
             'level_of_course', 'training_mode', 'batch_timing', 'counselling_date',
-            'counselling_done_by', 'interest_level', 'follow_up_date', 'remarks'
+            'counselling_done_by', 'interest_level', 'follow_up_date', 'remarks', 'district'
         ];
 
         let queryParts = [];
@@ -200,7 +202,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
 
 router.get("/:enquiry_id", authMiddleware, async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM student_enquiries WHERE enquiry_id = $1", [req.params.enquiry_id]);
+        const result = await pool.query("SELECT * FROM student_enquiries WHERE enquiry_id = $1 AND is_deleted = false", [req.params.enquiry_id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Enquiry not found" });
         }
@@ -226,14 +228,14 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         const { id } = req.params;
 
         // Get enquiry_id first
-        const enqRes = await pool.query("SELECT enquiry_id FROM student_enquiries WHERE id = $1", [id]);
+        const enqRes = await pool.query("SELECT enquiry_id FROM student_enquiries WHERE id = $1 AND is_deleted = false", [id]);
         if (enqRes.rows.length > 0) {
             const enquiryId = enqRes.rows[0].enquiry_id;
             // Set enquiry_id to NULL in admissions to satisfy foreign key
             await pool.query("UPDATE student_admissions SET enquiry_id = NULL WHERE enquiry_id = $1", [enquiryId]);
         }
 
-        const result = await pool.query("DELETE FROM student_enquiries WHERE id = $1 RETURNING *", [id]);
+        const result = await pool.query("UPDATE student_enquiries SET is_deleted = true, deleted_at = NOW() WHERE id = $1 RETURNING *", [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Enquiry not found" });
         }

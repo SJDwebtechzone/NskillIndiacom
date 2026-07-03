@@ -1,4 +1,5 @@
 "use client";
+import ValidatedFileInput from '@/components/ValidatedFileInput';
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,6 +33,40 @@ const steps = [
     { id: "N",      title: "Office Use",        icon: FileText     },
 ];
 
+const DeclarationAccordion = ({ label, name, checked, onChange, error="", compulsory=false, children }: any) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className={`border border-slate-200 rounded-2xl bg-slate-50 transition-all ${isOpen ? 'shadow-md border-blue-300' : 'hover:border-blue-200'}`}>
+            <div className="flex items-center justify-between p-4 cursor-pointer select-none" onClick={() => setIsOpen(!isOpen)}>
+                <div className="flex items-center gap-3">
+                    {name && (
+                        <input 
+                            type="checkbox" 
+                            name={name} 
+                            checked={checked||false} 
+                            onChange={onChange} 
+                            onClick={(e) => e.stopPropagation()} 
+                            className="w-5 h-5 rounded-lg text-blue-500 border-slate-400 cursor-pointer"
+                        />
+                    )}
+                    <span className="text-[11px] uppercase tracking-widest font-black text-slate-700 leading-tight">
+                        {label} {compulsory && <span className="text-red-500">*</span>}
+                    </span>
+                </div>
+                <div className="text-slate-400 hover:text-slate-600 p-1">
+                    <ChevronRight size={18} className={`transform transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+                </div>
+            </div>
+            {isOpen && (
+                <div className="px-12 pb-4 pt-1 border-t border-slate-100 text-xs text-slate-600 leading-relaxed space-y-2 max-h-60 overflow-y-auto font-medium">
+                    {children}
+                </div>
+            )}
+            {error && <div className="px-12 pb-3 text-[9px] text-red-500 font-black uppercase tracking-wider">{error}</div>}
+        </div>
+    );
+};
+
 const mapQualification = (val: string) => {
     if (!val) return "";
     const lower = val.toLowerCase().trim();
@@ -46,6 +81,147 @@ const mapQualification = (val: string) => {
     
     return "";
 };
+
+// ── Searchable Counsellor Combobox ────────────────────────────────────────────
+const CounsellorSearchField = ({
+    label, counsellors, value, onSelect, error, compulsory = false,
+}: {
+    label?: string;
+    counsellors: { name: string; code: string; type: string }[];
+    value: { name: string; code: string; type: string };
+    onSelect: (c: { name: string; code: string; type: string } | null) => void;
+    error?: string;
+    compulsory?: boolean;
+}) => {
+    const [query,    setQuery]    = useState("");
+    const [open,     setOpen]     = useState(false);
+    const ref = React.useRef<HTMLDivElement>(null);
+
+    // Close on outside click
+    React.useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const filtered = query.trim()
+        ? counsellors.filter(c =>
+            c.name.toLowerCase().includes(query.toLowerCase()) ||
+            c.code.toLowerCase().includes(query.toLowerCase())
+          )
+        : counsellors;
+
+    const staffList  = filtered.filter(c => c.type === "Staff");
+    const assocList  = filtered.filter(c => c.type === "Associate");
+
+    const displayVal = value.name ? `${value.name}  (${value.code})` : "";
+
+    const handleSelect = (c: { name: string; code: string; type: string }) => {
+        onSelect(c);
+        setQuery("");
+        setOpen(false);
+    };
+
+    const handleClear = () => {
+        onSelect(null);
+        setQuery("");
+        setOpen(false);
+    };
+
+    return (
+        <div className="flex flex-col gap-1" ref={ref}>
+            {label && (
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    {label} {compulsory && <span className="text-red-500">*</span>}
+                </label>
+            )}
+            <div className="relative">
+                {/* Input */}
+                <input
+                    type="text"
+                    autoComplete="off"
+                    placeholder={displayVal || "Search by name or code…"}
+                    value={open ? query : displayVal}
+                    onFocus={() => { setOpen(true); setQuery(""); }}
+                    onChange={e => { setQuery(e.target.value); setOpen(true); }}
+                    className={`w-full px-3 pr-8 py-2.5 rounded-xl border text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition ${
+                        error ? "border-red-400 bg-red-50" : value.name ? "border-blue-300 bg-blue-50" : "border-slate-200"
+                    }`}
+                />
+                {/* Clear / chevron */}
+                {value.name ? (
+                    <button
+                        type="button"
+                        onClick={handleClear}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition"
+                    ><X size={14}/></button>
+                ) : (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                        <Search size={14}/>
+                    </span>
+                )}
+
+                {/* Dropdown */}
+                {open && (
+                    <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-2xl shadow-xl max-h-64 overflow-y-auto">
+                        {filtered.length === 0 ? (
+                            <p className="px-4 py-3 text-xs text-slate-400 font-semibold">No counsellors found</p>
+                        ) : (
+                            <>
+                                {staffList.length > 0 && (
+                                    <div>
+                                        <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-purple-500">── Staff ──</p>
+                                        {staffList.map(c => (
+                                            <button
+                                                key={c.code}
+                                                type="button"
+                                                onClick={() => handleSelect(c)}
+                                                className="w-full flex items-center justify-between px-4 py-2 hover:bg-purple-50 transition text-left"
+                                            >
+                                                <span className="text-sm font-semibold text-slate-800">{c.name}</span>
+                                                <span className="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-lg ml-2 shrink-0">{c.code}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {assocList.length > 0 && (
+                                    <div className={staffList.length > 0 ? "border-t border-slate-100" : ""}>
+                                        <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-green-600">── Associate ──</p>
+                                        {assocList.map(c => (
+                                            <button
+                                                key={c.code}
+                                                type="button"
+                                                onClick={() => handleSelect(c)}
+                                                className="w-full flex items-center justify-between px-4 py-2 hover:bg-green-50 transition text-left"
+                                            >
+                                                <span className="text-sm font-semibold text-slate-800">{c.name}</span>
+                                                <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-lg ml-2 shrink-0">{c.code}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* Selected badge */}
+            {value.name && !open && (
+                <p className="text-xs text-slate-400 font-semibold mt-0.5">
+                    Code: <span className="text-blue-600 font-bold">{value.code}</span>
+                    <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold ${value.type === "Staff" ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
+                        {value.type}
+                    </span>
+                </p>
+            )}
+            {error && <p className="text-xs text-red-500 font-semibold mt-0.5">{error}</p>}
+        </div>
+    );
+};
+
 
 export default function StudentAdmissionForm() {
     const [viewMode,          setViewMode]          = useState<"form"|"list">("form");
@@ -66,9 +242,9 @@ export default function StudentAdmissionForm() {
         enquiry_id: "", full_name: "", gender: "Male", dob: "", age: "",
         aadhaar_number: "", passport_number: "", passport_validity: "", photo_file: null,
         mobile_number: "", alt_mobile_number: "", whatsapp_number: "", email_id: "",
-        residential_address: "", city: "", state: "", pin_code: "",
+        residential_address: "", city: "", district: "", state: "", pin_code: "",
         parent_name: "", relationship: "", parent_mobile: "", occupation: "", annual_income: "",
-        highest_qualification: "", year_of_passing: "", institution_name: "",
+        highest_qualification: "", qualification_course_name: "", year_of_passing: "", institution_name: "",
         board_university: "", medium_of_study: "",
         technical_background: "", total_experience: "", industry_experience: "", skills_known: "",
         course_interested: "", course_level: "Basic", mode_of_training: "Offline",
@@ -78,7 +254,7 @@ export default function StudentAdmissionForm() {
         counselling_date: "",
         // ── NEW: Enquiry Date ──
         enquiry_date: new Date().toISOString().split("T")[0],
-        course_name: "", course_fees: "0", total_fees: "0", paid_fees: "0",
+        course_name: "", other_or_miscellaneous: "", course_fees: "0", discount_fee: "0", discount_remark: "", total_fees: "0", paid_fees: "0",
         payment_mode: "Cash", payment_ref_no: "", payment_date: "",
         // ── UPDATED: Installments with separate refs ──
         instalment_1: "0", instalment_1_ref: "",
@@ -91,10 +267,14 @@ export default function StudentAdmissionForm() {
         instalment_4_mode: "Cash", instalment_4_date: "", instalment_4_ref_only: "",
         balance_amount: "0",
         has_aadhaar_file: null, has_edu_certs_file: null, has_passport_file: null,
-        has_resume_file: null, has_address_proof_file: null, has_photos_file: null,
-        student_declaration: false, parent_declaration: false, placement_ack: false,
-        overseas_disclaimer: false, discipline_ack: false, photo_consent: false,
+        has_resume_file: null, has_address_proof_file: null, has_guardian_id_file: null,
+        student_declaration: false, parent_declaration: true, placement_ack: false,
+        overseas_disclaimer: true, discipline_ack: false, photo_consent: false,
         refund_policy_ack: false, data_privacy_ack: false, final_undertaking: false,
+        training_attendance_ack: false, certificate_policy_ack: false,
+        document_verification_ack: false, conduct_workshop_ack: false,
+        conduct_hostel_ack: false, security_deposit_ack: false,
+        general_conditions_ack: false,
         // ── UPDATED: Emergency with relationship ──
         emergency_contact_name: "", emergency_contact_relationship: "", emergency_contact_number: "", emergency_authorized: false,
         // ── NEW: Date of Admission ──
@@ -104,6 +284,7 @@ export default function StudentAdmissionForm() {
 
     const [formData, setFormData] = useState<any>(emptyForm);
     const [courses, setCourses] = useState<any[]>([]);
+    const [counsellors, setCounsellors] = useState<{name:string;code:string;type:string}[]>([]);
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem("token");
@@ -119,12 +300,50 @@ export default function StudentAdmissionForm() {
                 console.error("Error fetching courses:", err);
             }
         };
+        const fetchCounsellors = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${API_BASE}/admissions/counsellors`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setCounsellors(res.data || []);
+            } catch (err) {
+                console.error("Error fetching counsellors:", err);
+            }
+        };
         fetchCourses();
+        fetchCounsellors();
     }, []);
 
     useEffect(() => {
         if (viewMode === "list") fetchAdmissions();
     }, [viewMode]);
+
+    // ── Re-resolve counsellor when list loads after form is already populated ──
+    // Fixes timing: old code "001" → new format "A00001" / "S00001"
+    useEffect(() => {
+        if (counsellors.length === 0) return;
+        if (!formData.counsellor_name) return;
+
+        // Already resolved to new format — skip
+        const code = formData.counsellor_code || "";
+        const alreadyResolved = /^[AS]\d{5}$/.test(code);
+        if (alreadyResolved) return;
+
+        // Try to match by name (most reliable)
+        const matched = counsellors.find((c: any) => c.name === formData.counsellor_name)
+                     || counsellors.find((c: any) => c.name.toLowerCase() === formData.counsellor_name.toLowerCase());
+
+        if (matched) {
+            setFormData((p: any) => ({
+                ...p,
+                counsellor_name: matched.name,
+                counsellor_code: matched.code,
+                counsellor_type: matched.type,
+            }));
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [counsellors]);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -261,6 +480,27 @@ export default function StudentAdmissionForm() {
         try {
             const res  = await axios.get(`${API_BASE}/enquiries/${targetId}`, { headers: getAuthHeaders() });
             const data = res.data;
+
+            // ── Resolve counsellor from the live dropdown list ────────────────────
+            // Priority 1: exact name + code match
+            // Priority 2: name-only match (handles old/different code formats)
+            // Priority 3: keep whatever is in the enquiry record
+            const enqCounsellorName = data.counsellor_name || "";
+            const enqCounsellorCode = data.counsellor_code || "";
+
+            const matchedByBoth = counsellors.find(
+                (c: any) => c.name === enqCounsellorName && c.code === enqCounsellorCode
+            );
+            const matchedByName = !matchedByBoth && enqCounsellorName
+                ? counsellors.find((c: any) => c.name === enqCounsellorName)
+                : null;
+
+            const resolvedCounsellor = matchedByBoth || matchedByName;
+            const resolvedName  = resolvedCounsellor?.name  || enqCounsellorName;
+            const resolvedCode  = resolvedCounsellor?.code  || enqCounsellorCode;
+            const resolvedType  = resolvedCounsellor?.type
+                || (resolvedCode.startsWith("S") ? "Staff" : resolvedCode.startsWith("A") ? "Associate" : "");
+
             setFormData((prev: any) => ({
                 ...prev,
                 enquiry_id:             data.enquiry_id,
@@ -274,18 +514,24 @@ export default function StudentAdmissionForm() {
                 email_id:               data.email_id            || "",
                 residential_address:    data.perm_address        || "",
                 city:                   data.perm_city           || "",
+                district:               data.district            || "",
                 state:                  data.perm_state          || "",
                 pin_code:               data.perm_pin            || "",
-                parent_name:            data.father_name         || "",
+                parent_name:            data.father_name || data.mother_name || "",
+                relationship:           data.father_name ? "Father" : (data.mother_name ? "Mother" : ""),
                 parent_mobile:          data.parent_contact      || "",
+                occupation:             data.parent_occupation   || "",
+                annual_income:          data.annual_income       || "",
                 highest_qualification:  mapQualification(data.highest_qualification || ""),
+                qualification_course_name: data.qualification_course_name || "",
                 year_of_passing:        data.year_of_passing     || "",
                 institution_name:       data.institution_name    || "",
                 course_interested:      data.course_interested   || "",
                 course_level:           data.level_of_course     || "Basic",
                 mode_of_training:       data.training_mode === "Classroom" ? "Offline" : (data.training_mode || "Offline"),
-                counsellor_name:        data.counsellor_name     || "",
-                counsellor_code:        data.counsellor_code     || "",
+                counsellor_name:        resolvedName,
+                counsellor_code:        resolvedCode,
+                counsellor_type:        resolvedType,
                 referral_source:        data.referred_by         || "Career Counsellor",
                 counselling_date:       data.counselling_date    ? data.counselling_date.split("T")[0]  : "",
                 enquiry_date:           data.enquiry_date        ? data.enquiry_date.split("T")[0]      : new Date().toISOString().split("T")[0],
@@ -303,7 +549,17 @@ export default function StudentAdmissionForm() {
         } else if (type === "file") {
             setFormData((prev: any) => ({ ...prev, [name]: (e.target as HTMLInputElement).files?.[0] }));
         } else {
-            setFormData((prev: any) => ({ ...prev, [name]: value }));
+            setFormData((prev: any) => {
+                const updated = { ...prev, [name]: value };
+                if (name === "course_fees" || name === "discount_fee" || name === "paid_fees") {
+                    const c = parseFloat(updated.course_fees) || 0;
+                    const d = parseFloat(updated.discount_fee) || 0;
+                    const p = parseFloat(updated.paid_fees) || 0;
+                    updated.total_fees = (c - d).toString();
+                    updated.balance_amount = ((c - d) - p).toString();
+                }
+                return updated;
+            });
         }
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
     };
@@ -335,8 +591,35 @@ export default function StudentAdmissionForm() {
         const inst3Parsed = parseRefField(adm.instalment_3_ref || "", adm.payment_mode || "Cash", adm.payment_date || "");
         const inst4Parsed = parseRefField(adm.instalment_4_ref || "", adm.payment_mode || "Cash", adm.payment_date || "");
 
+        // ── Resolve counsellor for dropdown pre-selection ────────────────────────
+        // Priority 1: exact name + code match (new format S00001/A00001)
+        // Priority 2: name-only match (handles old/different code formats in DB)
+        const admCounsellorName = adm.counsellor_name || "";
+        const admCounsellorCode = adm.counsellor_code || "";
+
+        const admMatchedByBoth = counsellors.find(
+            (c: any) => c.name === admCounsellorName && c.code === admCounsellorCode
+        );
+        const admMatchedByName = !admMatchedByBoth && admCounsellorName
+            ? counsellors.find((c: any) => c.name === admCounsellorName)
+            : null;
+
+        const admResolved     = admMatchedByBoth || admMatchedByName;
+        const admResolvedName = admResolved?.name || admCounsellorName;
+        const admResolvedCode = admResolved?.code || admCounsellorCode;
+        const admResolvedType = admResolved?.type
+            || adm.counsellor_type
+            || (admResolvedCode.startsWith("S") ? "Staff" : admResolvedCode.startsWith("A") ? "Associate" : "");
+
         setFormData({
             ...emptyForm, ...adm,
+            training_attendance_ack: !!adm.discipline_ack,
+            certificate_policy_ack: !!adm.discipline_ack,
+            document_verification_ack: !!adm.discipline_ack,
+            conduct_workshop_ack: !!adm.discipline_ack,
+            conduct_hostel_ack: !!adm.discipline_ack,
+            security_deposit_ack: !!adm.discipline_ack,
+            general_conditions_ack: !!adm.final_undertaking,
             highest_qualification: mapQualification(adm.highest_qualification || ""),
             dob:              adm.dob              ? adm.dob.split("T")[0]              : "",
             passport_validity:adm.passport_validity? adm.passport_validity.split("T")[0]: "",
@@ -344,7 +627,10 @@ export default function StudentAdmissionForm() {
             payment_date:     adm.payment_date     ? adm.payment_date.split("T")[0]     : "",
             enquiry_date:     adm.enquiry_date     ? adm.enquiry_date.split("T")[0]     : "",
             admission_date:   adm.admission_date   ? adm.admission_date.split("T")[0]   : "",
-            
+            counsellor_name:  admResolvedName,
+            counsellor_code:  admResolvedCode,
+            counsellor_type:  admResolvedType,
+
             instalment_1_mode: inst1Parsed.mode,
             instalment_1_date: inst1Parsed.date ? inst1Parsed.date.split("T")[0] : "",
             instalment_1_ref_only: inst1Parsed.ref === "—" ? "" : inst1Parsed.ref,
@@ -369,7 +655,7 @@ export default function StudentAdmissionForm() {
     };
 
     const handleDelete = async (adm: any) => {
-        if (!confirm(`Delete admission for "${adm.full_name}"? Cannot be undone.`)) return;
+        if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
         try {
             await axios.delete(`${API_BASE}/admissions/${adm.id}`, { headers: getAuthHeaders() });
             setAdmissions(prev => prev.filter(a => a.id !== adm.id));
@@ -396,6 +682,7 @@ export default function StudentAdmissionForm() {
             if (!formData.email_id)                           newErrors.email_id         = "Required";
             if (!formData.residential_address)                newErrors.residential_address = "Required";
             if (!formData.city)                               newErrors.city             = "Required";
+            if (!formData.district)                           newErrors.district         = "Required";
             if (!formData.state)                              newErrors.state            = "Required";
             if (!formData.pin_code)                           newErrors.pin_code         = "Required";
             if (!formData.parent_name)                        newErrors.parent_name      = "Required";
@@ -428,15 +715,19 @@ export default function StudentAdmissionForm() {
             if (!formData.has_edu_certs_file)     newErrors.has_edu_certs_file     = "Required";
             if (!formData.has_resume_file)        newErrors.has_resume_file        = "Required";
             if (!formData.has_address_proof_file) newErrors.has_address_proof_file = "Required";
-            if (!formData.has_photos_file)        newErrors.has_photos_file        = "Required";
+            if (!formData.has_guardian_id_file)   newErrors.has_guardian_id_file   = "Required";
 
             if (!formData.student_declaration) newErrors.student_declaration = "Compulsory";
-            if (!formData.parent_declaration)  newErrors.parent_declaration  = "Compulsory";
-            if (!formData.placement_ack)       newErrors.placement_ack       = "Compulsory";
-            if (!formData.discipline_ack)      newErrors.discipline_ack      = "Compulsory";
+            if (!formData.training_attendance_ack)   newErrors.training_attendance_ack   = "Compulsory";
+            if (!formData.certificate_policy_ack)    newErrors.certificate_policy_ack    = "Compulsory";
+            if (!formData.document_verification_ack) newErrors.document_verification_ack = "Compulsory";
+            if (!formData.conduct_workshop_ack)      newErrors.conduct_workshop_ack      = "Compulsory";
+            if (!formData.conduct_hostel_ack)        newErrors.conduct_hostel_ack        = "Compulsory";
+            if (!formData.security_deposit_ack)      newErrors.security_deposit_ack      = "Compulsory";
             if (!formData.photo_consent)       newErrors.photo_consent       = "Compulsory";
             if (!formData.refund_policy_ack)   newErrors.refund_policy_ack   = "Compulsory";
             if (!formData.data_privacy_ack)    newErrors.data_privacy_ack    = "Compulsory";
+            if (!formData.general_conditions_ack) newErrors.general_conditions_ack = "Compulsory";
             if (!formData.final_undertaking)   newErrors.final_undertaking   = "Compulsory";
             if (!formData.emergency_contact_name)   newErrors.emergency_contact_name   = "Required";
             if (!formData.emergency_contact_number) newErrors.emergency_contact_number = "Required";
@@ -476,7 +767,11 @@ export default function StudentAdmissionForm() {
         const data = new FormData();
         
         // Compile helper fields into standard instalment ref strings
-        const compiledForm = { ...formData };
+        const compiledForm = { 
+            ...formData,
+            discipline_ack: formData.training_attendance_ack && formData.certificate_policy_ack && formData.document_verification_ack && formData.conduct_workshop_ack && formData.conduct_hostel_ack && formData.security_deposit_ack,
+            final_undertaking: formData.general_conditions_ack
+        };
         if (Number(compiledForm.instalment_1) > 0) {
             compiledForm.instalment_1_ref = `${compiledForm.instalment_1_mode || compiledForm.payment_mode || "Cash"} | ${compiledForm.instalment_1_date || compiledForm.payment_date || new Date().toISOString().split("T")[0]} | ${compiledForm.instalment_1_ref_only || "—"}`;
         }
@@ -546,7 +841,7 @@ export default function StudentAdmissionForm() {
                         <InputField label="6. Passport Number (If Available)" name="passport_number" value={formData.passport_number} onChange={handleChange} />
                         <InputField label="7. Passport Validity" name="passport_validity" type="date" value={formData.passport_validity} onChange={handleChange} />
                     </div>
-                    <FileField label="8. Recent Passport Size Photo" name="photo_file" value={formData.photo_file || formData.photo_url} onChange={handleChange} error={errors.photo_file} compulsory />
+                    <FileField fileType="image" label="8. Recent Passport Size Photo" name="photo_file" value={formData.photo_file || formData.photo_url} onChange={handleChange} error={errors.photo_file} compulsory />
                 </div>
             );
 
@@ -565,10 +860,11 @@ export default function StudentAdmissionForm() {
                         <div className="mt-4">
                             <TextAreaField label="13. Full Residential Address" name="residential_address" value={formData.residential_address} onChange={handleChange} error={errors.residential_address} compulsory />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                            <InputField label="14. City / District" name="city"     value={formData.city}     onChange={handleChange} error={errors.city}     compulsory />
-                            <InputField label="15. State"           name="state"    value={formData.state}    onChange={handleChange} error={errors.state}    compulsory />
-                            <InputField label="16. PIN Code"        name="pin_code" value={formData.pin_code} onChange={handleChange} error={errors.pin_code} compulsory />
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                            <InputField label="14. City/Village / Town" name="city"     value={formData.city}     onChange={handleChange} error={errors.city}     compulsory />
+                            <InputField label="15. District"        name="district" value={formData.district} onChange={handleChange} error={errors.district} compulsory />
+                            <InputField label="16. State"           name="state"    value={formData.state}    onChange={handleChange} error={errors.state}    compulsory />
+                            <InputField label="17. PIN Code"        name="pin_code" value={formData.pin_code} onChange={handleChange} error={errors.pin_code} compulsory />
                         </div>
                     </div>
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-sm">
@@ -594,6 +890,11 @@ export default function StudentAdmissionForm() {
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><GraduationCap className="text-blue-500" size={18}/> Education Details</h4>
                         <SelectField label="22. Highest Qualification" name="highest_qualification" value={formData.highest_qualification}
                             options={["", "School Dropout", "10th / 12th", "ITI / Diploma", "Degree / Engineering"]} onChange={handleChange} compulsory error={errors.highest_qualification} />
+                        {(formData.highest_qualification === "ITI / Diploma" || formData.highest_qualification === "Degree / Engineering") && (
+                            <div className="mt-4">
+                                <InputField label="Course Name" name="qualification_course_name" value={formData.qualification_course_name} onChange={handleChange} error={errors.qualification_course_name} compulsory />
+                            </div>
+                        )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <InputField label="23. Year of Passing"  name="year_of_passing"  value={formData.year_of_passing}  onChange={handleChange} compulsory error={errors.year_of_passing}  />
@@ -662,12 +963,26 @@ export default function StudentAdmissionForm() {
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><Sparkles className="text-blue-500" size={18}/> Counsellor & Referral</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField label="43. Career Counsellor Name" name="counsellor_name" value={formData.counsellor_name} onChange={handleChange} compulsory error={errors.counsellor_name} />
-                            <InputField label="44. Counsellor Code / ID"   name="counsellor_code" value={formData.counsellor_code} onChange={handleChange} compulsory error={errors.counsellor_code} />
+                            <CounsellorSearchField
+                                label="43. Counsellor Name & Code"
+                                compulsory
+                                counsellors={counsellors}
+                                value={{ name: formData.counsellor_name || "", code: formData.counsellor_code || "", type: formData.counsellor_type || "" }}
+                                onSelect={c => {
+                                    if (!c) {
+                                        setFormData((p: any) => ({ ...p, counsellor_name: "", counsellor_code: "", counsellor_type: "" }));
+                                    } else {
+                                        setFormData((p: any) => ({ ...p, counsellor_name: c.name, counsellor_code: c.code, counsellor_type: c.type }));
+                                    }
+                                    if (errors.counsellor_name) setErrors((p: any) => ({ ...p, counsellor_name: "" }));
+                                }}
+                                error={errors.counsellor_name}
+                            />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <SelectField label="45. Referral Source" name="referral_source" value={formData.referral_source}
-                                options={["Career Counsellor","Walk-in","Social Media","Website"]} onChange={handleChange} compulsory />
+                                options={["Career Counsellor", "Social Media", "Website", "NTSC", "Student Referral", "Staff Referral", "HR Consultant", "Just Dial"]} onChange={handleChange} compulsory />
                             <InputField label="46. Date of Counselling" name="counselling_date" type="date" value={formData.counselling_date} onChange={handleChange} compulsory error={errors.counselling_date} />
                         </div>
                     </div>
@@ -680,25 +995,38 @@ export default function StudentAdmissionForm() {
                             <InputField label="47. Enquiry Date" name="enquiry_date" type="date" value={formData.enquiry_date} onChange={handleChange} compulsory error={errors.enquiry_date} />
                         </div>
 
-                        <SelectField
-                            label="48. Course Name"
-                            name="course_name"
-                            value={formData.course_name}
-                            options={(() => {
-                                const apiTitles = courses.map((c: any) => c.title).filter(Boolean);
-                                const allOptions = Array.from(new Set(["", ...apiTitles]));
-                                if (formData.course_name && !allOptions.includes(formData.course_name)) {
-                                    allOptions.push(formData.course_name);
-                                }
-                                return allOptions;
-                            })()}
-                            onChange={handleChange}
-                            compulsory
-                            error={errors.course_name}
-                        />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <InputField label="49. Course Fees"  name="course_fees"  type="number" value={formData.course_fees}  onChange={handleChange} compulsory />
-                            <InputField label="50. Total Fees"   name="total_fees"   type="number" value={formData.total_fees}   onChange={handleChange} compulsory />
+                            <AutoCompleteField
+                                label="48. Course Name"
+                                name="course_name"
+                                value={formData.course_name}
+                                options={(() => {
+                                    const apiTitles = courses.map((c: any) => c.title).filter(Boolean);
+                                    const allOptions = Array.from(new Set(apiTitles));
+                                    if (formData.course_name && !allOptions.includes(formData.course_name)) {
+                                        allOptions.push(formData.course_name);
+                                    }
+                                    return allOptions;
+                                })()}
+                                onChange={handleChange}
+                                compulsory
+                                error={errors.course_name}
+                                placeholder="Type to filter courses..."
+                            />
+                            <InputField label="Other or Miscellaneous (Short Term Details)" name="other_or_miscellaneous" value={formData.other_or_miscellaneous} onChange={handleChange} placeholder="Enter short term course details..." />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <InputField label="49. Course Fees *" name="course_fees" type="number" value={formData.course_fees} onChange={handleChange} compulsory />
+                            <InputField label="Discount Fee" name="discount_fee" type="number" value={formData.discount_fee} onChange={handleChange} />
+                        </div>
+                        {parseFloat(formData.discount_fee || 0) > 0 && (
+                            <div className="mt-4">
+                                <InputField label="Discount Remark *" name="discount_remark" value={formData.discount_remark} onChange={handleChange} compulsory={parseFloat(formData.discount_fee || 0) > 0} error={errors.discount_remark} />
+                            </div>
+                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <InputField label="50. Total Fees (Auto) *" name="total_fees" type="number" value={formData.total_fees} readOnly={true} />
+                            <InputField label="Balance Fee (Auto)" name="balance_amount" type="number" value={formData.balance_amount} readOnly={true} />
                         </div>
                         <div className="mt-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl flex justify-between items-center">
                             <span className="text-emerald-700 font-bold text-xs uppercase tracking-widest">51. Paid Fees (Auto)</span>
@@ -751,16 +1079,7 @@ export default function StudentAdmissionForm() {
                                 </div>
                             </div>
 
-                            <div className="mt-4 p-4 rounded-xl flex justify-between items-center shadow-lg" style={{ backgroundColor: "#0f172a" }}>
-                                <span className="font-bold uppercase text-xs tracking-widest" style={{ color: "#93c5fd" }}>59. Balance Payable Amount</span>
-                                {can("Associate Management","edit") ? (
-                                    <input name="balance_amount" value={formData.balance_amount} onChange={handleChange}
-                                        style={{ color: "#ffffff", backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-                                        className="text-2xl font-black w-32 outline-none text-right border-b border-white/20" />
-                                ) : (
-                                    <span className="text-2xl font-black" style={{ color: "#ffffff" }}>₹ {parseFloat(formData.balance_amount||0).toLocaleString("en-IN")}</span>
-                                )}
-                            </div>
+
                             <p className="text-xs font-bold mt-2 flex items-center gap-1.5" style={{ color: "#1e3a8a" }}><AlertTriangle size={14} style={{ color: "#2563eb" }}/> Auto-points (10%) added once balance is 0.</p>
                         </div>
                     </div>
@@ -772,31 +1091,149 @@ export default function StudentAdmissionForm() {
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><FileText className="text-blue-500" size={18}/> K. Documents Checklist</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileField label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
-                            <FileField label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
-                            <FileField label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} />
-                            <FileField label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} />
-                            <FileField label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} />
-                            <FileField label="Passport Size Photos"      name="has_photos_file"        value={formData.has_photos_file}        onChange={handleChange} compulsory error={errors.has_photos_file} />
+                            <FileField fileType="pdf" label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
+                            <FileField fileType="pdf" label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
+                            <FileField fileType="pdf" label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} />
+                            <FileField fileType="pdf" label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} />
+                            <FileField fileType="pdf" label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} />
+                            <FileField fileType="pdf" label="Guardian / Parent ID"      name="has_guardian_id_file"  value={formData.has_guardian_id_file}  onChange={handleChange} compulsory error={errors.has_guardian_id_file} />
                         </div>
                     </div>
 
+
                     <div className="space-y-4">
-                        <h4 className="font-black text-slate-800 uppercase tracking-widest text-xs flex items-center gap-2"><ShieldCheck className="text-blue-500" size={16}/> Declarations</h4>
+                        <h4 className="font-black text-slate-800 uppercase tracking-widest text-xs flex items-center gap-2"><ShieldCheck className="text-blue-500" size={16}/> STUDENT DECLARATION & DISCLAIMER</h4>
                         <div className="space-y-3">
-                            <CheckboxField label="Student Declaration (Rules & Discipline)"  name="student_declaration" checked={formData.student_declaration} onChange={handleChange} compulsory error={errors.student_declaration} />
-                            <CheckboxField label="Parent / Guardian Declaration (Consent)"  name="parent_declaration"  checked={formData.parent_declaration}  onChange={handleChange} compulsory error={errors.parent_declaration}  />
-                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                                <p className="text-[11px] font-bold text-blue-800 mb-2">Placement Assistance: Performance dependent. Overseas subject to Visa/Medical.</p>
-                                <CheckboxField label="Placement Assistance Acknowledgement" name="placement_ack" checked={formData.placement_ack} onChange={handleChange} compulsory error={errors.placement_ack} />
-                            </div>
-                            {formData.career_goal === "Overseas Job" && (
-                                <CheckboxField label="Overseas Placement Disclaimer" name="overseas_disclaimer" checked={formData.overseas_disclaimer} onChange={handleChange} />
-                            )}
-                            <CheckboxField label="Discipline & Code of Conduct"      name="discipline_ack"    checked={formData.discipline_ack}    onChange={handleChange} compulsory error={errors.discipline_ack}    />
-                            <CheckboxField label="Photography / Video Consent"       name="photo_consent"     checked={formData.photo_consent}     onChange={handleChange} compulsory error={errors.photo_consent}     />
-                            <CheckboxField label="Fee Refund & Cancellation Policy"  name="refund_policy_ack" checked={formData.refund_policy_ack} onChange={handleChange} compulsory error={errors.refund_policy_ack} />
-                            <CheckboxField label="Data Privacy & Confidentiality"    name="data_privacy_ack"  checked={formData.data_privacy_ack}  onChange={handleChange} compulsory error={errors.data_privacy_ack}  />
+                            <DeclarationAccordion label="STUDENT DECLARATION" name="student_declaration" checked={formData.student_declaration} onChange={handleChange} compulsory error={errors.student_declaration}>
+                                <p>I hereby declare that I have voluntarily enrolled in the above-mentioned course at Niile Technical Skill and Consulting (NTSC). I have read, understood, and agree to abide by the following terms and conditions:</p>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="FEES & REFUND POLICY" name="refund_policy_ack" checked={formData.refund_policy_ack} onChange={handleChange} compulsory error={errors.refund_policy_ack}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>All admission, registration, examination, and course fees paid to the institute are non-refundable and non-transferable.</li>
+                                    <li>Students discontinuing the course after admission shall not be entitled to any refund.</li>
+                                    <li>Any refund, if approved, shall be solely at the discretion of the management.</li>
+                                    <li>Fees paid for Theory and Practical’s study Soft Copy materials, examinations, or certifications are non-refundable.</li>
+                                </ol>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="TRAINING & ATTENDANCE" name="training_attendance_ack" checked={formData.training_attendance_ack} onChange={handleChange} compulsory error={errors.training_attendance_ack}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>Students must maintain a minimum attendance of 80%.</li>
+                                    <li>Practical training and assessments are compulsory.</li>
+                                    <li>Students shall follow all workshop, laboratory, hostel, and safety regulations.</li>
+                                    <li>Misconduct, indiscipline, harassment, violence, intoxication, or damage to institute property may result in suspension or cancellation of admission without fee refund.</li>
+                                </ol>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="CERTIFICATE POLICY" name="certificate_policy_ack" checked={formData.certificate_policy_ack} onChange={handleChange} compulsory error={errors.certificate_policy_ack}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>Certificates will be issued only after successful completion of the course.</li>
+                                    <li>Students must complete attendance requirements, practical training, assessments, and fee payments before certificate issuance.</li>
+                                    <li>Students leaving the course before completion shall not be eligible for course completion certificates.</li>
+                                    <li>The institute reserves the right to withhold certificates in case of pending dues or disciplinary issues.</li>
+                                </ol>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="PLACEMENT ASSISTANCE" name="placement_ack" checked={formData.placement_ack} onChange={handleChange}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>The institute provides placement assistance only and does not guarantee employment.</li>
+                                    <li>Job selection depends on student performance, skills, attendance, employer requirements, interview performance, and market conditions.</li>
+                                    <li>Salary, location, designation, accommodation, and employment terms are decided solely by the recruiting company.</li>
+                                    <li>The institute shall not be held responsible if a student is not selected by an employer.</li>
+                                    <li>Students must attend interviews arranged by the institute when called.</li>
+                                </ol>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="DOCUMENT VERIFICATION" name="document_verification_ack" checked={formData.document_verification_ack} onChange={handleChange} compulsory error={errors.document_verification_ack}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>All documents submitted by me are genuine and valid.</li>
+                                    <li>Submission of false, forged, or misleading documents may result in cancellation of admission, cancellation of certification, and legal action.</li>
+                                </ol>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="Code of Conduct Training & Workshop" name="conduct_workshop_ack" checked={formData.conduct_workshop_ack} onChange={handleChange} compulsory error={errors.conduct_workshop_ack}>
+                                <p className="mb-2">I agree to maintain professional behaviour and discipline throughout the training and workshop sessions conducted by NTSC. I understand and agree that I will:</p>
+                                <ul className="list-disc pl-4 space-y-1 mb-2">
+                                    <li>Attend all training sessions punctually.</li>
+                                    <li>Follow the instructions of trainers and NTSC staff.</li>
+                                    <li>Wear appropriate attire and Personal Protective Equipment (PPE) during practical sessions.</li>
+                                    <li>Handle tools, machines, instruments, and training equipment safely and responsibly.</li>
+                                    <li>Respect fellow trainees, trainers, staff, and visitors.</li>
+                                    <li>Refrain from using abusive language, discrimination, harassment, or disruptive behavior.</li>
+                                    <li>Keep classrooms, laboratories, and workshop areas clean and organized.</li>
+                                    <li>Not use mobile phones during training sessions unless permitted by the trainer.</li>
+                                    <li>Not consume alcohol, tobacco, narcotics, or any prohibited substances within the training premises.</li>
+                                    <li>Immediately report any unsafe conditions, accidents, or damage to equipment.</li>
+                                </ul>
+                                <p>I understand that failure to comply with the above rules may result in disciplinary action, suspension, or termination from the training program.</p>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="Code of Conduct Hostel" name="conduct_hostel_ack" checked={formData.conduct_hostel_ack} onChange={handleChange} compulsory error={errors.conduct_hostel_ack}>
+                                <p className="mb-2">I understand that staying in the hostel is a privilege and agree to abide by the hostel rules and regulations. I agree to:</p>
+                                <ul className="list-disc pl-4 space-y-1 mb-2">
+                                    <li>Maintain discipline and respect hostel staff and fellow residents.</li>
+                                    <li>Keep my room and common areas clean and hygienic.</li>
+                                    <li>Avoid damaging hostel property. Any damages caused by negligence may be recovered from me.</li>
+                                    <li>Follow the hostel timings and visitor policies.</li>
+                                    <li>Maintain peace and avoid causing inconvenience to other residents.</li>
+                                    <li>Not possess or consume alcohol, tobacco, drugs, or other prohibited substances.</li>
+                                    <li>Follow all safety and emergency procedures.</li>
+                                    <li>Inform the hostel warden before leaving the hostel for any extended period.</li>
+                                </ul>
+                                <p>I understand that violation of hostel rules may lead to disciplinary action, including cancellation of hostel accommodation.</p>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="Security Deposit (Caution Deposit)" name="security_deposit_ack" checked={formData.security_deposit_ack} onChange={handleChange} compulsory error={errors.security_deposit_ack}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>Every student shall pay a refundable caution deposit of Rs. 1,000 at the time of hostel admission.</li>
+                                    <li>The caution deposit will be refunded after the student vacates the hostel, subject to:
+                                        <ul className="list-[circle] pl-4 mt-0.5 space-y-0.5">
+                                            <li>No damage to hostel property.</li>
+                                            <li>Return of any hostel property (if issued).</li>
+                                            <li>Compliance with all hostel rules and regulations.</li>
+                                        </ul>
+                                    </li>
+                                    <li>If any damage is caused to the hostel building, furniture, electrical fittings, plumbing fixtures, appliances, equipment, or any other hostel property due to the student's negligence, misuse, or intentional act, the cost of repair or replacement will be deducted from the caution deposit.</li>
+                                    <li>If the actual cost of repair or replacement exceeds the caution deposit amount of Rs. 1,000, the student and/or parent/guardian shall pay the balance amount immediately before vacating the hostel or receiving any refund.</li>
+                                    <li>The hostel management's assessment of the damage and repair cost shall be final and binding.</li>
+                                </ol>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="Data Privacy & Confidentiality" name="data_privacy_ack" checked={formData.data_privacy_ack} onChange={handleChange} compulsory error={errors.data_privacy_ack}>
+                                <p className="mb-2">I understand that NTSC will collect and maintain my personal information for admission, training, certification, placement assistance, statutory compliance, and communication purposes.</p>
+                                <p className="mb-2">I hereby consent to NTSC collecting, storing, processing, and using my information solely for official purposes.</p>
+                                <p className="mb-2">I further agree that:</p>
+                                <ul className="list-disc pl-4 space-y-1 mb-2">
+                                    <li>I will maintain the confidentiality of all NTSC training materials, assessments, and any confidential information shared during the course.</li>
+                                    <li>I will not copy, reproduce, distribute, record, or share NTSC training materials without prior written permission.</li>
+                                    <li>I will not disclose confidential information obtained during industrial visits or company-sponsored training programs.</li>
+                                </ul>
+                                <p>NTSC will make reasonable efforts to protect my personal information and use it only for legitimate educational and administrative purposes.</p>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="Photography & Video Consent" name="photo_consent" checked={formData.photo_consent} onChange={handleChange} compulsory error={errors.photo_consent}>
+                                <p className="mb-2">I hereby grant permission to Niile Technical Skill & Consulting Pvt Ltd (NTSC) to capture photographs, audio recordings, and video recordings of me during training programs, workshops, seminars, industrial visits, placement activities, competitions, and other official events.</p>
+                                <p className="mb-2">I understand that these photographs and videos may be used by NTSC for:</p>
+                                <ul className="list-disc pl-4 space-y-1 mb-2">
+                                    <li>Training and educational purposes</li>
+                                    <li>Certificates and course documentation</li>
+                                    <li>Website and social media platforms</li>
+                                    <li>Brochures, newsletters, and promotional materials</li>
+                                    <li>Marketing and branding activities</li>
+                                    <li>Reports and presentations</li>
+                                </ul>
+                                <p className="mb-2">I understand that no financial compensation will be provided for the use of these photographs or videos.</p>
+                                <p>If I do not wish to be photographed or recorded, I will inform NTSC in writing before the commencement of the training program.</p>
+                            </DeclarationAccordion>
+
+                            <DeclarationAccordion label="GENERAL CONDITIONS" name="general_conditions_ack" checked={formData.general_conditions_ack} onChange={handleChange} compulsory error={errors.general_conditions_ack}>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                    <li>The institute reserves the right to modify batch timings, trainers, syllabus, examination schedules, training locations, or course structure whenever required.</li>
+                                    <li>Management decisions regarding admission, training, certification, and placement shall be final and binding.</li>
+                                    <li>Any dispute shall be subject to the jurisdiction of Chennai courts only.</li>
+                                </ol>
+                            </DeclarationAccordion>
                         </div>
 
                         {/* ── Emergency Contact — UPDATED with Relationship + Date of Admission ── */}
@@ -1196,11 +1633,12 @@ export default function StudentAdmissionForm() {
                                             <DetailRow label="Passport File"       value={selectedAdmission.has_passport_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_passport_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
                                             <DetailRow label="Resume File"         value={selectedAdmission.has_resume_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_resume_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
                                             <DetailRow label="Address Proof"       value={selectedAdmission.has_address_proof_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_address_proof_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
-                                            <DetailRow label="Photos"              value={selectedAdmission.has_photos_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_photos_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
+                                            <DetailRow label="Guardian / Parent ID" value={selectedAdmission.has_guardian_id_file ? <a href={`${process.env.NEXT_PUBLIC_API_URL}/${selectedAdmission.has_guardian_id_file.replace(/\\/g,"/")}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold hover:underline">View File</a> : "Pending"} />
                                             <DetailRow label="Student Declaration" value={selectedAdmission.student_declaration ? "Signed" : "—"} color="text-emerald-600" />
-                                            <DetailRow label="Parent Declaration"  value={selectedAdmission.parent_declaration ? "Signed" : "—"} color="text-emerald-600" />
                                         </div>
                                     </Section>
+
+
                                 </div>
 
                                 <div className="mt-10 pt-6 border-t border-slate-100 flex gap-4">
@@ -1287,6 +1725,20 @@ const SelectField = ({ label, name, value, options, onChange, error="", compulso
     </div>
 );
 
+const AutoCompleteField = ({ label, name, value, options, onChange, error="", compulsory=false, placeholder="" }: any) => (
+    <div className="flex flex-col gap-1.5 flex-1 w-full">
+        <label className="text-[12px] font-black text-slate-700 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
+            {label} {compulsory && <span className="text-red-500">*</span>}
+        </label>
+        <input list={`${name}-list`} name={name} value={value||""} onChange={onChange} placeholder={placeholder}
+            className={`w-full px-5 py-4 bg-slate-50 border ${error?"border-red-500":"border-slate-300 focus:border-blue-500"} rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 transition-all font-black text-slate-900`} />
+        <datalist id={`${name}-list`}>
+            {options.filter((o: string) => o).map((o: string) => <option key={o} value={o} />)}
+        </datalist>
+        {error && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{error}</span>}
+    </div>
+);
+
 const TextAreaField = ({ label, name, value, onChange, error="", compulsory=false }: any) => (
     <div className="flex flex-col gap-1.5 w-full">
         <label className="text-[12px] font-black text-slate-700 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
@@ -1321,20 +1773,33 @@ const CheckboxField = ({ label, name, checked, onChange, error="", compulsory=fa
     );
 };
 
-const FileField = ({ label, name, value, onChange, error="", compulsory=false }: any) => (
+const FileField = ({ label, name, value, onChange, error="", compulsory=false, fileType="any" }: any) => {
+    const [localError, setLocalError] = React.useState<string | null>(null);
+    const displayError = localError || error;
+    return (
     <div className="flex flex-col gap-1.5 w-full">
         <label className="text-[12px] font-black text-slate-700 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
             {label} {compulsory && <span className="text-red-500">*</span>}
         </label>
-        <div className={`relative flex items-center p-1 px-4 bg-slate-100 border-2 border-dashed ${error?"border-red-500 bg-red-50":"border-slate-300 hover:border-blue-500 hover:bg-blue-50"} rounded-2xl transition-all h-16`}>
-            <input type="file" name={name} onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
-            <div className="flex items-center gap-3">
-                <Upload size={20} className={error?"text-red-400":"text-blue-500"}/>
-                <span className={`text-xs font-black uppercase tracking-wider ${error?"text-red-600":"text-slate-600"}`}>
-                    {value ? (typeof value==="string" ? value.split("/").pop() : value.name) : "Choose File"}
-                </span>
+        <div className={`relative flex flex-col`}>
+            <div className={`relative flex items-center p-1 px-4 bg-slate-100 border-2 border-dashed ${displayError?"border-red-500 bg-red-50":"border-slate-300 hover:border-blue-500 hover:bg-blue-50"} rounded-2xl transition-all h-16`}>
+                <ValidatedFileInput 
+                    fileType={fileType} 
+                    name={name} 
+                    onChange={onChange} 
+                    onFileError={setLocalError}
+                    wrapperClassName=""
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                />
+                <div className="flex items-center gap-3">
+                    <Upload size={20} className={displayError?"text-red-400":"text-blue-500"}/>
+                    <span className={`text-xs font-black uppercase tracking-wider ${displayError?"text-red-600":"text-slate-600"}`}>
+                        {value ? (typeof value==="string" ? value.split("/").pop() : value.name) : "Choose File"}
+                    </span>
+                </div>
             </div>
+            {displayError && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{displayError}</span>}
         </div>
-        {error && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{error}</span>}
     </div>
-);
+)};
+

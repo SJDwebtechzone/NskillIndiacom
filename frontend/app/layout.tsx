@@ -8,6 +8,7 @@ import CoursePopup from "./components/CoursePopup";
 import Chatbot from "./components/Chatbot";
 import FloatingContact from "./components/FloatingContact";
 import ScrollRestoration from "./components/ScrollRestoration";
+import AdvertisementPopup from "./components/AdvertisementPopup";
 import { AuthProvider } from "@/app/context/AuthContext"; // ✅ ADDED
 
 const geistSans = Geist({
@@ -148,6 +149,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <CoursePopup />
+          <AdvertisementPopup />
           <Chatbot />
           <FloatingContact />
         </AuthProvider>

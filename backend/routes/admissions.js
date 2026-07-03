@@ -6,23 +6,9 @@ const path = require("path");
 const fs = require("fs");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
-// Configure Multer for File Uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = 'uploads/admissions';
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
+const { handleFileUpload } = require("../utils/fileUpload");
 
-const upload = multer({ storage });
-
-const uploadFields = upload.fields([
+const uploadFields = handleFileUpload([
     { name: 'photo_file', maxCount: 1 },
     { name: 'has_aadhaar_file', maxCount: 1 },
     { name: 'has_edu_certs_file', maxCount: 1 },
@@ -30,6 +16,8 @@ const uploadFields = upload.fields([
     { name: 'has_resume_file', maxCount: 1 },
     { name: 'has_address_proof_file', maxCount: 1 },
     { name: 'has_photos_file', maxCount: 1 },
+    { name: 'has_guardian_id_file', maxCount: 1 },
+    { name: 'has_weekly_test_file', maxCount: 1 },
 ]);
 
 // Helper to add referral points
@@ -43,7 +31,7 @@ const addReferralPoints = async (admissionData) => {
             SELECT r.name as role_name 
             FROM users u 
             JOIN roles r ON u.role_id = r.id 
-            WHERE u.id = $1`, 
+            WHERE u.id = $1 AND u.is_deleted = false`, 
         [userId]);
         
         if (userRes.rows.length === 0 || userRes.rows[0].role_name !== "Associate") return;
@@ -54,7 +42,7 @@ const addReferralPoints = async (admissionData) => {
         // As requested: points are 0 if balance not cleared, 10% if cleared
         const points = (balance <= 0 && totalFees > 0) ? (totalFees * 0.10) : 0;
 
-        const check = await pool.query("SELECT id, is_settled FROM associate_referral_points WHERE admission_id = $1", [admissionData.id]);
+        const check = await pool.query("SELECT id, is_settled FROM associate_referral_points WHERE admission_id = $1 AND is_deleted = false", [admissionData.id]);
         
         if (check.rows.length === 0) {
             await pool.query(
@@ -80,7 +68,50 @@ const addReferralPoints = async (admissionData) => {
 
 // ─── STATIC / SPECIFIC ROUTES FIRST ──────────────────────────────────────────
 
-// Create new admission
+// GET /api/admissions/counsellors – combined Staff (S-prefix) + Associates (A-prefix)
+router.get("/counsellors", authMiddleware, async (req, res) => {
+    try {
+        // ── Staff users (role name = 'staff' or 'trainer') ──────────────────────
+        const staffRes = await pool.query(`
+            SELECT u.id, u.name AS full_name, 'staff' AS source
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE LOWER(r.name) IN ('staff', 'trainer')
+              AND (u.status IS NULL OR LOWER(u.status) NOT IN ('deleted', 'inactive'))
+              AND u.is_deleted = false
+            ORDER BY u.name ASC
+        `);
+
+        // ── Approved Associates from career_counsellors ──────────────────────────
+        const assocRes = await pool.query(`
+            SELECT id, full_name, 'associate' AS source
+            FROM career_counsellors
+            WHERE status = 'approved' AND is_deleted = false
+            ORDER BY full_name ASC
+        `);
+
+        // Build code: S00001 for staff, A00001 for associates (zero-padded 5 digits)
+        const staffList = staffRes.rows.map(r => ({
+            name: r.full_name,
+            code: "S" + String(r.id).padStart(5, "0"),
+            type: "Staff",
+        }));
+        const assocList = assocRes.rows.map(r => ({
+            name: r.full_name,
+            code: "A" + String(r.id).padStart(5, "0"),
+            type: "Associate",
+        }));
+
+        // Merge: Staff first, then Associates; both sorted alphabetically
+        const counsellors = [...staffList, ...assocList];
+        res.json(counsellors);
+    } catch (err) {
+        console.error("❌ GET /counsellors:", err.message);
+        res.status(500).json({ error: "Failed to fetch counsellors." });
+    }
+});
+
+
 router.post("/", authMiddleware, uploadFields, async (req, res) => {
     try {
         const data = req.body;
@@ -109,6 +140,20 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
         if (!payment_date)     return res.status(400).json({ error: "Payment date is required" });
         if (!counselling_date) return res.status(400).json({ error: "Counselling date is required" });
 
+        const course_fees = toNum(data.course_fees);
+        const discount_fee = toNum(data.discount_fee);
+        
+        if (course_fees < 0) return res.status(400).json({ error: "Course fee cannot be negative." });
+        if (discount_fee < 0) return res.status(400).json({ error: "Discount fee cannot be negative." });
+        if (discount_fee > course_fees) return res.status(400).json({ error: "Discount fee cannot exceed course fee." });
+        if (discount_fee > 0 && (!data.discount_remark || data.discount_remark.trim() === "")) {
+            return res.status(400).json({ error: "Discount remark is required when a discount is applied." });
+        }
+
+        const total_fees = course_fees - discount_fee;
+        const paid_fees = toNum(data.paid_fees);
+        const balance_amount = total_fees - paid_fees;
+
         const getFilePath = (fieldName) => (files && files[fieldName]) ? files[fieldName][0].path : null;
 
         const query = `
@@ -116,19 +161,20 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
                 enquiry_id, full_name, gender, dob, age, aadhaar_number, passport_number, passport_validity, photo_url,
                 mobile_number, alt_mobile_number, whatsapp_number, email_id, residential_address, city, state, pin_code,
                 parent_name, relationship, parent_mobile, occupation, annual_income,
-                highest_qualification, year_of_passing, institution_name, board_university, medium_of_study,
+                highest_qualification, qualification_course_name, year_of_passing, institution_name, board_university, medium_of_study,
                 technical_background, total_experience, industry_experience, skills_known,
                 course_interested, course_level, mode_of_training, batch_preference, training_location,
                 career_goal, preferred_country, expected_salary, willing_to_relocate,
                 counsellor_name, counsellor_code, referral_source, counselling_date, enquiry_date,
-                course_name, course_fees, total_fees, paid_fees, payment_mode, payment_ref_no, payment_date,
+                course_name, course_fees, discount_fee, discount_remark, total_fees, paid_fees, payment_mode, payment_ref_no, payment_date,
                 instalment_1, instalment_1_ref, instalment_2, instalment_2_ref, instalment_3, instalment_3_ref, instalment_4, instalment_4_ref, balance_amount,
                 has_aadhaar_file, has_edu_certs_file, has_passport_file, has_resume_file, has_address_proof_file, has_photos_file,
                 student_declaration, parent_declaration, placement_ack, overseas_disclaimer,
                 discipline_ack, photo_consent, refund_policy_ack, data_privacy_ack, final_undertaking,
                 emergency_contact_name, emergency_contact_relationship, emergency_contact_number, emergency_authorized,
                 admission_number, batch_allotted, verified_by, authorized_signature_by,
-                created_by_id
+                created_by_id,
+                has_guardian_id_file, has_weekly_test_file, other_or_miscellaneous, district
             ) VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9,
                 $10, $11, $12, $13, $14, $15, $16, $17,
@@ -145,26 +191,27 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
                 $72, $73, $74, $75, $76,
                 $77, $78, $79, $80,
                 $81, $82, $83, $84,
-                $85
+                $85, $86, $87, $88, $89, $90, $91, $92
             ) RETURNING *`;
 
         const values = [
             toStr(data.enquiry_id), data.full_name, data.gender, dob, toStr(data.age) || "0", data.aadhaar_number, toStr(data.passport_number), toDate(data.passport_validity), getFilePath('photo_file') || toStr(data.photo_url),
             data.mobile_number, toStr(data.alt_mobile_number), data.whatsapp_number, data.email_id, data.residential_address, data.city, data.state, data.pin_code,
             data.parent_name, data.relationship, data.parent_mobile, data.occupation, toStr(data.annual_income),
-            data.highest_qualification, data.year_of_passing, data.institution_name, data.board_university, data.medium_of_study,
+            data.highest_qualification, toStr(data.qualification_course_name), data.year_of_passing, data.institution_name, data.board_university, data.medium_of_study,
             toStr(data.technical_background), toStr(data.total_experience), toStr(data.industry_experience), toStr(data.skills_known),
             data.course_interested, data.course_level || "Basic", data.mode_of_training || "Classroom", toStr(data.batch_preference), toStr(data.training_location),
             data.career_goal, toStr(data.preferred_country), toStr(data.expected_salary), data.willing_to_relocate || "Yes",
             data.counsellor_name, data.counsellor_code, data.referral_source || "Career Counsellor", counselling_date, toDate(data.enquiry_date),
-            data.course_name, toNum(data.course_fees), toNum(data.total_fees), toNum(data.paid_fees), data.payment_mode || "Cash", toStr(data.payment_ref_no), payment_date,
-            toNum(data.instalment_1), toStr(data.instalment_1_ref), toNum(data.instalment_2), toStr(data.instalment_2_ref), toNum(data.instalment_3), toStr(data.instalment_3_ref), toNum(data.instalment_4), toStr(data.instalment_4_ref), toNum(data.balance_amount),
+            data.course_name, course_fees, discount_fee, toStr(data.discount_remark), total_fees, paid_fees, data.payment_mode || "Cash", toStr(data.payment_ref_no), payment_date,
+            toNum(data.instalment_1), toStr(data.instalment_1_ref), toNum(data.instalment_2), toStr(data.instalment_2_ref), toNum(data.instalment_3), toStr(data.instalment_3_ref), toNum(data.instalment_4), toStr(data.instalment_4_ref), balance_amount,
             getFilePath('has_aadhaar_file'), getFilePath('has_edu_certs_file'), getFilePath('has_passport_file'), getFilePath('has_resume_file'), getFilePath('has_address_proof_file'), getFilePath('has_photos_file'),
             toBool(data.student_declaration), toBool(data.parent_declaration), toBool(data.placement_ack), toBool(data.overseas_disclaimer),
             toBool(data.discipline_ack), toBool(data.photo_consent), toBool(data.refund_policy_ack), toBool(data.data_privacy_ack), toBool(data.final_undertaking),
             data.emergency_contact_name, toStr(data.emergency_contact_relationship), data.emergency_contact_number, toBool(data.emergency_authorized),
             toStr(data.admission_number || data.enquiry_id), toStr(data.batch_allotted), toStr(data.verified_by), toStr(data.authorized_signature_by),
-            userId
+            userId,
+            getFilePath('has_guardian_id_file'), getFilePath('has_weekly_test_file'), toStr(data.other_or_miscellaneous), toStr(data.district)
         ];
 
         const fs = require('fs');
@@ -191,10 +238,11 @@ router.get("/", authMiddleware, async (req, res) => {
             SELECT sa.*, u.name as associate_name 
             FROM student_admissions sa
             LEFT JOIN users u ON sa.created_by_id = u.id
+            WHERE sa.is_deleted = false
         `;
         let params = [];
         if (req.user.roleName === "Associate") {
-            query += " WHERE sa.created_by_id = $1";
+            query += " AND sa.created_by_id = $1";
             params.push(req.user.id);
         }
         query += " ORDER BY sa.created_at DESC";
@@ -213,7 +261,7 @@ router.get("/referral-points/my", authMiddleware, async (req, res) => {
             SELECT rp.*, sa.admission_number, sa.enquiry_id, sa.photo_url
             FROM associate_referral_points rp
             LEFT JOIN student_admissions sa ON sa.id = rp.admission_id
-            WHERE rp.associate_id = $1 
+            WHERE rp.associate_id = $1 AND rp.is_deleted = false
             ORDER BY rp.created_at DESC`,
             [req.user.id]
         );
@@ -249,6 +297,7 @@ router.get("/referral-points/all", authMiddleware, async (req, res) => {
       FROM associate_referral_points arp
       LEFT JOIN users u  ON u.id  = arp.associate_id
       LEFT JOIN student_admissions sa ON sa.id = arp.admission_id
+      WHERE arp.is_deleted = false
       ORDER BY arp.created_at DESC
     `);
 
@@ -281,7 +330,7 @@ router.patch("/referral-points/:id/settle", authMiddleware, async (req, res) => 
 // Get admission by enquiry_id (MUST be before /:id)
 router.get("/by-enquiry/:enquiry_id", authMiddleware, async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM student_admissions WHERE enquiry_id = $1", [req.params.enquiry_id]);
+        const result = await pool.query("SELECT * FROM student_admissions WHERE enquiry_id = $1 AND is_deleted = false", [req.params.enquiry_id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Admission not found" });
         }
@@ -312,12 +361,13 @@ router.get("/no-credential", authMiddleware, async (req, res) => {
                 mobile_number, 
                 course_interested,
                 EXISTS (
-                    SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email)
+                    SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email) AND u.is_deleted = false
                 ) AS has_credential
             FROM student_admissions 
+            WHERE is_deleted = false
             ORDER BY 
                 EXISTS (
-                    SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email)
+                    SELECT 1 FROM users u WHERE LOWER(email_id) = LOWER(u.email) AND u.is_deleted = false
                 ) ASC,
                 created_at DESC
         `);
@@ -337,7 +387,43 @@ router.patch("/:id", authMiddleware, uploadFields, async (req, res) => {
         const data = req.body || {};
         const files = req.files || {};
         
-        const fields = Object.keys(data).filter(f => !['id', 'created_at', 'created_by_id', 'associate_name', 'student_name', 'photo_file', 'has_aadhaar_file', 'has_edu_certs_file', 'has_passport_file', 'has_resume_file', 'has_address_proof_file', 'has_photos_file'].includes(f));
+        // --- Discount Validation & Auto-Calculation ---
+        if (data.course_fees !== undefined || data.discount_fee !== undefined || data.paid_fees !== undefined) {
+            const existingRes = await pool.query("SELECT course_fees, discount_fee, paid_fees, discount_remark FROM student_admissions WHERE id = $1 AND is_deleted = false", [id]);
+            if (existingRes.rows.length > 0) {
+                const existing = existingRes.rows[0];
+                const c_fee = data.course_fees !== undefined ? parseFloat(data.course_fees) : parseFloat(existing.course_fees || 0);
+                const d_fee = data.discount_fee !== undefined ? parseFloat(data.discount_fee) : parseFloat(existing.discount_fee || 0);
+                const p_fee = data.paid_fees !== undefined ? parseFloat(data.paid_fees) : parseFloat(existing.paid_fees || 0);
+                
+                if (c_fee < 0) return res.status(400).json({ error: "Course fee cannot be negative." });
+                if (d_fee < 0) return res.status(400).json({ error: "Discount fee cannot be negative." });
+                if (d_fee > c_fee) return res.status(400).json({ error: "Discount fee cannot exceed course fee." });
+                
+                if (d_fee > 0) {
+                    const remark = data.discount_remark !== undefined ? data.discount_remark : existing.discount_remark;
+                    if (!remark || remark.trim() === "") {
+                        return res.status(400).json({ error: "Discount remark is required when a discount is applied." });
+                    }
+                }
+                
+                data.total_fees = c_fee - d_fee;
+                data.balance_amount = data.total_fees - (isNaN(p_fee) ? 0 : p_fee);
+            }
+        }
+
+        const fields = Object.keys(data).filter(f => ![
+            'id', 'created_at', 'created_by_id', 'associate_name', 'student_name', 
+            'photo_file', 'has_aadhaar_file', 'has_edu_certs_file', 'has_passport_file', 
+            'has_resume_file', 'has_address_proof_file', 'has_photos_file', 'has_guardian_id_file', 'has_weekly_test_file',
+            'instalment_1_mode', 'instalment_1_date', 'instalment_1_ref_only',
+            'instalment_2_mode', 'instalment_2_date', 'instalment_2_ref_only',
+            'instalment_3_mode', 'instalment_3_date', 'instalment_3_ref_only',
+            'instalment_4_mode', 'instalment_4_date', 'instalment_4_ref_only',
+            'training_attendance_ack', 'certificate_policy_ack', 'document_verification_ack', 
+            'conduct_workshop_ack', 'conduct_hostel_ack', 'security_deposit_ack', 'general_conditions_ack',
+            'counsellor_type'
+        ].includes(f));
         
         // Handle files in PATCH too
         const fileFields = Object.keys(files);
@@ -346,7 +432,7 @@ router.patch("/:id", authMiddleware, uploadFields, async (req, res) => {
         }
 
         const setClauseParts = fields.map((f, i) => `${f} = $${i + 1}`);
-        const numericFields = ['course_fees', 'total_fees', 'paid_fees', 'instalment_1', 'instalment_2', 'instalment_3', 'instalment_4', 'balance_amount', 'age'];
+        const numericFields = ['course_fees', 'discount_fee', 'total_fees', 'paid_fees', 'instalment_1', 'instalment_2', 'instalment_3', 'instalment_4', 'balance_amount', 'age'];
         const dateFields = ['dob', 'passport_validity', 'counselling_date', 'payment_date', 'admission_date', 'enquiry_date', 'follow_up_date'];
         const values = fields.map(f => {
             if (numericFields.includes(f)) {
@@ -399,7 +485,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         await client.query("BEGIN");
 
         // 1. Get admission record first
-        const admRes = await client.query("SELECT * FROM student_admissions WHERE id = $1", [id]);
+        const admRes = await client.query("SELECT * FROM student_admissions WHERE id = $1 AND is_deleted = false", [id]);
         if (admRes.rows.length === 0) {
             await client.query("ROLLBACK");
             return res.status(404).json({ error: "Admission not found" });
@@ -407,20 +493,22 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         const admission = admRes.rows[0];
 
         // 2. Delete from referencing tables
-        await client.query("DELETE FROM associate_referral_points WHERE admission_id = $1", [id]);
-        await client.query("DELETE FROM attendance WHERE admission_id = $1", [id]);
-        await client.query("DELETE FROM face_embeddings WHERE admission_id = $1", [id]);
-        await client.query("DELETE FROM assessment_submissions WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM finaltest_attempts WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM posttest_attempts WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM practical_submissions WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM pretest_attempts WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM student_feedback WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM student_google_reviews WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM student_marks WHERE student_id = $1", [id]);
+        await client.query("UPDATE associate_referral_points SET is_deleted = true, deleted_at = NOW() WHERE admission_id = $1", [id]);
+        await client.query("UPDATE attendance SET is_deleted = true, deleted_at = NOW() WHERE admission_id = $1", [id]);
+        await client.query("UPDATE face_embeddings SET is_deleted = true, deleted_at = NOW() WHERE admission_id = $1", [id]);
+        await client.query("UPDATE assessment_submissions SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE finaltest_attempts SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE posttest_attempts SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE practical_submissions SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE pretest_attempts SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_feedback SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_google_reviews SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_justdial_reviews SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_marks SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_videos SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
         
         // Retrieve and delete offer letters from placements
-        const placementResult = await client.query("SELECT offer_letter_url FROM student_placements WHERE student_id = $1", [id]);
+        const placementResult = await client.query("SELECT offer_letter_url FROM student_placements WHERE student_id = $1 AND is_deleted = false", [id]);
         for (const row of placementResult.rows) {
             if (row.offer_letter_url) {
                 const filePath = path.join(__dirname, '..', row.offer_letter_url);
@@ -429,15 +517,15 @@ router.delete("/:id", authMiddleware, async (req, res) => {
                 }
             }
         }
-        await client.query("DELETE FROM student_placements WHERE student_id = $1", [id]);
-        await client.query("DELETE FROM student_videos WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_placements SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
+        await client.query("UPDATE student_videos SET is_deleted = true, deleted_at = NOW() WHERE student_id = $1", [id]);
 
         // Delete from student_admissions
-        await client.query("DELETE FROM student_admissions WHERE id = $1", [id]);
+        await client.query("UPDATE student_admissions SET is_deleted = true, deleted_at = NOW() WHERE id = $1", [id]);
 
         // Delete associated user login if matches email
         if (admission.email_id) {
-            await client.query("DELETE FROM users WHERE LOWER(email) = LOWER($1)", [admission.email_id]);
+            await client.query("UPDATE users SET is_deleted = true, deleted_at = NOW() WHERE LOWER(email) = LOWER($1)", [admission.email_id]);
         }
 
         await client.query("COMMIT");
@@ -490,7 +578,7 @@ router.get("/my-profile", async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
 
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
@@ -500,7 +588,7 @@ router.get("/my-profile", async (req, res) => {
       `SELECT id, full_name, admission_number, dob, mobile_number, 
               course_name, batch_allotted, photo_url, admission_date, email_id
        FROM student_admissions 
-       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+       WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
 
@@ -527,7 +615,7 @@ router.get("/fees-receipt", async (req, res) => {
 
     // Get email from users table
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
@@ -542,7 +630,7 @@ router.get("/fees-receipt", async (req, res) => {
         payment_mode, payment_ref_no, payment_date,
         instalment_1, instalment_2
        FROM student_admissions 
-       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+       WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
 
@@ -570,7 +658,7 @@ router.get("/course-fees-details", async (req, res) => {
 
     // Get email from users table
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
@@ -590,7 +678,7 @@ router.get("/course-fees-details", async (req, res) => {
        FROM student_admissions sa
        LEFT JOIN courses c ON LOWER(c.title) = LOWER(sa.course_name)
        LEFT JOIN users u ON u.id = c.trainer_id
-       WHERE LOWER(sa.email_id) = LOWER($1)
+       WHERE LOWER(sa.email_id) = LOWER($1) AND sa.is_deleted = false
        LIMIT 1`,
       [email]
     );
@@ -629,7 +717,7 @@ router.get("/certificate-status", async (req, res) => {
       `SELECT id, full_name, course_name, balance_amount, admission_number,
               batch_allotted, admission_date
        FROM student_admissions 
-       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+       WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
     if (studentResult.rows.length === 0) {
@@ -647,7 +735,7 @@ router.get("/certificate-status", async (req, res) => {
     // 2. Pre-test passed
     const pretestResult = await pool.query(
       `SELECT passed FROM pretest_attempts 
-       WHERE student_id = $1 AND course_name = $2 
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false 
        ORDER BY submitted_at DESC LIMIT 1`,
       [studentId, courseName]
     );
@@ -656,7 +744,7 @@ router.get("/certificate-status", async (req, res) => {
     // 3. Post-test passed
     const posttestResult = await pool.query(
       `SELECT passed FROM finaltest_attempts 
-       WHERE student_id = $1 AND course_name = $2 
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false 
        ORDER BY submitted_at DESC LIMIT 1`,
       [studentId, courseName]
     );
@@ -665,7 +753,7 @@ router.get("/certificate-status", async (req, res) => {
     // 4. Weekly test attempted
     const weeklyResult = await pool.query(
       `SELECT id FROM posttest_attempts 
-       WHERE student_id = $1 AND course_name = $2 LIMIT 1`,
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false LIMIT 1`,
       [studentId, courseName]
     );
     const weeklyDone = weeklyResult.rows.length > 0;
@@ -673,7 +761,7 @@ router.get("/certificate-status", async (req, res) => {
     // 5. Assessment submitted
     const assessmentResult = await pool.query(
       `SELECT id FROM assessment_submissions 
-       WHERE student_id = $1 LIMIT 1`,
+       WHERE student_id = $1 AND is_deleted = false LIMIT 1`,
       [studentId]
     );
     const assessmentDone = assessmentResult.rows.length > 0;
@@ -681,7 +769,7 @@ router.get("/certificate-status", async (req, res) => {
     // 6. Practical video verified
     const practicalResult = await pool.query(
       `SELECT id FROM practical_submissions 
-       WHERE student_id = $1 AND status = 'verified' LIMIT 1`,
+       WHERE student_id = $1 AND status = 'verified' AND is_deleted = false LIMIT 1`,
       [studentId]
     );
     const practicalDone = practicalResult.rows.length > 0;
@@ -689,7 +777,7 @@ router.get("/certificate-status", async (req, res) => {
     // 7. Google review submitted
     const reviewResult = await pool.query(
       `SELECT id FROM student_google_reviews 
-       WHERE student_id = $1 LIMIT 1`,
+       WHERE student_id = $1 AND is_deleted = false LIMIT 1`,
       [studentId]
     );
     const reviewDone = reviewResult.rows.length > 0;
@@ -697,7 +785,7 @@ router.get("/certificate-status", async (req, res) => {
     // 8. Feedback submitted
     const feedbackResult = await pool.query(
       `SELECT id FROM student_feedback 
-       WHERE student_id = $1 LIMIT 1`,
+       WHERE student_id = $1 AND is_deleted = false LIMIT 1`,
       [studentId]
     );
     const feedbackDone = feedbackResult.rows.length > 0;
@@ -707,7 +795,7 @@ router.get("/certificate-status", async (req, res) => {
       `SELECT 
          COUNT(*) FILTER (WHERE status = 'Present') as present_count,
          COUNT(*) FILTER (WHERE status IS NOT NULL AND status != '') as total_count
-       FROM attendance WHERE admission_id = $1`,
+       FROM attendance WHERE admission_id = $1 AND is_deleted = false`,
       [studentId]
     );
     const { present_count, total_count } = attendanceResult.rows[0];

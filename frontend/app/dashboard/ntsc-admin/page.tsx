@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import api from "@/app/lib/axiosInstance";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface User {
@@ -39,8 +40,8 @@ export default function NtscAdminPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-     const res = await fetch(`${API}?role=Admin`, { headers: getAuthHeaders() });
-      const json = await res.json();
+     const res = await api.get(`${API}?role=Admin`);
+      const json = res.data;
       setUsers(json.data || []);
     } catch {
       showToast("❌ Failed to load NTSC Admins");

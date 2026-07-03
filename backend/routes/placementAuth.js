@@ -29,6 +29,39 @@ router.post("/register", async (req, res) => {
       [userId, name, email, password, phone, status]
     );
 
+    // 3. AUTOMATIC REMINDER SYSTEM
+    // Find if there's an active mail template that has reminders enabled
+    const templateResult = await client.query(
+      `SELECT * FROM mail_templates WHERE is_active = true AND enable_reminder = true LIMIT 1`
+    );
+
+    if (templateResult.rows.length > 0) {
+      const template = templateResult.rows[0];
+      
+      // Default Job Fair date to 30 days from now since we don't have a specific event selected
+      const eventDate = new Date();
+      eventDate.setDate(eventDate.getDate() + 30);
+      
+      // Calculate next send date based on start delay
+      const nextSendDate = new Date();
+      nextSendDate.setDate(nextSendDate.getDate() + (template.reminder_start_delay_days || 0));
+
+      // Calculate stop date based on condition
+      const stopDate = new Date(eventDate);
+      if (template.reminder_stop_condition === 'Stop 1 Day Before') {
+        stopDate.setDate(stopDate.getDate() - 1);
+      } else if (template.reminder_stop_condition === 'Stop 2 Days Before') {
+        stopDate.setDate(stopDate.getDate() - 2);
+      }
+
+      await client.query(
+        `INSERT INTO mail_reminder_schedule 
+          (student_id, event_id, event_date, mail_template_id, next_send_date, frequency_days, stop_date)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [userId, 0, eventDate, template.id, nextSendDate, template.reminder_frequency_days || 1, stopDate]
+      );
+    }
+
     await client.query("COMMIT");
 
     // ✅ Generate Token using the main users.id

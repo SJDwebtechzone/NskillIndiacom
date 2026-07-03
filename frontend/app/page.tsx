@@ -7,6 +7,7 @@ import LatestNewsSection from "./components/LatestNewsSection";
 import AccreditationsSection from "./components/AccreditationsSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import GoogleReviewsSection from "./components/GoogleReviewsSection";
+import JustDialReviewsSection from "./components/JustDialReviewsSection";
 import VideoTestimonialsSection from "./components/VideoTestimonialsSection";
 
 export default function Home() {
@@ -48,6 +49,7 @@ export default function Home() {
 
 
 <div className="w-full"><GoogleReviewsSection /></div>
+<div className="w-full"><JustDialReviewsSection /></div>
 <div className="w-full"><VideoTestimonialsSection /></div>
       {/* Latest News Section */}
       <div className="w-full">

@@ -368,18 +368,22 @@ export default function AdminJobPage() {
   const [form, setForm] = useState({
     title: "", company: "", location: "", salary: "",
     job_type: "", skills: "", experience: "", description: "",
+    use_default_email: true, thank_you_template_id: "", reminder_template_id: "",
+    enable_reminder: false, event_date: "", event_time: "", event_location: ""
   });
 
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [editId, setEditId] = useState<number | null>(null);
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+  const [templates, setTemplates] = useState<any[]>([]);
+
   const fetchJobs = async () => {
     try {
       const res = await fetch(`${API}/api/jobs/jobs`);
       const data = await res.json();
-      // Handle both array response and object response
       setJobs(Array.isArray(data) ? data : data.jobs || data.data || []);
     } catch (err) {
       console.error("Failed to fetch jobs:", err);
@@ -387,10 +391,25 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
     }
   };
 
-  useEffect(() => { fetchJobs(); }, []);
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch(`${API}/api/mail-templates`);
+      const data = await res.json();
+      setTemplates(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  useEffect(() => { fetchJobs(); fetchTemplates(); }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    if (type === "checkbox") {
+      setForm({ ...form, [name]: (e.target as HTMLInputElement).checked });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async () => {
@@ -402,26 +421,75 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
     setError("");
     setSuccess("");
     try {
-      const res = await fetch(`${API}/api/jobs/add-job`, {
-        method: "POST",
+      const url = editId ? `${API}/api/jobs/update-job/${editId}` : `${API}/api/jobs/add-job`;
+      const method = editId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Failed to post job");
+        throw new Error(data.message || `Failed to ${editId ? "update" : "post"} job`);
       }
-      setSuccess("Job posted successfully!");
+      setSuccess(editId ? "Job updated successfully!" : "Job posted successfully!");
       setForm({
         title: "", company: "", location: "", salary: "",
         job_type: "", skills: "", experience: "", description: "",
+        use_default_email: true, thank_you_template_id: "", reminder_template_id: "",
+        enable_reminder: false, event_date: "", event_time: "", event_location: ""
       });
+      setEditId(null);
       fetchJobs();
     } catch (err: any) {
-      console.error("Error posting job:", err);
+      console.error("Error posting/updating job:", err);
       setError(err.message || "Something went wrong. Please try again.");
     }
     setLoading(false);
+  };
+
+  const handleEdit = (job: any) => {
+    setEditId(job.id);
+    
+    // Format date properly if it exists
+    let formattedDate = "";
+    if (job.event_date) {
+      formattedDate = new Date(job.event_date).toISOString().split('T')[0];
+    }
+    
+    setForm({
+      title: job.title || "",
+      company: job.company || "",
+      location: job.location || "",
+      salary: job.salary || "",
+      job_type: job.job_type || "",
+      skills: job.skills || "",
+      experience: job.experience || "",
+      description: job.description || "",
+      use_default_email: job.use_default_email !== undefined ? job.use_default_email : true,
+      thank_you_template_id: job.thank_you_template_id || "",
+      reminder_template_id: job.reminder_template_id || "",
+      enable_reminder: job.enable_reminder || false,
+      event_date: formattedDate,
+      event_time: job.event_time || "",
+      event_location: job.event_location || ""
+    });
+    setError("");
+    setSuccess("");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditId(null);
+    setForm({
+      title: "", company: "", location: "", salary: "",
+      job_type: "", skills: "", experience: "", description: "",
+      use_default_email: true, thank_you_template_id: "", reminder_template_id: "",
+      enable_reminder: false, event_date: "", event_time: "", event_location: ""
+    });
+    setError("");
+    setSuccess("");
   };
 
   const handleDelete = async (id: number) => {
@@ -467,13 +535,22 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
           <div className="px-6 py-5 border-b border-blue-50 bg-gradient-to-r from-blue-50 to-slate-50">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
+                {editId ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                )}
               </div>
               <div>
-                <p className="text-[15px] font-black text-slate-800">Post a new job</p>
-                <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Fill in the details below to publish</p>
+                <p className="text-[15px] font-black text-slate-800">{editId ? "Edit job" : "Post a new job"}</p>
+                <p className="text-[11px] text-slate-400 font-semibold mt-0.5">
+                  {editId ? "Update the details below to save changes" : "Fill in the details below to publish"}
+                </p>
               </div>
             </div>
           </div>
@@ -583,13 +660,123 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
               />
             </div>
 
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full mt-1 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl text-[13px] font-black cursor-pointer font-sans disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-sm shadow-blue-200 tracking-wide uppercase"
-            >
-              {loading ? "Posting…" : "Post job"}
-            </button>
+            {/* ── EMAIL SETTINGS ── */}
+            <div className="mt-2 pt-4 border-t border-slate-200 flex flex-col gap-4">
+              <h3 className="text-[13px] font-black text-slate-800 uppercase tracking-wide">Email Settings</h3>
+              
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="use_default_email"
+                  checked={form.use_default_email}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                />
+                <span className="text-[13px] font-semibold text-slate-700">Use Default Confirmation Email</span>
+              </label>
+
+              {!form.use_default_email && (
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col gap-4">
+                  <h4 className="text-[12px] font-bold text-slate-700 uppercase tracking-wide border-b border-slate-200 pb-2">Custom Email Configuration</h4>
+                  
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Thank You Template *</label>
+                    <select
+                      name="thank_you_template_id"
+                      value={form.thank_you_template_id}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2.5 text-[13px] border border-slate-200 rounded-xl bg-white text-slate-800 outline-none font-sans focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    >
+                      <option value="">Select Template</option>
+                      {templates.map(t => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Event Date</label>
+                      <input
+                        type="date"
+                        name="event_date"
+                        value={form.event_date}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-[13px] border border-slate-200 rounded-xl bg-white text-slate-800 outline-none font-sans focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Event Time</label>
+                      <input
+                        name="event_time"
+                        value={form.event_time}
+                        placeholder="e.g. 10:00 AM"
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-[13px] border border-slate-200 rounded-xl bg-white text-slate-800 outline-none font-sans focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Event Location</label>
+                    <input
+                      name="event_location"
+                      value={form.event_location}
+                      placeholder="e.g. Main Campus Auditorium"
+                      onChange={handleChange}
+                      className="w-full px-3 py-2.5 text-[13px] border border-slate-200 rounded-xl bg-white text-slate-800 outline-none font-sans focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer mt-2">
+                    <input
+                      type="checkbox"
+                      name="enable_reminder"
+                      checked={form.enable_reminder}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                    />
+                    <span className="text-[13px] font-semibold text-slate-700">Enable Reminders</span>
+                  </label>
+
+                  {form.enable_reminder && (
+                    <div className="flex flex-col gap-1.5 pl-4 border-l-2 border-blue-200 ml-1">
+                      <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Reminder Template *</label>
+                      <select
+                        name="reminder_template_id"
+                        value={form.reminder_template_id}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-[13px] border border-slate-200 rounded-xl bg-white text-slate-800 outline-none font-sans focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                      >
+                        <option value="">Select Template</option>
+                        {templates.map(t => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-1">
+              {editId && (
+                <button
+                  onClick={handleCancelEdit}
+                  disabled={loading}
+                  className="w-1/3 py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-[13px] font-black cursor-pointer font-sans transition-all tracking-wide uppercase"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl text-[13px] font-black cursor-pointer font-sans disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-sm shadow-blue-200 tracking-wide uppercase"
+              >
+                {loading ? (editId ? "Updating…" : "Posting…") : (editId ? "Update job" : "Post job")}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -642,13 +829,25 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleDelete(job.id)}
-                      className="flex items-center gap-1.5 bg-transparent border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer text-slate-400 text-[11px] font-bold font-sans hover:border-red-200 hover:bg-red-50 hover:text-red-500 transition-all"
-                    >
-                      <TrashIcon />
-                      Remove
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleEdit(job)}
+                        className="flex items-center gap-1.5 bg-transparent border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer text-slate-500 text-[11px] font-bold font-sans hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(job.id)}
+                        className="flex items-center gap-1.5 bg-transparent border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer text-slate-400 text-[11px] font-bold font-sans hover:border-red-200 hover:bg-red-50 hover:text-red-500 transition-all"
+                      >
+                        <TrashIcon />
+                        Remove
+                      </button>
+                    </div>
                   </div>
 
                   {/* Meta Row */}

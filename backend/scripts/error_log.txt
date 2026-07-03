@@ -106,3 +106,141 @@ error: invalid input syntax for type date: ""
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:372:24
 
+[2026-06-25T06:08:59.725Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:376:24
+
+[2026-06-29T08:29:38.823Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-29T08:30:05.054Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-29T08:30:49.587Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T06:59:44.821Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T06:59:50.689Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T06:59:54.841Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T07:05:16.442Z] PATCH Error: column "instalment_1_mode" of relation "student_admissions" does not exist
+error: column "instalment_1_mode" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T07:07:43.617Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T07:28:44.637Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T07:28:48.503Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-06-30T07:28:51.423Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:422:24
+
+[2026-07-01T06:04:18.712Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:461:24
+
+[2026-07-01T06:04:23.067Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:461:24
+
+[2026-07-01T06:05:05.557Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:461:24
+
+[2026-07-01T06:06:25.636Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:461:24
+
+[2026-07-01T06:06:35.415Z] PATCH Error: column "instalment_1_date" of relation "student_admissions" does not exist
+error: column "instalment_1_date" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:461:24
+
+[2026-07-01T06:07:40.464Z] PATCH Error: column "counsellor_type" of relation "student_admissions" does not exist
+error: column "counsellor_type" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
+
+[2026-07-01T06:07:43.436Z] PATCH Error: column "counsellor_type" of relation "student_admissions" does not exist
+error: column "counsellor_type" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
+
+[2026-07-01T06:09:20.915Z] PATCH Error: column "counsellor_type" of relation "student_admissions" does not exist
+error: column "counsellor_type" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
+
+[2026-07-01T06:09:25.126Z] PATCH Error: column "counsellor_type" of relation "student_admissions" does not exist
+error: column "counsellor_type" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
+
+[2026-07-01T06:26:38.865Z] PATCH Error: column "counsellor_type" of relation "student_admissions" does not exist
+error: column "counsellor_type" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
+
+[2026-07-01T06:26:43.031Z] PATCH Error: column "counsellor_type" of relation "student_admissions" does not exist
+error: column "counsellor_type" of relation "student_admissions" does not exist
+    at D:\Devspectra\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
+

@@ -7,27 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 // ── Multer config ─────────────────────────────────────────────────────────────
-const uploadDir = path.join(__dirname, '../uploads/background-images');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-  fileFilter: (req, file, cb) => {
-    const allowed = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (allowed.includes(ext)) cb(null, true);
-    else cb(new Error('Only image files allowed'));
-  },
-});
+const { handleSingleUpload } = require('../utils/fileUpload');
 
 // GET /api/background-images — get all images
 router.get('/', async (req, res) => {
@@ -84,7 +64,7 @@ router.get('/active', async (req, res) => {
 });
 
 // POST /api/background-images — upload new image
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', handleSingleUpload('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Image file is required' });
     const { name, category } = req.body;
@@ -149,7 +129,7 @@ router.delete('/:id', async (req, res) => {
       const filePath = path.join(__dirname, '..', result.rows[0].image_url);
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
-    await pool.query(`DELETE FROM background_images WHERE id = $1`, [id]);
+    await pool.query(`UPDATE background_images SET is_deleted = true, deleted_at = NOW() WHERE id = $1`, [id]);
     res.json({ message: 'Image deleted' });
   } catch (err) {
     console.error(err);

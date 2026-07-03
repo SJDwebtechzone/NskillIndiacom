@@ -1,3 +1,7 @@
+const express = require('express');
+const router = express.Router();
+const pool = require('../config/db');
+
 router.get('/my-profile', async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
@@ -7,7 +11,7 @@ router.get('/my-profile', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
 
     const userResult = await pool.query(
-      `SELECT email FROM users WHERE id = $1 LIMIT 1`,
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     const email = userResult.rows[0]?.email;
@@ -17,7 +21,7 @@ router.get('/my-profile', async (req, res) => {
       `SELECT id, full_name, admission_number, dob, mobile_number, 
               course_name, batch_allotted, photo_url, admission_date, email_id
        FROM student_admissions 
-       WHERE LOWER(email_id) = LOWER($1) LIMIT 1`,
+       WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
       [email]
     );
 
@@ -31,3 +35,5 @@ router.get('/my-profile', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+module.exports = router;

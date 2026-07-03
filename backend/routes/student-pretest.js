@@ -10,7 +10,7 @@ router.get('/:courseName/config', async (req, res) => {
   const { courseName } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM pretest_config WHERE course_name = $1`,
+      `SELECT * FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
       [courseName]
     );
     res.json({ config: result.rows[0] || null });
@@ -31,7 +31,7 @@ router.get('/:courseName/status', async (req, res) => {
     const result = await pool.query(
       `SELECT score, total, passed
        FROM pretest_attempts
-       WHERE student_id = $1 AND course_name = $2
+       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false
        ORDER BY submitted_at DESC
        LIMIT 1`,
       [studentId, courseName]
@@ -56,7 +56,7 @@ router.get('/:courseName/questions', async (req, res) => {
   try {
     // Get config for total_qs and time_limit
     const configResult = await pool.query(
-      `SELECT total_qs, time_limit FROM pretest_config WHERE course_name = $1`,
+      `SELECT total_qs, time_limit FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
       [courseName]
     );
     const config = configResult.rows[0] || { total_qs: 20, time_limit: 1200 };
@@ -65,7 +65,7 @@ router.get('/:courseName/questions', async (req, res) => {
     const result = await pool.query(
       `SELECT id, question, option_a, option_b, option_c, option_d
        FROM pretest_questions
-       WHERE course_name = $1
+       WHERE course_name = $1 AND is_deleted = false
        ORDER BY RANDOM()
        LIMIT $2`,
       [courseName, config.total_qs]
@@ -96,7 +96,7 @@ router.post('/:courseName/submit', async (req, res) => {
 
     const qIds = answers.map((a) => a.question_id);
     const correctResult = await client.query(
-      `SELECT id, correct_ans FROM pretest_questions WHERE id = ANY($1)`,
+      `SELECT id, correct_ans FROM pretest_questions WHERE id = ANY($1) AND is_deleted = false`,
       [qIds]
     );
 
@@ -106,7 +106,7 @@ router.post('/:courseName/submit', async (req, res) => {
     });
 
     const configResult = await client.query(
-      `SELECT total_qs, pass_percent FROM pretest_config WHERE course_name = $1`,
+      `SELECT total_qs, pass_percent FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
       [courseName]
     );
     const config = configResult.rows[0] || { total_qs: answers.length, pass_percent: 60 };
@@ -159,8 +159,8 @@ router.get('/result/:attemptId', async (req, res) => {
     const attemptResult = await pool.query(
       `SELECT pa.score, pa.total, pa.passed, pa.time_taken, pc.pass_percent
        FROM pretest_attempts pa
-       LEFT JOIN pretest_config pc ON pa.course_name = pc.course_name
-       WHERE pa.id = $1`,
+       LEFT JOIN pretest_config pc ON pa.course_name = pc.course_name AND pc.is_deleted = false
+       WHERE pa.id = $1 AND pa.is_deleted = false`,
       [attemptId]
     );
     if (attemptResult.rows.length === 0)
@@ -176,7 +176,7 @@ router.get('/result/:attemptId', async (req, res) => {
          pq.correct_ans,
          pan.is_correct
        FROM pretest_answers pan
-       JOIN pretest_questions pq ON pan.question_id = pq.id
+       JOIN pretest_questions pq ON pan.question_id = pq.id AND pq.is_deleted = false
        WHERE pan.attempt_id = $1
        ORDER BY pan.id`,
       [attemptId]
@@ -202,7 +202,7 @@ router.get('/my-courses', async (req, res) => {
   try {
     // Step 1: Find student's enrolled course from admissions table
     const admissionResult = await pool.query(
-      `SELECT course_name FROM admissions WHERE user_id = $1 LIMIT 1`,
+      `SELECT course_name FROM admissions WHERE user_id = $1 AND is_deleted = false LIMIT 1`,
       [studentId]
     );
 
@@ -222,11 +222,11 @@ router.get('/my-courses', async (req, res) => {
        FROM pretest_config pc
        LEFT JOIN LATERAL (
          SELECT * FROM pretest_attempts
-         WHERE student_id = $1 AND course_name = pc.course_name
+         WHERE student_id = $1 AND course_name = pc.course_name AND is_deleted = false
          ORDER BY submitted_at DESC
          LIMIT 1
        ) pa ON true
-       WHERE pc.course_name = $2`,
+       WHERE pc.course_name = $2 AND pc.is_deleted = false`,
       [studentId, courseName]
     );
 

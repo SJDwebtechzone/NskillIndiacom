@@ -11,13 +11,13 @@ router.get("/", async (req, res) => {
     let query  = `SELECT id, title, slug, category, duration, eligibility,
                          certification, delivery_method, is_active,
                          thumbnail_url, gallery
-                  FROM courses ORDER BY category, title`;
+                  FROM courses WHERE is_deleted = false ORDER BY category, title`;
     let params = [];
     if (category) {
       query  = `SELECT id, title, slug, category, duration, eligibility,
                        certification, delivery_method, is_active,
                        thumbnail_url, gallery
-                FROM courses WHERE LOWER(category) = LOWER($1) ORDER BY title`;
+                FROM courses WHERE LOWER(category) = LOWER($1) AND is_deleted = false ORDER BY title`;
       params = [category];
     }
     const result = await pool.query(query, params);
@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
 router.get('/all', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, title, trainer_id FROM courses ORDER BY title`
+      `SELECT id, title, trainer_id FROM courses WHERE is_deleted = false ORDER BY title`
     );
     res.json({ courses: result.rows });
   } catch (err) {
@@ -61,7 +61,7 @@ router.put('/:id/assign-trainer', authMiddleware, async (req, res) => {
 router.get("/slug/:slug", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM courses WHERE slug = $1",
+      "SELECT * FROM courses WHERE slug = $1 AND is_deleted = false",
       [req.params.slug]
     );
     if (result.rows.length === 0)
@@ -79,7 +79,7 @@ router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
     const result = await pool.query(
-      "SELECT * FROM courses WHERE id = $1",
+      "SELECT * FROM courses WHERE id = $1 AND is_deleted = false",
       [id]
     );
     if (result.rows.length === 0)
@@ -212,7 +212,7 @@ router.delete("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
     const result = await pool.query(
-      "DELETE FROM courses WHERE id = $1 RETURNING id",
+      "UPDATE courses SET is_deleted = true, deleted_at = NOW() WHERE id = $1 RETURNING id",
       [id]
     );
     if (result.rows.length === 0)

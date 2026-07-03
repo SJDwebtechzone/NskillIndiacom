@@ -11,6 +11,7 @@ interface Review {
   google_review_url: string;
   photo_url: string;
   status: string;
+  youtube_subscribed?: boolean;
   submitted_at: string;
 }
 
@@ -190,6 +191,12 @@ const getPhotoUrl = (photoUrl: string) => {
                           className="text-xs text-blue-600 hover:underline mb-3 block">
                           🔗 View on Google
                         </a>
+                      )}
+                      {r.youtube_subscribed && (
+                        <div className="flex items-center gap-1.5 mb-3">
+                          <span className="text-red-600 text-sm">▶</span>
+                          <span className="text-xs font-semibold text-gray-700">Subscribed to NTSC YouTube Channel ✅</span>
+                        </div>
                       )}
                       {r.status === "pending" && (
                         <div className="flex gap-2">

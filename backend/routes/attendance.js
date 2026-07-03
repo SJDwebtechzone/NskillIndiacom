@@ -5,11 +5,7 @@ const { authMiddleware } = require("../middleware/authMiddleware");
 const multer  = require("multer");
 const crypto  = require("crypto");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/attendance/"),
-  filename:    (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
-const upload = multer({ storage });
+const { handleSingleUpload } = require("../utils/fileUpload");
 
 // ✅ Single status list used everywhere — easy to update
 const ACTIVE_STATUSES = `('Approved', 'Completed', 'Ongoing', 'Active')`;
@@ -30,7 +26,7 @@ router.get("/students", authMiddleware, async (req, res) => {
       SELECT id, admission_number, full_name, email_id,
              course_name, photo_url, batch_allotted
       FROM student_admissions
-      WHERE status IN ${ACTIVE_STATUSES}
+      WHERE status IN ${ACTIVE_STATUSES} AND is_deleted = false
     `;
     const params = [];
 
@@ -61,7 +57,7 @@ router.get("/students", authMiddleware, async (req, res) => {
         u.name AS marked_by_name
       FROM attendance a
       LEFT JOIN users u ON a.marked_by_id = u.id
-      WHERE a.batch = $1 AND a.date = $2
+      WHERE a.batch = $1 AND a.date = $2 AND a.is_deleted = false
     `;
     const attendParams = [batch, date];
 
@@ -175,7 +171,7 @@ router.post("/qr/mark", authMiddleware, async (req, res) => {
       SELECT id, time_in, time_out
       FROM attendance
       WHERE admission_id = $1
-        AND date = CURRENT_DATE
+        AND date = CURRENT_DATE AND is_deleted = false
     `, [admission_id]);
 
     if (existing.rows.length === 0) {
@@ -196,7 +192,7 @@ router.post("/qr/mark", authMiddleware, async (req, res) => {
       }
 
       const sessionRes = await client.query(`
-        SELECT is_active FROM attendance_sessions WHERE id = $1
+        SELECT is_active FROM attendance_sessions WHERE id = $1 AND is_deleted = false
       `, [session_id]);
 
       const earlyExit = sessionRes.rows[0]?.is_active === true;
@@ -293,7 +289,7 @@ router.post("/session/refresh-qr", authMiddleware, async (req, res) => {
 
     const sessionRes = await pool.query(`
       SELECT id FROM attendance_sessions
-      WHERE id = $1 AND trainer_id = $2 AND is_active = true
+      WHERE id = $1 AND trainer_id = $2 AND is_active = true AND is_deleted = false
     `, [session_id, req.user.id]);
 
     if (!sessionRes.rows.length) {
@@ -335,7 +331,7 @@ router.get("/qr/validate/:token", async (req, res) => {
         (qt.expires_at > NOW()) AS is_valid
       FROM qr_tokens qt
       JOIN attendance_sessions s ON qt.session_id = s.id
-      WHERE qt.token = $1
+      WHERE qt.token = $1 AND s.is_deleted = false
     `, [req.params.token]);
 
     if (!result.rows.length) {
@@ -368,7 +364,7 @@ router.get("/qr/validate/:token", async (req, res) => {
 /* =====================================================
    8. PHOTO ATTENDANCE (file upload)
 ===================================================== */
-router.post("/photo", authMiddleware, upload.single("photo"), async (req, res) => {
+router.post("/photo", authMiddleware, handleSingleUpload("photo"), async (req, res) => {
   try {
     const { admission_id, batch, session_id } = req.body;
 
@@ -406,7 +402,7 @@ router.get("/student-report", authMiddleware, async (req, res) => {
     const userId = req.user.id;
 
     const userRes = await pool.query(
-      "SELECT email FROM users WHERE id = $1", [userId]
+      "SELECT email FROM users WHERE id = $1 AND is_deleted = false", [userId]
     );
     const email = userRes.rows[0]?.email;
 
@@ -416,7 +412,7 @@ router.get("/student-report", authMiddleware, async (req, res) => {
 
     // ✅ No status filter — find admission by email only
     const admRes = await pool.query(
-      "SELECT id, full_name, admission_number FROM student_admissions WHERE email_id = $1 LIMIT 1",
+      "SELECT id, full_name, admission_number FROM student_admissions WHERE email_id = $1 AND is_deleted = false LIMIT 1",
       [email]
     );
 
@@ -429,7 +425,7 @@ router.get("/student-report", authMiddleware, async (req, res) => {
     const recordsRes = await pool.query(`
       SELECT date, batch, status, method, time_in, time_out, early_exit
       FROM attendance
-      WHERE admission_id = $1
+      WHERE admission_id = $1 AND is_deleted = false
       ORDER BY date DESC
     `, [admissionId]);
 
@@ -470,7 +466,7 @@ router.get("/today", authMiddleware, async (req, res) => {
              sa.full_name, sa.admission_number
       FROM attendance a
       LEFT JOIN student_admissions sa ON a.admission_id = sa.id
-      WHERE a.date = CURRENT_DATE
+      WHERE a.date = CURRENT_DATE AND a.is_deleted = false
       ORDER BY a.created_at DESC
     `);
 
@@ -490,7 +486,7 @@ router.get("/my-admission", authMiddleware, async (req, res) => {
     const userId = req.user.id;
 
     const userRes = await pool.query(
-      "SELECT email, name FROM users WHERE id = $1", [userId]
+      "SELECT email, name FROM users WHERE id = $1 AND is_deleted = false", [userId]
     );
 
     if (!userRes.rows.length) {
@@ -509,7 +505,7 @@ router.get("/my-admission", authMiddleware, async (req, res) => {
              photo_url
       FROM student_admissions
       WHERE email_id = $1
-        AND status IN ${ACTIVE_STATUSES}
+        AND status IN ${ACTIVE_STATUSES} AND is_deleted = false
       LIMIT 1
     `, [email]);
 
@@ -548,7 +544,7 @@ router.post("/face/enrol", authMiddleware, async (req, res) => {
     }
 
     const userRes = await pool.query(
-      "SELECT email FROM users WHERE id = $1", [userId]
+      "SELECT email FROM users WHERE id = $1 AND is_deleted = false", [userId]
     );
     if (!userRes.rows.length) {
       return res.status(404).json({ success: false, message: "User not found" });
@@ -556,7 +552,7 @@ router.post("/face/enrol", authMiddleware, async (req, res) => {
 
     // ✅ Accept all active statuses
     const admRes = await pool.query(
-      `SELECT id FROM student_admissions WHERE email_id = $1 AND status IN ${ACTIVE_STATUSES} LIMIT 1`,
+      `SELECT id FROM student_admissions WHERE email_id = $1 AND status IN ${ACTIVE_STATUSES} AND is_deleted = false LIMIT 1`,
       [userRes.rows[0].email]
     );
     if (!admRes.rows.length) {
@@ -588,14 +584,14 @@ router.get("/face/check", authMiddleware, async (req, res) => {
     const userId = req.user.id;
 
     const userRes = await pool.query(
-      "SELECT email FROM users WHERE id = $1", [userId]
+      "SELECT email FROM users WHERE id = $1 AND is_deleted = false", [userId]
     );
     if (!userRes.rows.length) {
       return res.json({ success: true, has_embedding: false });
     }
 
     const admRes = await pool.query(
-      "SELECT id FROM student_admissions WHERE email_id = $1 LIMIT 1",
+      "SELECT id FROM student_admissions WHERE email_id = $1 AND is_deleted = false LIMIT 1",
       [userRes.rows[0].email]
     );
     if (!admRes.rows.length) {
@@ -603,7 +599,7 @@ router.get("/face/check", authMiddleware, async (req, res) => {
     }
 
     const embRes = await pool.query(
-      "SELECT id FROM face_embeddings WHERE admission_id = $1",
+      "SELECT id FROM face_embeddings WHERE admission_id = $1 AND is_deleted = false",
       [admRes.rows[0].id]
     );
 
@@ -631,7 +627,7 @@ router.get("/face/embeddings", authMiddleware, async (req, res) => {
         sa.admission_number
       FROM face_embeddings fe
       JOIN student_admissions sa ON fe.admission_id = sa.id
-      WHERE sa.status IN ${ACTIVE_STATUSES}
+      WHERE sa.status IN ${ACTIVE_STATUSES} AND fe.is_deleted = false AND sa.is_deleted = false
       ORDER BY sa.full_name ASC
     `);
 
@@ -688,7 +684,7 @@ router.post("/photo/mark", authMiddleware, async (req, res) => {
 
       const sessionRes = session_id
         ? await client.query(
-            "SELECT is_active FROM attendance_sessions WHERE id = $1",
+            "SELECT is_active FROM attendance_sessions WHERE id = $1 AND is_deleted = false",
             [session_id]
           )
         : { rows: [{ is_active: false }] };

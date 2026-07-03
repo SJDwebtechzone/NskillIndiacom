@@ -14,8 +14,16 @@ import {
     FileImage,
     Globe
 } from "lucide-react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/settings`;
+
+interface Advertisement {
+    id: number;
+    image: string;
+    status: string;
+    created_at: string;
+}
 
 interface Banner {
     id: number;
@@ -54,13 +62,15 @@ interface Accreditation {
 function SettingsContent() {
     const searchParams = useSearchParams();
     const tab = searchParams.get("tab");
-    const [activeTab, setActiveTab] = useState(tab === "accreditations" ? "accreditations" : tab === "popup" ? "popup" : tab === "news" ? "news" : "banner");
+    const [activeTab, setActiveTab] = useState(tab === "advertisement" ? "advertisement" : tab === "accreditations" ? "accreditations" : tab === "partners" ? "partners" : tab === "popup" ? "popup" : tab === "news" ? "news" : "banner");
 
     // Sync tab when URL changes (sidebar navigation)
     useEffect(() => {
-        if (tab === "popup") setActiveTab("popup");
+        if (tab === "advertisement") setActiveTab("advertisement");
+        else if (tab === "popup") setActiveTab("popup");
         else if (tab === "news") setActiveTab("news");
         else if (tab === "accreditations") setActiveTab("accreditations");
+        else if (tab === "partners") setActiveTab("partners");
         else setActiveTab("banner");
     }, [tab]);
 
@@ -68,6 +78,11 @@ function SettingsContent() {
     const [popups, setPopups] = useState<Popup[]>([]);
     const [news, setNews] = useState<NewsItem[]>([]);
     const [accreditations, setAccreditations] = useState<Accreditation[]>([]);
+    const [partners, setPartners] = useState<any[]>([]);
+    const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
+    const [advertisementForm, setAdvertisementForm] = useState({
+        image: null as File | null,
+    });
     const [loading, setLoading] = useState(false);
 
     const [bannerForm, setBannerForm] = useState({
@@ -95,12 +110,29 @@ function SettingsContent() {
         image: null as File | null,
     });
 
+    const [partnersForm, setPartnersForm] = useState({
+        company_name: "",
+        website_url: "",
+        company_logo: null as File | null,
+    });
+
     useEffect(() => {
         fetchBanners();
         fetchPopups();
         fetchNews();
         fetchAccreditations();
+        fetchPartners();
+        fetchAdvertisements();
     }, []);
+
+    const fetchAdvertisements = async () => {
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/advertisements`);
+            setAdvertisements(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const fetchBanners = async () => {
         try {
@@ -133,6 +165,56 @@ function SettingsContent() {
         try {
             const res = await axios.get(`${API_BASE_URL}/accreditations`);
             setAccreditations(Object.values(res.data));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchPartners = async () => {
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/partners`);
+            setPartners(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const addAdvertisement = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        const formData = new FormData();
+        if (advertisementForm.image) {
+            formData.append("image", advertisementForm.image);
+        }
+
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/advertisements`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            setAdvertisementForm({ image: null });
+            fetchAdvertisements();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleAdvertisementStatus = async (id: number, currentStatus: string) => {
+        try {
+            const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+            await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/advertisements/${id}/status`, { status: newStatus });
+            fetchAdvertisements();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const deleteAdvertisement = async (id: number) => {
+        if (!confirm('Are you sure you want to delete this advertisement?')) return;
+        try {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/advertisements/${id}`);
+            fetchAdvertisements();
         } catch (err) {
             console.error(err);
         }
@@ -268,10 +350,134 @@ function SettingsContent() {
         fetchAccreditations();
     };
 
+    const addPartner = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        const formData = new FormData();
+        formData.append("company_name", partnersForm.company_name);
+        if (partnersForm.website_url) formData.append("website_url", partnersForm.website_url);
+        if (partnersForm.company_logo) {
+            formData.append("company_logo", partnersForm.company_logo);
+        }
+
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/partners`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            setPartnersForm({ company_name: "", website_url: "", company_logo: null });
+            fetchPartners();
+        } catch (err) {
+            console.error(err);
+            if (axios.isAxiosError(err)) {
+                alert(err.response?.data?.message || err.message);
+            } else {
+                alert("An unexpected error occurred");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deletePartner = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this partner?")) return;
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/partners/${id}`);
+        fetchPartners();
+    };
+
     return (
         <div className="bg-[#f8fafc] rounded-[32px] shadow-sm border border-slate-100 overflow-hidden min-h-[700px] flex flex-col md:flex-row">
             {/* Content Area */}
             <div className="flex-1 p-10 overflow-y-auto w-full">
+                {activeTab === "advertisement" && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+                            <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-100">
+                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                                    <Monitor className="w-5 h-5 text-[#2563eb]" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-slate-800">Add Advertisement</h2>
+                                    <p className="text-sm text-slate-500">Upload an advertisement image for the global popup.</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={addAdvertisement} className="space-y-6 max-w-2xl">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-slate-700">Advertisement Image *</label>
+                                    <ValidatedFileInput
+                                        accept="image/*"
+                                        onChange={(e: any) => setAdvertisementForm({ ...advertisementForm, image: e.target.files[0] })}
+                                        className="w-full"
+                                        required
+                                    />
+                                    <p className="text-xs text-slate-500">Recommended: 600x800px. Max size: 2MB.</p>
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="flex items-center gap-2 px-6 py-3 bg-[#2563eb] hover:bg-blue-700 text-white rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50"
+                                >
+                                    <PlusCircle size={18} />
+                                    {loading ? "Saving..." : "Add Advertisement"}
+                                </button>
+                            </form>
+                        </div>
+
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                            <div className="p-6 md:p-8 border-b border-slate-100">
+                                <h2 className="text-xl font-bold text-slate-800">Current Advertisements</h2>
+                                <p className="text-sm text-slate-500 mt-1">Manage all uploaded advertisements</p>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-slate-50/50 text-slate-500 text-sm">
+                                            <th className="p-4 font-semibold whitespace-nowrap">Image</th>
+                                            <th className="p-4 font-semibold whitespace-nowrap">Status</th>
+                                            <th className="p-4 font-semibold whitespace-nowrap">Date</th>
+                                            <th className="p-4 font-semibold whitespace-nowrap text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {advertisements.map((ad) => (
+                                            <tr key={ad.id} className="hover:bg-slate-50/50 transition-colors">
+                                                <td className="p-4">
+                                                    <img src={ad.image} alt="Ad" className="h-16 w-16 object-cover rounded-lg border border-slate-200" />
+                                                </td>
+                                                <td className="p-4">
+                                                    <button
+                                                        onClick={() => toggleAdvertisementStatus(ad.id, ad.status)}
+                                                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                                                            ad.status === 'Active' 
+                                                            ? 'bg-green-50 text-green-600 hover:bg-green-100' 
+                                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                                        }`}
+                                                    >
+                                                        {ad.status === 'Active' ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
+                                                        {ad.status}
+                                                    </button>
+                                                </td>
+                                                <td className="p-4 text-sm text-slate-600">
+                                                    {new Date(ad.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-4 text-right">
+                                                    <button
+                                                        onClick={() => deleteAdvertisement(ad.id)}
+                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
                 {activeTab === "banner" && (
                     <div className="animate-in fade-in slide-in-from-right duration-500">
                         <div className="flex items-center justify-between mb-8">
@@ -649,6 +855,114 @@ function SettingsContent() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "partners" && (
+                    <div className="animate-in fade-in slide-in-from-right duration-500">
+                        <div className="flex items-center justify-between mb-8">
+                            <h1 className="text-2xl font-black text-slate-800 tracking-tight">Partners Section</h1>
+                            <span className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">{partners.length} Active Partners</span>
+                        </div>
+
+                        {/* Add Partner Form */}
+                        <div className="bg-white p-6 md:p-8 rounded-[32px] border border-slate-100 shadow-sm mb-10">
+                            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <PlusCircle className="w-4 h-4 text-blue-600" /> Add New Partner
+                            </h2>
+                            <form onSubmit={addPartner} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Company Name *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full px-5 py-4 bg-slate-50 border-0 rounded-2xl text-slate-700 font-medium focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all outline-none"
+                                        placeholder="e.g. Google"
+                                        value={partnersForm.company_name}
+                                        onChange={(e) => setPartnersForm({ ...partnersForm, company_name: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Website URL (Optional)</label>
+                                    <input
+                                        type="url"
+                                        className="w-full px-5 py-4 bg-slate-50 border-0 rounded-2xl text-slate-700 font-medium focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all outline-none"
+                                        placeholder="https://google.com"
+                                        value={partnersForm.website_url}
+                                        onChange={(e) => setPartnersForm({ ...partnersForm, website_url: e.target.value })}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Company Logo *</label>
+                                    <ValidatedFileInput
+                                        fileType="image"
+                                        required
+                                        onChange={(e) => setPartnersForm({ ...partnersForm, company_logo: e.target.files?.[0] || null })}
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 mt-2"
+                                >
+                                    {loading ? "Saving..." : <><PlusCircle className="w-5 h-5" /> Add Partner</>}
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Partners List */}
+                        <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-slate-50 border-b border-slate-100">
+                                            <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Company Logo</th>
+                                            <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Company Name</th>
+                                            <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Website URL</th>
+                                            <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {partners.map((item) => (
+                                            <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                                <td className="py-4 px-6">
+                                                    <div className="h-12 w-24 bg-white border border-slate-100 rounded-lg flex items-center justify-center p-2">
+                                                        <img src={item.company_logo} alt={item.company_name} className="max-h-full max-w-full object-contain" />
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-6 font-bold text-slate-800 text-sm">
+                                                    {item.company_name}
+                                                </td>
+                                                <td className="py-4 px-6 text-sm">
+                                                    {item.website_url ? (
+                                                        <a href={item.website_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                                                            {item.website_url}
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-slate-400 italic">Not provided</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-4 px-6 text-right">
+                                                    <button
+                                                        onClick={() => deletePartner(item.id)}
+                                                        className="inline-flex items-center justify-center px-4 py-2 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white rounded-lg transition-all text-xs font-bold"
+                                                    >
+                                                        <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {partners.length === 0 && (
+                                            <tr>
+                                                <td colSpan={4} className="py-8 text-center text-slate-500 font-medium text-sm">
+                                                    No partners found. Add one above!
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 )}

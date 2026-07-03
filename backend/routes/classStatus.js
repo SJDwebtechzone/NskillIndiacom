@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
         sa.admission_date,
         sa.created_at
       FROM student_admissions sa
-      WHERE 1=1
+      WHERE sa.is_deleted = false
     `;
     const params = [];
 

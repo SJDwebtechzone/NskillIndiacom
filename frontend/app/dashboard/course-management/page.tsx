@@ -55,7 +55,7 @@ export default function AllCoursesPage() {
   }
 
   async function handleDelete(id: number, title: string) {
-    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     setDeletingId(id);
     try {
       const res = await fetch(`${API}/api/courses/${id}`, { method: "DELETE" });

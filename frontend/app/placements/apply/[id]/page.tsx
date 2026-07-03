@@ -3,6 +3,7 @@
 import { useState, FormEvent, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Briefcase, MapPin, ArrowRight, Loader2 } from "lucide-react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 type FormType = {
   name: string;
@@ -302,10 +303,9 @@ export default function ApplyPage() {
               }`}
               onClick={() => fileInputRef.current?.click()}
             >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.doc,.docx"
+              <ValidatedFileInput
+                ref={fileInputRef as any}
+                fileType="any"
                 className="hidden"
                 onChange={handleFileChange}
               />

@@ -90,9 +90,9 @@ function ConfirmModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm p-8 space-y-4">
-        <h3 className="text-lg font-black text-black">Delete Location?</h3>
+        <h3 className="text-lg font-black text-black">Move this record to Restore?</h3>
         <p className="text-slate-500 font-medium text-sm">
-          This action cannot be undone.
+          This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.
         </p>
         <div className="flex gap-3 pt-2">
           <button
@@ -109,7 +109,7 @@ function ConfirmModal({
             className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-50"
           >
             {loading ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
-            Delete
+            Move to Restore
           </button>
         </div>
       </div>
@@ -465,7 +465,7 @@ export default function ContactSettingsPage() {
             <p className="text-slate-500 font-medium text-sm">All locations shown on the contact page</p>
           </div>
           <button type="button" onClick={handleOpenAdd}
-            className="flex items-center gap-2 px-6 py-3 bg-[#0b1f3a] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg">
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg">
             <Plus size={16} /> Add Location
           </button>
         </div>

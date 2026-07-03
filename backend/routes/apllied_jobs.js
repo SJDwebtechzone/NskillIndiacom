@@ -5,45 +5,10 @@ const path = require("path");
 const fs = require("fs");
 const pool = require("../config/db");
 
-// ─── Ensure Upload Folder Exists ─────────────────────────────
-if (!fs.existsSync("./uploads")) {
-  fs.mkdirSync("./uploads", { recursive: true });
-}
-
-// ─── Multer Storage ──────────────────────────────────────────
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./uploads/"),
-  filename: (req, file, cb) => {
-    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, unique + path.extname(file.originalname));
-  },
-});
-
-// ─── File Filter ─────────────────────────────────────────────
-const fileFilter = (req, file, cb) => {
-  const allowed = [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-    "video/mp4",
-    "video/webm",
-    "video/ogg",
-  ];
-
-  if (allowed.includes(file.mimetype)) cb(null, true);
-  else cb(new Error("Only images and videos allowed"), false);
-};
-
-// ─── Multer Config ───────────────────────────────────────────
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 100 * 1024 * 1024 },
-});
+const { handleArrayUpload } = require("../utils/fileUpload");
 
 // ─── UPLOAD API ──────────────────────────────────────────────
-router.post("/upload", upload.array("media", 20), async (req, res) => {
+router.post("/upload", handleArrayUpload("media", 20), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
@@ -78,7 +43,7 @@ const fileUrl = `${backendUrl}/uploads/${file.filename}`;
 router.get("/media", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM media ORDER BY uploaded_at DESC"
+      "SELECT * FROM media WHERE is_deleted = false ORDER BY uploaded_at DESC"
     );
 
     res.json({
@@ -95,7 +60,7 @@ router.get("/media", async (req, res) => {
 router.delete("/media/:id", async (req, res) => {
   try {
     const result = await pool.query( // ✅ FIXED
-      "SELECT * FROM media WHERE id = $1",
+      "SELECT * FROM media WHERE id = $1 AND is_deleted = false",
       [req.params.id]
     );
 
@@ -112,7 +77,7 @@ router.delete("/media/:id", async (req, res) => {
     }
 
     await pool.query( // ✅ FIXED
-      "DELETE FROM media WHERE id = $1",
+      "UPDATE media SET is_deleted = true, deleted_at = NOW() WHERE id = $1",
       [req.params.id]
     );
 

@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
     if (course_id && (!courseName || !brochureURL)) {
       try {
         const courseRes = await pool.query(
-          "SELECT title, brochure_url FROM courses WHERE id = $1",
+          "SELECT title, brochure_url FROM courses WHERE id = $1 AND is_deleted = false",
           [course_id]
         );
         if (courseRes.rows.length > 0) {
@@ -68,6 +68,7 @@ router.get("/", async (req, res) => {
       `SELECT l.*, c.title AS course_title
        FROM leads l
        LEFT JOIN courses c ON l.course_id = c.id
+       WHERE l.is_deleted = false
        ORDER BY l.created_at DESC`
     );
     res.json(result.rows);
@@ -88,7 +89,7 @@ router.post("/verified", async (req, res) => {
     if (course_id && !brochureURL) {
       try {
         const courseRes = await pool.query(
-          "SELECT title, brochure_url FROM courses WHERE id = $1",
+          "SELECT title, brochure_url FROM courses WHERE id = $1 AND is_deleted = false",
           [course_id]
         );
         if (courseRes.rows.length > 0) {

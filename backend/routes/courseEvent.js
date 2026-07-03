@@ -4,7 +4,7 @@ const db = require("../config/db");
 
 router.get("/", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM course_events ORDER BY start_date ASC");
+    const result = await db.query("SELECT * FROM course_events WHERE is_deleted = false ORDER BY start_date ASC");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -44,7 +44,7 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    await db.query("DELETE FROM course_events WHERE id=$1", [req.params.id]);
+    await db.query("UPDATE course_events SET is_deleted = true, deleted_at = NOW() WHERE id=$1", [req.params.id]);
     res.json({ message: "Deleted" });
   } catch (err) {
     res.status(500).json({ error: "Delete error" });

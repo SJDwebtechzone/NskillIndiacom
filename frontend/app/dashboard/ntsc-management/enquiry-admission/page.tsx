@@ -52,7 +52,7 @@
 //         const identifier = view === "enquiry" ? item.enquiry_id : (item.admission_number || item.enquiry_id); // Use admission_number for admissions if available
 //         const name = view === "enquiry" ? item.student_name : item.full_name;
 
-//         if (!confirm(`Are you sure you want to delete ${type} for "${name}" (${identifier})?\nThis action is permanent.`)) return;
+//         if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
 
 //         try {
 //             const endpoint = view === "enquiry" ? `/enquiries/${item.id}` : `/admissions/${item.id}`;
@@ -734,7 +734,7 @@ export default function EnquiryAdmissionPage() {
   };
 
   const deleteEnquiry = async (id: number, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete the enquiry for "${name}"?\nThis action is permanent.`)) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       const res = await fetch(`${API}/api/enquiries/${id}`, {
         method: "DELETE",
@@ -750,7 +750,7 @@ export default function EnquiryAdmissionPage() {
   };
 
   const deleteAdmission = async (id: number, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete the admission for "${name}"?\nThis action is permanent.`)) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       const res = await fetch(`${API}/api/admissions/${id}`, {
         method: "DELETE",

@@ -37,12 +37,18 @@ const finaltestRoutes = require('./routes/finaltest');
 const marksRoutes = require('./routes/marks');
 const placementFeedbackRoutes = require('./routes/placement-feedback');
 const reviewsRoutes = require('./routes/reviews');
+const myProfileRoute = require('./routes/my-profile-route');
 const bgImagesRoutes = require('./routes/background-images');
+const partnersRoutes = require('./routes/partners');
 const otpRoutes = require("./routes/otp");
-
+const advertisementsRoutes = require('./routes/advertisements');
+const mailTemplatesRoutes = require('./routes/mail_templates');
 const dashboardRoutes = require("./routes/dashboard");
 const classStatusRoutes = require("./routes/classStatus");
 const courseEventRoutes = require("./routes/courseEvent");
+const restoreRoutes = require("./routes/restore");
+const { initCronScheduler } = require("./utils/cronScheduler");
+const { startScheduler } = require('./utils/emailScheduler');
 // In index.js — add this if not already there
 const path = require('path');
 const app  = express();
@@ -83,6 +89,8 @@ app.use("/api/bookings", bookingsRoutes);  // POST /api/bookings
 app.use("/api/leads",    leadsRoutes); 
 app.use("/api/upload",   uploadRoutes);    // POST /api/upload/video
 app.use('/api/admin/posttest', posttestRoutes);
+app.use("/api/advertisements", advertisementsRoutes);
+app.use("/api/mail-templates", mailTemplatesRoutes);
 
 app.use('/api/assessments', assessmentRoutes);
 
@@ -103,11 +111,16 @@ app.use('/api/marks', marksRoutes);
 app.use('/api/placement-feedback', placementFeedbackRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/background-images', bgImagesRoutes);
-// ✅ Correct — matches the actual filename
+app.use('/api/partners', partnersRoutes);
+app.use('/api/advertisements', advertisementsRoutes);// ✅ Correct — matches the actual filename
 app.use("/api/course_events", courseEventRoutes);
 
 app.use("/api/class-status", classStatusRoutes);
+app.use("/api/restore", restoreRoutes);
 
+// Initialize background scheduler
+initCronScheduler();
+startScheduler();
 
 // app.use("/api", authRoutes);
 // ── Health check ───────────────────────────────────────────────────────────────

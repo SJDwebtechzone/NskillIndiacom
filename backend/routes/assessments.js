@@ -28,14 +28,15 @@ router.get('/trainer/courses', authMiddleware, async (req, res) => {
       result = await pool.query(
         `SELECT course_name, COUNT(*) AS student_count
          FROM student_admissions
+         WHERE is_deleted = false
          GROUP BY course_name ORDER BY course_name`
       );
     } else {
       result = await pool.query(
         `SELECT c.title AS course_name, COUNT(sa.id) AS student_count
          FROM courses c
-         LEFT JOIN student_admissions sa ON sa.course_name = c.title
-         WHERE c.trainer_id = $1
+         LEFT JOIN student_admissions sa ON sa.course_name = c.title AND sa.is_deleted = false
+         WHERE c.trainer_id = $1 AND c.is_deleted = false
          GROUP BY c.title ORDER BY c.title`,
         [trainerId]
       );
@@ -54,7 +55,7 @@ router.get('/trainer/:courseName', authMiddleware, async (req, res) => {
     const decoded = decodeToken(req.headers.authorization);
     const result = await pool.query(
       `SELECT * FROM assessments
-       WHERE course_name = $1 AND trainer_id = $2
+       WHERE course_name = $1 AND trainer_id = $2 AND is_deleted = false
        ORDER BY due_date ASC`,
       [courseName, decoded.id]
     );
@@ -104,7 +105,7 @@ router.put('/trainer/:assessmentId', authMiddleware, async (req, res) => {
 router.delete('/trainer/:assessmentId', authMiddleware, async (req, res) => {
   const { assessmentId } = req.params;
   try {
-    await pool.query(`DELETE FROM assessments WHERE id=$1`, [assessmentId]);
+    await pool.query(`UPDATE assessments SET is_deleted = true, deleted_at = NOW() WHERE id=$1`, [assessmentId]);
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -127,7 +128,7 @@ router.get('/trainer/:assessmentId/submissions', authMiddleware, async (req, res
        FROM assessment_submissions s
        INNER JOIN student_admissions sa ON sa.id = s.student_id
        INNER JOIN users u ON u.email = sa.email_id
-       WHERE s.assessment_id = $1
+       WHERE s.assessment_id = $1 AND s.is_deleted = false AND sa.is_deleted = false AND u.is_deleted = false
        ORDER BY s.submitted_at DESC`,
       [assessmentId]
     );
@@ -169,7 +170,7 @@ router.get('/student', authMiddleware, async (req, res) => {
     const courseRes = await pool.query(
       `SELECT sa.id, sa.course_name FROM student_admissions sa
        INNER JOIN users u ON u.email = sa.email_id
-       WHERE u.id = $1 LIMIT 1`,
+       WHERE u.id = $1 AND sa.is_deleted = false AND u.is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     if (courseRes.rows.length === 0)
@@ -185,8 +186,8 @@ router.get('/student', authMiddleware, async (req, res) => {
          s.marks, s.remarks, s.submitted_at, s.verified_at
        FROM assessments a
        LEFT JOIN assessment_submissions s 
-         ON s.assessment_id = a.id AND s.student_id = $1
-       WHERE a.course_name = $2
+         ON s.assessment_id = a.id AND s.student_id = $1 AND s.is_deleted = false
+       WHERE a.course_name = $2 AND a.is_deleted = false
        ORDER BY a.due_date ASC`,
       [admissionId, course_name]
     );
@@ -208,7 +209,7 @@ router.post('/student/:assessmentId/submit', authMiddleware, async (req, res) =>
     const studentRes = await pool.query(
       `SELECT sa.id FROM student_admissions sa
        INNER JOIN users u ON u.email = sa.email_id
-       WHERE u.id = $1 LIMIT 1`,
+       WHERE u.id = $1 AND sa.is_deleted = false AND u.is_deleted = false LIMIT 1`,
       [decoded.id]
     );
     if (studentRes.rows.length === 0)
@@ -219,7 +220,7 @@ router.post('/student/:assessmentId/submit', authMiddleware, async (req, res) =>
     // Check if already submitted
     const existing = await pool.query(
       `SELECT id FROM assessment_submissions
-       WHERE assessment_id=$1 AND student_id=$2`,
+       WHERE assessment_id=$1 AND student_id=$2 AND is_deleted = false`,
       [assessmentId, admissionId]
     );
 

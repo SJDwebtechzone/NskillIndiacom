@@ -41,13 +41,17 @@ const websiteSettingsItems = [
   { name: "Latest News",        path: "/dashboard/settings?tab=news",             module: "Latest News",        icon: Settings,      tab: "news"           },
   { name: "Accreditions",       path: "/dashboard/settings?tab=accreditations",   module: "Accreditions",       icon: Award,         tab: "accreditations" },
   { name: "Contact Info",       path: "/dashboard/settings/contact-info",         module: "Contact Info",       icon: Phone,         tab: null             },
-  { name: "Post Jobs",          path: "/dashboard/settings/placement",            module: "Placement",          icon: Briefcase,     tab: null             },
-  { name: "Applied Jobs",       path: "/dashboard/settings/apllied-jobs",         module: "Apllied Jobs",       icon: ClipboardList, tab: null             },
-  { name: "Upload Videos",      path: "/dashboard/settings/upload-videos",        module: "Upload videos",      icon: Video,         tab: null             },
+  { name: "Post Jobs",          path: "/dashboard/settings/placement",            module: "Post Jobs",          icon: Briefcase,     tab: null             },
+  { name: "Applied Jobs",       path: "/dashboard/settings/apllied-jobs",         module: "Applied Jobs",       icon: ClipboardList, tab: null             },
+  { name: "Upload Videos",      path: "/dashboard/settings/upload-videos",        module: "Upload Videos",      icon: Video,         tab: null             },
   { name: "Student Placements", path: "/dashboard/settings/student-placements",   module: "Student Placements", icon: Upload,        tab: null             },
   { name: "Testimonials",       path: "/dashboard/settings/testimonials",         module: "Testimonials",       icon: MessageSquare, tab: null             },
   { name: "Reviews & Videos",   path: "/dashboard/settings/reviews",              module: "Reviews & Videos",   icon: Share2,        tab: null             },
+  { name: "Just Dial Reviews",  path: "/dashboard/settings/justdial-reviews",     module: "Reviews & Videos",   icon: Phone,         tab: null             },
   { name: "Course Calendar",    path: "/dashboard/settings/course_calender",      module: "course calender",    icon: CalendarDays,  tab: null             },
+  { name: "Partners Section",   path: "/dashboard/settings?tab=partners",         module: "Partners Section",   icon: Users,         tab: "partners"       },
+  { name: "Advertisement",      path: "/dashboard/settings?tab=advertisement",    module: "Advertisement",      icon: ImagePlay,     tab: "advertisement"  },
+  { name: "Mail Templates",       path: "/dashboard/settings/mail-templates",         module: "Mail Templates",       icon: Settings,      tab: null             },
 ];
 
 const courseManagementItems = [
@@ -68,8 +72,7 @@ const studentManagementItems: MenuItem[] = [
   { name: "ID Generation",            path: "/dashboard/student-management/id-generation",          module: "ID Generation",             icon: FileDigit     },
   { name: "Course and Fees Details",  path: "/dashboard/student-management/course-details",         module: "Course and Fees Details",   icon: BookOpen      },
   { name: "Fees Receipt",             path: "/dashboard/student-management/fees-receipt",           module: "Fees Receipt",              icon: Receipt       },
-  { name: "Pre-Test",                 path: "/dashboard/student-management/pre-test",               module: "Admin Pre-Test",            icon: ClipboardList },
-  { name: "My Pre-Test",              path: "/dashboard/student-management/my-pretest",             module: "MyPreTest",                 icon: ClipboardList },
+
   { name: "Daily Attendance",         path: "/dashboard/student-management/attendance",             module: "Daily Attendance",          icon: CalendarCheck },
   { name: "Face Enrolment",           path: "/dashboard/student-management/face-enrol",             module: "Daily Attendance",          icon: Scan          },
   { name: "Scan QR Attendance",       path: "/dashboard/student-management/attendance/scan",        module: "Daily Attendance",          icon: QrCode        },
@@ -83,6 +86,7 @@ const studentManagementItems: MenuItem[] = [
   { name: "Placement Details Uploads",path: "/dashboard/student-management/placements",             module: "Placement Details Uploads", icon: Upload        },
   { name: "Feedback & Testimonial",   path: "/dashboard/student-management/feedback",               module: "Feedback & Testimonial",    icon: MessageSquare },
   { name: "Google Review & Videos",   path: "/dashboard/student-management/reviews",                module: "Google Review & Videos",    icon: Share2        },
+  { name: "Just Dial Review & Videos",path: "/dashboard/student-management/justdial",               module: "Just Dial Review & Videos", icon: Phone         },
   // { name: "Fee Details", module: "Fee Details", icon: DollarSign, isDropdown: true, children: [
   //     { name: "Pending Fee", path: "/dashboard/student-management/fees/pending", icon: Clock       },
   //     { name: "Paid Fee",    path: "/dashboard/student-management/fees/paid",    icon: CheckSquare },
@@ -115,6 +119,10 @@ const ntscManagementItems = [
 
 const backgroundImagesItems = [
   { name: "Background Images", path: "/dashboard/background-images", module: "Background Images", icon: Image },
+];
+
+const restoreSystemItems = [
+  { name: "Restore System", path: "/dashboard/restore", module: "NTSC Admin", icon: RefreshCw },
 ];
 
 function SubLink({ 
@@ -168,6 +176,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
 
   // ── Sidebar open states — lazy init from pathname ──────────────────────────
   const [isUserMenuOpen,          setIsUserMenuOpen]          = useState(() => inPath(pathname, "/ntsc-admin","/associate","/students","/staff","/manage-users","/manage-roles"));
+  const [isRestoreSystemOpen,     setIsRestoreSystemOpen]     = useState(() => inPath(pathname, "/restore"));
   const [isSettingsMenuOpen,      setIsSettingsMenuOpen]      = useState(() => inPath(pathname, "/dashboard/settings"));
   const [isCourseMenuOpen,        setIsCourseMenuOpen]        = useState(() => inPath(pathname, "/course-management"));
   const [isAssociateMenuOpen,     setIsAssociateMenuOpen]     = useState(() => inPath(pathname, "/associate-management"));
@@ -190,11 +199,13 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
     setIsTraineeManagementOpen(prev => menu === "trainer" ? !prev : false);
     setIsNTSCManagementOpen(prev => menu === "ntsc" ? !prev : false);
     setIsBackgroundImagesOpen(prev => menu === "bg" ? !prev : false);
+    setIsRestoreSystemOpen(prev => menu === "restore" ? !prev : false);
   };
 
   // ── Update sidebar states when pathname changes ────────────────────────────
   useEffect(() => {
     setIsUserMenuOpen(inPath(pathname, "/ntsc-admin","/associate","/students","/staff","/manage-users","/manage-roles"));
+    setIsRestoreSystemOpen(inPath(pathname, "/restore"));
     setIsSettingsMenuOpen(inPath(pathname, "/dashboard/settings"));
     setIsCourseMenuOpen(inPath(pathname, "/course-management"));
     setIsAssociateMenuOpen(inPath(pathname, "/associate-management"));
@@ -244,13 +255,14 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
 
   // ── Visible items — re-computed every render when permissions change ────────
   const visibleUserItems      = userManagementItems.filter(i => hasPerm(i.module));
-  const visibleSettingsItems  = websiteSettingsItems.filter(i => hasPerm(i.module));
+  const visibleSettingsItems  = isAdmin(user) ? websiteSettingsItems.filter(i => hasPerm(i.module)) : [];
   const visibleCourseItems    = courseManagementItems.filter(i => hasPerm(i.module));
   const visibleAssociateItems = isAssociate ? associateManagementItems : associateManagementItems.filter(i => hasPerm(i.module));
   const visibleStudentItems   = isStudent ? studentManagementItems : studentManagementItems.filter(i => hasPerm(i.module));
   const visibleTraineeItems   = isTrainer ? traineeManagementItems : traineeManagementItems.filter(i => hasPerm(i.module));
   const visibleNTSCItems      = ntscManagementItems.filter(i => hasPerm(i.module));
   const visibleBgItems        = backgroundImagesItems.filter(i => hasPerm(i.module));
+  const visibleRestoreItems   = restoreSystemItems.filter(i => hasPerm(i.module));
 
   const getInitials = (name: string) =>
     name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
@@ -261,6 +273,17 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
     if (name === "Latest News")     return inPath(pathname, "/dashboard/settings") && tabParam === "news";
     if (name === "Accreditions")    return inPath(pathname, "/dashboard/settings") && tabParam === "accreditations";
     if (name === "Contact Info")    return inPath(pathname, "/dashboard/settings/contact-info");
+    if (name === "Post Jobs")       return inPath(pathname, "/dashboard/settings/placement");
+    if (name === "Applied Jobs")    return inPath(pathname, "/dashboard/settings/apllied-jobs");
+    if (name === "Upload Videos")   return inPath(pathname, "/dashboard/settings/upload-videos");
+    if (name === "Student Placements") return inPath(pathname, "/dashboard/settings/student-placements");
+    if (name === "Testimonials")    return inPath(pathname, "/dashboard/settings/testimonials");
+    if (name === "Reviews & Videos") return inPath(pathname, "/dashboard/settings/reviews");
+    if (name === "Just Dial Reviews") return inPath(pathname, "/dashboard/settings/justdial-reviews");
+    if (name === "Course Calendar") return inPath(pathname, "/dashboard/settings/course_calender");
+    if (name === "Partners Section") return inPath(pathname, "/dashboard/settings") && tabParam === "partners";
+    if (name === "Advertisement") return inPath(pathname, "/dashboard/settings") && tabParam === "advertisement";
+    if (name === "Mail Templates") return inPath(pathname, "/dashboard/settings/mail-templates");
     return false;
   };
 
@@ -503,6 +526,20 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
               {isBackgroundImagesOpen && (
                 <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
                   {visibleBgItems.map(item => (
+                    <li key={item.name}><SubLink path={item.path!} name={item.name} icon={item.icon} pathname={pathname} /></li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* Restore System */}
+          {visibleRestoreItems.length > 0 && (
+            <div className="space-y-1">
+              <SectionToggle label="Restore System" icon={RefreshCw} isOpen={isRestoreSystemOpen} onClick={() => toggleMenu("restore")} />
+              {isRestoreSystemOpen && (
+                <ul className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4 py-1">
+                  {visibleRestoreItems.map(item => (
                     <li key={item.name}><SubLink path={item.path!} name={item.name} icon={item.icon} pathname={pathname} /></li>
                   ))}
                 </ul>

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 interface Assessment {
   id: number;
@@ -195,11 +196,10 @@ export default function StudentAssessmentsPage() {
                     {a.status === 'submitted' ? 'Re-upload Document' : 'Upload Document'}
                   </p>
                   <div className="flex items-center gap-3">
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    <ValidatedFileInput
+                      fileType="any"
                       onChange={e => e.target.files && handleFileChange(a.id, e.target.files[0])}
-                      className="flex-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+                      className="flex-1"
                     />
                     <button
                       onClick={() => handleSubmit(a.id)}

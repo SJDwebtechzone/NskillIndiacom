@@ -56,14 +56,15 @@ function openPrintPage(student: any) {
     }
     .page {
       width: 210mm;
-      height: 297mm;
+      min-height: 297mm;
       padding: 8mm 10mm;
-      margin: 0 auto;
+      margin: 20px auto;
       background: white;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
+      justify-content: flex-start;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     /* Header */
@@ -190,15 +191,41 @@ function openPrintPage(student: any) {
       color: #888;
     }
 
+    .print-spacer-header { display: none; }
+    .print-spacer-footer { display: none; }
+    .page-border { display: none; }
+
     @media print {
-      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-      .page { padding: 8mm 10mm; }
-      @page { size: A4; margin: 0; }
+      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; background: white; margin: 0; padding: 0; }
+      .page {
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 5mm !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      .print-spacer-header { display: table-header-group; }
+      .print-spacer-footer { display: table-footer-group; }
+      @page { size: A4; margin: 5mm; }
     }
   </style>
 </head>
 <body>
 <div class="page">
+  <table style="width: 100%; border-collapse: collapse; border-left: 2px solid #000; border-right: 2px solid #000; box-sizing: border-box;">
+    <thead class="print-spacer-header">
+      <tr>
+        <td style="border-top: 2px solid #000; padding: 0;"><div style="height: 5mm;"></div></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: none; padding: 0 10mm; vertical-align: top;">
+          <div style="display: flex; flex-direction: column; height: 100%; min-height: 540mm;">
+            <div style="flex: 1 0 auto;">
 
   <!-- Header -->
   <div class="header">
@@ -214,6 +241,7 @@ function openPrintPage(student: any) {
       <div class="form-title">STUDENT ADMISSION FORM</div>
       <div class="adm-no">Admission No: ${student.admission_number || student.enquiry_id || "—"}</div>
       <div class="adm-no">Date: ${fmtDate(student.admission_date)}</div>
+      <div class="adm-no">Course: ${student.course_name || "—"}</div>
     </div>
   </div>
 
@@ -308,6 +336,8 @@ function openPrintPage(student: any) {
       <thead>
         <tr>
           <th>Course Fees</th>
+          <th>Discount Fee</th>
+          <th>Discount Remark</th>
           <th>Total Fees</th>
           <th>Paid Fees</th>
           <th>Balance Due</th>
@@ -316,6 +346,8 @@ function openPrintPage(student: any) {
       <tbody>
         <tr>
           <td>${fmtAmt(student.course_fees)}</td>
+          <td>${fmtAmt(student.discount_fee || 0)}</td>
+          <td>${student.discount_remark || "-"}</td>
           <td>${fmtAmt(student.total_fees)}</td>
           <td>${fmtAmt(student.paid_fees)}</td>
           <td class="${Number(student.balance_amount) > 0 ? "highlight" : "cleared"}">
@@ -373,54 +405,201 @@ function openPrintPage(student: any) {
 
   <!-- Declarations -->
   <div class="section">
-    <div class="section-title">Declarations Signed</div>
-    <div class="decl-grid">
-      ${[
-        ["Student Declaration",   student.student_declaration],
-        ["Parent Declaration",    student.parent_declaration],
-        ["Placement Ack",         student.placement_ack],
-        ["Discipline Ack",        student.discipline_ack],
-        ["Photo Consent",         student.photo_consent],
-        ["Refund Policy Ack",     student.refund_policy_ack],
-        ["Data Privacy Ack",      student.data_privacy_ack],
-        ["Final Undertaking",     student.final_undertaking],
-        ["Overseas Disclaimer",   student.overseas_disclaimer],
-      ].map(([label, val]) =>
-        `<div class="decl-item">
-          <span class="${val ? "tick" : "cross"}">${val ? "✓" : "✗"}</span>
-          <span>${label}</span>
-        </div>`
-      ).join("")}
+    <div class="section-title"><span style="color: #27ae60; margin-right: 4px;">✓</span> STUDENT DECLARATION & DISCLAIMER</div>
+    <p style="font-size: 8.5px; font-weight: bold; margin-bottom: 5px; text-align: justify; color: #111;">
+      <span style="color: #27ae60; margin-right: 4px;">✓</span> I hereby declare that I have voluntarily enrolled in the above-mentioned course at Niile Technical Skill and Consulting (NTSC). I have read, understood, and agree to abide by the following terms and conditions:
+    </p>
+
+    <!-- Signed Declarations Content -->
+    <div style="font-size: 7px; line-height: 1.25; color: #222; margin-bottom: 5px; display: flex; flex-direction: column; gap: 8px;">
+      
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> FEES & REFUND POLICY</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal;">
+          <li>All admission, registration, examination, and course fees paid to the institute are non-refundable and non-transferable.</li>
+          <li>Students discontinuing the course after admission shall not be entitled to any refund.</li>
+          <li>Any refund, if approved, shall be solely at the discretion of the management.</li>
+          <li>Fees paid for Theory and Practical’s study Soft Copy materials, examinations, or certifications are non-refundable.</li>
+        </ol>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> TRAINING & ATTENDANCE</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal;">
+          <li>Students must maintain a minimum attendance of 80%.</li>
+          <li>Practical training and assessments are compulsory.</li>
+          <li>Students shall follow all workshop, laboratory, hostel, and safety regulations.</li>
+          <li>Misconduct, indiscipline, harassment, violence, intoxication, or damage to institute property may result in suspension or cancellation of admission without fee refund.</li>
+        </ol>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> CERTIFICATE POLICY</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal;">
+          <li>Certificates will be issued only after successful completion of the course.</li>
+          <li>Students must complete attendance requirements, practical training, assessments, and fee payments before certificate issuance.</li>
+          <li>Students leaving the course before completion shall not be eligible for course completion certificates.</li>
+          <li>The institute reserves the right to withhold certificates in case of pending dues or disciplinary issues.</li>
+        </ol>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;">${student.placement_ack ? '<span style="color: #27ae60; margin-right: 4px;">✓</span>' : '<span style="color: #e74c3c; margin-right: 4px;">✗</span>'} PLACEMENT ASSISTANCE</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal;">
+          <li>The institute provides placement assistance only and does not guarantee employment.</li>
+          <li>Job selection depends on student performance, skills, attendance, employer requirements, interview performance, and market conditions.</li>
+          <li>Salary, location, designation, accommodation, and employment terms are decided solely by the recruiting company.</li>
+          <li>The institute shall not be held responsible if a student is not selected by an employer.</li>
+          <li>Students must attend interviews arranged by the institute when called.</li>
+        </ol>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> DOCUMENT VERIFICATION</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal;">
+          <li>All documents submitted by me are genuine and valid.</li>
+          <li>Submission of false, forged, or misleading documents may result in cancellation of admission, cancellation of certification, and legal action.</li>
+        </ol>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> Code of Conduct Training & Workshop</strong>
+        <p style="margin: 1px 0;">I agree to maintain professional behaviour and discipline throughout the training and workshop sessions conducted by NTSC. I understand and agree that I will:</p>
+        <ul style="margin-left: 12px; list-style-type: disc;">
+          <li>Attend all training sessions punctually.</li>
+          <li>Follow the instructions of trainers and NTSC staff.</li>
+          <li>Wear appropriate attire and Personal Protective Equipment (PPE) during practical sessions.</li>
+          <li>Handle tools, machines, instruments, and training equipment safely and responsibly.</li>
+          <li>Respect fellow trainees, trainers, staff, and visitors.</li>
+          <li>Refrain from using abusive language, discrimination, harassment, or disruptive behavior.</li>
+          <li>Keep classrooms, laboratories, and workshop areas clean and organized.</li>
+          <li>Not use mobile phones during training sessions unless permitted by the trainer.</li>
+          <li>Not consume alcohol, tobacco, narcotics, or any prohibited substances within the training premises.</li>
+          <li>Immediately report any unsafe conditions, accidents, or damage to equipment.</li>
+        </ul>
+        <p style="margin-top: 1px;">I understand that failure to comply with the above rules may result in disciplinary action, suspension, or termination from the training program.</p>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> Code of Conduct Hostel</strong>
+        <p style="margin: 1px 0;">I understand that staying in the hostel is a privilege and agree to abide by the hostel rules and regulations. I agree to:</p>
+        <ul style="margin-left: 12px; list-style-type: disc;">
+          <li>Maintain discipline and respect hostel staff and fellow residents.</li>
+          <li>Keep my room and common areas clean and hygienic.</li>
+          <li>Avoid damaging hostel property. Any damages caused by negligence may be recovered from me.</li>
+          <li>Follow the hostel timings and visitor policies.</li>
+          <li>Maintain peace and avoid causing inconvenience to other residents.</li>
+          <li>Not possess or consume alcohol, tobacco, drugs, or other prohibited substances.</li>
+          <li>Follow all safety and emergency procedures.</li>
+          <li>Inform the hostel warden before leaving the hostel for any extended period.</li>
+        </ul>
+        <p style="margin-top: 1px;">I understand that violation of hostel rules may lead to disciplinary action, including cancellation of hostel accommodation.</p>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> Security Deposit (Caution Deposit)</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal;">
+          <li>Every student shall pay a refundable caution deposit of Rs. 1,000 at the time of hostel admission.</li>
+          <li>The caution deposit will be refunded after the student vacates the hostel, subject to:
+            <ul style="margin-left: 10px; list-style-type: circle;">
+              <li>No damage to hostel property.</li>
+              <li>Return of any hostel property (if issued).</li>
+              <li>Compliance with all hostel rules and regulations.</li>
+            </ul>
+          </li>
+          <li>If any damage is caused to the hostel building, furniture, electrical fittings, plumbing fixtures, appliances, equipment, or any other hostel property due to the student's negligence, misuse, or intentional act, the cost of repair or replacement will be deducted from the caution deposit.</li>
+          <li>If the actual cost of repair or replacement exceeds the caution deposit amount of Rs. 1,000, the student and/or parent/guardian shall pay the balance amount immediately before vacating the hostel or receiving any refund.</li>
+          <li>The hostel management's assessment of the damage and repair cost shall be final and binding.</li>
+        </ol>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> Data Privacy & Confidentiality</strong>
+        <p style="margin: 1px 0;">I understand that NTSC will collect and maintain my personal information for admission, training, certification, placement assistance, statutory compliance, and communication purposes. I hereby consent to NTSC collecting, storing, processing, and using my information solely for official purposes. I further agree that:</p>
+        <ul style="margin-left: 12px; list-style-type: disc;">
+          <li>I will maintain the confidentiality of all NTSC training materials, assessments, and any confidential information shared during the course.</li>
+          <li>I will not copy, reproduce, distribute, record, or share NTSC training materials without prior written permission.</li>
+          <li>I will not disclose confidential information obtained during industrial visits or company-sponsored training programs.</li>
+        </ul>
+        <p style="margin-top: 1px;">NTSC will make reasonable efforts to protect my personal information and use it only for legitimate educational and administrative purposes.</p>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> Photography & Video Consent</strong>
+        <p style="margin: 1px 0;">I hereby grant permission to Niile Technical Skill & Consulting Pvt Ltd (NTSC) to capture photographs, audio recordings, and video recordings of me during training programs, workshops, seminars, industrial visits, placement activities, competitions, and other official events.</p>
+        <p style="margin: 1px 0;">I understand that these photographs and videos may be used by NTSC for:</p>
+        <ul style="margin-left: 12px; list-style-type: disc;">
+          <li>Training and educational purposes</li>
+          <li>Certificates and course documentation</li>
+          <li>Website and social media platforms</li>
+          <li>Brochures, newsletters, and promotional materials</li>
+          <li>Marketing and branding activities</li>
+          <li>Reports and presentations</li>
+        </ul>
+        <p style="margin-top: 1px;">I understand that no financial compensation will be provided for the use of these photographs or videos. If I do not wish to be photographed or recorded, I will inform NTSC in writing before the commencement of the training program.</p>
+      </div>
+
+      <div>
+        <strong style="color: #1e3a6e;"><span style="color: #27ae60; margin-right: 4px;">✓</span> GENERAL CONDITIONS</strong>
+        <ol style="margin-left: 12px; list-style-type: decimal; display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px;">
+          <li>The institute reserves the right to modify batch timings, trainers, syllabus, examination schedules, training locations, or course structure whenever required.</li>
+          <li>Management decisions regarding admission, training, certification, and placement shall be final and binding.</li>
+          <li style="grid-column: span 2;">Any dispute shall be subject to the jurisdiction of Chennai courts only.</li>
+        </ol>
+      </div>
+
     </div>
   </div>
 
-  <!-- Signatures -->
-  <div class="sig-row">
-    <div class="sig-box">
-      <div class="sig-line"></div>
-      <div class="sig-label">Student Signature</div>
-    </div>
-    <div class="sig-box">
-      <div class="sig-line"></div>
-      <div class="sig-label">Parent / Guardian Signature</div>
-    </div>
-    <div class="sig-box">
-      <div class="sig-line"></div>
-      <div class="sig-label">Counsellor Signature</div>
-    </div>
-    <div class="sig-box">
-      <div class="sig-line"></div>
-      <div class="sig-label">Authorised Signatory</div>
-    </div>
-  </div>
+            </div>
+            
+            <!-- Spacer to push signature down -->
+            <div style="flex-grow: 1;"></div>
 
-  <!-- Footer -->
-  <div class="page-footer">
-    <span>NTSC Training Institute · Kovur, Chennai · +91 98842 09774</span>
-    <span>Printed on: ${new Date().toLocaleDateString("en-IN")}</span>
-    <span>Admission No: ${student.admission_number || student.enquiry_id || "—"}</span>
-  </div>
+            <!-- Signature block anchored to bottom -->
+            <div style="margin-top: 20px; page-break-inside: avoid; padding-top: 20px; flex-shrink: 0;">
+              <div style="font-size: 8px; font-weight: bold; border-top: 1.5px solid #1e3a6e; padding-top: 4px; margin-bottom: 6px;">
+                <span style="color: #1e3a6e; text-transform: uppercase;">STUDENT CONSENT:</span>
+                <p style="margin-top: 2px; font-weight: normal; color: #444;">I confirm that I have read and understood all the above terms and conditions. I agree to comply with the rules and regulations of Niile Technical Skill and Consulting (NTSC).</p>
+              </div>
 
+              <!-- Signatures -->
+              <div class="sig-row" style="margin-top: 15px;">
+                <div class="sig-box">
+                  <div class="sig-line"></div>
+                  <div class="sig-label">Student Signature</div>
+                </div>
+                <div class="sig-box">
+                  <div class="sig-line"></div>
+                  <div class="sig-label">Parent / Guardian Signature</div>
+                </div>
+                <div class="sig-box">
+                  <div class="sig-line"></div>
+                  <div class="sig-label">Counsellor Signature</div>
+                </div>
+                <div class="sig-box">
+                  <div class="sig-line"></div>
+                  <div class="sig-label">Authorised Signatory</div>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <div class="page-footer">
+                <span>NTSC Training Institute · Kovur, Chennai · +91 98842 09774</span>
+                <span>Printed on: ${new Date().toLocaleDateString("en-IN")}</span>
+              </div>
+            </div>
+
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot class="print-spacer-footer">
+      <tr>
+        <td style="border-bottom: 2px solid #000; padding: 0;"><div style="height: 5mm;"></div></td>
+      </tr>
+    </tfoot>
+  </table>
 </div>
 
 <script>
@@ -469,7 +648,7 @@ export default function DownloadA4Page() {
   };
 
   const deleteAdmission = async (id: number, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete the admission for "${name}"?\nThis action is permanent.`)) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       const res = await fetch(`${API}/api/admissions/${id}`, {
         method: "DELETE",

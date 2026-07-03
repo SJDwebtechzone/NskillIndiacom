@@ -69,7 +69,7 @@ router.post("/login", async (req, res) => {
        FROM   users u
        LEFT JOIN roles r ON u.role_id = r.id
        LEFT JOIN student_admissions sa ON sa.email_id = u.email
-       WHERE  u.email = $1
+       WHERE  u.email = $1 AND u.is_deleted = false
        LIMIT 1`,
       [email]
     );
@@ -99,7 +99,7 @@ router.post("/login", async (req, res) => {
     const permResult = await pool.query(
       `SELECT module, can_view, can_add, can_edit, can_delete
        FROM   permissions
-       WHERE  role_id = $1`,
+       WHERE  role_id = $1 AND is_deleted = false`,
       [user.role_id]
     );
 
@@ -171,7 +171,7 @@ router.get("/me", async (req, res) => {
               sp.skills, sp.languages, sp.profile_summary, sp.academic_achievements
        FROM users u
        LEFT JOIN student_profiles sp ON u.id = sp.user_id
-       WHERE u.id = $1`,
+       WHERE u.id = $1 AND u.is_deleted = false`,
       [decoded.id]
     );
 

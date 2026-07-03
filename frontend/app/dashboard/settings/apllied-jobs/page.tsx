@@ -98,7 +98,7 @@ export default function AdminApplicationsPage() {
   };
 
   const handleDeleteApplication = async (id: number) => {
-    if (!confirm("Are you sure you want to permanently delete this application?")) return;
+    if (!window.confirm("Move this record to Restore? This record can be restored within 30 days. After 30 days it will be permanently deleted automatically.")) return;
     try {
       const res = await fetch(`${API}/api/jobs/application/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");

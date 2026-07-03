@@ -7,7 +7,7 @@ const { authMiddleware } = require("../middleware/authMiddleware");
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      "SELECT * FROM roles ORDER BY created_at DESC"
+      "SELECT * FROM roles WHERE is_deleted = false ORDER BY created_at DESC"
     );
     res.json({ success: true, data: rows });
   } catch (err) {
@@ -20,7 +20,7 @@ router.get("/:id/permissions", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const roleRes = await pool.query(
-      "SELECT * FROM roles WHERE id = $1", [id]
+      "SELECT * FROM roles WHERE id = $1 AND is_deleted = false", [id]
     );
     if (!roleRes.rows.length)
       return res.status(404).json({ success: false, message: "Role not found" });
@@ -36,7 +36,8 @@ router.get("/:id/permissions", authMiddleware, async (req, res) => {
          COALESCE(p.can_delete, false) AS can_delete
        FROM modules m
        LEFT JOIN permissions p
-         ON p.module = m.slug AND p.role_id = $1
+         ON p.module = m.slug AND p.role_id = $1 AND p.is_deleted = false
+       WHERE m.is_deleted = false
        ORDER BY m.name`,
       [id]
     );
@@ -93,7 +94,7 @@ router.put("/:id/permissions", authMiddleware, async (req, res) => {
     const { permissions } = req.body;
 
     await client.query("BEGIN");
-    await client.query("DELETE FROM permissions WHERE role_id = $1", [id]);
+    await client.query("UPDATE permissions SET is_deleted = true, deleted_at = NOW() WHERE role_id = $1", [id]);
 
     for (const p of permissions) {
       if (p.can_view || p.can_add || p.can_edit || p.can_delete) {
