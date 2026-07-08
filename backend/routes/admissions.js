@@ -874,4 +874,88 @@ router.patch("/:id/verify", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+// GET /admission-form — get logged in student's full admission form (for A4 print/view)
+router.get("/admission-form", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const token = authHeader.split(' ')[1];
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
+
+    // Get email from users table
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
+      [decoded.id]
+    );
+    const email = userResult.rows[0]?.email;
+    if (!email) return res.status(404).json({ error: 'User not found' });
+
+    // Get full admission record for this student
+    const studentResult = await pool.query(
+      `SELECT * FROM student_admissions 
+       WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
+      [email]
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Admission record not found' });
+    }
+
+    res.json(studentResult.rows[0]);
+  } catch (err) {
+    console.error('GET /admission-form error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Multer config for the signed admission file
+const uploadSignedField = handleFileUpload([
+    { name: 'signed_admission_file', maxCount: 1 },
+]);
+
+// POST /upload-signed — student uploads their signed admission form
+router.post("/upload-signed", uploadSignedField, async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const token = authHeader.split(' ')[1];
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecret');
+
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
+      [decoded.id]
+    );
+    const email = userResult.rows[0]?.email;
+    if (!email) return res.status(404).json({ error: 'User not found' });
+
+    if (!req.files || !req.files['signed_admission_file']) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // ── Normalize to a relative "uploads/xxx.ext" path ──
+    const rawPath = req.files['signed_admission_file'][0].path.replace(/\\/g, '/');
+    const idx = rawPath.lastIndexOf('/uploads/');
+    const filePath = idx !== -1 ? rawPath.slice(idx + 1) : rawPath; // keep "uploads/xxx.ext"
+
+    const result = await pool.query(
+      `UPDATE student_admissions
+       SET signed_admission_file = $1
+       WHERE LOWER(email_id) = LOWER($2) AND is_deleted = false
+       RETURNING id, signed_admission_file`,
+      [filePath, email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Admission record not found' });
+    }
+
+    res.json({ success: true, signed_admission_file: result.rows[0].signed_admission_file });
+  } catch (err) {
+    console.error('POST /upload-signed error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

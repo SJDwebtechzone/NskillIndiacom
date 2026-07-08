@@ -154,3 +154,20 @@ ALTER TABLE jobs ADD COLUMN IF NOT EXISTS event_location VARCHAR(255);
 -- Optional: Add Foreign Key constraints if you want strict referential integrity
 -- ALTER TABLE jobs ADD CONSTRAINT fk_thank_you_template FOREIGN KEY (thank_you_template_id) REFERENCES mail_templates(id) ON DELETE SET NULL;
 -- ALTER TABLE jobs ADD CONSTRAINT fk_reminder_template FOREIGN KEY (reminder_template_id) REFERENCES mail_templates(id) ON DELETE SET NULL;
+
+
+
+
+
+-- Migration: add placement assistance fields to student_admissions
+ALTER TABLE student_admissions
+  ADD COLUMN IF NOT EXISTS placement_assistance_required VARCHAR(10),
+  ADD COLUMN IF NOT EXISTS placement_no_reason TEXT;
+
+  ALTER TABLE student_admissions
+  ADD COLUMN IF NOT EXISTS signed_admission_file TEXT;
+
+
+  UPDATE student_admissions
+SET signed_admission_file = 'uploads/1783493205626-772806194.pdf'
+WHERE signed_admission_file LIKE '%1783493205626-772806194.pdf';

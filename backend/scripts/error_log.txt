@@ -244,3 +244,9 @@ error: column "counsellor_type" of relation "student_admissions" does not exist
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async D:\Devspectra\NskillIndiacom\backend\routes\admissions.js:471:24
 
+[2026-07-08T05:03:59.053Z] PATCH Error: column "placement_no_reason" of relation "student_admissions" does not exist
+error: column "placement_no_reason" of relation "student_admissions" does not exist
+    at C:\nskillindia-latest\NskillIndiacom\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C:\nskillindia-latest\NskillIndiacom\backend\routes\admissions.js:462:24
+

@@ -269,6 +269,7 @@ export default function StudentAdmissionForm() {
         has_aadhaar_file: null, has_edu_certs_file: null, has_passport_file: null,
         has_resume_file: null, has_address_proof_file: null, has_guardian_id_file: null,
         student_declaration: false, parent_declaration: true, placement_ack: false,
+        placement_assistance_required: "",placement_no_reason: "",
         overseas_disclaimer: true, discipline_ack: false, photo_consent: false,
         refund_policy_ack: false, data_privacy_ack: false, final_undertaking: false,
         training_attendance_ack: false, certificate_policy_ack: false,
@@ -718,6 +719,8 @@ export default function StudentAdmissionForm() {
             if (!formData.has_guardian_id_file)   newErrors.has_guardian_id_file   = "Required";
 
             if (!formData.student_declaration) newErrors.student_declaration = "Compulsory";
+            if (!formData.placement_assistance_required) newErrors.placement_assistance_required = "Please select Yes or No";
+            if (formData.placement_assistance_required === "No" && !formData.placement_no_reason) newErrors.placement_no_reason = "Please select a reason";          
             if (!formData.training_attendance_ack)   newErrors.training_attendance_ack   = "Compulsory";
             if (!formData.certificate_policy_ack)    newErrors.certificate_policy_ack    = "Compulsory";
             if (!formData.document_verification_ack) newErrors.document_verification_ack = "Compulsory";
@@ -1143,6 +1146,65 @@ export default function StudentAdmissionForm() {
                                     <li>The institute shall not be held responsible if a student is not selected by an employer.</li>
                                     <li>Students must attend interviews arranged by the institute when called.</li>
                                 </ol>
+                                {/* ── NEW: Placement Assistance Required Yes/No ── */}
+                                <div className="mt-4 pt-4 border-t border-slate-200">
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-700 mb-2">
+                                        Do you require Placement Assistance from NTSC? <span className="text-red-500">*</span>
+                                    </p>
+                                    <div className="flex gap-6">
+                                        {["Yes", "No"].map(opt => (
+                                            <label key={opt} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="placement_assistance_required"
+                                                    value={opt}
+                                                    checked={formData.placement_assistance_required === opt}
+                                                    onChange={handleChange}
+                                                    className="w-4 h-4 text-blue-500 border-slate-400 cursor-pointer"
+                                                />
+                                                <span className="text-xs font-bold text-slate-600">{opt}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    {errors.placement_assistance_required && (
+                                        <p className="text-[9px] text-red-500 font-black uppercase tracking-wider mt-1">
+                                            {errors.placement_assistance_required}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* ── NEW: If No, reason options ── */}
+                                {formData.placement_assistance_required === "No" && (
+                                    <div className="mt-4 pt-4 border-t border-slate-200">
+                                        <p className="text-[11px] font-black uppercase tracking-widest text-slate-700 mb-2">
+                                            Please select one option: <span className="text-red-500">*</span>
+                                        </p>
+                                        <div className="flex flex-col gap-2">
+                                            {[
+                                                "I will search for a job on my own",
+                                                "I am not interested in placement assistance",
+                                                "I plan to start / continue my own business",
+                                            ].map(opt => (
+                                                <label key={opt} className="flex items-center gap-2 cursor-pointer">
+                                                    <input
+                                                        type="radio"
+                                                        name="placement_no_reason"
+                                                        value={opt}
+                                                        checked={formData.placement_no_reason === opt}
+                                                        onChange={handleChange}
+                                                        className="w-4 h-4 text-blue-500 border-slate-400 cursor-pointer"
+                                                    />
+                                                    <span className="text-xs font-bold text-slate-600">{opt}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                        {errors.placement_no_reason && (
+                                            <p className="text-[9px] text-red-500 font-black uppercase tracking-wider mt-1">
+                                                {errors.placement_no_reason}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </DeclarationAccordion>
 
                             <DeclarationAccordion label="DOCUMENT VERIFICATION" name="document_verification_ack" checked={formData.document_verification_ack} onChange={handleChange} compulsory error={errors.document_verification_ack}>

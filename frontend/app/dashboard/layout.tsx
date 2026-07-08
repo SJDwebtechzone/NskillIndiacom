@@ -76,6 +76,7 @@ const studentManagementItems: MenuItem[] = [
   { name: "Daily Attendance",         path: "/dashboard/student-management/attendance",             module: "Daily Attendance",          icon: CalendarCheck },
   { name: "Face Enrolment",           path: "/dashboard/student-management/face-enrol",             module: "Daily Attendance",          icon: Scan          },
   { name: "Scan QR Attendance",       path: "/dashboard/student-management/attendance/scan",        module: "Daily Attendance",          icon: QrCode        },
+  { name: "My Admission Form",        path: "/dashboard/student-management/my-admission",           module: "My Admission Form",         icon: FileText      },
   { name: "My Weekly Test",           path: "/dashboard/student-management/weekly-test",            module: "My Weekly Test",            icon: MonitorPlay   },
   { name: "My Assessment",            path: "/dashboard/student-management/assessments",            module: "My Assessment",             icon: PenTool       },
   { name: "My Practical Video",       path: "/dashboard/student-management/practical-video",        module: "My Practical Video",        icon: Video         },
