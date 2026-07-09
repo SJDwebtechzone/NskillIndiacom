@@ -22,6 +22,7 @@ interface ValidatedFileInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
   wrapperClassName?: string;
   errorClassName?: string;
   infoClassName?: string;
+  ref?: any;
 }
 
 export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInputProps>(({
