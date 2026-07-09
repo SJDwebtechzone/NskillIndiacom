@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, ChangeEvent } from "react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 interface PreviewItem {
   name: string;

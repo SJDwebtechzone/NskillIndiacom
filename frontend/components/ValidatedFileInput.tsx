@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, useState } from 'react';
+import React, { InputHTMLAttributes, useState, forwardRef } from 'react';
 
 export type FileType = 'image' | 'pdf' | 'word' | 'excel' | 'powerpoint' | 'audio' | 'video' | 'zip' | 'csv' | 'text' | 'any';
 
@@ -24,7 +24,7 @@ interface ValidatedFileInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
   infoClassName?: string;
 }
 
-export function ValidatedFileInput({
+export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInputProps>(({
   fileType = 'any',
   className = '',
   wrapperClassName = 'w-full',
@@ -36,7 +36,7 @@ export function ValidatedFileInput({
   id,
   name,
   ...props
-}: ValidatedFileInputProps) {
+}, ref) => {
   const [error, setError] = useState<string | null>(null);
   const config = FILE_TYPE_CONFIG[fileType];
 
@@ -82,6 +82,7 @@ export function ValidatedFileInput({
   const content = (
     <>
       <input
+        ref={ref}
         type="file"
         id={id}
         name={name}
@@ -111,6 +112,8 @@ export function ValidatedFileInput({
       {content}
     </div>
   );
-}
+});
+
+ValidatedFileInput.displayName = 'ValidatedFileInput';
 
 export default ValidatedFileInput;

@@ -811,7 +811,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
           ) : (
             jobs.map((job) => {
               const skills = job.skills
-                ? job.skills.split(",").map((s) => s.trim()).filter(Boolean)
+                ? job.skills.split(",").map((s: string) => s.trim()).filter(Boolean)
                 : [];
 
               return (
@@ -877,7 +877,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
                   {/* Skills Row */}
                   {skills.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-2">
-                      {skills.slice(0, 4).map((sk, i) => (
+                      {skills.slice(0, 4).map((sk: string, i: number) => (
                         <span
                           key={i}
                           className="text-[11px] text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full font-semibold"

@@ -791,7 +791,7 @@ export default function DownloadA4Page() {
                       <div className="flex items-center gap-2.5">
                         {s.photo_url ? (
                           <img
-                            src={getCorrectPhotoUrl(s.photo_url, API ?? "http://localhost:5000")}
+                            src={getCorrectPhotoUrl(s.photo_url, API ?? "http://localhost:5000") || undefined}
                             alt={s.full_name}
                             className="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0"
                             onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}

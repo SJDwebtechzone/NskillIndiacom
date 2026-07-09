@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { Trash2, Plus, CheckCircle, Upload } from "lucide-react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 interface BgImage {
   id: number;

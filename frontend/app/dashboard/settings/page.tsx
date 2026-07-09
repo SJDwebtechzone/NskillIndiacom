@@ -405,7 +405,7 @@ function SettingsContent() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-semibold text-slate-700">Advertisement Image *</label>
                                     <ValidatedFileInput
-                                        accept="image/*"
+                                        fileType="image"
                                         onChange={(e: any) => setAdvertisementForm({ ...advertisementForm, image: e.target.files[0] })}
                                         className="w-full"
                                         required
