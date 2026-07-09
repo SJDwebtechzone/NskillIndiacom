@@ -45,10 +45,10 @@ router.get(
       // Check permissions manually based on role
       const roleLower = (req.user.roleName || "").toLowerCase();
       if (roleLower !== "admin" && roleLower !== "super admin" && roleLower !== "super_admin") {
-        let allowedModules = ["Manage Users"];
-        if (role === 'student') allowedModules.push("Students");
-        else if (role === 'staff') allowedModules.push("Staff / Trainee");
-        else if (role === 'ntsc-admin' || role === 'Admin') allowedModules.push("NTSC Admin");
+        let allowedModules = ["manage-users"];
+        if (role === 'student') allowedModules.push("students");
+        else if (role === 'staff') allowedModules.push("staff-trainee");
+        else if (role === 'ntsc-admin' || role === 'Admin') allowedModules.push("ntsc-admin");
 
         const permCheck = await pool.query(
           `SELECT can_view FROM permissions WHERE role_id = $1 AND module = ANY($2::text[]) AND can_view = true`,
@@ -71,7 +71,7 @@ router.get(
          FROM users u
          LEFT JOIN roles r ON u.role_id = r.id AND r.is_deleted = false
          WHERE (u.status IS NULL OR u.status <> 'Deleted') AND u.is_deleted = false
-         AND u.id NOT IN (SELECT id FROM placement_users)
+         AND u.email NOT IN (SELECT email FROM placement_users WHERE email IS NOT NULL)
       `;
       let params = [];
 
@@ -102,7 +102,7 @@ router.post(
   async (req, res, next) => {
     if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") return next();
     const perm = await pool.query(
-      "SELECT can_add FROM permissions WHERE role_id=$1 AND module IN ('Manage Users', 'Students') AND can_add = true",
+      "SELECT can_add FROM permissions WHERE role_id=$1 AND module IN ('manage-users', 'students') AND can_add = true",
       [req.user.roleId]
     );
     if (perm.rows.length === 0) return res.status(403).json({ message: "Access denied" });
@@ -167,7 +167,7 @@ router.post(
 router.post(
   "/",
   authMiddleware,
-  checkPermission("Staff / Trainee", "add"),
+  checkPermission("staff-trainee", "add"),
   async (req, res) => {
     try {
       const { name, email, role_id, status, phone_number, dob, password } = req.body;
@@ -210,7 +210,7 @@ router.put(
   async (req, res, next) => {
     if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") return next();
     const perm = await pool.query(
-      "SELECT can_edit FROM permissions WHERE role_id=$1 AND module IN ('Manage Users', 'Students', 'Staff / Trainee', 'NTSC Admin') AND can_edit = true",
+      "SELECT can_edit FROM permissions WHERE role_id=$1 AND module IN ('manage-users', 'students', 'staff-trainee', 'ntsc-admin') AND can_edit = true",
       [req.user.roleId]
     );
     if (perm.rows.length === 0) return res.status(403).json({ message: "Access denied" });
@@ -249,7 +249,7 @@ router.put(
   async (req, res, next) => {
     if (req.user.roleName === "Admin" || req.user.roleName === "Super Admin") return next();
     const perm = await pool.query(
-      "SELECT can_edit FROM permissions WHERE role_id=$1 AND module IN ('Manage Users', 'Students', 'Staff / Trainee', 'NTSC Admin') AND can_edit = true",
+      "SELECT can_edit FROM permissions WHERE role_id=$1 AND module IN ('manage-users', 'students', 'staff-trainee', 'ntsc-admin') AND can_edit = true",
       [req.user.roleId]
     );
     if (perm.rows.length === 0) return res.status(403).json({ message: "Access denied" });
@@ -287,7 +287,7 @@ router.delete(
     try {
       const result = await pool.query(
         `SELECT can_delete FROM permissions 
-         WHERE role_id = $1 AND module IN ('Manage Users', 'Staff / Trainee', 'Students', 'NTSC Admin') AND can_delete = true AND is_deleted = false`,
+         WHERE role_id = $1 AND module IN ('manage-users', 'staff-trainee', 'students', 'ntsc-admin') AND can_delete = true AND is_deleted = false`,
         [req.user.roleId]
       );
       if (result.rows.length === 0) {

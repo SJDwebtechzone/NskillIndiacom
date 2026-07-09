@@ -64,9 +64,14 @@ export default function IDGenerationPage() {
 
   const getPhotoUrl = (photoUrl: string) => {
     if (!photoUrl) return null;
-    const cleaned = photoUrl.replace(/\\/g, "/");
-    const withSlash = cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
-    return `${API}${withSlash}`;
+    let normalized = photoUrl.replace(/\\/g, "/");
+    const uploadIndex = normalized.indexOf('uploads/');
+    if (uploadIndex !== -1) {
+      normalized = normalized.substring(uploadIndex);
+    } else if (normalized.startsWith('/')) {
+      normalized = normalized.substring(1);
+    }
+    return `${API}/${normalized}`;
   };
 
   const formatDate = (dateStr: string) => {

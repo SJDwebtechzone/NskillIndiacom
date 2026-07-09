@@ -45,7 +45,7 @@ const getVideoUrl = (videoUrl: string) =>
         {/* Header */}
         <div className="text-center mb-12">
           <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">
-            🎬 Video Testimonials
+            🎬 Course Completion Review Videos
           </p>
           <h2 className="mb-4">Hear It From Our Students</h2>
           <p className="text-slate-500 mt-3 max-w-xl mx-auto">

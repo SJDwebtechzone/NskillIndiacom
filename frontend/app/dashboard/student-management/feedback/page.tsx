@@ -191,8 +191,8 @@ export default function StudentFeedbackPage() {
         {/* Testimonial Video Upload */}
         <div className="mb-6">
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
-            Testimonial Video
-            <span className="text-gray-400 font-normal ml-1">(optional — share a video testimonial)</span>
+            Course Completion Review Video
+            <span className="text-gray-400 font-normal ml-1">(optional — share a course completion review video)</span>
           </label>
           <div
             className={`border-2 border-dashed rounded-xl px-4 py-8 cursor-pointer text-center transition-all ${

@@ -895,7 +895,7 @@ export default function StudentAdmissionForm() {
                             options={["", "School Dropout", "10th / 12th", "ITI / Diploma", "Degree / Engineering"]} onChange={handleChange} compulsory error={errors.highest_qualification} />
                         {(formData.highest_qualification === "ITI / Diploma" || formData.highest_qualification === "Degree / Engineering") && (
                             <div className="mt-4">
-                                <InputField label="Course Name" name="qualification_course_name" value={formData.qualification_course_name} onChange={handleChange} error={errors.qualification_course_name} compulsory />
+                                <InputField label="Major Subject" name="qualification_course_name" value={formData.qualification_course_name} onChange={handleChange} error={errors.qualification_course_name} compulsory />
                             </div>
                         )}
 
@@ -1016,7 +1016,7 @@ export default function StudentAdmissionForm() {
                                 error={errors.course_name}
                                 placeholder="Type to filter courses..."
                             />
-                            <InputField label="Other or Miscellaneous (Short Term Details)" name="other_or_miscellaneous" value={formData.other_or_miscellaneous} onChange={handleChange} placeholder="Enter short term course details..." />
+                            <InputField label="Miscellaneous (Short Term Details)" name="other_or_miscellaneous" value={formData.other_or_miscellaneous} onChange={handleChange} placeholder="Enter short term course details..." />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <InputField label="49. Course Fees *" name="course_fees" type="number" value={formData.course_fees} onChange={handleChange} compulsory />

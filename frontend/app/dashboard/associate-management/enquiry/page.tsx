@@ -437,7 +437,7 @@ export default function StudentEnquiryForm() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <SelectField label="Highest Qualification" name="highest_qualification" options={QUALIFICATION_OPTIONS} value={formData.highest_qualification} onChange={handleChange} error={errors.highest_qualification} compulsory />
                             {(formData.highest_qualification === "ITI / Diploma" || formData.highest_qualification === "Degree / Engineering") && (
-                                <InputField label="Course Name" name="qualification_course_name" value={formData.qualification_course_name} onChange={handleChange} error={errors.qualification_course_name} compulsory />
+                                <InputField label="Major Subject" name="qualification_course_name" value={formData.qualification_course_name} onChange={handleChange} error={errors.qualification_course_name} compulsory />
                             )}
                             <InputField label="Year of Passing" name="year_of_passing" type="number" value={formData.year_of_passing} onChange={handleChange} error={errors.year_of_passing} compulsory />
                         </div>

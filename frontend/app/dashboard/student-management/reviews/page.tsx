@@ -177,7 +177,7 @@ export default function StudentReviewsPage() {
             activeTab === "video" ? "bg-white shadow text-gray-800" : "text-gray-500 hover:text-gray-700"
           }`}
         >
-          🎥 Video Testimonial
+          🎥 Course Completion Review Video
         </button>
       </div>
 
@@ -355,7 +355,7 @@ export default function StudentReviewsPage() {
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             {/* Tips */}
             <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-5">
-              <p className="text-xs font-semibold text-blue-700 mb-2">💡 Tips for a great video testimonial:</p>
+              <p className="text-xs font-semibold text-blue-700 mb-2">💡 Tips for a great course completion review video:</p>
               <ul className="text-xs text-blue-600 space-y-1">
                 <li>• Keep it 1–3 minutes long</li>
                 <li>• Talk about your course experience and placement</li>

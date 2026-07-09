@@ -45,11 +45,21 @@ const viewSignedDocument = (student: any) => {
 };
 
 // ─── A4 Print Page ─────────────────────────────────────────────────────────────
+function getCorrectPhotoUrl(url: string, backendBase: string) {
+  if (!url) return null;
+  let normalized = url.replace(/\\/g, '/');
+  const uploadIndex = normalized.indexOf('uploads/');
+  if (uploadIndex !== -1) {
+    normalized = normalized.substring(uploadIndex);
+  } else if (normalized.startsWith('/')) {
+    normalized = normalized.substring(1);
+  }
+  return `${backendBase}/${normalized}`;
+}
+
 function openPrintPage(student: any) {
   const backendBase = API ?? "http://localhost:5000";
-  const photoUrl = student.photo_url
-    ? `${backendBase}/${student.photo_url.replace(/\\/g, "/")}`
-    : null;
+  const photoUrl = getCorrectPhotoUrl(student.photo_url, backendBase);
 
   const html = `
 <!DOCTYPE html>
@@ -776,7 +786,7 @@ export default function DownloadA4Page() {
                       <div className="flex items-center gap-2.5">
                         {s.photo_url ? (
                           <img
-                            src={`${API}/${s.photo_url.replace(/\\/g, "/")}`}
+                            src={getCorrectPhotoUrl(s.photo_url, API ?? "http://localhost:5000")}
                             alt={s.full_name}
                             className="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0"
                             onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
