@@ -665,7 +665,7 @@ export default function MyAdmissionPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
         <h3 className="font-black text-slate-800 mb-2">Upload Signed Admission Form</h3>
         <p className="text-xs text-slate-400 font-semibold mb-4">
-          Print the form above, sign it, then upload a scanned copy or photo (PDF/JPG/PNG).
+          Print the form above, sign it, then upload a scanned copy or photo (PDF: max 5MB, JPG/PNG: max 200KB).
         </p>
 
         {student.signed_admission_file && (
