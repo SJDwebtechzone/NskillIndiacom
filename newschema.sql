@@ -1,50 +1,4 @@
---student reviews and feedback--
 
-ALTER TABLE student_google_reviews ADD COLUMN IF NOT EXISTS completion_video_url TEXT DEFAULT NULL;
-ALTER TABLE student_feedback ADD COLUMN IF NOT EXISTS testimonial_video_url TEXT DEFAULT NULL;
-
-ALTER TABLE student_google_reviews 
-ADD COLUMN youtube_subscribed BOOLEAN DEFAULT FALSE;
-
--- ============================================================
--- SQL Schema Update: Alter Existing POSTTEST Tables
--- Run this in your PostgreSQL database
--- ============================================================
-
--- 1. Alter posttest_questions to allow it to act as an upload request
-ALTER TABLE posttest_questions ADD COLUMN IF NOT EXISTS is_upload BOOLEAN DEFAULT FALSE;
-ALTER TABLE posttest_questions ADD COLUMN IF NOT EXISTS upload_type TEXT;
-
--- Since upload requests won't have options, drop NOT NULL from MCQ columns
-ALTER TABLE posttest_questions ALTER COLUMN option_a DROP NOT NULL;
-ALTER TABLE posttest_questions ALTER COLUMN option_b DROP NOT NULL;
-ALTER TABLE posttest_questions ALTER COLUMN option_c DROP NOT NULL;
-ALTER TABLE posttest_questions ALTER COLUMN option_d DROP NOT NULL;
-ALTER TABLE posttest_questions ALTER COLUMN correct_ans DROP NOT NULL;
-
--- 2. Alter posttest_attempts to store the uploaded file
-ALTER TABLE posttest_attempts ADD COLUMN IF NOT EXISTS file_url TEXT;
-ALTER TABLE posttest_attempts ADD COLUMN IF NOT EXISTS file_type TEXT;
-ALTER TABLE posttest_attempts ADD COLUMN IF NOT EXISTS review_note TEXT;
-ALTER TABLE posttest_attempts ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
-
--- Verify the columns were added successfully:
-SELECT column_name, data_type, is_nullable
-FROM information_schema.columns 
-WHERE table_name IN ('posttest_questions', 'posttest_attempts')
-  AND column_name IN ('is_upload', 'upload_type', 'file_url', 'file_type', 'review_note', 'status');
-
-  -- Schema for Just Dial Reviews
-
-CREATE TABLE IF NOT EXISTS student_justdial_reviews (
-    id SERIAL PRIMARY KEY,
-    student_id INTEGER REFERENCES student_admissions(id) ON DELETE CASCADE,
-    course_name VARCHAR(255),
-    rating INTEGER DEFAULT 5,
-    review_text TEXT,
-    justdial_review_url TEXT,
-    photo_url TEXT,
-    status VARCHAR(20) DEFAULT 'pending',
 --student reviews and feedback--
 
 ALTER TABLE student_google_reviews ADD COLUMN IF NOT EXISTS completion_video_url TEXT DEFAULT NULL;
@@ -168,6 +122,3 @@ ALTER TABLE student_admissions
   ADD COLUMN IF NOT EXISTS signed_admission_file TEXT;
 
 
-  UPDATE student_admissions
-SET signed_admission_file = 'uploads/1783493205626-772806194.pdf'
-WHERE signed_admission_file LIKE '%1783493205626-772806194.pdf';
