@@ -49,8 +49,9 @@ const initTable = async () => {
 initTable();
 
 // ==============================
-// ✅ GET contact info (legacy)
+// ✅ GET contact info (legacy) - DEPRECATED
 // ==============================
+/*
 router.get("/contact-info", async (req, res) => {
   try {
     const result = await db.query(
@@ -61,10 +62,12 @@ router.get("/contact-info", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch data" });
   }
 });
+*/
 
 // ==============================
-// ✅ SAVE contact info (legacy)
+// ✅ SAVE contact info (legacy) - DEPRECATED
 // ==============================
+/*
 router.post("/contact-info", async (req, res) => {
   try {
     const data = req.body;
@@ -85,6 +88,7 @@ router.post("/contact-info", async (req, res) => {
     res.status(500).json({ error: "Save failed" });
   }
 });
+*/
 
 // ==============================
 // 🏢 GET ALL LOCATIONS

@@ -286,8 +286,9 @@ router.delete("/accreditations/:id", async (req, res) => {
     }
 });
 
-// --- Contact Info ---
+// --- Contact Info (legacy) - DEPRECATED ---
 
+/*
 router.get("/contact-info", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM contact_info ORDER BY id LIMIT 1");
@@ -337,5 +338,6 @@ router.post("/contact-info", async (req, res) => {
         res.status(500).json({ error: "Server Error" });
     }
 });
+*/
 
 module.exports = router;

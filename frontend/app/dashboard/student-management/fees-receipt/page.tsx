@@ -25,6 +25,8 @@ interface StudentFeeData {
   instalment_2_ref?: string;
   instalment_3_ref?: string;
   instalment_4_ref?: string;
+  discount_fee?: number;
+  discount_remark?: string;
 }
 
 const parseRefField = (refField: string, defaultMode: string, defaultDate: string) => {
@@ -72,18 +74,45 @@ export default function FeesReceiptPage() {
   fetch(`${API}/api/admissions/fees-receipt`, {
     headers: { Authorization: `Bearer ${token}` },
   }),
-  fetch(`${API}/api/settings/contact-info`),
+  fetch(`${API}/api/settings/locations`),
   fetch(`${API}/api/background-images/active?category=Fees Receipt`),  // ← updated
 ]);
 
         const studentData = await studentRes.json();
-        const companyData = await companyRes.json();
         const bgData = await bgRes.json();
 
         if (studentData.student) setStudent(studentData.student);
         else setError("Student not found.");
 
-        if (companyData) setCompany(companyData);
+        if (companyRes.ok) {
+          const locations = await companyRes.json();
+          const primary = Array.isArray(locations)
+            ? locations.find((l: any) => l.is_primary) || locations[0]
+            : null;
+
+          if (primary && typeof primary === 'object') {
+            setCompany({
+              company_name: primary.location_name || "Institution Name",
+              address: primary.address || "Address Not Available",
+              primary_phone: primary.primary_phone || "Phone Not Available",
+              email: primary.email || "Email Not Available",
+            });
+          } else {
+            setCompany({
+              company_name: "Institution Name",
+              address: "Address Not Available",
+              primary_phone: "Phone Not Available",
+              email: "Email Not Available",
+            });
+          }
+        } else {
+          setCompany({
+            company_name: "Institution Name",
+            address: "Address Not Available",
+            primary_phone: "Phone Not Available",
+            email: "Email Not Available",
+          });
+        }
 
         if (bgData.image?.image_url) {
           const url = bgData.image.image_url.replace(/\\/g, "/");
@@ -129,7 +158,6 @@ export default function FeesReceiptPage() {
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
-        imageTimeout: 15000,
         onclone: (clonedDoc) => {
           const images = clonedDoc.querySelectorAll("img");
           images.forEach((img) => { img.crossOrigin = "anonymous"; });

@@ -6,8 +6,8 @@ export const contactInfo = {
         { label: "Secondary", value: "+91 - 80560 63023", link: "tel:+918056063023" }
     ],
     whatsapp: {
-        number: "918778085752",
-        display: "8778085752",
+        number: "919884209774",
+        display: "+9198842 09774",
         message: "Hello NTSC! I would like to know more."
     },
     email: "nskilltraining@gmail.com",

@@ -38,20 +38,49 @@ export default function IDGenerationPage() {
     const fetchData = async () => {
       try {
         const [studentRes, companyRes] = await Promise.all([
-        fetch(`${API}/api/admissions/my-profile`, {
-  headers: { Authorization: `Bearer ${token}` },
-}),
-          fetch(`${API}/api/settings/contact-info`),
+          fetch(`${API}/api/admissions/my-profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API}/api/settings/locations`),
         ]);
+        
         const studentData = await studentRes.json();
-        const companyData = await companyRes.json();
-
+        
         if (studentData.student) {
           setStudent(studentData.student);
         } else {
           setError("Student profile not found.");
         }
-        if (companyData) setCompany(companyData);
+
+        if (companyRes.ok) {
+          const locations = await companyRes.json();
+          const primary = Array.isArray(locations)
+            ? locations.find((l: any) => l.is_primary) || locations[0]
+            : null;
+
+          if (primary && typeof primary === 'object') {
+            setCompany({
+              company_name: primary.location_name || "NSkill India",
+              address: primary.address || "Address Not Available",
+              primary_phone: primary.primary_phone || "Phone Not Available",
+              email: primary.email || "Email Not Available",
+            });
+          } else {
+            setCompany({
+              company_name: "NSkill India",
+              address: "Address Not Available",
+              primary_phone: "Phone Not Available",
+              email: "Email Not Available",
+            });
+          }
+        } else {
+          setCompany({
+            company_name: "NSkill India",
+            address: "Address Not Available",
+            primary_phone: "Phone Not Available",
+            email: "Email Not Available",
+          });
+        }
       } catch (err) {
         console.error(err);
         setError("Failed to load ID card data.");
@@ -101,7 +130,6 @@ const getValidUntil = (admissionDate: string) => {
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#1e3a8a",
-        imageTimeout: 15000,
         onclone: (clonedDoc) => {
           const images = clonedDoc.querySelectorAll("img");
           images.forEach((img) => {

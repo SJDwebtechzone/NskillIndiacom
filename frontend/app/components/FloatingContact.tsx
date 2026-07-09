@@ -7,7 +7,7 @@ import ScrollToTop from "./ScrollToTop";
 
 const FloatingContact = () => {
     const pathname = usePathname();
-    const phoneNumber = contactInfo.whatsapp.display;
+    const phoneNumber = contactInfo.whatsapp.number;
     const whatsappNumber = contactInfo.whatsapp.number;
     const whatsappMessage = contactInfo.whatsapp.message;
 
@@ -51,7 +51,7 @@ const FloatingContact = () => {
 
             {/* Phone Button */}
             <a
-                href={`tel:+91${phoneNumber}`}
+                href={`tel:+${phoneNumber}`}
                 className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 hover:scale-110 transition-all duration-300 relative group"
             >
                 <Phone size={28} />

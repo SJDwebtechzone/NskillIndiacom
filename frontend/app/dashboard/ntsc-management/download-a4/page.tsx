@@ -34,13 +34,18 @@ const parseRefField = (refField: string, defaultMode: string, defaultDate: strin
 
 const viewSignedDocument = (student: any) => {
   if (!student.signed_admission_file) return;
-  const backendBase = API ?? "http://localhost:5000";
 
-  let filePath = student.signed_admission_file.replace(/\\/g, "/");
-  const idx = filePath.lastIndexOf("/uploads/");
-  if (idx !== -1) filePath = filePath.slice(idx + 1); // keep "uploads/xxx.ext"
+  let normalized = student.signed_admission_file.replace(/\\/g, "/");
+  const uploadIndex = normalized.indexOf("uploads/");
+  if (uploadIndex !== -1) {
+    normalized = normalized.substring(uploadIndex);
+  } else if (normalized.startsWith("/")) {
+    normalized = normalized.substring(1);
+  }
 
-  const fileUrl = `${backendBase}/${filePath}`;
+  const backendBaseRaw = API ?? "http://localhost:5000";
+  const backendBase = backendBaseRaw.endsWith("/") ? backendBaseRaw.slice(0, -1) : backendBaseRaw;
+  const fileUrl = `${backendBase}/${normalized}`;
   window.open(fileUrl, "_blank");
 };
 
