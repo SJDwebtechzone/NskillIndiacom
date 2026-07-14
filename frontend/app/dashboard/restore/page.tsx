@@ -73,7 +73,8 @@ export default function RestorePage() {
   const modules = ["All", ...new Set(records.map(r => r.module_name))];
 
   const filteredRecords = records.filter(record => {
-    const matchesSearch = record.title?.toLowerCase().includes(search.toLowerCase()) || false;
+    const titleStr = record.title || `ID: ${record.id}`;
+    const matchesSearch = titleStr.toLowerCase().includes(search.toLowerCase());
     const matchesModule = moduleFilter === "All" || record.module_name === moduleFilter;
     return matchesSearch && matchesModule;
   });

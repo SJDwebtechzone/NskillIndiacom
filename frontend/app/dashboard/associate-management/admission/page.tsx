@@ -738,9 +738,11 @@ export default function StudentAdmissionForm() {
             if (!formData.emergency_authorized) newErrors.emergency_authorized = "Authorization required";
         }
         if (stepId === "N") {
-            if (!formData.admission_number) newErrors.admission_number = "Required";
-            if (!formData.batch_allotted)   newErrors.batch_allotted   = "Required";
-            if (!formData.verified_by)      newErrors.verified_by      = "Required";
+            if (user?.role === "Super Admin" || user?.role === "Admin") {
+                if (!formData.admission_number) newErrors.admission_number = "Required";
+                if (!formData.batch_allotted)   newErrors.batch_allotted   = "Required";
+                if (!formData.verified_by)      newErrors.verified_by      = "Required";
+            }
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -749,7 +751,11 @@ export default function StudentAdmissionForm() {
     const validateAllSteps = () => {
         const start = isEditing ? 1 : 0;
         for (let i = start; i < steps.length; i++) {
-            if (!validateStep(i)) { setCurrentStep(i); return false; }
+            if (!validateStep(i)) { 
+                setCurrentStep(i); 
+                alert(`Please complete all compulsory fields in Step ${i + 1}: ${steps[i].title}`);
+                return false; 
+            }
         }
         return true;
     };
