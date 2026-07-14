@@ -1,5 +1,5 @@
 "use client";
-import ValidatedFileInput from '@/components/ValidatedFileInput';
+import ValidatedFileInput, { FILE_TYPE_CONFIG, FileType } from '@/components/ValidatedFileInput';
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1094,12 +1094,12 @@ export default function StudentAdmissionForm() {
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><FileText className="text-blue-500" size={18}/> K. Documents Checklist</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileField fileType="pdf" label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
-                            <FileField fileType="pdf" label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
-                            <FileField fileType="pdf" label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} />
-                            <FileField fileType="pdf" label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} />
-                            <FileField fileType="pdf" label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} />
-                            <FileField fileType="pdf" label="Guardian / Parent ID"      name="has_guardian_id_file"  value={formData.has_guardian_id_file}  onChange={handleChange} compulsory error={errors.has_guardian_id_file} />
+                            <FileField fileType="document" label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
+                            <FileField fileType="document" label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
+                            <FileField fileType="document" label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} />
+                            <FileField fileType="document" label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} />
+                            <FileField fileType="document" label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} />
+                            <FileField fileType="document" label="Guardian / Parent ID"      name="has_guardian_id_file"  value={formData.has_guardian_id_file}  onChange={handleChange} compulsory error={errors.has_guardian_id_file} />
                         </div>
                     </div>
 
@@ -1781,6 +1781,7 @@ const SelectField = ({ label, name, value, options, onChange, error="", compulso
         </label>
         <select name={name} value={value||""} onChange={onChange}
             className={`w-full px-5 py-4 bg-slate-50 border ${error?"border-red-500":"border-slate-300 focus:border-blue-500"} rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 transition-all font-black text-slate-900`}>
+            <option value="" disabled>Select...</option>
             {options.map((o: string) => <option key={o} value={o}>{o||"Select..."}</option>)}
         </select>
         {error && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{error}</span>}
@@ -1838,30 +1839,45 @@ const CheckboxField = ({ label, name, checked, onChange, error="", compulsory=fa
 const FileField = ({ label, name, value, onChange, error="", compulsory=false, fileType="any" }: any) => {
     const [localError, setLocalError] = React.useState<string | null>(null);
     const displayError = localError || error;
+
+    const getFileName = (val: any) => {
+        if (!val) return "Choose File";
+        if (typeof val === "string") {
+            const parts = val.split(/[/\\]/);
+            return parts[parts.length - 1];
+        }
+        return val.name;
+    };
+
+    const config = FILE_TYPE_CONFIG[fileType as FileType] || FILE_TYPE_CONFIG['any'];
+
     return (
     <div className="flex flex-col gap-1.5 w-full">
         <label className="text-[12px] font-black text-slate-700 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
             {label} {compulsory && <span className="text-red-500">*</span>}
         </label>
-        <div className={`relative flex flex-col`}>
-            <div className={`relative flex items-center p-1 px-4 bg-slate-100 border-2 border-dashed ${displayError?"border-red-500 bg-red-50":"border-slate-300 hover:border-blue-500 hover:bg-blue-50"} rounded-2xl transition-all h-16`}>
-                <ValidatedFileInput 
-                    fileType={fileType} 
-                    name={name} 
-                    onChange={onChange} 
-                    onFileError={setLocalError}
-                    wrapperClassName=""
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                />
-                <div className="flex items-center gap-3">
-                    <Upload size={20} className={displayError?"text-red-400":"text-blue-500"}/>
-                    <span className={`text-xs font-black uppercase tracking-wider ${displayError?"text-red-600":"text-slate-600"}`}>
-                        {value ? (typeof value==="string" ? value.split("/").pop() : value.name) : "Choose File"}
-                    </span>
-                </div>
+        <div className={`relative flex flex-col p-2 px-4 bg-slate-100 border-2 border-dashed ${displayError?"border-red-500 bg-red-50":"border-slate-300 hover:border-blue-500 hover:bg-blue-50"} rounded-2xl transition-all min-h-16 justify-center overflow-hidden`}>
+            <ValidatedFileInput 
+                fileType={fileType} 
+                name={name} 
+                onChange={onChange} 
+                onFileError={setLocalError}
+                wrapperClassName=""
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                showMessages={false}
+            />
+            <div className="flex items-center gap-3">
+                <Upload size={20} className={`shrink-0 ${displayError?"text-red-400":"text-blue-500"}`}/>
+                <span className={`text-xs font-black uppercase tracking-wider truncate ${displayError?"text-red-600":"text-slate-600"}`} title={typeof value === "string" ? value : value?.name || ""}>
+                    {getFileName(value)}
+                </span>
             </div>
-            {displayError && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{displayError}</span>}
+            <div className="mt-1 ml-8 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                Allowed: {config.extensions.length > 0 ? config.extensions.join(', ') : 'All'} | Max size: {config.maxSize / (1024 * 1024) < 1 ? config.maxSize / 1024 + 'KB' : config.maxSize / (1024 * 1024) + 'MB'}
+            </div>
         </div>
+        {displayError && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{displayError}</span>}
     </div>
-)};
+    );
+};
 

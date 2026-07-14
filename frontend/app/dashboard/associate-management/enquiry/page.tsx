@@ -154,7 +154,7 @@ const emptyForm = {
     career_objective: "Job", preferred_country: "", expected_salary: "", willing_to_work_all_india: "Yes",
     work_experience: "Fresher", company_name: "", position: "", salary: "", location: "", skills_trade: "",
     father_name: "", mother_name: "", parent_contact: "", parent_occupation: "",
-    referred_by: "", counsellor_name: "", counsellor_code: "", will_attend_test: "Yes",
+    referred_by: "", counsellor_name: "", counsellor_code: "", will_attend_test: "",
     course_interested: "", level_of_course: "Basic", training_mode: "Offline", batch_timing: "",
     // ── NEW: Enquiry Date ──
     enquiry_date: new Date().toISOString().split("T")[0],
@@ -933,6 +933,7 @@ const SelectField = ({ label, name, value, options, onChange, error="", compulso
         </label>
         <select name={name} value={value||""} onChange={onChange}
             className={`w-full px-5 py-3.5 bg-slate-50 border ${error?"border-red-500":"border-slate-200 focus:border-orange-500"} rounded-2xl outline-none focus:ring-4 focus:ring-orange-100 font-bold text-slate-900 transition-all`}>
+            <option value="" disabled>Select...</option>
             {options.map((o: string) => <option key={o} value={o}>{o||"Select..."}</option>)}
         </select>
         {error && <span className="text-red-500 text-[9px] font-black uppercase mt-1">{error}</span>}

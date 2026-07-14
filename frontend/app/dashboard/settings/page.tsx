@@ -502,12 +502,12 @@ function SettingsContent() {
                                 <div className="space-y-2">
                                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Hero Image</label>
                                     <div className="relative group">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => setBannerForm({ ...bannerForm, image: e.target.files ? e.target.files[0] : null })}
+                                        <ValidatedFileInput
+                                            fileType="image"
+                                            onChange={(e: any) => setBannerForm({ ...bannerForm, image: e.target.files ? e.target.files[0] : null })}
                                             className="hidden"
                                             id="banner-file"
+                                            showMessages={true}
                                             required
                                         />
                                         <label htmlFor="banner-file" className="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 border-dashed rounded-2xl cursor-pointer hover:bg-white hover:border-blue-400 transition-all font-medium text-slate-500">
@@ -578,12 +578,12 @@ function SettingsContent() {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Video File</label>
                                 <div className="relative group">
-                                    <input
-                                        type="file"
-                                        accept="video/mp4"
-                                        onChange={(e) => setPopupForm({ ...popupForm, video: e.target.files ? e.target.files[0] : null })}
+                                    <ValidatedFileInput
+                                        fileType="video"
+                                        onChange={(e: any) => setPopupForm({ ...popupForm, video: e.target.files ? e.target.files[0] : null })}
                                         className="hidden"
                                         id="popup-video"
+                                        showMessages={true}
                                         required
                                     />
                                     <label htmlFor="popup-video" className="flex items-center gap-4 w-full p-4 bg-slate-50/50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-white hover:border-blue-400 transition-all font-medium text-slate-500">
@@ -724,12 +724,12 @@ function SettingsContent() {
                                 <div className="space-y-2">
                                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Cover Image (Optional)</label>
                                     <div className="relative group">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => setNewsForm({ ...newsForm, image: e.target.files ? e.target.files[0] : null })}
+                                        <ValidatedFileInput
+                                            fileType="image"
+                                            onChange={(e: any) => setNewsForm({ ...newsForm, image: e.target.files ? e.target.files[0] : null })}
                                             className="hidden"
                                             id="news-file"
+                                            showMessages={true}
                                         />
                                         <label htmlFor="news-file" className="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 border-dashed rounded-2xl cursor-pointer hover:bg-white hover:border-blue-400 transition-all font-medium text-slate-500">
                                             <div className="bg-blue-50 p-2 rounded-lg group-hover:bg-blue-100 transition-colors">
@@ -811,12 +811,12 @@ function SettingsContent() {
                                 <div className="space-y-2">
                                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Logo</label>
                                     <div className="relative group">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => setAccreditationsForm({ ...accreditationsForm, image: e.target.files ? e.target.files[0] : null })}
+                                        <ValidatedFileInput
+                                            fileType="image"
+                                            onChange={(e: any) => setAccreditationsForm({ ...accreditationsForm, image: e.target.files ? e.target.files[0] : null })}
                                             className="hidden"
                                             id="accreditation-file"
+                                            showMessages={true}
                                             required
                                         />
                                         <label htmlFor="accreditation-file" className="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 border-dashed rounded-2xl cursor-pointer hover:bg-white hover:border-blue-400 transition-all font-medium text-slate-500">

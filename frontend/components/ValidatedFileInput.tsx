@@ -1,6 +1,6 @@
 import React, { InputHTMLAttributes, useState, forwardRef } from 'react';
 
-export type FileType = 'image' | 'pdf' | 'word' | 'excel' | 'powerpoint' | 'audio' | 'video' | 'zip' | 'csv' | 'text' | 'any';
+export type FileType = 'image' | 'pdf' | 'word' | 'excel' | 'powerpoint' | 'audio' | 'video' | 'zip' | 'csv' | 'text' | 'document' | 'any';
 
 export const FILE_TYPE_CONFIG: Record<FileType, { extensions: string[], maxSize: number, label: string }> = {
   image: { extensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp'], maxSize: 200 * 1024, label: 'Image (max 200KB)' },
@@ -13,6 +13,7 @@ export const FILE_TYPE_CONFIG: Record<FileType, { extensions: string[], maxSize:
   zip: { extensions: ['.zip', '.rar', '.7z'], maxSize: 20 * 1024 * 1024, label: 'ZIP (max 20MB)' },
   csv: { extensions: ['.csv'], maxSize: 5 * 1024 * 1024, label: 'CSV (max 5MB)' },
   text: { extensions: ['.txt'], maxSize: 1 * 1024 * 1024, label: 'Text (max 1MB)' },
+  document: { extensions: ['.pdf', '.jpg', '.jpeg', '.png'], maxSize: 5 * 1024 * 1024, label: 'Document/Image (max 5MB)' },
   any: { extensions: [], maxSize: 5 * 1024 * 1024, label: 'Any File (max 5MB)' }
 };
 
@@ -22,6 +23,9 @@ interface ValidatedFileInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
   wrapperClassName?: string;
   errorClassName?: string;
   infoClassName?: string;
+  showMessages?: boolean;
+  customExtensions?: string[];
+  customMaxSize?: number;
   ref?: any;
 }
 
@@ -31,6 +35,9 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
   wrapperClassName = 'w-full',
   errorClassName = 'text-[10px] text-red-500 font-black uppercase mt-1',
   infoClassName = 'text-[10px] text-slate-500 font-bold uppercase mt-1',
+  customExtensions,
+  customMaxSize,
+  showMessages,
   onChange,
   onFileError,
   style,
@@ -40,16 +47,18 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
 }, ref) => {
   const [error, setError] = useState<string | null>(null);
   const config = FILE_TYPE_CONFIG[fileType];
+  const maxSize = customMaxSize || config.maxSize;
+  const extensions = customExtensions || config.extensions;
 
   const validateFile = (file: File): string | null => {
-    if (file.size > config.maxSize) {
-      return `File size exceeds the limit of ${config.maxSize / (1024 * 1024) < 1 ? config.maxSize / 1024 + 'KB' : config.maxSize / (1024 * 1024) + 'MB'}.`;
+    if (file.size > maxSize) {
+      return `File size exceeds the limit of ${maxSize / (1024 * 1024) < 1 ? maxSize / 1024 + 'KB' : maxSize / (1024 * 1024) + 'MB'}.`;
     }
     
-    if (config.extensions.length > 0) {
+    if (extensions.length > 0) {
       const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!config.extensions.includes(extension)) {
-        return `Invalid file format. Allowed formats: ${config.extensions.join(', ')}.`;
+      if (!extensions.includes(extension)) {
+        return `Invalid file format. Allowed formats: ${extensions.join(', ')}.`;
       }
     }
     
@@ -74,7 +83,7 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
     }
   };
 
-  const acceptString = config.extensions.length > 0 ? config.extensions.join(',') : undefined;
+  const acceptString = extensions.length > 0 ? extensions.join(',') : undefined;
   
   // To handle places where input is absolute/hidden and we still want to show messages,
   // we render them as siblings if wrapper is used.
@@ -93,12 +102,10 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
         onChange={handleChange}
         {...props}
       />
-      {/* We only show these below if the input isn't entirely "display: none" style, but for absolute we might want them. 
-          Actually, we just render them, and the parent can manage placement if needed. */}
-      {!(style?.display === 'none' || className.includes('hidden') || className.includes('opacity-0')) && (
+      {(showMessages !== false && (showMessages === true || !(style?.display === 'none' || className.includes('hidden') || className.includes('opacity-0')))) && (
         <div className="flex flex-col mt-1">
           <span className={infoClassName}>
-            Allowed: {config.extensions.length > 0 ? config.extensions.join(', ') : 'All'} | Max size: {config.maxSize / (1024 * 1024) < 1 ? config.maxSize / 1024 + 'KB' : config.maxSize / (1024 * 1024) + 'MB'}
+            Allowed: {extensions.length > 0 ? extensions.join(', ') : 'All'} | Max size: {maxSize / (1024 * 1024) < 1 ? maxSize / 1024 + 'KB' : maxSize / (1024 * 1024) + 'MB'}
           </span>
           {error && <span className={errorClassName}>{error}</span>}
         </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Printer, Loader2, FileText,Upload, CheckCircle2 } from "lucide-react";
+import ValidatedFileInput from "@/components/ValidatedFileInput";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -675,10 +676,11 @@ export default function MyAdmissionPage() {
         )}
 
         <div className="flex items-center gap-3">
-          <input
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+          <ValidatedFileInput
+            fileType="any"
+            customExtensions={['.pdf', '.jpg', '.jpeg', '.png']}
+            customMaxSize={5 * 1024 * 1024}
+            onChange={(e: any) => setSelectedFile(e.target.files?.[0] || null)}
             className="text-sm"
           />
           <button
