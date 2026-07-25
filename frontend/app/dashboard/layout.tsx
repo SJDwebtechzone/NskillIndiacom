@@ -80,6 +80,7 @@ const studentManagementItems: MenuItem[] = [
   { name: "My Weekly Test",           path: "/dashboard/student-management/weekly-test",            module: "My Weekly Test",            icon: MonitorPlay   },
   { name: "My Assessment",            path: "/dashboard/student-management/assessments",            module: "My Assessment",             icon: PenTool       },
   { name: "My Practical Video",       path: "/dashboard/student-management/practical-video",        module: "My Practical Video",        icon: Video         },
+  { name: "My Pre Test",              path: "/dashboard/student-management/student/pretest",        module: "My Pre Test",               icon: FileText      },
   { name: "My Post Test",             path: "/dashboard/student-management/post-test",              module: "My Post Test",              icon: ClipboardCheck},
   { name: "My Results",               path: "/dashboard/student-management/results",                module: "My Results",                icon: CheckSquare   },
   { name: "Download Certificate",     path: "/dashboard/student-management/certificates/download",  module: "Download Certificate",      icon: FileDown      },

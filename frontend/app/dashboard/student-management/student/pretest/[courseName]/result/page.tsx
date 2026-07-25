@@ -34,9 +34,10 @@ export default function PretestResultPage() {
 
   const fetchResult = async () => {
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/result/${attemptId}`,
-        { credentials: 'include' }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();
       setResult(data);
@@ -61,7 +62,20 @@ export default function PretestResultPage() {
     );
   }
 
-  if (!result) return null;
+  if (result?.error || !result) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64 text-gray-500 space-y-4">
+        <p className="text-red-500 font-semibold">{result?.error || 'Failed to fetch result'}</p>
+        <p className="text-xs">Attempt ID: {attemptId}</p>
+        <button
+          onClick={() => router.push('/dashboard/student-management/student/pretest')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm hover:bg-blue-700"
+        >
+          ← Go Back to Courses
+        </button>
+      </div>
+    );
+  }
 
   const percent = Math.round((result.score / result.total) * 100);
 

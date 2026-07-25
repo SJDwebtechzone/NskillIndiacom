@@ -2,6 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
+const { authMiddleware } = require('../middleware/authMiddleware');
+
+router.use(authMiddleware);
 
 // ─────────────────────────────────────────
 // GET /api/student/pretest/:courseName/config
@@ -10,10 +13,19 @@ router.get('/:courseName/config', async (req, res) => {
   const { courseName } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
-      [courseName]
+      `SELECT * FROM pretest_config WHERE TRIM(LOWER(course_name)) = $1 AND is_deleted = false`,
+      [courseName.trim().toLowerCase()]
     );
-    res.json({ config: result.rows[0] || null });
+    let config = result.rows[0];
+    if (!config) {
+      // Fallback config if trainer hasn't explicitly set one
+      config = {
+        total_qs: 20,
+        pass_percent: 60,
+        time_limit: 1200 // 20 minutes in seconds
+      };
+    }
+    res.json({ config });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch config' });
@@ -28,13 +40,24 @@ router.get('/:courseName/status', async (req, res) => {
   const { courseName } = req.params;
   const studentId = req.user?.id; // from your auth middleware
   try {
+    // Get admission ID
+    const userResult = await pool.query(`SELECT email FROM users WHERE id = $1`, [studentId]);
+    if (userResult.rows.length === 0) return res.json({ has_attempted: false });
+    const email = userResult.rows[0].email;
+    const admissionResult = await pool.query(
+      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
+      [email]
+    );
+    if (admissionResult.rows.length === 0) return res.json({ has_attempted: false });
+    const admissionId = admissionResult.rows[0].id;
+
     const result = await pool.query(
       `SELECT score, total, passed
        FROM pretest_attempts
-       WHERE student_id = $1 AND course_name = $2 AND is_deleted = false
+       WHERE student_id = $1 AND TRIM(LOWER(course_name)) = $2 AND is_deleted = false
        ORDER BY submitted_at DESC
        LIMIT 1`,
-      [studentId, courseName]
+      [admissionId, courseName.trim().toLowerCase()]
     );
     if (result.rows.length === 0) {
       return res.json({ has_attempted: false });
@@ -56,8 +79,8 @@ router.get('/:courseName/questions', async (req, res) => {
   try {
     // Get config for total_qs and time_limit
     const configResult = await pool.query(
-      `SELECT total_qs, time_limit FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
-      [courseName]
+      `SELECT total_qs, time_limit FROM pretest_config WHERE TRIM(LOWER(course_name)) = $1 AND is_deleted = false`,
+      [courseName.trim().toLowerCase()]
     );
     const config = configResult.rows[0] || { total_qs: 20, time_limit: 1200 };
 
@@ -65,18 +88,17 @@ router.get('/:courseName/questions', async (req, res) => {
     const result = await pool.query(
       `SELECT id, question, option_a, option_b, option_c, option_d
        FROM pretest_questions
-       WHERE course_name = $1 AND is_deleted = false
-       ORDER BY RANDOM()
-       LIMIT $2`,
-      [courseName, config.total_qs]
+       WHERE TRIM(LOWER(course_name)) = $1 AND is_deleted = false
+       ORDER BY RANDOM()`,
+      [courseName.trim().toLowerCase()]
     );
-
+    console.log('[DEBUG] /questions fetch for', courseName, '-> rows:', result.rows.length);
     res.json({
       questions: result.rows,
       time_limit: config.time_limit,
     });
   } catch (err) {
-    console.error(err);
+    console.error('[DEBUG] /questions Error:', err);
     res.status(500).json({ error: 'Failed to fetch questions' });
   }
 });
@@ -92,11 +114,26 @@ router.post('/:courseName/submit', async (req, res) => {
 
   const client = await pool.connect();
   try {
+    // Look up admission ID for the student
+    const userResult = await client.query(`SELECT email FROM users WHERE id = $1`, [studentId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const email = userResult.rows[0].email;
+    const admissionResult = await client.query(
+      `SELECT id FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
+      [email]
+    );
+    if (admissionResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Student admission not found' });
+    }
+    const admissionId = admissionResult.rows[0].id;
+
     await client.query('BEGIN');
 
     const qIds = answers.map((a) => a.question_id);
     const correctResult = await client.query(
-      `SELECT id, correct_ans FROM pretest_questions WHERE id = ANY($1) AND is_deleted = false`,
+      `SELECT id, correct_ans FROM pretest_questions WHERE id = ANY($1::int[]) AND is_deleted = false`,
       [qIds]
     );
 
@@ -106,8 +143,8 @@ router.post('/:courseName/submit', async (req, res) => {
     });
 
     const configResult = await client.query(
-      `SELECT total_qs, pass_percent FROM pretest_config WHERE course_name = $1 AND is_deleted = false`,
-      [courseName]
+      `SELECT total_qs, pass_percent FROM pretest_config WHERE TRIM(LOWER(course_name)) = $1 AND is_deleted = false`,
+      [courseName.trim().toLowerCase()]
     );
     const config = configResult.rows[0] || { total_qs: answers.length, pass_percent: 60 };
 
@@ -125,7 +162,7 @@ router.post('/:courseName/submit', async (req, res) => {
       `INSERT INTO pretest_attempts (student_id, course_name, score, total, passed, time_taken)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id`,
-      [studentId, courseName, score, total, passed, time_taken]
+      [admissionId, courseName, score, total, passed, time_taken]
     );
     const attemptId = attemptResult.rows[0].id;
 
@@ -141,8 +178,8 @@ router.post('/:courseName/submit', async (req, res) => {
     res.json({ attempt_id: attemptId, score, total, passed });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error(err);
-    res.status(500).json({ error: 'Failed to submit test' });
+    console.error('SUBMIT ERROR:', err);
+    res.status(500).json({ error: 'Failed to submit test', detail: err.message });
   } finally {
     client.release();
   }
@@ -157,10 +194,10 @@ router.get('/result/:attemptId', async (req, res) => {
   try {
     // Get attempt summary
     const attemptResult = await pool.query(
-      `SELECT pa.score, pa.total, pa.passed, pa.time_taken, pc.pass_percent
-       FROM pretest_attempts pa
-       LEFT JOIN pretest_config pc ON pa.course_name = pc.course_name AND pc.is_deleted = false
-       WHERE pa.id = $1 AND pa.is_deleted = false`,
+       `SELECT pa.score, pa.total, pa.passed, pa.time_taken, pc.pass_percent
+        FROM pretest_attempts pa
+        LEFT JOIN pretest_config pc ON TRIM(LOWER(pa.course_name)) = TRIM(LOWER(pc.course_name)) AND pc.is_deleted = false
+        WHERE pa.id = $1 AND pa.is_deleted = false`,
       [attemptId]
     );
     if (attemptResult.rows.length === 0)
@@ -200,10 +237,20 @@ router.get('/my-courses', async (req, res) => {
   const studentId = req.user?.id;
 
   try {
-    // Step 1: Find student's enrolled course from admissions table
-    const admissionResult = await pool.query(
-      `SELECT course_name FROM admissions WHERE user_id = $1 AND is_deleted = false LIMIT 1`,
+    // Step 1: Find student's email from users table
+    const userResult = await pool.query(
+      `SELECT email FROM users WHERE id = $1 AND is_deleted = false LIMIT 1`,
       [studentId]
+    );
+    if (userResult.rows.length === 0) {
+      return res.json({ courses: [] });
+    }
+    const email = userResult.rows[0].email;
+
+    // Step 2: Find student's enrolled course from student_admissions table
+    const admissionResult = await pool.query(
+      `SELECT course_name FROM student_admissions WHERE LOWER(email_id) = LOWER($1) AND is_deleted = false LIMIT 1`,
+      [email]
     );
 
     if (admissionResult.rows.length === 0) {
@@ -222,12 +269,12 @@ router.get('/my-courses', async (req, res) => {
        FROM pretest_config pc
        LEFT JOIN LATERAL (
          SELECT * FROM pretest_attempts
-         WHERE student_id = $1 AND course_name = pc.course_name AND is_deleted = false
+         WHERE student_id = $1 AND TRIM(LOWER(course_name)) = TRIM(LOWER(pc.course_name)) AND is_deleted = false
          ORDER BY submitted_at DESC
          LIMIT 1
        ) pa ON true
-       WHERE pc.course_name = $2 AND pc.is_deleted = false`,
-      [studentId, courseName]
+       WHERE TRIM(LOWER(pc.course_name)) = $2 AND pc.is_deleted = false`,
+      [studentId, courseName.trim().toLowerCase()]
     );
 
     res.json({ courses: configResult.rows });

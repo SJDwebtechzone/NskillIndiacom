@@ -4,7 +4,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useEffect, useState } from "react";
 import {
   GraduationCap, TrendingUp, TrendingDown, CheckCircle2,
-  ClipboardList, BookOpen, Award, Clock, BarChart2, Activity
+  ClipboardList, BookOpen, Award, Clock, BarChart2, Activity, FileText
 } from "lucide-react";
 import Link from "next/link";
 
@@ -152,6 +152,7 @@ export default function StudentManagementDashboard() {
           <QuickLink href="/dashboard/student-management/attendance"    icon={Activity}     label="Daily Attendance"       desc="View & track class attendance" />
 
           <QuickLink href="/dashboard/student-management/weekly-test"   icon={BarChart2}    label="My Weekly Test"         desc="Weekly assessment results" />
+          <QuickLink href="/dashboard/student-management/student/pretest" icon={FileText}     label="My Pre Test"            desc="Course pre-tests & scores" />
           <QuickLink href="/dashboard/student-management/assessments"   icon={CheckCircle2} label="My Assessment"          desc="Course assessments & scores" />
           <QuickLink href="/dashboard/student-management/results"       icon={Award}        label="My Results"             desc="Final marks and outcomes" />
           <QuickLink href="/dashboard/student-management/certificates/download" icon={GraduationCap} label="Download Certificate" desc="Get your course certificate" />

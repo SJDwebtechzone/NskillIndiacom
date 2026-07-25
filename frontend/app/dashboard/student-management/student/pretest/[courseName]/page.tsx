@@ -31,9 +31,12 @@ export default function PretestStartPage() {
 
   const fetchData = async () => {
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const headers = { Authorization: `Bearer ${token}` };
+
       const [configRes, statusRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/${encodeURIComponent(decoded)}/config`, { credentials: 'include' }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/${encodeURIComponent(decoded)}/status`, { credentials: 'include' }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/${encodeURIComponent(decoded)}/config`, { headers }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/${encodeURIComponent(decoded)}/status`, { headers }),
       ]);
       const configData = await configRes.json();
       const statusData = await statusRes.json();
@@ -106,7 +109,7 @@ export default function PretestStartPage() {
             <button
               onClick={() =>
                 router.push(
-                  `/dashboard/student-management/student/pretest/${courseName}/attempt`
+                  `/dashboard/student-management/student/pretest/${encodeURIComponent(decoded)}/attempt`
                 )
               }
               className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all"

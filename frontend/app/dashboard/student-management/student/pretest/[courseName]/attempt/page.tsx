@@ -33,11 +33,16 @@ export default function PretestAttemptPage() {
 
   const fetchQuestions = async () => {
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/${encodeURIComponent(decoded)}/questions`,
-        { credentials: 'include' }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store'
+        }
       );
       const data = await res.json();
+      (window as any).__debugData = data;
       setQuestions(data.questions || []);
       setTimeLeft(data.time_limit || 1200);
       startTimer(data.time_limit || 1200);
@@ -79,21 +84,29 @@ export default function PretestAttemptPage() {
     };
 
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/student/pretest/${encodeURIComponent(decoded)}/submit`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify(payload),
         }
       );
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || data.error || 'Failed to submit test');
+      }
+
       router.push(
-        `/dashboard/student-management/student/pretest/${courseName}/result?attemptId=${data.attempt_id}`
+        `/dashboard/student-management/student/pretest/${encodeURIComponent(decoded)}/result?attemptId=${data.attempt_id}`
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || 'An error occurred while submitting.');
       setSubmitting(false);
     }
   };
@@ -108,6 +121,24 @@ export default function PretestAttemptPage() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64 text-gray-500 space-y-4">
+        <p>No questions have been added for this pre-test yet.</p>
+        <div className="p-4 bg-red-50 text-red-600 text-xs rounded-xl overflow-auto max-w-full">
+          <p className="font-bold mb-2">DEBUG INFO (Take a screenshot of this):</p>
+          <pre>{JSON.stringify({ courseName: decoded, questionsLength: questions.length, __dataRef: (window as any).__debugData || 'No data fetched' }, null, 2)}</pre>
+        </div>
+        <button
+          onClick={() => router.push('/dashboard/student-management/student/pretest')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm hover:bg-blue-700"
+        >
+          ← Go Back
+        </button>
       </div>
     );
   }
