@@ -16,7 +16,7 @@ const modules = [
 
   // ── Pre-Test ──
   "Trainer Pre-Test",
-  "MyPreTest",
+  "My Pre Test",
 
   // ── Post-Test ──
   "Trainer Post-Test",
