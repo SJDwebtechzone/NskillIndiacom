@@ -96,11 +96,30 @@ router.put("/:id/permissions", authMiddleware, async (req, res) => {
     await client.query("BEGIN");
     await client.query("UPDATE permissions SET is_deleted = true, deleted_at = NOW() WHERE role_id = $1", [id]);
 
+    // Deduplicate permissions array by module_slug to prevent Postgres constraint violations
+    const uniquePermissions = [];
+    const seenModules = new Set();
     for (const p of permissions) {
+        if (!p.module_slug || p.module_slug.trim() === '') continue;
+        if (!seenModules.has(p.module_slug)) {
+            seenModules.add(p.module_slug);
+            uniquePermissions.push(p);
+        }
+    }
+
+    for (const p of uniquePermissions) {
       if (p.can_view || p.can_add || p.can_edit || p.can_delete) {
         await client.query(
-          `INSERT INTO permissions (role_id, module, can_view, can_add, can_edit, can_delete)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
+          `INSERT INTO permissions (role_id, module, can_view, can_add, can_edit, can_delete, is_deleted, deleted_at)
+           VALUES ($1, $2, $3, $4, $5, $6, false, NULL)
+           ON CONFLICT (role_id, module)
+           DO UPDATE SET
+             can_view = EXCLUDED.can_view,
+             can_add = EXCLUDED.can_add,
+             can_edit = EXCLUDED.can_edit,
+             can_delete = EXCLUDED.can_delete,
+             is_deleted = EXCLUDED.is_deleted,
+             deleted_at = EXCLUDED.deleted_at`,
           [id, p.module_slug, !!p.can_view, !!p.can_add, !!p.can_edit, !!p.can_delete]
         );
       }
