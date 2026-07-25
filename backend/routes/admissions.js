@@ -154,7 +154,14 @@ router.post("/", authMiddleware, uploadFields, async (req, res) => {
         const paid_fees = toNum(data.paid_fees);
         const balance_amount = total_fees - paid_fees;
 
-        const getFilePath = (fieldName) => (files && files[fieldName]) ? files[fieldName][0].path : null;
+        const getFilePath = (fieldName) => {
+            if (files && files[fieldName]) {
+                let filePath = files[fieldName][0].path.replace(/\\/g, '/');
+                const idx = filePath.lastIndexOf('/uploads/');
+                return idx !== -1 ? filePath.slice(idx + 1) : filePath;
+            }
+            return null;
+        };
 
         const query = `
             INSERT INTO student_admissions (
@@ -448,7 +455,10 @@ router.patch("/:id", authMiddleware, uploadFields, async (req, res) => {
         // Add file updates to the query if any
         let counter = values.length + 1;
         fileFields.forEach(fieldName => {
-            const filePath = files[fieldName][0].path;
+            let filePath = files[fieldName][0].path.replace(/\\/g, '/');
+            const idx = filePath.lastIndexOf('/uploads/');
+            if (idx !== -1) filePath = filePath.slice(idx + 1); // "uploads/xxx.ext"
+
             const dbColumn = fieldName === 'photo_file' ? 'photo_url' : fieldName;
             setClauseParts.push(`${dbColumn} = $${counter}`);
             values.push(filePath);
