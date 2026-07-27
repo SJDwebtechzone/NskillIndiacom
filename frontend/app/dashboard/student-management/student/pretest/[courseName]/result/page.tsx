@@ -15,6 +15,7 @@ interface ResultData {
     correct_ans: string;
     is_correct: boolean;
   }[];
+  error?: string;
 }
 
 export default function PretestResultPage() {
