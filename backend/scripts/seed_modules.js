@@ -9,11 +9,11 @@ const pool = new pg.Pool({
   port:     parseInt(process.env.DB_PORT || '5432'),
 });
 const modules = [
-  "NTSC Admin", "Associate", "Students", "Staff / Trainee", "Manage Users", "Manage Roles",
+  "NTSC Admin", "Associate", "Students", "Student Management", "Staff / Trainee", "Manage Users", "Manage Roles",
   "Home", "Homepage Banner", "Feature Popup", "Latest News", "Accreditions", "Contact Info",
-  "Associate Dashboard", "Enquiry Form", "Admission Form", "Referral Fee Tracking", "Referral Fee History",
+  "Associate Dashboard", "Enquiry Form", "Admission Form", "My Admission Form", "Referral Fee Tracking", "Referral Fee History",
   "StudentDashboard", "ID Generation", "Course and Fees Details", "Fees Receipt",
-
+  
   // ── Pre-Test ──
   "Trainer Pre-Test",
   "My Pre Test",
@@ -31,30 +31,30 @@ const modules = [
   "Trainer Practical Video",    // ← trainer manages tasks + verifies
   "My Practical Video",         // ← student uploads videos
 
-  "Daily Attendance", "Practical Video",
-  "Final Exam",  "Certification",  "Google Review & Videos", "Fee Details",
+  "Daily Attendance", "Face Enrolment", "Scan QR Attendance", "Practical Video",
+  "Final Exam",  "Certification",  "Google Review & Videos", "Just Dial Review & Video", "Fee Details",
 
   // ── Trainer Management ──
   "TrainerDashboard", "Class Status", "Attendance Status", "Trainer Management",
   "Weekly Test",
   "Trainer Post-Test",  // trainer manages
-"My Post Test",
+  "My Post Test",
 
   // ── Missing modules ──
   "Dashboard",
   "Payments",
   "Course Management",
   "Background Images",
-   "Trainer Marks",   // ← Trainer
+  "Trainer Marks",   // ← Trainer
   "My Results",
 
   "Placement Details Uploads",  // student uploads
-"Feedback & Testimonial",     // student submits
-"Student Placements",         // admin views placements
-"Testimonials",               // admin approves testimonials
-// Certificate
-"Download Certificate",   // student downloads certificate
-"Request Certificate",    // student requests manual review
+  "Feedback & Testimonial",     // student submits
+  "Student Placements",         // admin views placements
+  "Testimonials",               // admin approves testimonials
+  // Certificate
+  "Download Certificate",   // student downloads certificate
+  "Request Certificate",    // student requests manual review
   "NTSC Dashboard", "Download A4 Sheet", "Enquiry / Admission and Document",
   "Update Class Status", "Monitor Student Changes and Approval",
   "Post Jobs", "Applied Jobs", "Upload Videos", "Reviews & Videos", "course calender", "Partners Section"
