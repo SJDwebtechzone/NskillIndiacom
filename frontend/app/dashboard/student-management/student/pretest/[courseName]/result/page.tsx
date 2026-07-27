@@ -63,10 +63,10 @@ export default function PretestResultPage() {
     );
   }
 
-  if (result?.error || !result) {
+  if (!result) {
     return (
       <div className="flex flex-col justify-center items-center h-64 text-gray-500 space-y-4">
-        <p className="text-red-500 font-semibold">{result?.error || 'Failed to fetch result'}</p>
+        <p className="text-red-500 font-semibold">Failed to fetch result</p>
         <p className="text-xs">Attempt ID: {attemptId}</p>
         <button
           onClick={() => router.push('/dashboard/student-management/student/pretest')}
