@@ -1,0 +1,1 @@
+const pool = require('./config/db'); async function run() { try { const qIds = [7, 8]; const correctResult = await pool.query('SELECT id, correct_ans FROM pretest_questions WHERE id = ANY(\) AND is_deleted = false', [qIds]); console.log(correctResult.rows); } catch (err) { console.error('ERROR OCCURRED:', err.message); } process.exit(0); } run();
