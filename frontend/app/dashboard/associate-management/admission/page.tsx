@@ -801,9 +801,9 @@ export default function StudentAdmissionForm() {
         });
         try {
             if (isEditing && editId) {
-                await axios.patch(`${API_BASE}/admissions/${editId}`, data, { headers: { ...getAuthHeaders(), "Content-Type": "multipart/form-data" } });
+                await axios.patch(`${API_BASE}/admissions/${editId}`, data, { headers: { ...getAuthHeaders() } });
             } else {
-                await axios.post(`${API_BASE}/admissions`, data, { headers: { ...getAuthHeaders(), "Content-Type": "multipart/form-data" } });
+                await axios.post(`${API_BASE}/admissions`, data, { headers: { ...getAuthHeaders() } });
             }
             setIsSuccess(true);
             setTimeout(() => { setIsSuccess(false); window.location.reload(); }, 3000);
