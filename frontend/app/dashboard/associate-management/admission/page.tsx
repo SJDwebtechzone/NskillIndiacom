@@ -1100,12 +1100,12 @@ export default function StudentAdmissionForm() {
                     <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
                         <h4 className="font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider text-sm"><FileText className="text-blue-500" size={18}/> K. Documents Checklist</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FileField fileType="document" label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} />
-                            <FileField fileType="document" label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} />
-                            <FileField fileType="document" label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} />
-                            <FileField fileType="document" label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} />
-                            <FileField fileType="document" label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} />
-                            <FileField fileType="document" label="Guardian / Parent ID"      name="has_guardian_id_file"  value={formData.has_guardian_id_file}  onChange={handleChange} compulsory error={errors.has_guardian_id_file} />
+                            <FileField fileType="document" label="Aadhaar Card"              name="has_aadhaar_file"       value={formData.has_aadhaar_file}       onChange={handleChange} compulsory error={errors.has_aadhaar_file} helperText="Accepted formats:\n• PDF (Max: 2 MB)\n• JPG, JPEG, PNG (Max: 200 KB)" customExtensionMaxSizes={{ '.pdf': 2 * 1024 * 1024, '.jpg': 200 * 1024, '.jpeg': 200 * 1024, '.png': 200 * 1024 }} />
+                            <FileField fileType="document" label="Educational Certificates"  name="has_edu_certs_file"     value={formData.has_edu_certs_file}     onChange={handleChange} compulsory error={errors.has_edu_certs_file} helperText="Accepted formats:\n• PDF (Max: 2 MB)\n• JPG, JPEG, PNG (Max: 200 KB)" customExtensionMaxSizes={{ '.pdf': 2 * 1024 * 1024, '.jpg': 200 * 1024, '.jpeg': 200 * 1024, '.png': 200 * 1024 }} />
+                            <FileField fileType="document" label="Passport (If Available)"   name="has_passport_file"      value={formData.has_passport_file}      onChange={handleChange} helperText="Accepted formats:\n• PDF (Max: 2 MB)\n• JPG, JPEG, PNG (Max: 200 KB)" customExtensionMaxSizes={{ '.pdf': 2 * 1024 * 1024, '.jpg': 200 * 1024, '.jpeg': 200 * 1024, '.png': 200 * 1024 }} />
+                            <FileField fileType="document" label="Resume / Bio-data"         name="has_resume_file"        value={formData.has_resume_file}        onChange={handleChange} compulsory error={errors.has_resume_file} helperText="Accepted formats:\n• PDF (Max: 2 MB)\n• JPG, JPEG, PNG (Max: 200 KB)" customExtensionMaxSizes={{ '.pdf': 2 * 1024 * 1024, '.jpg': 200 * 1024, '.jpeg': 200 * 1024, '.png': 200 * 1024 }} />
+                            <FileField fileType="document" label="Address Proof"             name="has_address_proof_file" value={formData.has_address_proof_file} onChange={handleChange} compulsory error={errors.has_address_proof_file} helperText="Accepted formats:\n• PDF (Max: 2 MB)\n• JPG, JPEG, PNG (Max: 200 KB)" customExtensionMaxSizes={{ '.pdf': 2 * 1024 * 1024, '.jpg': 200 * 1024, '.jpeg': 200 * 1024, '.png': 200 * 1024 }} />
+                            <FileField fileType="document" label="Guardian / Parent ID"      name="has_guardian_id_file"  value={formData.has_guardian_id_file}  onChange={handleChange} compulsory error={errors.has_guardian_id_file} helperText="Accepted formats:\n• PDF (Max: 2 MB)\n• JPG, JPEG, PNG (Max: 200 KB)" customExtensionMaxSizes={{ '.pdf': 2 * 1024 * 1024, '.jpg': 200 * 1024, '.jpeg': 200 * 1024, '.png': 200 * 1024 }} />
                         </div>
                     </div>
 
@@ -1842,7 +1842,7 @@ const CheckboxField = ({ label, name, checked, onChange, error="", compulsory=fa
     );
 };
 
-const FileField = ({ label, name, value, onChange, error="", compulsory=false, fileType="any" }: any) => {
+const FileField = ({ label, name, value, onChange, error="", compulsory=false, fileType="any", helperText, customExtensionMaxSizes }: any) => {
     const [localError, setLocalError] = React.useState<string | null>(null);
     const displayError = localError || error;
 
@@ -1871,6 +1871,7 @@ const FileField = ({ label, name, value, onChange, error="", compulsory=false, f
                 wrapperClassName=""
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 showMessages={false}
+                customExtensionMaxSizes={customExtensionMaxSizes}
             />
             <div className="flex items-center gap-3">
                 <Upload size={20} className={`shrink-0 ${displayError?"text-red-400":"text-blue-500"}`}/>
@@ -1878,8 +1879,8 @@ const FileField = ({ label, name, value, onChange, error="", compulsory=false, f
                     {getFileName(value)}
                 </span>
             </div>
-            <div className="mt-1 ml-8 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                Allowed: {config.extensions.length > 0 ? config.extensions.join(', ') : 'All'} | Max size: {config.maxSize / (1024 * 1024) < 1 ? config.maxSize / 1024 + 'KB' : config.maxSize / (1024 * 1024) + 'MB'}
+            <div className="mt-1 ml-8 text-[9px] font-bold text-slate-500 tracking-widest leading-relaxed whitespace-pre-line">
+                {helperText || `Allowed: ${config.extensions.length > 0 ? config.extensions.join(', ') : 'All'} | Max size: ${config.maxSize / (1024 * 1024) < 1 ? config.maxSize / 1024 + 'KB' : config.maxSize / (1024 * 1024) + 'MB'}`}
             </div>
         </div>
         {displayError && <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-1 ml-1">{displayError}</span>}

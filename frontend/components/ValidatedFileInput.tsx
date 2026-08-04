@@ -26,6 +26,7 @@ interface ValidatedFileInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
   showMessages?: boolean;
   customExtensions?: string[];
   customMaxSize?: number;
+  customExtensionMaxSizes?: Record<string, number>;
   ref?: any;
 }
 
@@ -37,6 +38,7 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
   infoClassName = 'text-[10px] text-slate-500 font-bold uppercase mt-1',
   customExtensions,
   customMaxSize,
+  customExtensionMaxSizes,
   showMessages,
   onChange,
   onFileError,
@@ -50,13 +52,22 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
   const maxSize = customMaxSize || config.maxSize;
   const extensions = customExtensions || config.extensions;
 
+  const formatSize = (size: number): string => {
+    if (size >= 1024 * 1024) {
+      return `${(size / (1024 * 1024)).toFixed(size % (1024 * 1024) === 0 ? 0 : 1)}MB`;
+    }
+    return `${size / 1024}KB`;
+  };
+
   const validateFile = (file: File): string | null => {
-    if (file.size > maxSize) {
-      return `File size exceeds the limit of ${maxSize / (1024 * 1024) < 1 ? maxSize / 1024 + 'KB' : maxSize / (1024 * 1024) + 'MB'}.`;
+    const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const effectiveMaxSize = customExtensionMaxSizes?.[extension] ?? maxSize;
+
+    if (file.size > effectiveMaxSize) {
+      return `File size exceeds the limit of ${formatSize(effectiveMaxSize)}.`;
     }
     
     if (extensions.length > 0) {
-      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
       if (!extensions.includes(extension)) {
         return `Invalid file format. Allowed formats: ${extensions.join(', ')}.`;
       }
@@ -104,8 +115,8 @@ export const ValidatedFileInput = forwardRef<HTMLInputElement, ValidatedFileInpu
       />
       {(showMessages !== false && (showMessages === true || !(style?.display === 'none' || className.includes('hidden') || className.includes('opacity-0')))) && (
         <div className="flex flex-col mt-1">
-          <span className={infoClassName}>
-            Allowed: {extensions.length > 0 ? extensions.join(', ') : 'All'} | Max size: {maxSize / (1024 * 1024) < 1 ? maxSize / 1024 + 'KB' : maxSize / (1024 * 1024) + 'MB'}
+          <span className={`${infoClassName} whitespace-pre-line`}>
+            Allowed: {extensions.length > 0 ? extensions.join(', ') : 'All'} | Max size: {formatSize(maxSize)}
           </span>
           {error && <span className={errorClassName}>{error}</span>}
         </div>
