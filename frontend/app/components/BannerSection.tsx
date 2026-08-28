@@ -74,8 +74,9 @@ export default function BannerSection() {
                             alt={banner.title}
                             className="w-full h-full object-fill"
                             onError={(e) => {
-                                console.error("Image failed to load:", banner.image_url);
-                                (e.target as HTMLImageElement).src = "https://via.placeholder.com/1920x1080?text=Banner+Image+Not+Found";
+                                const image = e.currentTarget;
+                                image.onerror = null;
+                                image.src = "/logo.png";
                             }}
                         />
                     </div>
