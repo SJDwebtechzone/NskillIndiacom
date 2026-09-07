@@ -5,31 +5,48 @@ import { notFound } from "next/navigation";
 import CourseDetailClient from "../CourseDetailClient";
 
 // ─── Fetch single course by slug ──────────────────────────────────────────────
-async function getCourse(slug: string) {
+async function getCourse(identifier: string) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const isNumeric = /^\d+$/.test(identifier);
+
+  const primaryUrl = isNumeric
+    ? `${apiUrl}/api/courses/${identifier}`
+    : `${apiUrl}/api/courses/slug/${identifier}`;
+
+  const fallbackUrl = isNumeric
+    ? `${apiUrl}/api/courses/slug/${identifier}`
+    : `${apiUrl}/api/courses/${identifier}`;
+
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/courses/slug/${slug}`,
-      {
-         cache: "no-store",  // re-fetch every 60 seconds (ISR)
+    let res = await fetch(primaryUrl, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok && res.status === 404) {
+      res = await fetch(fallbackUrl, {
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
-      }
-    );
+      });
+    }
+
     if (!res.ok) {
-      console.error(`getCourse(${slug}) failed: ${res.status}`);
+      console.error(`getCourse(${identifier}) failed: ${res.status}`);
       return null;
     }
     return res.json();
   } catch (err) {
-    console.error(`getCourse(${slug}) network error:`, err);
+    console.error(`getCourse(${identifier}) network error:`, err);
     return null;
   }
 }
 
 // ─── Fetch all courses for sidebar ────────────────────────────────────────────
 async function getAllCourses() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/courses`,
+      `${apiUrl}/api/courses`,
       {
        cache: "no-store",  
         headers: { "Content-Type": "application/json" },
@@ -79,7 +96,7 @@ const course = {
 
   // Normalise allCourses so sidebar uses slug as the link id
   const normalisedCourses = allCourses.map((c: any) => ({
-    id:       c.slug,   // ← sidebar links use /courses/:slug
+    id:       c.slug || c.id,   // ← sidebar links use /courses/:slug or /courses/:id
     title:    c.title,
     category: c.category,
   }));
@@ -88,7 +105,7 @@ const course = {
     <CourseDetailClient
       course={course}
       allCourses={normalisedCourses}
-      currentSlug={id}
+      currentSlug={raw.slug || id}
     />
   );
 }

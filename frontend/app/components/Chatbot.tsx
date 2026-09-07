@@ -428,19 +428,7 @@ const ChatbotContent: React.FC = () => {
 };
 
 const Chatbot: React.FC = () => {
-    const pathname = usePathname();
-
-    // Switcher logic: Check for restricted routes before rendering the logic-heavy component
-    const isRestricted = pathname ? (
-        pathname.toLowerCase().startsWith("/dashboard") ||
-        pathname.toLowerCase().startsWith("/login") ||
-        pathname.toLowerCase().startsWith("/admin") ||
-        pathname.toLowerCase().startsWith("/associate/register")
-    ) : false;
-
-    if (isRestricted) return null;
-
-    return <ChatbotContent />;
+    return null;
 };
 
 export default Chatbot;

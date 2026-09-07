@@ -124,7 +124,10 @@ const createHandler = (uploaderInstance) => {
             // Post-upload size validation per file type
             if (req.files && typeof req.files === 'object') {
                 for (const fieldName in req.files) {
-                    for (const file of req.files[fieldName]) {
+                    const files = Array.isArray(req.files[fieldName])
+                        ? req.files[fieldName]
+                        : [req.files[fieldName]];
+                    for (const file of files) {
                         if (file.size > file.categoryLimit) {
                             Object.values(req.files).flat().forEach(f => {
                                 if (f.path && fs.existsSync(f.path)) fs.unlinkSync(f.path);

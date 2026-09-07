@@ -27,6 +27,13 @@ router.get("/banners", async (req, res) => {
 router.post("/banners", handleSingleUpload("image"), async (req, res) => {
     try {
         const { title, display_order } = req.body;
+        if (req.file) {
+            const bannerDir = path.join(__dirname, "../uploads/banners");
+            fs.mkdirSync(bannerDir, { recursive: true });
+            const bannerPath = path.join(bannerDir, req.file.filename);
+            fs.renameSync(req.file.path, bannerPath);
+            req.file.path = bannerPath;
+        }
         // ✅ FIXED — was hardcoded http://localhost:5000
         const image_url = req.file ? `${BACKEND_URL}/uploads/banners/${req.file.filename}` : "";
 

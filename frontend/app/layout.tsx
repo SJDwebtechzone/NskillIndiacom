@@ -134,7 +134,7 @@ export default function RootLayout({
           <Footer />
           <CoursePopup />
           <AdvertisementPopup />
-          <Chatbot />
+          {/* <Chatbot /> */}
           <FloatingContact />
         </AuthProvider>
       </body>

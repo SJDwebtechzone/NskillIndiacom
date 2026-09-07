@@ -39,7 +39,18 @@ export default function PlacementsPage() {
   const router = useRouter();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [jobs, setJobs] = useState<JobRecord[]>([]);
+  const carouselRef = React.useRef<HTMLDivElement>(null);
   const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+  const scrollCarousel = (direction: "left" | "right") => {
+    if (carouselRef.current) {
+      const scrollAmount = 300;
+      carouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchPartners = async () => {
@@ -91,14 +102,13 @@ export default function PlacementsPage() {
 
   return (
     <div className="bg-[#f3f5f9] min-h-screen">
-      <section className="relative overflow-hidden bg-[#022d5c]">
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="/placement/placementbanner.png"
             alt="N-Skill career placement banner"
             className="h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#032b59]/95 via-[#032b59]/88 to-[#032b59]/35" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1500px] px-3 py-5 md:px-6 md:py-7 lg:px-10 lg:py-8">
@@ -120,7 +130,7 @@ export default function PlacementsPage() {
                 initial={{ opacity: 0, y: -18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-[2.1rem] font-black leading-[0.9] tracking-[-0.05em] text-white sm:text-[2.6rem] md:text-[3.2rem] lg:text-[3.8rem]"
+                className="text-[40px] font-black leading-[1.12] tracking-tight text-white md:text-[46px]"
               >
                 <span className="block">Build Your Skills.</span>
                 <span className="block">Get Job-Ready.</span>
@@ -202,7 +212,7 @@ export default function PlacementsPage() {
       <div className="mx-auto max-w-[1320px] px-4 py-8 md:px-8 md:py-12">
         <div className="rounded-[18px] border border-slate-200 bg-white px-3 py-6 shadow-sm md:px-6 md:py-8">
           <div className="mb-7 text-center">
-            <h2 className="text-[1.75rem] font-black tracking-tight text-[#0a2d5c] md:text-[2.3rem]">Your Journey With N-Skill</h2>
+            <h2 className="text-[1.3rem] font-black tracking-tight text-[#0a2d5c] md:text-[1.6rem]">Your Journey With N-Skill</h2>
           </div>
 
           <div className="grid items-start gap-4 md:grid-cols-6">
@@ -243,7 +253,7 @@ export default function PlacementsPage() {
 
       <div className="mx-auto max-w-[1320px] px-4 pb-10 md:px-8 md:pb-14">
         <div className="mb-5">
-          <h2 className="text-[1.65rem] font-black tracking-tight text-[#0a2d5c] md:text-[2.2rem]">Latest Job Opportunities</h2>
+          <h2 className="text-[1.3rem] font-black tracking-tight text-[#0a2d5c] md:text-[1.6rem]">Latest Job Opportunities</h2>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr_0.8fr]">
@@ -280,7 +290,7 @@ export default function PlacementsPage() {
           </div>
 
           <div className="rounded-[14px] border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="mb-4 text-[1.5rem] font-black leading-tight text-[#0a2d5c] md:text-[1.8rem]">Create Your Career Profile</div>
+            <div className="mb-4 whitespace-nowrap text-[1.3rem] font-black leading-tight text-[#0a2d5c] md:text-[1.6rem]">Create Your Career Profile</div>
             <ul className="space-y-2 text-sm text-slate-600 md:text-[0.9rem]">
               <li className="flex gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#ff8c2a]" /> Register your profile and get recommended jobs that match your skills.</li>
               <li className="flex gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[#ff8c2a]" /> Get relevant job recommendations.</li>
@@ -326,7 +336,7 @@ export default function PlacementsPage() {
         {partners.length > 0 && (
           <div className="bg-white py-6">
             <div className="mb-4 text-center">
-              <h2 className="text-[1.8rem] font-black text-[#0a2d5c] md:text-[2.2rem]">Our Hiring Partners</h2>
+              <h2 className="text-[1.3rem] font-black text-[#0a2d5c] md:text-[1.6rem]">Our Hiring Partners</h2>
             </div>
 
             <div className="overflow-hidden">
@@ -357,10 +367,117 @@ export default function PlacementsPage() {
         )}
       </div>
 
+      <div className="mx-auto max-w-[1320px] px-4 pb-12 md:px-8 md:pb-16">
+        <div className="grid gap-5 lg:grid-cols-2">
+          {/* Success Stories Section */}
+          <div className="rounded-[18px] border border-[#dfe8f4] bg-white p-4 md:p-5 shadow-sm">
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="text-[1.1rem] font-black text-[#0a2d5c]">Success Stories</h3>
+              <a href="#" className="text-[0.8rem] font-black text-[#ff8c2a] hover:text-[#e67a18]">View All →</a>
+            </div>
+            <div className="relative">
+              <div 
+                ref={carouselRef}
+                className="flex gap-3 overflow-x-auto pb-2 scroll-smooth"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                <style>{`
+                  div::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                {[
+                  { name: "Karthik R.", role: "HVAC Engineer", company: "DAIKIN", salary: "₹20,000 / Month", review: "N-Skill training helped me build confidence and was placed in a reputed company." },
+                  { name: "Suresh M.", role: "6G Welder", company: "LARSEN & TOUBRO", salary: "₹22,000 / Month", review: "Excellent practical training and interview preparation. Thank you N-Skill!" },
+                  { name: "Imran A.", role: "Industrial Electrician", company: "TATA PROJECTS", salary: "₹18,500 / Month", review: "From a fresher to an employed professional. N-Skill changed my career." },
+                ].map((story, idx) => (
+                  <div key={idx} className="flex-shrink-0 w-[280px] rounded-[12px] border border-slate-200 p-4 bg-white">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#ff8c2a] to-[#e67a18] flex items-center justify-center flex-shrink-0">
+                        <div className="text-sm font-black text-white">{story.name.charAt(0)}</div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-[0.95rem] font-black text-[#0a2d5c]">{story.name}</div>
+                        <div className="text-[0.8rem] text-slate-500">{story.role}</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5 mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-[#ff8c2a] text-base">★</span>
+                      ))}
+                    </div>
+                    <div className="text-[0.85rem] text-slate-600 mb-3 italic">"{story.review}"</div>
+                    <div className="pt-3 border-t border-slate-200">
+                      <div className="text-[0.8rem] font-bold text-slate-500 mb-1">Placed at</div>
+                      <div className="text-[0.95rem] font-black text-[#0a2d5c] mb-2">{story.company}</div>
+                      <div className="text-[0.85rem] font-bold text-[#ff8c2a]">Salary: {story.salary}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button 
+                onClick={() => scrollCarousel("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 h-8 w-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hidden md:flex cursor-pointer transition"
+              >
+                ‹
+              </button>
+              <button 
+                onClick={() => scrollCarousel("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 h-8 w-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hidden md:flex cursor-pointer transition"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+
+          {/* Upcoming Job Fairs Section */}
+          <div className="rounded-[18px] border border-[#dfe8f4] bg-white p-4 md:p-5 shadow-sm">
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="text-[1.1rem] font-black text-[#0a2d5c]">Upcoming Job Fairs / Drives</h3>
+              <a href="#" className="text-[0.8rem] font-black text-[#ff8c2a] hover:text-[#e67a18]">View All →</a>
+            </div>
+            <div className="space-y-4">
+              {[
+                { title: "N-Skill Mega Job Fair 2026", date: "15 Jun 2026 (Sunday)", location: "N-Skill Training Center, Chennai", openings: "20+ Companies | 500+ Openings", image: "/placement/jobfair1.jpg" },
+                { title: "Construction & MEP Hiring Drive", date: "28 Jun 2026 (Saturday)", location: "N-Skill Training Center, Chennai", openings: "15+ Companies | Multiple Openings", image: "/placement/jobfair2.jpg" },
+              ].map((job, idx) => (
+                <div key={idx} className="rounded-[12px] border border-slate-200 overflow-hidden bg-white">
+                  <div className="flex gap-3">
+                    <div className="h-24 w-28 flex-shrink-0 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center overflow-hidden">
+                      <img src={job.image} alt={job.title} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="flex-1 p-3 flex flex-col justify-between">
+                      <div>
+                        <div className="text-[0.9rem] font-black text-[#0a2d5c] mb-2">{job.title}</div>
+                        <div className="text-[0.85rem] text-slate-600 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span>📅</span>
+                            <span>{job.date}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span>📍</span>
+                            <span>{job.location}</span>
+                          </div>
+                          <div className="text-[0.85rem] font-medium text-slate-700">{job.openings}</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        <button className="px-3 py-1.5 text-[0.75rem] font-black bg-[#ff8c2a] text-white rounded-md hover:bg-[#e67a18] transition">Register as Candidate</button>
+                        <button className="px-3 py-1.5 text-[0.75rem] font-black border border-[#0a2d5c] text-[#0a2d5c] rounded-md hover:bg-slate-50 transition">Register as Employer</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-[1320px] px-4 pb-10 md:px-8 md:pb-14">
         <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
           <div className="rounded-[18px] border border-[#dfe8f4] bg-white p-4 md:p-5">
-            <h3 className="mb-5 text-[2rem] font-black leading-none tracking-[-0.04em] text-[#0a2d5c] md:text-[2.2rem]">
+            <h3 className="mb-5 text-[1.3rem] font-black leading-none tracking-[-0.04em] text-[#0a2d5c] md:text-[1.6rem]">
               Why Recruiters Choose N-Skill Candidates?
             </h3>
 
@@ -387,7 +504,7 @@ export default function PlacementsPage() {
           <div className="overflow-hidden rounded-[18px] border border-[#dfe8f4] bg-white shadow-sm">
             <div className="grid h-full gap-0 md:grid-cols-[1fr_0.8fr]">
               <div className="flex flex-col justify-center p-5 md:p-6">
-                <h3 className="mb-3 text-[2rem] font-black leading-none tracking-[-0.04em] text-[#0a2d5c] md:text-[2.3rem]">Are You Hiring?</h3>
+                <h3 className="mb-3 whitespace-nowrap text-[1.3rem] font-black leading-none tracking-[-0.04em] text-[#0a2d5c] md:text-[1.6rem]">Are You Hiring?</h3>
                 <p className="mb-4 max-w-[320px] text-[0.98rem] leading-relaxed text-slate-600">
                   Post your job requirements and connect with our skilled candidates.
                 </p>
@@ -427,7 +544,7 @@ export default function PlacementsPage() {
       <div id="placement-faqs" className="mx-auto max-w-[1320px] px-4 pb-14 md:px-8">
         <div className="rounded-[16px] border border-[#dfe8f4] bg-white px-4 py-4 shadow-[0_8px_20px_rgba(15,23,42,0.03)] md:px-6 md:py-5">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-[1.8rem] font-black leading-tight text-[#0a2d5c] md:text-[2.2rem]">Placement Support - FAQs</h2>
+            <h2 className="text-[1.3rem] font-black leading-tight text-[#0a2d5c] md:text-[1.6rem]">Placement Support - FAQs</h2>
           </div>
 
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -440,16 +557,6 @@ export default function PlacementsPage() {
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 text-xl font-light text-slate-400">+</span>
               </div>
             ))}
-          </div>
-
-          <div className="mt-5 flex justify-center">
-            <a
-              href="#placement-faqs"
-              className="inline-flex items-center gap-2 text-[1rem] font-black uppercase tracking-[0.04em] text-[#ff8c2a] transition hover:text-[#e67a18]"
-            >
-              View All FAQs
-              <ArrowRight className="h-4 w-4" />
-            </a>
           </div>
         </div>
       </div>
