@@ -1,13 +1,228 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { X, User, Mail, Phone, BookOpen, Send, CheckCircle2, ChevronRight, Loader2, Rocket, BadgeCheck, MessageSquare, CalendarDays, Users } from "lucide-react";
+import Link from "next/link";
+import {
+  Search,
+  MapPin,
+  Calendar,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  X,
+  User,
+  Mail,
+  Phone,
+  BookOpen,
+  Send,
+  CheckCircle2,
+  Loader2,
+  Rocket,
+  BadgeCheck,
+  MessageSquare,
+  CalendarDays,
+  Users,
+  GraduationCap,
+  Building2,
+  UserCheck,
+  MessageCircle,
+  Star,
+  Download,
+  Flame,
+  Zap,
+  Wind,
+  Wrench,
+  ShieldCheck,
+  PhoneCall,
+  FileText,
+} from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
 import AnimatedCalendarBanner from "../components/AnimatedCalendarBanner";
 
+
+function formatEventDate(dateString: string) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${d.getDate().toString().padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+const CATEGORIES_DATA = [
+  { name: "Welding" },
+  { name: "HVAC & Refrigeration" },
+  { name: "Electrical" },
+  { name: "Plumbing" },
+  { name: "MEP" },
+  { name: "Quality" },
+  { name: "Safety" },
+  { name: "Home Appliance" },
+  { name: "Oil & Gas" },
+];
+
+const TESTIMONIALS_DATA = [
+  {
+    name: "Karthik R.",
+    role: "HVAC Engineer",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    quote: "N-Skill gave me the right skills and confidence. The practical training was excellent.",
+    rating: 5,
+  },
+  {
+    name: "Suresh M.",
+    role: "6G Welding",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    quote: "Best training institute for welding. Good facilities and experienced trainers.",
+    rating: 5,
+  },
+  {
+    name: "Mohammed Imran",
+    role: "Industrial Electrician",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    quote: "The course content and practical sessions were very helpful for my career.",
+    rating: 5,
+  },
+  {
+    name: "Vignesh K.",
+    role: "MEP Technician",
+    image: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
+    quote: "Top notch practical sessions and direct placement support. Highly recommended!",
+    rating: 5,
+  },
+];
+
+const CATEGORY_IMAGES: Record<string, string[]> = {
+  "HVAC & Refrigeration": [
+    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80",
+    "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
+    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+  ],
+  "Electrical": [
+    "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80",
+    "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80",
+    "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80",
+  ],
+  "Plumbing": [
+    "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80",
+    "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=600&q=80",
+    "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&q=80",
+  ],
+  "Welding": [
+    "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
+    "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=600&q=80",
+    "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&q=80",
+  ],
+  "Home Appliance": [
+    "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80",
+    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80",
+    "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
+  ],
+  "MEP": [
+    "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&q=80",
+    "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
+    "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=600&q=80",
+  ],
+  "Quality": [
+    "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
+    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=80",
+    "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=600&q=80",
+  ],
+  "Safety": [
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80",
+    "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80",
+    "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600&q=80",
+  ],
+  "Oil & Gas": [
+    "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
+    "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&q=80",
+    "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=600&q=80",
+  ],
+};
+
+const FALLBACK_IMAGES = [
+  "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80",
+  "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80",
+  "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
+];
+
+function getCourseImage(category: string, index: number): string {
+  const pool = CATEGORY_IMAGES[category] ?? FALLBACK_IMAGES;
+  return pool[index % pool.length];
+}
+
+const COURSE_METADATA_MAP: Record<string, { fee: string; badge: string; time: string; level: string; mode: string }> = {
+  "welding": { fee: "₹25,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 04:00 PM", level: "Certificate", mode: "Practical Lab" },
+  "6g welding": { fee: "₹55,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 04:00 PM", level: "Advanced", mode: "Practical Lab" },
+  "hvac": { fee: "₹15,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 02:00 PM", level: "Diploma", mode: "Classroom / Lab" },
+  "electrician": { fee: "₹14,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 02:00 PM", level: "Certificate", mode: "Practical Lab" },
+  "quality": { fee: "₹16,000 + GST", badge: "FEW SEATS", time: "10:00 AM - 02:00 PM", level: "Diploma", mode: "Classroom / Lab" },
+  "plumbing": { fee: "₹8,000 + GST", badge: "UPCOMING BATCH", time: "10:00 AM - 02:00 PM", level: "Certificate", mode: "Practical Lab" },
+  "home appliance": { fee: "₹10,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 02:00 PM", level: "Certificate", mode: "Practical Lab" },
+  "mep": { fee: "₹16,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 02:00 PM", level: "Advanced", mode: "Classroom / Lab" },
+  "safety": { fee: "₹12,000 + GST", badge: "ADMISSIONS OPEN", time: "10:00 AM - 02:00 PM", level: "Certificate", mode: "Classroom" },
+  "oil & gas": { fee: "₹55,000 + GST", badge: "FEW SEATS", time: "10:00 AM - 04:00 PM", level: "Advanced", mode: "Classroom / Lab" },
+};
+
+function getCourseMeta(course: any) {
+  const title = (course?.title || "").toLowerCase();
+  const cat = (course?.category || "").toLowerCase();
+
+  for (const [key, val] of Object.entries(COURSE_METADATA_MAP)) {
+    if (title.includes(key) || cat.includes(key)) {
+      return val;
+    }
+  }
+  return {
+    fee: "₹15,000 + GST",
+    badge: "ADMISSIONS OPEN",
+    time: "10:00 AM - 02:00 PM",
+    level: "Certificate",
+    mode: "Classroom / Lab",
+  };
+}
+
 type EventType = "batch1" | "batch2" | "both";
 type Week      = "First" | "Second" | "Third" | "Fourth";
+
+// ─── Custom Icons for Hero Features ───────────────────────────────────────────
+// â”€â”€â”€ Custom Icons for Hero Features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function PracticalTrainingIcon({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  );
+}
+
+function IndustryCurriculumIcon({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <path d="M9 22v-4h6v4" />
+      <path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01" strokeWidth="2.5" />
+    </svg>
+  );
+}
+
+function ExperiencedTrainersIcon({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function PlacementAssistanceIcon({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
 
 interface CourseEvent {
   id:          number;
@@ -119,6 +334,26 @@ export default function StudentCalendar() {
   const [events,       setEvents]       = useState<CourseEvent[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState("");
+
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedDuration, setSelectedDuration] = useState("All Durations");
+  const [selectedLocation, setSelectedLocation] = useState("All Locations");
+  const [selectedMode, setSelectedMode] = useState("All Training Modes");
+  const [courses, setCourses] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/courses`)
+      .then(r => r.json())
+      .then(data => { if(Array.isArray(data)) setCourses(data); })
+      .catch(console.error);
+  }, []);
+
+  const handleOpenEnquiry = (courseName: string) => {
+    setDemoForm(prev => ({ ...prev, course_id: courseName }));
+    setShowEnquiryModal(true);
+  };
+
   const [monthIdx,     setMonthIdx]     = useState(0);
   const [selectedDay,  setSelectedDay]  = useState<number | null>(null);
   const [filterCourse, setFilterCourse] = useState<string>("all");
@@ -137,6 +372,12 @@ export default function StudentCalendar() {
     catch (e: any) { setError(e.message ?? "Failed to load"); }
     finally { setLoading(false); }
   }, []);
+
+  
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    window.location.href = `/courses?search=${encodeURIComponent(searchInput)}`;
+  };
 
   const handleDemoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,6 +420,43 @@ export default function StudentCalendar() {
     return courseMatch && batchMatch;
   });
 
+  // Dynamic filtered courses for Next Available Batches
+  const filteredCourses = courses.filter((c) => {
+    if (searchInput.trim()) {
+      const q = searchInput.toLowerCase().trim();
+      const titleMatch = (c.title || "").toLowerCase().includes(q);
+      const catMatch = (c.category || "").toLowerCase().includes(q);
+      const contentMatch = (c.content || "").toLowerCase().includes(q);
+      if (!titleMatch && !catMatch && !contentMatch) return false;
+    }
+    if (selectedCategory !== "all" && selectedCategory !== "All Categories") {
+      if ((c.category || "").toLowerCase() !== selectedCategory.toLowerCase()) return false;
+    }
+    if (selectedDuration !== "all" && selectedDuration !== "All Durations") {
+      if (!c.duration || !c.duration.toLowerCase().includes(selectedDuration.toLowerCase())) return false;
+    }
+    const meta = getCourseMeta(c);
+    if (selectedMode !== "all" && selectedMode !== "All Training Modes") {
+      if (!meta.mode.toLowerCase().includes(selectedMode.toLowerCase())) return false;
+    }
+    return true;
+  });
+
+  // Ref and controls for horizontal single-row scrolling of batches
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
+
   const totalDays        = getDaysInMonth(month, year);
   const startDay         = getFirstDayOfMonth(month, year);
   const dateMap          = buildDateMap(filteredEvents, totalDays);
@@ -186,6 +464,166 @@ export default function StudentCalendar() {
   const monthCourseNames = [...new Set(monthEvents.map((e) => e.course_name))];
   const batch1Count      = monthEvents.filter((e) => e.event_type === "batch1" || e.event_type === "both").length;
   const batch2Count      = monthEvents.filter((e) => e.event_type === "batch2" || e.event_type === "both").length;
+
+  const [calendarViewMode, setCalendarViewMode] = useState<"calendar" | "list">("calendar");
+  const [showAllBatches, setShowAllBatches] = useState(false);
+
+  // Dynamic batch schedule calculation
+  interface BatchRowItem {
+    id: string;
+    courseName: string;
+    title: string;
+    startDate: string;
+    dayNumber: number;
+    duration: string;
+    timing: string;
+    location: string;
+    seats: number;
+    status: "Open" | "Few Seats" | "Upcoming" | "Batch Full";
+    batchType: string;
+  }
+
+  const currentMonthBatches = useMemo<BatchRowItem[]>(() => {
+    // 1. If we have events from database for this month:
+    const dbBatches: BatchRowItem[] = monthEvents.map((ev, index) => {
+      const day = parseInt(ev.start_date.split("-")[2], 10) || ((index * 6) % totalDays) + 1;
+      const dStr = formatEventDate(ev.start_date) || `${day.toString().padStart(2, "0")} ${month.slice(0, 3)} ${year}`;
+      let status: "Open" | "Few Seats" | "Upcoming" | "Batch Full" = "Open";
+      if (ev.event_type === "batch2") status = "Few Seats";
+      else if (index % 4 === 3) status = "Upcoming";
+      else if (index % 5 === 4) status = "Few Seats";
+
+      return {
+        id: `ev-${ev.id}`,
+        courseName: ev.course_name || ev.title,
+        title: ev.title,
+        startDate: dStr,
+        dayNumber: day,
+        duration: "30 Days",
+        timing: "10AM - 02PM",
+        location: "Chennai",
+        seats: 12 + (index % 6),
+        status,
+        batchType: ev.event_type === "batch2" ? "Batch 2" : "Batch 1",
+      };
+    });
+
+    if (dbBatches.length > 0) return dbBatches;
+
+    // 2. Dynamic batches from courses if no events loaded for the month
+    const fallbackList: {
+      name: string;
+      category: string;
+      duration: string;
+      day: number;
+      timing: string;
+      seats: number;
+      status: "Open" | "Few Seats" | "Upcoming" | "Batch Full";
+      batch: string;
+    }[] = [
+      { name: "HVAC Engineer", category: "HVAC & Refrigeration", duration: "30 Days", day: 1, timing: "10AM - 02PM", seats: 15, status: "Open", batch: "Batch 1" },
+      { name: "Industrial Electrician", category: "Electrical", duration: "30 Days", day: 7, timing: "10AM - 02PM", seats: 12, status: "Open", batch: "Batch 1" },
+      { name: "6G Welding Training", category: "Welding", duration: "45 Days", day: 14, timing: "10AM - 04PM", seats: 10, status: "Open", batch: "Batch 1" },
+      { name: "Quality Inspector", category: "Quality", duration: "30 Days", day: 21, timing: "10AM - 02PM", seats: 15, status: "Few Seats", batch: "Batch 2" },
+      { name: "MEP Technician", category: "MEP", duration: "30 Days", day: 28, timing: "10AM - 02PM", seats: 12, status: "Upcoming", batch: "Upcoming" },
+    ];
+
+    if (courses.length > 0) {
+      return courses.slice(0, 8).map((c, idx) => {
+        const days = [1, 7, 14, 18, 21, 25, 28, 30];
+        const day = days[idx % days.length];
+        const dayStr = `${day.toString().padStart(2, "0")} ${month.slice(0, 3)} ${year}`;
+        let status: "Open" | "Few Seats" | "Upcoming" | "Batch Full" = "Open";
+        if (idx === 3 || idx === 6) status = "Few Seats";
+        else if (idx === 4 || idx === 7) status = "Upcoming";
+
+        return {
+          id: `c-${c.id || idx}`,
+          courseName: c.title,
+          title: c.title,
+          startDate: dayStr,
+          dayNumber: day,
+          duration: c.duration || "30 Days",
+          timing: idx % 3 === 2 ? "10AM - 04PM" : "10AM - 02PM",
+          location: "Chennai",
+          seats: 10 + ((idx * 3) % 8),
+          status,
+          batchType: status === "Few Seats" ? "Batch 2" : status === "Upcoming" ? "Upcoming" : "Batch 1",
+        };
+      });
+    }
+
+    return fallbackList.map((f, idx) => ({
+      id: `fb-${idx}`,
+      courseName: f.name,
+      title: f.name,
+      startDate: `${f.day.toString().padStart(2, "0")} ${month.slice(0, 3)} ${year}`,
+      dayNumber: f.day,
+      duration: f.duration,
+      timing: f.timing,
+      location: "Chennai",
+      seats: f.seats,
+      status: f.status,
+      batchType: f.batch,
+    }));
+  }, [monthEvents, courses, month, year, totalDays]);
+
+  // Map day numbers (1..totalDays) to batches scheduled on that day
+  const dayBatchesMap = useMemo(() => {
+    const map: Record<number, typeof currentMonthBatches> = {};
+    currentMonthBatches.forEach((b) => {
+      if (!map[b.dayNumber]) map[b.dayNumber] = [];
+      map[b.dayNumber].push(b);
+    });
+    return map;
+  }, [currentMonthBatches]);
+
+  const prevMonthIdx = (monthIdx - 1 + MONTHS_FY.length) % MONTHS_FY.length;
+  const prevMonthName = MONTHS_FY[prevMonthIdx].month;
+  const prevMonthYear = MONTHS_FY[prevMonthIdx].year;
+  const prevMonthTotalDays = getDaysInMonth(prevMonthName, prevMonthYear);
+  const totalCells = startDay + totalDays;
+  const trailingCount = (7 - (totalCells % 7)) % 7;
+
+  const displayedBatches = useMemo(() => {
+    let list = currentMonthBatches;
+    if (selectedDay !== null) {
+      const filtered = list.filter((b) => b.dayNumber === selectedDay);
+      if (filtered.length > 0) list = filtered;
+    }
+    if (!showAllBatches && list.length > 6) {
+      return list.slice(0, 6);
+    }
+    return list;
+  }, [currentMonthBatches, selectedDay, showAllBatches]);
+
+  const [downloadPhone, setDownloadPhone] = useState("");
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [testimonialIdx, setTestimonialIdx] = useState(0);
+
+  const handleCalendarDownload = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!downloadPhone.trim()) return;
+    setDownloadSuccess(true);
+    alert(`Thank you! The 2026-27 Course Calendar has been sent to +91 ${downloadPhone}`);
+    setDownloadPhone("");
+  };
+
+  const handlePrevTestimonial = () => {
+    setTestimonialIdx((prev) => (prev === 0 ? TESTIMONIALS_DATA.length - 1 : prev - 1));
+  };
+
+  const handleNextTestimonial = () => {
+    setTestimonialIdx((prev) => (prev + 1) % TESTIMONIALS_DATA.length);
+  };
+
+  const visibleTestimonials = useMemo(() => {
+    const list = [];
+    for (let i = 0; i < 3; i++) {
+      list.push(TESTIMONIALS_DATA[(testimonialIdx + i) % TESTIMONIALS_DATA.length]);
+    }
+    return list;
+  }, [testimonialIdx]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -213,473 +651,249 @@ export default function StudentCalendar() {
         .cal-cell:hover { background: #f8fafc !important; }
       `}</style>
 
-      {/* ── Page Banner ── */}
-      <div className="relative min-h-[380px] md:h-[350px] lg:h-[400px] flex items-center overflow-hidden bg-white mb-8 py-8 md:py-0">
-        <AnimatedCalendarBanner />
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb] z-20" />
+      {/* ── Hero Banner ── */}
+      <section className="relative overflow-hidden bg-[#031525] pb-8 md:pb-10 lg:pb-12">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/coursecalender/calenderbanner.png"
+            alt="Course Calendar Banner"
+            className="h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#031525] via-[#031525]/90 to-transparent lg:w-[65%]" />
+        </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-6 w-full">
-                  {/* Header Text */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <div className="inline-flex items-center gap-2 bg-[#dbeafe] border border-[#bfdbfe] rounded-full px-4 py-1 mb-3 md:mb-4 shadow-sm">
-                <span className="text-[#2563eb] text-[11px] font-black tracking-widest uppercase">FY 2026–2027</span>
-              </div>
-              <h1 className="text-[#0f172a] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 md:mb-3">
-                Course Calendar
+        <div className="relative z-10 mx-auto max-w-[1500px] px-3 py-5 md:px-6 md:py-7 lg:px-10 lg:py-8">
+          <div className="grid min-h-[360px] items-center gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="max-w-[620px] text-left">
+              {/* Orange "Upcoming" label */}
+              <p className="text-[#f97316] text-xs sm:text-sm md:text-base font-bold mb-1">Upcoming</p>
+
+              {/* Main heading */}
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-white leading-tight tracking-tight mb-1 lg:whitespace-nowrap">
+                Technical Training Courses
               </h1>
-            </motion.div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-white leading-tight tracking-tight mb-3">
+                &amp; Batch Calendar <span className="text-[#f97316]">2026–27</span>
+              </h1>
 
-            {/* Month Navigator */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-2 sm:gap-4 bg-white rounded-2xl px-4 py-2.5 sm:px-5 sm:py-3 border border-slate-200 shadow-sm"
-            >
-              <button
-                onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
-                disabled={monthIdx === 0}
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-lg sm:text-xl shadow-sm"
-              >‹</button>
-              <span className="min-w-[110px] sm:min-w-[140px] text-center text-[15px] sm:text-[17px] font-black text-[#0f172a]">{month} {year}</span>
-              <button
-                onClick={() => setMonthIdx((i) => Math.min(MONTHS_FY.length - 1, i + 1))}
-                disabled={monthIdx === MONTHS_FY.length - 1}
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 text-white text-lg sm:text-xl shadow-sm"
-              >›</button>
-            </motion.div>
-          </div>
+              {/* Description */}
+              <p className="text-slate-200 text-xs sm:text-sm md:text-base font-normal mb-5 leading-relaxed max-w-lg">
+                Choose your course, check upcoming batches and start your journey towards a successful career.
+              </p>
 
-          {/* Month Tabs */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-            className="flex gap-3 mt-6 md:mt-12 overflow-x-auto scrollbar-hide pb-2 pt-1"
-          >
-            {MONTHS_FY.map(({ month: m, year: y }, i) => {
-              const isActive = monthIdx === i;
-              return (
+              {/* 4 Feature Badges */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-white">
+                <div className="flex items-center gap-2">
+                  <PracticalTrainingIcon className="w-6 h-6 text-white/80 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Practical<br />Training</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IndustryCurriculumIcon className="w-6 h-6 text-white/80 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Industry<br />Oriented</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ExperiencedTrainersIcon className="w-6 h-6 text-white/80 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Expert<br />Trainers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <PlacementAssistanceIcon className="w-6 h-6 text-white/80 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Placement<br />Assistance</span>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
                 <button
-                  key={i}
-                  onClick={() => setMonthIdx(i)}
-                  className={`flex-shrink-0 px-6 py-3 rounded-2xl text-[15px] font-bold transition-all shadow-sm ${
-                    isActive
-                      ? "bg-white text-[#0f172a] border-2 border-[#3b82f6] shadow-md shadow-blue-500/10 scale-105 transform -translate-y-1"
-                      : "bg-[#e0e7ff]/60 text-[#0f172a] border border-[#c7d2fe] hover:bg-[#dbeafe] hover:-translate-y-0.5"
-                  }`}
+                  onClick={() => {
+                    const el = document.getElementById("calendar-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer"
                 >
-                  {m.slice(0, 3)} '{String(y).slice(2)}
+                  VIEW UPCOMING BATCHES
                 </button>
-              );
-            })}
-          </motion.div>
+                <button
+                  onClick={() => setShowEnquiryModal(true)}
+                  className="w-full sm:w-auto inline-flex items-center justify-center bg-white hover:bg-slate-50 text-[#0b1f3a] px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-md"
+                >
+                  <MessageCircle className="w-4 h-4 text-green-500 mr-2" />
+                  TALK TO COUNSELLOR
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Floating Stats Bar */}
+      <div className="mx-auto max-w-[1200px] px-4 relative z-20 -mt-8 md:-mt-10 mb-8 md:mb-10">
+        <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-6 px-4 md:px-10 grid grid-cols-2 lg:grid-cols-4 gap-6 border border-slate-100">
+          <div className="flex items-center gap-3 sm:gap-4 justify-center">
+            <GraduationCap className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
+            <div>
+              <h3 className="text-xl md:text-2xl font-black text-[#0b1f3a]">5000+</h3>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Students Trained</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-4 justify-center lg:border-l lg:border-slate-200">
+            <BookOpen className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
+            <div>
+              <h3 className="text-xl md:text-2xl font-black text-[#0b1f3a]">50+</h3>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Skill Programs</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-4 justify-center lg:border-l lg:border-slate-200">
+            <Building2 className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
+            <div>
+              <h3 className="text-xl md:text-2xl font-black text-[#0b1f3a]">100+</h3>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Industry Connections</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-4 justify-center lg:border-l lg:border-slate-200">
+            <UserCheck className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
+            <div>
+              <p className="text-base font-black text-[#0b1f3a] leading-tight">Experienced</p>
+              <p className="text-base font-black text-[#0b1f3a] leading-tight">Trainers</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-
-        {error && (
-          <div className="mb-6 p-4 rounded-xl text-sm bg-red-50 border border-red-200 text-red-700">
-            ⚠️ {error} — <button onClick={loadEvents} className="underline font-semibold">Retry</button>
-          </div>
-        )}
-
-        {/* ── Stats ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Total Sessions",   value: monthEvents.length,      icon: <CalendarDays className="w-6 h-6 text-blue-600" />,   color: "text-blue-600",   iconBg: "bg-blue-100" },
-            { label: "Courses Running",  value: monthCourseNames.length, icon: <BookOpen className="w-6 h-6 text-indigo-600" />,     color: "text-indigo-600", iconBg: "bg-indigo-100" },
-            { label: "Batch 1 Sessions", value: batch1Count,             icon: <Users className="w-6 h-6 text-sky-600" />,           color: "text-sky-600",    iconBg: "bg-sky-100" },
-            { label: "Batch 2 Sessions", value: batch2Count,             icon: <Users className="w-6 h-6 text-cyan-600" />,          color: "text-cyan-600",   iconBg: "bg-cyan-100" },
-          ].map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col hover:shadow-md transition-shadow">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${s.iconBg}`}>
-                {s.icon}
+      {/* ─── Next Available Batches & Search ───────────────────────────────────── */}
+      <div id="next-batches-section" className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 relative z-10 mb-16">
+        <div className="flex flex-col xl:flex-row gap-6 items-start">
+          
+          {/* Left: Next Available Batches */}
+          <div className="flex-1 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-5 md:p-7 border border-slate-100 min-w-0 w-full overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-3">
+              <div>
+                <h2 className="text-xl md:text-2xl font-black text-[#0b1f3a] flex items-center gap-2 tracking-tight">
+                  🔥 Next Available Batches
+                </h2>
+                <p className="text-slate-500 text-sm md:text-[15px] font-semibold mt-1">
+                  Admissions are currently open for the following programs.
+                </p>
               </div>
-              <div className={`text-4xl font-black ${s.color} mb-1 leading-none`}>{s.value}</div>
-              <div className="text-[17px] font-black text-[#0f172a]">{s.label}</div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit whitespace-nowrap">
+                  {filteredCourses.length} {filteredCourses.length === 1 ? "Program" : "Programs"} Available
+                </span>
+                {filteredCourses.length > 0 && (
+                  <div className="flex items-center gap-1.5 ml-1">
+                    <button
+                      type="button"
+                      onClick={handleScrollLeft}
+                      className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-all shadow-sm hover:border-[#0b1f3a] cursor-pointer"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleScrollRight}
+                      className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-all shadow-sm hover:border-[#0b1f3a] cursor-pointer"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* ── Filters + CTA ── */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-8">
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-            <p className="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Filter by Batch</p>
-            <div className="flex flex-wrap gap-2 mb-8">
-              {(["all", "batch1", "batch2"] as const).map((b) => (
+            {/* 1-Row Horizontal Scrolling Courses Container */}
+            {filteredCourses.length === 0 ? (
+              <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <p className="text-slate-500 font-semibold text-sm">No courses found matching your criteria.</p>
                 <button
-                  key={b}
-                  onClick={() => setFilterBatch(b)}
-                  className={`px-5 py-3 rounded-xl text-base font-bold transition-all border ${
-                    filterBatch === b
-                      ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50"
-                  }`}
+                  onClick={() => {
+                    setSearchInput("");
+                    setSelectedCategory("All Categories");
+                    setSelectedDuration("All Durations");
+                    setSelectedLocation("All Locations");
+                    setSelectedMode("All Training Modes");
+                  }}
+                  className="mt-3 px-4 py-2 bg-[#0b1f3a] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition-colors cursor-pointer"
                 >
-                  {b === "all" ? "All Batches" : b === "batch1" ? "Batch 1" : "Batch 2"}
+                  Reset Filters
                 </button>
-              ))}
-            </div>
-
-            <p className="text-sm font-bold uppercase tracking-widest text-blue-600 mb-4">Filter by Course</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilterCourse("all")}
-                className={`px-5 py-3 rounded-xl text-base font-bold transition-all border ${
-                  filterCourse === "all"
-                    ? "bg-[#0b1f3a] text-white border-[#0b1f3a] shadow-md"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
-                }`}
-              >All Courses</button>
-              {monthCourseNames.map((cname) => {
-                const p = getCourseColor(cname, allCourses);
-                const isActive = filterCourse === cname;
-                return (
-                  <button
-                    key={cname}
-                    onClick={() => setFilterCourse(filterCourse === cname ? "all" : cname)}
-                    className="px-5 py-3 rounded-xl text-base font-bold transition-all border flex items-center gap-2 hover:shadow-md"
-                    style={isActive ? {
-                      background: p.solidColor, color: "#fff", borderColor: p.solidColor,
-                      boxShadow: `0 4px 12px ${p.dotColor}40`,
-                    } : {
-                      background: "#fff", color: "#475569", borderColor: "#e2e8f0",
-                    }}
-                  >
-                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: p.dotColor }} />
-                    {cname}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="w-full lg:w-[360px] flex flex-col gap-4">
-            <div className="flex-1 bg-white rounded-2xl p-8 text-slate-900 relative overflow-hidden shadow-sm border border-slate-200 group">
-              <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-50 rounded-full blur-2xl group-hover:scale-125 transition-transform"></div>
-              <div className="relative z-10">
-                <h3 className="text-2xl font-black mb-3 text-[#0b1f3a]">Join a Batch</h3>
-                <p className="text-slate-600 text-[15px] mb-8 font-medium leading-relaxed">Have questions about our schedule or courses? Reach out to our team today.</p>
-                <div className="flex flex-col gap-4">
-                  <button 
-                    onClick={() => setShowEnquiryModal(true)}
-                    className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-base transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2"
-                  >
-                    Enquire Now
-                    <span className="text-xl leading-none">→</span>
-                  </button>
-                  <button 
-                    onClick={() => setShowDemoModal(true)}
-                    className="w-full py-4 bg-white hover:bg-blue-50 text-blue-700 hover:border-blue-200 rounded-xl font-black text-base transition-all border border-slate-200 active:scale-95"
-                  >
-                    Book a Free Demo
-                  </button>
-                </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Demo Booking Modal ── */}
-        {showDemoModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={closeDemoModal}>
-            <div className="bg-white rounded-[40px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto scrollbar-hide shadow-2xl relative animate-scaleUp" onClick={e => e.stopPropagation()}>
-              
-              {!submittedDemo ? (
-                <>
-                  {/* Modal Header */}
-                  <div className="p-8 pb-4 flex items-center justify-between sticky top-0 bg-white z-10">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0b1f3a] to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-[#0b1f3a]/30">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                      </div>
-                      <div>
-                        <h2 className="text-[22px] font-black text-[#111827] leading-tight">Book Your Free Demo</h2>
-                        <p className="text-[13px] font-bold text-[#7c829c]">Reserve a slot with our expert counsellor</p>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={closeDemoModal}
-                      className="w-10 h-10 rounded-full bg-[#f6f7fb] flex items-center justify-center text-[#7c829c] hover:bg-[#eff1f6] hover:text-[#111827] transition-all"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleDemoSubmit} className="p-8 pt-0 space-y-6">
-                    {/* Selected Course Display */}
-                    <div className="bg-[#f5f3ff] p-4 rounded-2xl border border-[#ede9fe] flex items-center gap-3">
-                      <span className="text-xl">📖</span>
-                      <span className="text-[14px] font-black text-[#7c3aed] uppercase tracking-wide">
-                        {filterCourse === "all" ? "General Demo (All Courses)" : filterCourse}
-                      </span>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
-                          👤 Full Name <span className="text-red-500">*</span>
-                        </label>
-                        <input 
-                          required
-                          type="text"
-                          placeholder="Your full name"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
-                          value={demoForm.name}
-                          onChange={e => setDemoForm({...demoForm, name: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
-                          📍 Address
-                        </label>
-                        <input 
-                          type="text"
-                          placeholder="City / Area"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
-                          value={demoForm.address}
-                          onChange={e => setDemoForm({...demoForm, address: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
-                          ✉️ Email Address <span className="text-red-500">*</span>
-                        </label>
-                        <input 
-                          required
-                          type="email"
-                          placeholder="you@example.com"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
-                          value={demoForm.email}
-                          onChange={e => setDemoForm({...demoForm, email: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
-                          📞 Phone Number <span className="text-red-500">*</span>
-                        </label>
-                        <input 
-                          required
-                          type="tel"
-                          placeholder="+91 XXXXX XXXXX"
-                          className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
-                          value={demoForm.phone}
-                          onChange={e => setDemoForm({...demoForm, phone: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
-                            📅 Date <span className="text-red-500">*</span>
-                          </label>
-                          <input 
-                            required
-                            type="date"
-                            className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold"
-                            value={demoForm.date}
-                            onChange={e => setDemoForm({...demoForm, date: e.target.value})}
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
-                            🕒 Time <span className="text-red-500">*</span>
-                          </label>
-                          <select 
-                            required
-                            className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-800 focus:bg-white transition-all outline-none text-[15px] font-bold appearance-none"
-                            value={demoForm.time}
-                            onChange={e => setDemoForm({...demoForm, time: e.target.value})}
-                          >
-                            <option value="">Select slot</option>
-                            <option value="10:00 AM">10:00 AM</option>
-                            <option value="12:00 PM">12:00 PM</option>
-                            <option value="02:00 PM">02:00 PM</option>
-                            <option value="04:00 PM">04:00 PM</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button 
-                      disabled={isSubmitting}
-                      className="w-full py-5 bg-[#0b1f3a] hover:bg-[#071527] text-white rounded-[24px] font-black text-[17px] shadow-xl transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                      {isSubmitting ? "Confirming..." : "Confirm My Demo Slot"}
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <div className="p-12 text-center">
-                  <div className="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-100">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                  </div>
-                  <h3 className="text-[28px] font-black text-[#111827] mb-2 leading-tight">Done! 🎉</h3>
-                  <p className="text-[15px] font-medium text-[#7c829c] mb-8">
-                    Your free demo slot is booked. We'll contact you shortly to confirm the details!
-                  </p>
-                  <button
-                    onClick={closeDemoModal}
-                    className="w-full py-4 bg-[#0b1f3a] hover:bg-[#071527] text-white rounded-2xl font-black text-[16px] transition-all"
-                  >
-                    Close
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Enquiry Modal ── */}
-        <EnquiryModal 
-          isOpen={showEnquiryModal} 
-          onClose={() => setShowEnquiryModal(false)} 
-          defaultCourse={filterCourse !== "all" ? filterCourse : undefined}
-        />
-
-        {/* ── Calendar Grid ── */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mb-6">
-          {/* Day headers */}
-          <div className="grid grid-cols-7 bg-[#0b1f3a]">
-            {WEEK_DAYS.map((d) => (
-              <div key={d} className="py-2 sm:py-4 text-center text-xs sm:text-[17px] font-black uppercase tracking-normal sm:tracking-widest text-white">{d}</div>
-            ))}
-          </div>
-
-          {loading ? (
-            <div className="py-24 text-center text-slate-400 animate-pulse text-base">Loading schedule…</div>
-          ) : (
-            <div className="grid grid-cols-7">
-              {Array.from({ length: startDay }).map((_, i) => (
-                <div key={`pad-${i}`} className="cal-cell bg-slate-50/60" />
-              ))}
-              {Array.from({ length: totalDays }).map((_, i) => {
-                const day        = i + 1;
-                const dayEvents  = dateMap[day] ?? [];
-                const hasEvents  = dayEvents.length > 0;
-                const colIndex   = (startDay + i) % 7;
-                const weekend    = colIndex === 0 || colIndex === 6;
-                const isSelected = selectedDay === day;
-                const today      = isToday(day, month, year);
-
-                return (
-                  <div
-                    key={day}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => hasEvents && setSelectedDay(isSelected ? null : day)}
-                    onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && hasEvents) setSelectedDay(isSelected ? null : day); }}
-                    className="cal-cell select-none"
-                    style={{
-                      background: isSelected ? "#eff6ff" : weekend ? "#f8fafc" : "#fff",
-                      boxShadow: isSelected ? "inset 0 0 0 2px #3b82f6" : undefined,
-                      cursor: hasEvents ? "pointer" : "default",
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span
-                        className="text-sm font-bold w-8 h-8 flex items-center justify-center rounded-full"
-                        style={today ? {
-                          background: "#1d4ed8", color: "#fff",
-                          boxShadow: "0 0 0 3px rgba(59,130,246,0.25)",
-                        } : {
-                          color: weekend ? "#94a3b8" : "#0f172a",
-                        }}
-                      >{day}</span>
-                      {hasEvents && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">
-                          {dayEvents.length}
-                        </span>
-                      )}
-                    </div>
-                    {/* Desktop/Tablet view: Event details text */}
-                    <div className="hidden sm:flex flex-col gap-1">
-                      {dayEvents.slice(0, 2).map((ev, idx) => {
-                        const p = getCourseColor(ev.course_name, allCourses);
-                        return (
-                          <span
-                            key={idx}
-                            className="rounded-lg text-left truncate px-2 py-1 text-[11px] font-semibold block"
-                            style={{
-                              background: p.bgColor,
-                              border: `1px solid ${p.borderColor}`,
-                              color: p.solidColor,
-                            }}
-                          >
-                            <span className="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle" style={{ backgroundColor: p.dotColor }} />
-                            {ev.course_name} · {ev.event_type === "both" ? "B1+2" : ev.event_type === "batch1" ? "B1" : "B2"}
-                          </span>
-                        );
-                      })}
-                      {dayEvents.length > 2 && (
-                        <span className="text-[11px] pl-1 font-medium text-slate-400">+{dayEvents.length - 2} more</span>
-                      )}
-                    </div>
-
-                    {/* Mobile view: Color dot indicators */}
-                    <div className="flex sm:hidden flex-wrap gap-1 justify-center mt-1">
-                      {dayEvents.map((ev, idx) => {
-                        const p = getCourseColor(ev.course_name, allCourses);
-                        return (
-                          <span
-                            key={idx}
-                            className="w-2.5 h-2.5 rounded-full inline-block border border-white shadow-sm flex-shrink-0"
-                            style={{ backgroundColor: p.dotColor }}
-                            title={ev.course_name}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* ── Day Detail Panel ── */}
-        {selectedDay !== null && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm animate-fade-in">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-black text-[#0b1f3a]">{month} {selectedDay}, {year}</h2>
-              <button
-                onClick={() => setSelectedDay(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition text-lg"
-              >×</button>
-            </div>
-            {(dateMap[selectedDay] ?? []).length === 0 ? (
-              <p className="text-slate-400 text-sm">No sessions scheduled.</p>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {(dateMap[selectedDay] ?? []).map((ev, idx) => {
-                  const p = getCourseColor(ev.course_name, allCourses);
+              <div
+                ref={scrollContainerRef}
+                className="flex gap-4 overflow-x-auto scrollbar-hide py-1 pb-3 snap-x snap-mandatory scroll-smooth"
+              >
+                {filteredCourses.map((course, idx) => {
+                  const meta = getCourseMeta(course);
+                  const imgSrc = course.thumbnail_url || course.image_url || getCourseImage(course.category || "Welding", idx);
+                  let badgeBg = "bg-[#15803d]";
+                  if (meta.badge === "FEW SEATS") badgeBg = "bg-[#ea580c]";
+                  if (meta.badge === "UPCOMING BATCH") badgeBg = "bg-[#2563eb]";
+
                   return (
-                    <div key={idx} className="rounded-xl p-4 flex items-start gap-3 border" style={{
-                      background: p.bgColor, borderColor: p.borderColor,
-                    }}>
-                      <span className="mt-1 w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: p.dotColor, boxShadow: `0 0 8px ${p.dotColor}60` }} />
-                      <div>
-                        <p className="text-lg font-black text-[#0b1f3a] mb-0.5">{ev.title}</p>
-                        <p className="text-base font-bold" style={{ color: p.solidColor }}>{ev.course_name}</p>
-                        {ev.description && <p className="text-[15px] mt-2 text-slate-600 leading-relaxed font-medium">{ev.description}</p>}
-                        <div className="flex gap-2 mt-4 flex-wrap">
-                          <span className="text-sm font-bold px-3 py-1.5 rounded-full shadow-sm" style={{ background: p.bgColor, color: p.solidColor, border: `1px solid ${p.borderColor}` }}>
-                            {ev.event_type === "both" ? "Batch 1 & 2" : ev.event_type === "batch1" ? "Batch 1" : "Batch 2"}
-                          </span>
-                          <span className="text-sm font-bold px-3 py-1.5 rounded-full shadow-sm bg-slate-100 text-slate-600 border border-slate-200">
-                            {WEEK_LABEL[dateToWeek(ev.start_date)]}
-                          </span>
+                    <div
+                      key={course.id || course.slug || idx}
+                      className="w-[260px] sm:w-[280px] shrink-0 snap-start bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col group hover:shadow-[0_8px_25px_rgb(0,0,0,0.08)] hover:border-slate-300 transition-all duration-300"
+                    >
+                      {/* Image & Badge */}
+                      <div className="relative h-36 overflow-hidden bg-slate-100">
+                        <img
+                          src={imgSrc}
+                          alt={course.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <div
+                          className={`absolute top-2.5 left-2.5 px-2.5 py-1 ${badgeBg} text-white font-extrabold text-[9px] uppercase tracking-wider rounded-sm shadow-md`}
+                        >
+                          {meta.badge}
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-4 flex flex-col flex-1 justify-between">
+                        <div>
+                          <h3 className="font-bold text-[#0b1f3a] text-sm leading-tight mb-2.5 group-hover:text-[#f97316] transition-colors line-clamp-2 min-h-[36px]">
+                            {course.title}
+                          </h3>
+                          <div className="space-y-1.5 mb-3 text-xs font-medium text-slate-600">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
+                              <span>{course.duration || "30 Days"}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
+                              <span>{meta.time}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
+                              <span>Chennai</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          {/* Price / Fee */}
+                          <div className="text-sm font-black text-[#ea580c] mb-3">
+                            {meta.fee}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                            <Link
+                              href={`/courses/${course.slug || course.id || ""}`}
+                              className="bg-white border border-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white text-[#0b1f3a] text-center text-[10px] uppercase tracking-wide font-black py-2 rounded-lg transition-colors flex items-center justify-center"
+                            >
+                              VIEW DETAILS
+                            </Link>
+                            <button
+                              onClick={() => handleOpenEnquiry(course.title)}
+                              className="bg-[#f97316] hover:bg-[#ea580c] text-white text-center text-[10px] uppercase tracking-wide font-black py-2 rounded-lg transition-colors shadow-sm cursor-pointer"
+                            >
+                              ENQUIRE NOW
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -688,89 +902,667 @@ export default function StudentCalendar() {
               </div>
             )}
           </div>
-        )}
 
-        {/* ── Week-wise Overview ── */}
-        <div className="mb-10">
-          <h2 className="text-xl font-black text-[#0b1f3a] uppercase tracking-wide mb-6">Week-wise Overview · {month} {year}</h2>
-          <div className="flex flex-col gap-8">
-            {WEEK_ORDER.map((week) => {
-              const weekEvents = filteredEvents.filter((e) => dateToWeek(e.start_date) === week);
-              return (
-                <div key={week} className="flex flex-col gap-3">
-                  <div className="flex items-end justify-between px-2">
-                    <h3 className="text-xl font-black uppercase tracking-widest text-blue-600">{WEEK_LABEL[week]}</h3>
-                    <span className="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold">{weekEvents.length} Sessions</span>
+          {/* Right: Find Your Course Sidebar */}
+          <div className="w-full xl:w-[320px] shrink-0 bg-[#f4f7fb] rounded-2xl border border-slate-200 p-6 md:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col">
+            <h3 className="text-lg font-black text-[#0b1f3a] mb-5 flex items-center gap-2 tracking-tight">
+              <Search className="w-5 h-5 text-[#0b1f3a]" />
+              Find Your Course
+            </h3>
+            
+            <div className="space-y-3 flex-1">
+              <input 
+                type="text" 
+                placeholder="Search course, trade or keyword..." 
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-[#0b1f3a] transition-colors placeholder:text-slate-400 shadow-sm"
+              />
+              
+              <div className="relative">
+                <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                  <option value="All Categories">All Categories</option>
+                  {CATEGORIES_DATA.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+              
+              <div className="relative">
+                <select value={selectedDuration} onChange={(e) => setSelectedDuration(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                  <option value="All Durations">All Durations</option>
+                  <option value="15 Days">15 Days</option>
+                  <option value="30 Days">30 Days</option>
+                  <option value="45 Days">45 Days</option>
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                  <option value="All Locations">All Locations</option>
+                  <option value="Chennai">Chennai</option>
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select value={selectedMode} onChange={(e) => setSelectedMode(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                  <option value="All Training Modes">All Training Modes</option>
+                  <option value="Classroom">Classroom</option>
+                  <option value="Practical Lab">Practical Lab</option>
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            <button 
+              onClick={() => {
+                const el = document.getElementById("next-batches-section");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }} 
+              className="w-full mt-5 bg-[#0b1f3a] hover:bg-[#152e52] text-white font-black text-xs py-3.5 rounded-xl uppercase tracking-wider shadow-md transition-colors cursor-pointer"
+            >
+              SEARCH COURSES
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div id="calendar-section" className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12 py-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* ── Left: Course Calendar Card ── */}
+          <div className="lg:col-span-6 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-[0_10px_35px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+            {/* Header: Title & View switch */}
+            <div className="flex items-center justify-between pb-5 border-b border-slate-100 mb-6">
+              <div className="flex items-center gap-2.5">
+                <Calendar className="w-6 h-6 text-[#0b1f3a]" />
+                <h2 className="text-xl sm:text-2xl font-black text-[#0b1f3a] tracking-tight">
+                  Course Calendar
+                </h2>
+              </div>
+              
+              {/* Toggle Pills */}
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setCalendarViewMode("calendar")}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    calendarViewMode === "calendar"
+                      ? "bg-[#0b1f3a] text-white shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Calendar View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCalendarViewMode("list")}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    calendarViewMode === "list"
+                      ? "bg-[#0b1f3a] text-white shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  List View
+                </button>
+              </div>
+            </div>
+
+            {/* Calendar View Content */}
+            {calendarViewMode === "calendar" ? (
+              <div>
+                {/* Month Navigator Header */}
+                <div className="flex items-center justify-center gap-6 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
+                    disabled={monthIdx === 0}
+                    className="p-1.5 rounded-full hover:bg-slate-100 text-slate-700 disabled:opacity-30 transition-colors cursor-pointer"
+                    aria-label="Previous Month"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-slate-700" />
+                  </button>
+                  <span className="text-lg sm:text-xl font-black text-[#0b1f3a] tracking-tight min-w-[150px] text-center">
+                    {month} {year}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setMonthIdx((i) => Math.min(MONTHS_FY.length - 1, i + 1))}
+                    disabled={monthIdx === MONTHS_FY.length - 1}
+                    className="p-1.5 rounded-full hover:bg-slate-100 text-slate-700 disabled:opacity-30 transition-colors cursor-pointer"
+                    aria-label="Next Month"
+                  >
+                    <ChevronRight className="w-5 h-5 text-slate-700" />
+                  </button>
+                </div>
+
+                {/* Days of Week Header */}
+                <div className="grid grid-cols-7 mb-3 text-center">
+                  {WEEK_DAYS.map((d) => (
+                    <div key={d} className="text-xs sm:text-sm font-extrabold text-[#0b1f3a]/80 py-1">
+                      {d}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Calendar Days Matrix */}
+                <div className="grid grid-cols-7 gap-1 sm:gap-1.5 border-b border-slate-100 pb-6">
+                  {/* Previous month trailing days */}
+                  {Array.from({ length: startDay }).map((_, i) => {
+                    const prevDay = prevMonthTotalDays - startDay + 1 + i;
+                    return (
+                      <div
+                        key={`prev-${i}`}
+                        className="h-14 sm:h-16 flex items-center justify-center text-slate-300 font-semibold text-sm sm:text-base select-none"
+                      >
+                        {prevDay}
+                      </div>
+                    );
+                  })}
+
+                  {/* Active Month Days */}
+                  {Array.from({ length: totalDays }).map((_, i) => {
+                    const day = i + 1;
+                    const batchesOnDay = dayBatchesMap[day] || [];
+                    const hasBatches = batchesOnDay.length > 0;
+                    const isSelected = selectedDay === day;
+
+                    return (
+                      <button
+                        key={`curr-${day}`}
+                        type="button"
+                        onClick={() => setSelectedDay(isSelected ? null : day)}
+                        className={`h-14 sm:h-16 rounded-xl flex flex-col items-center justify-center transition-all relative select-none ${
+                          isSelected
+                            ? "bg-blue-50 border-2 border-[#1e40af] shadow-xs"
+                            : hasBatches
+                            ? "hover:bg-blue-50/70 border border-blue-100/70 cursor-pointer"
+                            : "hover:bg-slate-50 cursor-default"
+                        }`}
+                      >
+                        <span
+                          className={`text-sm sm:text-base ${
+                            hasBatches
+                              ? "font-black text-[#1e40af]"
+                              : isSelected
+                              ? "font-black text-[#1e40af]"
+                              : "font-semibold text-slate-700"
+                          }`}
+                        >
+                          {day}
+                        </span>
+
+                        {hasBatches && (
+                          <span className="text-[10px] sm:text-[11px] font-black text-[#1e40af] leading-none mt-0.5 tracking-tight">
+                            {batchesOnDay.length} {batchesOnDay.length === 1 ? "Course" : "Courses"}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+
+                  {/* Next month leading days */}
+                  {Array.from({ length: trailingCount }).map((_, i) => (
+                    <div
+                      key={`next-${i}`}
+                      className="h-14 sm:h-16 flex items-center justify-center text-slate-300 font-semibold text-sm sm:text-base select-none"
+                    >
+                      {i + 1}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Calendar Bottom Legend */}
+                <div className="pt-5 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs font-bold text-slate-600">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />
+                    <span>Batch 1</span>
                   </div>
-                  
-                  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:border-blue-300 transition-colors">
-                    {weekEvents.length === 0 ? (
-                      <div className="flex items-center justify-center py-6">
-                        <p className="text-[17px] font-medium text-slate-400">No sessions scheduled for this week</p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {weekEvents.map((ev, idx) => {
-                          const p = getCourseColor(ev.course_name, allCourses);
-                          return (
-                            <div key={idx} className="rounded-xl px-6 py-5 border shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow" style={{
-                              background: p.bgColor, borderColor: p.borderColor,
-                            }}>
-                              <div>
-                                <div className="text-[18px] font-black leading-snug mb-2" style={{ color: p.solidColor }}>{ev.course_name}</div>
-                                <div className="text-[16px] font-bold text-slate-800 mb-5 leading-relaxed">{ev.title}</div>
-                              </div>
-                              <div>
-                                <div className="inline-block px-4 py-2 rounded-full text-[15px] font-black shadow-sm" style={{ background: "#fff", color: p.solidColor, border: `1px solid ${p.borderColor}` }}>
-                                  {ev.event_type === "both" ? "Batch 1 & 2" : ev.event_type === "batch1" ? "Batch 1" : "Batch 2"}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#f97316]" />
+                    <span>Batch 2</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />
+                    <span>Upcoming</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+                    <span>Few Seats</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+                    <span>Batch Full</span>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ) : (
+              /* List View Mode on Left */
+              <div className="space-y-3 py-2">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold text-slate-600">All Scheduled Batches in {month} {year}</span>
+                  <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+                    {currentMonthBatches.length} Sessions
+                  </span>
+                </div>
+                <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                  {currentMonthBatches.map((b) => (
+                    <div
+                      key={b.id}
+                      onClick={() => setSelectedDay(selectedDay === b.dayNumber ? null : b.dayNumber)}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                        selectedDay === b.dayNumber
+                          ? "bg-blue-50 border-blue-400 shadow-sm"
+                          : "bg-slate-50/70 border-slate-200 hover:bg-slate-100"
+                      }`}
+                    >
+                      <div>
+                        <h4 className="font-bold text-[#0b1f3a] text-sm">{b.courseName}</h4>
+                        <p className="text-xs text-slate-500 mt-0.5">{b.startDate} · {b.timing} · {b.location}</p>
+                      </div>
+                      <span className="text-xs font-black text-blue-700 bg-white border border-blue-200 px-2.5 py-1 rounded-lg">
+                        Day {b.dayNumber}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Right: Upcoming Batches (List View) ── */}
+          <div className="lg:col-span-6 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-[0_10px_35px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+            <div>
+              {/* Header */}
+              <div className="flex items-center justify-between pb-5 border-b border-slate-100 mb-4">
+                <div className="flex items-center gap-2.5">
+                  <BookOpen className="w-6 h-6 text-[#0b1f3a]" />
+                  <h2 className="text-xl sm:text-2xl font-black text-[#0b1f3a] tracking-tight">
+                    Upcoming Batches (List View)
+                  </h2>
+                </div>
+                {selectedDay !== null && (
+                  <button
+                    onClick={() => setSelectedDay(null)}
+                    className="text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Showing Day {selectedDay} (Clear)
+                  </button>
+                )}
+              </div>
+
+              {/* Table Container */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-[11px] sm:text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      <th className="py-3 px-2">Course Name</th>
+                      <th className="py-3 px-2">Start Date</th>
+                      <th className="py-3 px-2">Duration</th>
+                      <th className="py-3 px-2">Timing</th>
+                      <th className="py-3 px-2">Location</th>
+                      <th className="py-3 px-2 text-center">Seats</th>
+                      <th className="py-3 px-2 text-center">Status</th>
+                      <th className="py-3 px-2 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
+                    {displayedBatches.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="text-center py-10 text-slate-400 font-medium">
+                          No batches found for the selected criteria.
+                        </td>
+                      </tr>
+                    ) : (
+                      displayedBatches.map((b) => {
+                        let statusBadge = (
+                          <span className="bg-[#e6f7ed] text-[#16a34a] border border-[#bbf7d0] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
+                            Open
+                          </span>
+                        );
+                        if (b.status === "Few Seats") {
+                          statusBadge = (
+                            <span className="bg-[#fff7ed] text-[#ea580c] border border-[#ffedd5] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
+                              Few Seats
+                            </span>
+                          );
+                        } else if (b.status === "Upcoming") {
+                          statusBadge = (
+                            <span className="bg-[#eff6ff] text-[#2563eb] border border-[#dbeafe] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
+                              Upcoming
+                            </span>
+                          );
+                        } else if (b.status === "Batch Full") {
+                          statusBadge = (
+                            <span className="bg-[#fef2f2] text-[#dc2626] border border-[#fee2e2] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
+                              Batch Full
+                            </span>
+                          );
+                        }
+
+                        return (
+                          <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-3.5 px-2 font-bold text-[#0b1f3a] max-w-[140px] truncate" title={b.courseName}>
+                              {b.courseName}
+                            </td>
+                            <td className="py-3.5 px-2 whitespace-nowrap text-slate-600">
+                              {b.startDate}
+                            </td>
+                            <td className="py-3.5 px-2 whitespace-nowrap text-slate-600">
+                              {b.duration}
+                            </td>
+                            <td className="py-3.5 px-2 whitespace-nowrap font-bold text-[#0b1f3a]">
+                              {b.timing}
+                            </td>
+                            <td className="py-3.5 px-2 text-slate-600">
+                              {b.location}
+                            </td>
+                            <td className="py-3.5 px-2 text-center font-bold text-slate-700">
+                              {b.seats}
+                            </td>
+                            <td className="py-3.5 px-2 text-center">
+                              {statusBadge}
+                            </td>
+                            <td className="py-3.5 px-2 text-center">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenEnquiry(b.courseName)}
+                                className="border border-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white text-[#0b1f3a] font-bold text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                              >
+                                Enquire
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Bottom: VIEW ALL UPCOMING BATCHES button */}
+            <div className="pt-6 border-t border-slate-100 mt-2">
+              <button
+                type="button"
+                onClick={() => setShowAllBatches(!showAllBatches)}
+                className="w-full max-w-sm mx-auto block py-2.5 px-6 border-2 border-[#1e40af] text-[#1e40af] hover:bg-[#1e40af] hover:text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all text-center cursor-pointer shadow-xs"
+              >
+                {showAllBatches ? "SHOW FEWER BATCHES" : "VIEW ALL UPCOMING BATCHES"}
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ─── Bottom Section Row 1: Categories, How to Join, Download ─────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mt-10 mb-8">
+          
+          {/* Card 1: Popular Course Categories */}
+          <div className="lg:col-span-3 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-black text-[#0b1f3a] tracking-tight mb-5">
+                Popular Course Categories
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-y-4 gap-x-2">
+                <Link href="/courses?category=Welding" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1e40af] flex items-center justify-center group-hover:bg-[#1e40af] group-hover:text-white transition-colors shrink-0">
+                    <Flame className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-[#1e40af] transition-colors leading-tight">
+                    Welding Courses
+                  </span>
+                </Link>
+
+                <Link href="/courses?category=Electrical" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1e40af] flex items-center justify-center group-hover:bg-[#1e40af] group-hover:text-white transition-colors shrink-0">
+                    <Zap className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-[#1e40af] transition-colors leading-tight">
+                    Electrical Courses
+                  </span>
+                </Link>
+
+                <Link href="/courses?category=Electrical" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1e40af] flex items-center justify-center group-hover:bg-[#1e40af] group-hover:text-white transition-colors shrink-0">
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-[#1e40af] transition-colors leading-tight">
+                    Electrical Courses
+                  </span>
+                </Link>
+
+                <Link href="/courses?category=HVAC" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1e40af] flex items-center justify-center group-hover:bg-[#1e40af] group-hover:text-white transition-colors shrink-0">
+                    <Wind className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-[#1e40af] transition-colors leading-tight">
+                    HVAC Courses
+                  </span>
+                </Link>
+
+                <Link href="/courses?category=Plumbing" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1e40af] flex items-center justify-center group-hover:bg-[#1e40af] group-hover:text-white transition-colors shrink-0">
+                    <Wrench className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-[#1e40af] transition-colors leading-tight">
+                    Plumbing Courses
+                  </span>
+                </Link>
+
+                <Link href="/courses?category=Safety" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1e40af] flex items-center justify-center group-hover:bg-[#1e40af] group-hover:text-white transition-colors shrink-0">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-[#1e40af] transition-colors leading-tight">
+                    Safety Courses
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-2">
+              <Link
+                href="/courses"
+                className="w-full block text-center py-2.5 bg-[#0b1f3a] hover:bg-[#152e52] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-colors shadow-sm"
+              >
+                VIEW ALL COURSES
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: How to Join N-Skill */}
+          <div className="lg:col-span-6 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+            <h3 className="text-lg font-black text-[#0b1f3a] tracking-tight text-center mb-6">
+              How to Join N-Skill
+            </h3>
+
+            <div className="grid grid-cols-5 gap-2 items-start relative my-auto">
+              {/* Step 1 */}
+              <div className="flex flex-col items-center text-center relative group">
+                <div className="w-12 h-12 rounded-full border-2 border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-700 mb-2 group-hover:border-[#0b1f3a] transition-all">
+                  <FileText className="w-5 h-5 text-[#0b1f3a]" />
+                </div>
+                <span className="text-[11px] font-black text-[#0b1f3a] uppercase tracking-wider mb-0.5">01</span>
+                <h4 className="text-xs font-black text-[#0b1f3a] leading-tight mb-1">Select Course</h4>
+                <p className="text-[10px] font-semibold text-slate-500 leading-tight">Choose your preferred program</p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center text-center relative group">
+                <div className="w-12 h-12 rounded-full border-2 border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-700 mb-2 group-hover:border-[#0b1f3a] transition-all">
+                  <Calendar className="w-5 h-5 text-[#0b1f3a]" />
+                </div>
+                <span className="text-[11px] font-black text-[#0b1f3a] uppercase tracking-wider mb-0.5">02</span>
+                <h4 className="text-xs font-black text-[#0b1f3a] leading-tight mb-1">Check Batch</h4>
+                <p className="text-[10px] font-semibold text-slate-500 leading-tight">Select the upcoming batch</p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center text-center relative group">
+                <div className="w-12 h-12 rounded-full border-2 border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-700 mb-2 group-hover:border-[#0b1f3a] transition-all">
+                  <PhoneCall className="w-5 h-5 text-[#0b1f3a]" />
+                </div>
+                <span className="text-[11px] font-black text-[#0b1f3a] uppercase tracking-wider mb-0.5">03</span>
+                <h4 className="text-xs font-black text-[#0b1f3a] leading-tight mb-1">Counselling</h4>
+                <p className="text-[10px] font-semibold text-slate-500 leading-tight">Talk to our course counsellor</p>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex flex-col items-center text-center relative group">
+                <div className="w-12 h-12 rounded-full border-2 border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-700 mb-2 group-hover:border-[#0b1f3a] transition-all">
+                  <UserCheck className="w-5 h-5 text-[#0b1f3a]" />
+                </div>
+                <span className="text-[11px] font-black text-[#0b1f3a] uppercase tracking-wider mb-0.5">04</span>
+                <h4 className="text-xs font-black text-[#0b1f3a] leading-tight mb-1">Registration</h4>
+                <p className="text-[10px] font-semibold text-slate-500 leading-tight">Complete your admission process</p>
+              </div>
+
+              {/* Step 5 */}
+              <div className="flex flex-col items-center text-center relative group">
+                <div className="w-12 h-12 rounded-full border-2 border-[#f97316] bg-orange-50 shadow-sm flex items-center justify-center text-[#f97316] mb-2 group-hover:scale-105 transition-all">
+                  <GraduationCap className="w-5 h-5 text-[#f97316]" />
+                </div>
+                <span className="text-[11px] font-black text-[#f97316] uppercase tracking-wider mb-0.5">05</span>
+                <h4 className="text-xs font-black text-[#0b1f3a] leading-tight mb-1">Start Training</h4>
+                <p className="text-[10px] font-semibold text-slate-500 leading-tight">Begin your learning journey</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Download 2026-27 Course Calendar */}
+          <div className="lg:col-span-3 bg-white rounded-3xl border border-slate-200/90 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-black text-[#0b1f3a] tracking-tight leading-tight mb-2">
+                Download 2026–27<br />Course Calendar?
+              </h3>
+              <p className="text-xs font-medium text-slate-500 leading-relaxed mb-4">
+                Get the complete schedule of all upcoming batches, course details, duration and more.
+              </p>
+            </div>
+
+            <form onSubmit={handleCalendarDownload} className="space-y-3">
+              <input
+                type="tel"
+                placeholder="Enter your mobile number"
+                value={downloadPhone}
+                onChange={(e) => setDownloadPhone(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 placeholder-slate-400 outline-none focus:border-[#0b1f3a] shadow-xs"
+              />
+              <button
+                type="submit"
+                className="w-full py-3 bg-[#f97316] hover:bg-[#ea580c] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>DOWNLOAD NOW</span>
+                <Download className="w-4 h-4" />
+              </button>
+            </form>
           </div>
         </div>
 
-        {/* ── Course Legend ── */}
-        {allCourses.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-xl font-black text-[#0b1f3a] uppercase tracking-wide mb-6">Course Legend</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {allCourses.map((cname) => {
-                const p = getCourseColor(cname, allCourses);
-                const isActive = filterCourse === cname;
-                return (
-                  <button
-                    key={cname}
-                    onClick={() => setFilterCourse(filterCourse === cname ? "all" : cname)}
-                    className="flex items-center gap-4 p-5 rounded-2xl text-left transition-all border hover:border-blue-400 hover:shadow-md bg-white"
-                    style={{
-                      borderColor: isActive ? p.borderColor : "#e2e8f0",
-                      boxShadow: isActive ? `0 6px 20px ${p.dotColor}25` : undefined,
-                      transform: isActive ? "translateY(-2px)" : "none",
-                    }}
-                  >
-                    <span className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: p.dotColor, boxShadow: `0 0 8px ${p.dotColor}80` }} />
-                    <div>
-                      <p className="text-base font-bold" style={{ color: isActive ? p.solidColor : "#0f172a" }}>{cname}</p>
-                      <p className="text-[14px] font-medium text-slate-500 mt-1">
-                        {events.filter((e) => e.course_name === cname).length} sessions total
-                      </p>
+        {/* ─── Bottom Section Row 2: Reviews + Need Help ─────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          
+          {/* Left: What Our Students Say */}
+          <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-xl font-black text-[#0b1f3a] tracking-tight">
+                What Our Students Say
+              </h3>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handlePrevTestimonial}
+                  className="w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+                  aria-label="Previous testimonials"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextTestimonial}
+                  className="w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+                  aria-label="Next testimonials"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {visibleTestimonials.map((t, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-slate-50/70 border border-slate-100 flex flex-col justify-between hover:bg-slate-50 hover:shadow-sm transition-all"
+                >
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <img
+                        src={t.image}
+                        alt={t.name}
+                        className="w-11 h-11 rounded-full object-cover border border-slate-200 shadow-xs"
+                      />
+                      <div>
+                        <h4 className="font-bold text-sm text-[#0b1f3a] leading-tight">{t.name}</h4>
+                        <p className="text-xs font-semibold text-slate-500">{t.role}</p>
+                      </div>
                     </div>
-                  </button>
-                );
-              })}
+                    <p className="text-xs font-medium text-slate-600 leading-relaxed italic mb-4">
+                      &ldquo;{t.quote}&rdquo;
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 text-[#f59e0b]">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-[#f59e0b]" />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        )}
 
+          {/* Right: Need Help Choosing The Right Course */}
+          <div className="lg:col-span-4 xl:col-span-3 bg-[#031b34] rounded-3xl p-6 sm:p-7 text-white shadow-[0_10px_35px_rgb(0,0,0,0.15)] flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl font-black text-white leading-tight mb-2">
+                Need Help Choosing<br />The Right Course?
+              </h3>
+              <p className="text-xs font-medium text-slate-300 leading-relaxed mb-6">
+                Our experts are here to guide you.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setShowEnquiryModal(true)}
+                className="w-full py-3 bg-[#f97316] hover:bg-[#ea580c] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>TALK TO COUNSELLOR</span>
+              </button>
+              
+              <a
+                href="https://wa.me/919940000000?text=Hi%20N-Skill,%20I%20need%20help%20choosing%20the%20right%20course."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 bg-transparent hover:bg-white/10 text-white border border-white/30 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>CHAT ON WHATSAPP</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   );
 }
+
+

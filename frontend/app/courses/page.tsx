@@ -1022,68 +1022,70 @@ function CoursesPageContent() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#031525] via-[#031525]/90 to-transparent lg:w-[65%]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
-          <div className="max-w-[760px] text-left">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black text-white leading-tight tracking-tight">
-              Industry-Oriented
-            </h1>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black text-[#f97316] leading-tight tracking-tight mt-1 mb-5">
-              Technical Training Courses
-            </h1>
-            <p className="text-slate-200 text-base sm:text-lg md:text-xl font-normal mb-8 leading-relaxed max-w-xl">
-              Learn practical skills from industry experts and build a successful career with N-Skill.
-            </p>
+        <div className="relative z-10 mx-auto max-w-[1500px] px-3 py-5 md:px-6 md:py-7 lg:px-10 lg:py-8">
+          <div className="grid min-h-[360px] items-center gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="max-w-[620px] text-left">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-white leading-tight tracking-tight">
+                Industry-Oriented
+              </h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-[#f97316] leading-tight tracking-tight mt-0.5 mb-3 lg:whitespace-nowrap">
+                Technical Training Courses
+              </h1>
+              <p className="text-slate-200 text-xs sm:text-sm md:text-base font-normal mb-5 leading-relaxed max-w-lg">
+                Learn practical skills from industry experts and build a successful career with N-Skill.
+              </p>
 
-            {/* 4 Feature Badges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 mb-8 text-white">
-              <div className="flex items-center gap-3">
-                <PracticalTrainingIcon className="w-8 h-8 text-white/90 shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold leading-snug">
-                  100%<br />Practical Training
-                </span>
+              {/* 4 Feature Badges */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-white">
+                <div className="flex items-center gap-2">
+                  <PracticalTrainingIcon className="w-6 h-6 text-white/90 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                    100%<br />Practical Training
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IndustryCurriculumIcon className="w-6 h-6 text-white/90 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                    Industry<br />Curriculum
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ExperiencedTrainersIcon className="w-6 h-6 text-white/90 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                    Experienced<br />Trainers
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <PlacementAssistanceIcon className="w-6 h-6 text-white/90 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                    Placement<br />Assistance
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <IndustryCurriculumIcon className="w-8 h-8 text-white/90 shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold leading-snug">
-                  Industry<br />Oriented Curriculum
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <ExperiencedTrainersIcon className="w-8 h-8 text-white/90 shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold leading-snug">
-                  Experienced<br />Trainers
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <PlacementAssistanceIcon className="w-8 h-8 text-white/90 shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold leading-snug">
-                  Placement<br />Assistance
-                </span>
-              </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                onClick={handleExploreCourses}
-                className="bg-[#f97316] hover:bg-[#ea580c] text-white px-7 py-3.5 rounded-lg font-bold text-sm sm:text-base tracking-wide uppercase shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer"
-              >
-                EXPLORE COURSES
-              </button>
-              <button
-                onClick={handleTalkToCounsellor}
-                className="border border-white/40 hover:border-white text-white hover:bg-white/10 px-6 py-3.5 rounded-lg font-bold text-sm sm:text-base tracking-wide flex items-center gap-2.5 transition-all active:scale-95 cursor-pointer"
-              >
-                <MessageCircle className="w-5 h-5 text-white" />
-                <span>TALK TO COUNSELLOR</span>
-              </button>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <button
+                  onClick={handleExploreCourses}
+                  className="bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer"
+                >
+                  EXPLORE COURSES
+                </button>
+                <button
+                  onClick={handleTalkToCounsellor}
+                  className="border border-white/50 hover:border-white text-white hover:bg-white/10 px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 text-white" />
+                  <span>TALK TO COUNSELLOR</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── Floating Elevated Search Bar ───────────────────────────────────── */}
-      <div className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 relative z-30 -mt-7 mb-10">
+      <div className="mx-auto max-w-[1500px] px-3 sm:px-6 md:px-10 relative z-30 -mt-6 mb-8">
         <form
           onSubmit={handleSearchSubmit}
           className="bg-white rounded-2xl shadow-[0_12px_35px_rgba(0,0,0,0.08)] p-2.5 md:p-3 flex items-center gap-3 border border-slate-100"
@@ -1123,7 +1125,7 @@ function CoursesPageContent() {
       </div>
 
       {/* ─── Browse Courses by Category ─────────────────────────────────────── */}
-      <div id="categories-section" className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12">
+      <div id="categories-section" className="mx-auto max-w-[1700px] px-4 sm:px-8 md:px-12 lg:px-16">
         {/* Category Header Row */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-base sm:text-lg font-black text-[#0b1f3a] uppercase tracking-wider">

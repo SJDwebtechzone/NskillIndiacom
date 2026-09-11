@@ -1,0 +1,184 @@
+﻿import sys
+import re
+
+file_path = r'd:\Devspectra\Nskill\NskillIndiacom\frontend\app\courses\page.tsx'
+
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# 1. Add events state
+state_pattern = r'(const \[courses, setCourses\] = useState<any\[\]>\(\[\]\);)'
+content = re.sub(state_pattern, r'\1\n  const [events, setEvents] = useState<any[]>([]);', content, 1)
+
+# 2. Add events fetch
+fetch_pattern = r'setCourses\(data\);\n\s*\}\)'
+fetch_replacement = r'''setCourses(data);
+      })
+      fetch(${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/course_events)
+        .then((r) => r.json())
+        .then((data) => setEvents(Array.isArray(data) ? data : []))
+        .catch((err) => console.error(err));'''
+content = content.replace('setCourses(data);\n      })', fetch_replacement, 1)
+
+# 3. Add helper formatDate
+helper_code = '''
+// ─── Helper for Event Dates ───────────────────────────────────────────────
+function formatEventDate(dateString: string) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return ${d.getDate().toString().padStart(2, "0")}  ;
+}
+'''
+content = content.replace('// ─── Main Content Component', helper_code + '\n// ─── Main Content Component')
+
+# 4. Replace floating search bar with new layout
+start_marker = '      {/* ─── Floating Elevated Search Bar ───────────────────────────────────── */}'
+end_marker = '      {/* ─── Browse Courses by Category ─────────────────────────────────────── */}'
+
+start_idx = content.find(start_marker)
+end_idx = content.find(end_marker)
+
+if start_idx == -1 or end_idx == -1:
+    print('Search bar markers not found')
+    sys.exit(1)
+
+new_layout = '''      {/* ─── Next Available Batches & Search ───────────────────────────────────── */}
+      <div className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 relative z-30 -mt-10 mb-16">
+        <div className="flex flex-col xl:flex-row gap-6 items-start">
+          
+          {/* Left: Next Available Batches */}
+          <div className="flex-1 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-5 md:p-7 border border-slate-100">
+            <div className="mb-6 border-b border-slate-100 pb-4">
+              <h2 className="text-xl md:text-2xl font-black text-[#0b1f3a] flex items-center gap-2 tracking-tight">
+                🔥 Next Available Batches
+              </h2>
+              <p className="text-slate-500 text-sm md:text-[15px] font-semibold mt-1">
+                Admissions are currently open for the following programs.
+              </p>
+            </div>
+
+            {/* Grid of Batches */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              {events.slice(0, 4).map((ev, idx) => {
+                 const courseInfo = courses.find(c => (c.title || "").toLowerCase().includes((ev.course_name || "").toLowerCase())) || {};
+                 const meta = getCourseMeta(courseInfo);
+                 const badgeText = idx === 2 ? "Few Seats Available" : "Admissions Open";
+                 const badgeColor = idx === 2 ? "bg-[#f97316]" : "bg-[#16a34a]";
+                 
+                 return (
+                    <div key={idx} className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col group hover:shadow-[0_8px_25px_rgb(0,0,0,0.06)] transition-all duration-300">
+                       {/* Image & Badge */}
+                       <div className="relative h-32 overflow-hidden bg-slate-100">
+                          <img src={courseInfo.image_url || "/Skills/welding.jpg"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <div className={bsolute bottom-0 left-3 px-3 py-1 rounded-t-lg text-[10px] uppercase font-black text-white shadow-sm }>
+                             {badgeText}
+                          </div>
+                       </div>
+                       {/* Content */}
+                       <div className="p-4 flex flex-col flex-1">
+                          <h3 className="font-bold text-[#0b1f3a] text-sm leading-tight mb-3 group-hover:text-[#f97316] transition-colors line-clamp-2">
+                            {ev.course_name}
+                          </h3>
+                          <div className="space-y-2 mb-4">
+                             <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                {formatEventDate(ev.start_date)}
+                             </div>
+                             <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                {courseInfo.duration || "30 Days"}
+                             </div>
+                             <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                {meta.time}
+                             </div>
+                             <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                Chennai
+                             </div>
+                          </div>
+                          {/* Buttons */}
+                          <div className="mt-auto flex items-center gap-2">
+                             <Link href={/courses/} className="flex-1 bg-white border border-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white text-[#0b1f3a] text-center text-[10px] uppercase tracking-wide font-black py-2 rounded-lg transition-colors">
+                                View Course
+                             </Link>
+                             <button onClick={() => onOpenEnquiry(ev.course_name)} className="flex-1 bg-[#f97316] hover:bg-[#ea580c] text-white text-center text-[10px] uppercase tracking-wide font-black py-2 rounded-lg transition-colors shadow-sm cursor-pointer">
+                                Enquire Now
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+                 );
+              })}
+            </div>
+          </div>
+
+          {/* Right: Find Your Course Sidebar */}
+          <div className="w-full xl:w-[320px] shrink-0 bg-[#f4f7fb] rounded-2xl border border-slate-200 p-6 md:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col">
+            <h3 className="text-lg font-black text-[#0b1f3a] mb-5 flex items-center gap-2 tracking-tight">
+               <Search className="w-5 h-5 text-[#0b1f3a]" />
+               Find Your Course
+            </h3>
+            
+            <div className="space-y-3 flex-1">
+               <input 
+                  type="text" 
+                  placeholder="Search course, trade or keyword..." 
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-[#0b1f3a] transition-colors placeholder:text-slate-400 shadow-sm"
+               />
+               
+               <div className="relative">
+                  <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                     <option value="all">All Categories</option>
+                     {CATEGORIES_DATA.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+               </div>
+               
+               <div className="relative">
+                  <select value={selectedDuration} onChange={(e) => setSelectedDuration(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                     <option value="all">All Durations</option>
+                     <option value="15 Days">15 Days</option>
+                     <option value="30 Days">30 Days</option>
+                     <option value="45 Days">45 Days</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+               </div>
+
+               <div className="relative">
+                  <select className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                     <option value="all">All Locations</option>
+                     <option value="Chennai">Chennai</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+               </div>
+
+               <div className="relative">
+                  <select value={selectedMode} onChange={(e) => setSelectedMode(e.target.value)} className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#0b1f3a] cursor-pointer shadow-sm">
+                     <option value="all">All Training Modes</option>
+                     <option value="Classroom">Classroom</option>
+                     <option value="Practical Lab">Practical Lab</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+               </div>
+            </div>
+
+            <button onClick={() => {
+               const el = document.getElementById("all-courses-section");
+               if (el) el.scrollIntoView({ behavior: "smooth" });
+            }} className="w-full mt-5 bg-[#0b1f3a] hover:bg-[#152e52] text-white font-black text-xs py-3.5 rounded-xl uppercase tracking-wider shadow-md transition-colors cursor-pointer">
+               SEARCH COURSES
+            </button>
+          </div>
+        </div>
+      </div>\n\n'''
+
+content = content[:start_idx] + new_layout + content[end_idx:]
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print('Success')
