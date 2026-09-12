@@ -3,6 +3,8 @@ import AboutSection from "./components/AboutSection";
 import VisionSection from "./components/VisionSection";
 import WhyUsSection from "./components/WhyUsSection";
 import TeamSection from "./components/TeamSection";
+import PopularCoursesSection from "./components/PopularCoursesSection";
+import UpcomingBatchesSection from "./components/UpcomingBatchesSection";
 import LatestNewsSection from "./components/LatestNewsSection";
 import AccreditationsSection from "./components/AccreditationsSection";
 import TestimonialsSection from "./components/TestimonialsSection";
@@ -36,6 +38,16 @@ export default function Home() {
       {/* Team Section */}
       <div className="w-full">
         <TeamSection />
+      </div>
+
+      {/* Popular Courses Section */}
+      <div className="w-full">
+        <PopularCoursesSection />
+      </div>
+
+      {/* Upcoming Batches & Why Choose N-Skill Section */}
+      <div className="w-full">
+        <UpcomingBatchesSection />
       </div>
 
 

@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { GraduationCap, Briefcase, BarChart3, ShieldCheck } from "lucide-react";
+import { GraduationCap, Briefcase, BarChart3, ShieldCheck, ArrowRight } from "lucide-react";
 
 const services = [
   {
@@ -51,8 +52,8 @@ const AboutSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <h2 className="mb-4">About Us</h2>
-          <div className="w-16 h-1 bg-blue-600 mx-auto rounded-full" />
+          <h2 className="mb-4 text-[#0b1f3a] font-black text-3xl sm:text-4xl">About Us</h2>
+          <div className="w-16 h-1 bg-black mx-auto rounded-full" />
         </motion.div>
 
         {/* ── Card 1: NIILE Solutions — image LEFT, text RIGHT ── */}
@@ -60,7 +61,7 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-white overflow-hidden"
+          className="flex flex-col md:flex-row items-stretch border border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden"
         >
           {/* Image panel */}
           <div
@@ -79,7 +80,7 @@ const AboutSection = () => {
                 alt="NIILE Solutions"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-blue-900/20" />
+              <div className="absolute inset-0 bg-[#0b1f3a]/20" />
             </div>
             {/* Mobile — no clip */}
             <div className="absolute inset-0 md:hidden">
@@ -88,27 +89,32 @@ const AboutSection = () => {
                 alt="NIILE Solutions"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-blue-900/20" />
+              <div className="absolute inset-0 bg-[#0b1f3a]/20" />
             </div>
           </div>
 
           {/* Text */}
           <div className="flex flex-col justify-center px-6 md:px-12 py-10 gap-5 flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 w-fit">
-              <ShieldCheck className="w-3 h-3" /> Established 2012
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-[#0b1f3a] rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 w-fit">
+              <ShieldCheck className="w-3 h-3 text-[#0b1f3a]" /> Established 2012
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-[#0a2d5c] rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 w-fit">
+              <ShieldCheck className="w-3 h-3 text-[#0a2d5c]" /> Established 2012
             </div>
             <div>
-              <h3 className="mb-2">NIILE Solution</h3>
-              <div className="w-12 h-1 bg-blue-900 rounded-full" />
+              <h3 className="mb-2 text-2xl font-bold text-[#0b1f3a]">NIILE Solution</h3>
+              <h3 className="mb-2 text-2xl font-black text-[#0a2d5c]">NIILE Solution</h3>
+              <div className="w-12 h-1 bg-black rounded-full" />
             </div>
             <p className="text-slate-600 leading-relaxed text-justify">
               NIILE Solution is established in 2012 in Kundrathur, Chennai to offer{" "}
-              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
+              <strong className="text-[#0b1f3a] font-bold">Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
+              <strong className="text-[#0a2d5c] font-black">Technical Skill Training, Placement, and Industrial Consulting</strong>{" "}
               services. NIILE serves world-renowned organizations from Hydrocarbon, Power, Steel, Cement and Heavy Infrastructure industries involved in Construction, Commissioning, Operation and Maintenance activities.
             </p>
             <p className="text-slate-500 leading-relaxed text-justify">
               As a strategic expansion aligning with the Skill India Mission, NIILE Solutions started{" "}
-              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
+              <strong className="text-[#0b1f3a] font-bold">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
+              <strong className="text-[#0a2d5c] font-black">NIILE TECHNICAL SKILL AND CONSULTING PVT. LTD (NTSC)</strong>{" "}
               near Kundrathur, Chennai during 2018 — to train unemployed youth, school and college finishers and dropouts in various skill-based trades for domestic and overseas employment.
             </p>
           </div>
@@ -119,22 +125,25 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.35 }}
-          className="flex flex-col md:flex-row items-stretch border border-blue-900 rounded-2xl bg-white overflow-hidden"
+          className="flex flex-col md:flex-row items-stretch border border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden"
         >
           {/* Text — second on mobile, first on desktop */}
           <div className="flex flex-col justify-center px-6 md:px-12 py-10 gap-5 flex-1 order-2 md:order-1">
             <div>
-              <h3 className="mb-2">NTSC Training</h3>
-              <div className="w-12 h-1 bg-blue-900 rounded-full" />
+              <h3 className="mb-2 text-2xl font-bold text-[#0b1f3a]">NTSC Training</h3>
+              <h3 className="mb-2 text-2xl font-black text-[#0a2d5c]">NTSC Training</h3>
+              <div className="w-12 h-1 bg-black rounded-full" />
             </div>
             <p className="text-slate-600 leading-relaxed text-justify">
               NTSC training focuses on various skills like{" "}
-              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
+              <strong className="text-[#0b1f3a] font-bold">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
+              <strong className="text-[#0a2d5c] font-black">MEP, HVAC, A/C, Welding, Fabrication, Machine Operation, Electrical Wiring, Installation, Marine Mechanic, Home Appliance</strong>,
               and Civil construction skills such as Carpentry, Masonry, Plumbing, Bar-Bending, and a host of other trades. NTSC also offers customized courses for corporates on Behavioural, Leadership and Technical skills.
             </p>
             <p className="text-slate-500 leading-relaxed text-justify">
               NTSC's facility complies with NSDC requirements and is accredited by various State and Central Government bodies like{" "}
-              <strong className="text-[#2563eb]" style={{ color: "#2563eb" }}>NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
+              <strong className="text-[#0b1f3a] font-bold">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
+              <strong className="text-[#0a2d5c] font-black">NSDC, KVIC, BSS, MSME, NIESBUD, OGSC, TNDS, CTDS</strong>{" "}
               etc. The certifications help students avail opportunities for job and entrepreneurship.
             </p>
           </div>
@@ -180,58 +189,43 @@ const AboutSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className="group service-card flex flex-col bg-white rounded-2xl overflow-hidden relative"
+              className="group service-card flex flex-col bg-white rounded-2xl overflow-hidden relative shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200"
             >
-              {/* Gradient top panel with background image */}
-              <div
-                className={`relative h-48 bg-gradient-to-br ${s.bg} flex items-center justify-center overflow-hidden z-10`}
-              >
-                {/* Background image — subtle texture behind gradient */}
-                {s.image && (
-                  <img
-                    src={s.image}
-                    alt={s.title}
-                    className="absolute inset-0 w-full h-full object-cover opacity-1"
-                  />
-                )}
-                {/* Grid overlay */}
+              <Link href={s.href} className="flex flex-col flex-1">
+                {/* Top Image Banner */}
                 <div
-                  className="absolute inset-0 opacity-10"
-                  style={{
-                    // backgroundImage: `linear-gradient(${s.gridColor} 1px, transparent 1px), linear-gradient(90deg, ${s.gridColor} 1px, transparent 1px)`,
-                    backgroundSize: "32px 32px",
-                  }}
-                />
-                {/* <div className="absolute top-4 right-4 w-28 h-28 rounded-full bg-white/10" /> */}
-                {/* <div className="absolute bottom-4 left-4 w-16 h-16 rounded-full bg-white/10" /> */}
-                {/* <div className="relative z-10 flex flex-col items-center gap-3">
-                  <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    {/* <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                      {s.icon}
-                    </div> */}
-                  {/* </div> */}
-                  {/* <span className="text-[11px] text-white/70 uppercase tracking-widest font-semibold">
-                    {s.title}
-                  </span> */}
-                {/* </div>  */}
-              </div>
-
-              {/* Body */}
-              <div className="flex flex-col flex-1 p-6 gap-3 relative z-10">
-                <h3 className="tracking-tight">
-                  {s.title}
-                </h3>
-                <p className="text-slate-500 leading-relaxed flex-1 text-justify">{s.desc}</p>
-              </div>
-
-              {/* Footer */}
-              <div className="border-t border-blue-900 px-6 py-4 flex justify-end relative z-10">
-                <a
-                  href={s.href}
-                  className="text-xs font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors"
+                  className={`relative h-48 bg-gradient-to-br ${s.bg} flex items-center justify-center overflow-hidden z-10`}
                 >
-                  Read More
-                </a>
+                  {s.image && (
+                    <img
+                      src={s.image}
+                      alt={s.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-blue-950/20 group-hover:bg-transparent transition-colors" />
+                </div>
+
+                {/* Body with Cropped/Clamped Text */}
+                <div className="flex flex-col flex-1 p-6 gap-2.5 relative z-10">
+                  <h3 className="tracking-tight text-xl font-bold text-[#0b1f3a] group-hover:text-blue-600 transition-colors">
+                    {s.title}
+                  </h3>
+                  <p className="text-slate-600 text-sm leading-relaxed text-justify line-clamp-4">
+                    {s.desc}
+                  </p>
+                </div>
+              </Link>
+
+              {/* Footer with Read More button/link */}
+              <div className="border-t border-slate-100 px-6 py-4 flex justify-end items-center relative z-10 mt-auto bg-slate-50/50">
+                <Link
+                  href={s.href}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#f97316] uppercase tracking-wider hover:text-[#ea580c] transition-colors group-hover:translate-x-0.5 transform duration-200"
+                >
+                  <span>Read More</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </motion.div>
           ))}
