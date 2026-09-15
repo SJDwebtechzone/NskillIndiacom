@@ -265,8 +265,8 @@ function VideoPlayer({ src, label }: { src: string; label: string }) {
       </div>
       {/* Label bar */}
       <div className="px-5 py-4 flex items-center gap-3 border-t border-slate-100 bg-white">
-        <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
-        <span className="text-[14px] text-blue-900 font-extrabold uppercase tracking-[0.15em] truncate">
+        <span className="w-2.5 h-2.5 rounded-full bg-[#f97316] shrink-0" />
+        <span className="text-[14px] text-[#0a2d5c] font-extrabold uppercase tracking-[0.15em] truncate">
           {label}
         </span>
       </div>
@@ -323,24 +323,24 @@ function BookDemoModal({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-[40px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto scrollbar-hide shadow-2xl relative"
+        className="bg-white rounded-[32px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto scrollbar-hide shadow-2xl relative"
       >
         {!submitted ? (
           <>
             {/* Modal Header */}
             <div className="p-8 pb-4 flex items-center justify-between sticky top-0 bg-white z-10">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-blue-600/30">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0a2d5c] to-[#0b1f3a] text-[#f97316] flex items-center justify-center text-2xl shadow-lg shadow-[#0a2d5c]/20">
                   <CalendarDays className="w-7 h-7" />
                 </div>
                 <div>
-                  <h2 className="text-[22px] font-black text-[#111827] leading-tight">Book Your Free Demo</h2>
-                  <p className="text-[13px] font-bold text-[#7c829c]">Reserve a slot with our expert counsellor</p>
+                  <h2 className="text-[22px] font-black text-[#0a2d5c] leading-tight">Book Your Free Demo</h2>
+                  <p className="text-[13px] font-bold text-slate-500">Reserve a slot with our expert counsellor</p>
                 </div>
               </div>
               <button 
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-[#f6f7fb] flex items-center justify-center text-[#7c829c] hover:bg-[#eff1f6] hover:text-[#111827] transition-all"
+                className="w-10 h-10 rounded-full bg-[#f6f7fb] flex items-center justify-center text-slate-500 hover:bg-[#eff1f6] hover:text-[#0a2d5c] transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -348,64 +348,64 @@ function BookDemoModal({
 
             <form onSubmit={handleSubmit} className="p-8 pt-0 space-y-6">
               {/* Selected Course Display */}
-              <div className="bg-[#f5f3ff] p-4 rounded-2xl border border-[#ede9fe] flex items-center gap-3">
+              <div className="bg-orange-50/80 p-4 rounded-2xl border border-orange-200 flex items-center gap-3">
                 <span className="text-xl">📖</span>
-                <span className="text-[14px] font-black text-[#7c3aed] uppercase tracking-wide truncate">
+                <span className="text-[14px] font-black text-[#ea580c] uppercase tracking-wide truncate">
                   {course.title}
                 </span>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                     <User className="w-3.5 h-3.5" /> Full Name <span className="text-red-500">*</span>
                   </label>
                   <input 
                     required
                     type="text"
                     placeholder="Your full name"
-                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-[#0a2d5c] focus:bg-white transition-all outline-none text-[15px] font-bold"
                     value={form.name}
                     onChange={e => setForm({...form, name: e.target.value})}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                     <MapPin className="w-3.5 h-3.5" /> Address
                   </label>
                   <input 
                     type="text"
                     placeholder="City / Area"
-                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-[#0a2d5c] focus:bg-white transition-all outline-none text-[15px] font-bold"
                     value={form.address}
                     onChange={e => setForm({...form, address: e.target.value})}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                     <Mail className="w-3.5 h-3.5" /> Email Address <span className="text-red-500">*</span>
                   </label>
                   <input 
                     required
                     type="email"
                     placeholder="you@example.com"
-                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-[#0a2d5c] focus:bg-white transition-all outline-none text-[15px] font-bold"
                     value={form.email}
                     onChange={e => setForm({...form, email: e.target.value})}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                     <Phone className="w-3.5 h-3.5" /> Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input 
                     required
                     type="tel"
                     placeholder="+91 XXXXX XXXXX"
-                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-[#0a2d5c] focus:bg-white transition-all outline-none text-[15px] font-bold"
                     value={form.phone}
                     onChange={e => setForm({...form, phone: e.target.value})}
                   />
@@ -413,25 +413,25 @@ function BookDemoModal({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                       <CalendarDays className="w-3.5 h-3.5" /> Date <span className="text-red-500">*</span>
                     </label>
                     <input 
                       required
                       type="date"
                       min={today}
-                      className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold"
+                      className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-[#0a2d5c] focus:bg-white transition-all outline-none text-[15px] font-bold"
                       value={form.date}
                       onChange={e => setForm({...form, date: e.target.value})}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-black text-[#7c829c] uppercase tracking-widest flex items-center gap-2">
+                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5" /> Time <span className="text-red-500">*</span>
                     </label>
                     <select 
                       required
-                      className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-blue-600 focus:bg-white transition-all outline-none text-[15px] font-bold appearance-none"
+                      className="w-full px-5 py-4 rounded-2xl bg-[#f6f7fb] border border-[#eff1f6] focus:border-[#0a2d5c] focus:bg-white transition-all outline-none text-[15px] font-bold appearance-none"
                       value={form.time}
                       onChange={e => setForm({...form, time: e.target.value})}
                     >
@@ -444,7 +444,7 @@ function BookDemoModal({
 
               <button 
                 disabled={loading}
-                className="w-full py-5 bg-[#0b1f3a] text-white rounded-[24px] font-black text-[17px] shadow-xl hover:bg-[#1a3a63] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                className="w-full py-4.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-2xl font-black text-[16px] shadow-lg shadow-orange-600/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 uppercase tracking-wider cursor-pointer"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -464,13 +464,13 @@ function BookDemoModal({
             <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-100">
               <CheckCircle2 className="w-12 h-12" />
             </div>
-            <h3 className="text-[28px] font-black text-[#111827] mb-2 leading-tight">Done! 🎉</h3>
-            <p className="text-[15px] font-medium text-[#7c829c] mb-8">
-              Your free demo for <span className="text-blue-600 font-bold">{course.title}</span> is booked. We'll contact you shortly!
+            <h3 className="text-[28px] font-black text-[#0a2d5c] mb-2 leading-tight">Done! 🎉</h3>
+            <p className="text-[15px] font-medium text-slate-600 mb-8">
+              Your free demo for <span className="text-[#ea580c] font-bold">{course.title}</span> is booked. We'll contact you shortly!
             </p>
             <button
               onClick={onClose}
-              className="w-full py-4 bg-[#0b1f3a] text-white rounded-2xl font-black text-[16px] hover:bg-[#1a3a63] transition-all"
+              className="w-full py-4 bg-[#0a2d5c] text-white rounded-2xl font-black text-[16px] hover:bg-[#081f3d] transition-all cursor-pointer"
             >
               Close
             </button>
@@ -499,13 +499,13 @@ function BrochureModal({
   const [countdown, setCountdown] = useState(0);
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
- useEffect(() => () => clearInterval(timerRef.current ?? undefined), []);
+  useEffect(() => () => clearInterval(timerRef.current ?? undefined), []);
 
   const startCountdown = (secs = 30) => {
     setCountdown(secs);
-   clearInterval(timerRef.current ?? undefined);
+    clearInterval(timerRef.current ?? undefined);
     timerRef.current = setInterval(() => {
       setCountdown((c) => {
         if (c <= 1) { clearInterval(timerRef.current ?? undefined); return 0; }
@@ -523,64 +523,45 @@ const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-const handleSendOtp = async () => {
-  if (!validate()) return;
-  setSendingOtp(true);
-  try {
-    // Save lead to DB
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...form,
-        course_id:     course.id,
-        course_title:  course.title,
-        brochure_url:  course.brochure_url,
-      }),
-    });
+  const handleSendOtp = async () => {
+    if (!validate()) return;
+    setSendingOtp(true);
+    try {
+      // Save lead to DB
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          course_id:     course.id,
+          course_title:  course.title,
+          brochure_url:  course.brochure_url,
+        }),
+      });
 
-    // Send real OTP via WhatsApp
-    const otpRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/send`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone:        form.phone,
-        name:         form.name,
-        course_title: course.title,
-      }),
-    });
+      // Send real OTP via WhatsApp
+      const otpRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone:        form.phone,
+          name:         form.name,
+          course_title: course.title,
+        }),
+      });
 
-    const otpData = await otpRes.json();
-    if (!otpRes.ok) throw new Error(otpData.error ?? "Failed to send OTP");
+      const otpData = await otpRes.json();
+      if (!otpRes.ok) throw new Error(otpData.error ?? "Failed to send OTP");
 
-    setStep(2);
-    startCountdown(30);
-    setTimeout(() => otpRefs.current[0]?.focus(), 100);
-  } catch (err: any) {
-    setErrors({ phone: err.message ?? "Failed to send OTP" });
-  } finally {
-    setSendingOtp(false);
-  }
-};
-  // const handleSendOtp = async () => {
-  //   if (!validate()) return;
-  //   setSendingOtp(true);
-  //   try {
-  //     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ ...form, course_id: course.id }),
-  //     });
-  //   } catch {}
-  //   await new Promise((r) => setTimeout(r, 1200));
-  //   const code = String(Math.floor(100000 + Math.random() * 900000));
-  //   setGeneratedOtp(code);
-  //   console.info(`[DEV] OTP for +91${form.phone}: ${code}`);
-  //   setSendingOtp(false);
-  //   setStep(2);
-  //   startCountdown(30);
-  //   setTimeout(() => otpRefs.current[0]?.focus(), 100);
-  // };
+      setStep(2);
+      startCountdown(30);
+      setTimeout(() => otpRefs.current[0]?.focus(), 100);
+    } catch (err: any) {
+      setErrors({ phone: err.message ?? "Failed to send OTP" });
+    } finally {
+      setSendingOtp(false);
+    }
+  };
 
   const handleOtpChange = (idx: number, val: string) => {
     if (!/^\d?$/.test(val)) return;
@@ -612,76 +593,71 @@ const handleSendOtp = async () => {
     }
   };
 
-const handleVerify = async () => {
-  const entered = otpDigits.join("");
-  if (entered.length < 6) { setOtpError("Please enter all 6 digits"); return; }
-  setVerifying(true);
-  try {
-    // Step 1 — verify OTP
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: form.phone, otp: entered }),
-    });
-    const data = await res.json();
+  const handleVerify = async () => {
+    const entered = otpDigits.join("");
+    if (entered.length < 6) { setOtpError("Please enter all 6 digits"); return; }
+    setVerifying(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: form.phone, otp: entered }),
+      });
+      const data = await res.json();
 
-    if (!res.ok || !data.verified) {
-      setOtpError(data.error ?? "Incorrect OTP. Please try again.");
-      setOtpDigits(["", "", "", "", "", ""]);
-      setTimeout(() => otpRefs.current[0]?.focus(), 50);
-      return;
+      if (!res.ok || !data.verified) {
+        setOtpError(data.error ?? "Incorrect OTP. Please try again.");
+        setOtpDigits(["", "", "", "", "", ""]);
+        setTimeout(() => otpRefs.current[0]?.focus(), 50);
+        return;
+      }
+
+      triggerDownload();
+
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads/verified`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name:         form.name,
+          email:        form.email,
+          phone:        form.phone,
+          course_id:    course.id,
+          course_title: course.title,
+          brochure_url: course.brochure_url,
+        }),
+      }).catch(err => console.error("leads/verified failed:", err));
+
+      setStep(3);
+    } catch {
+      setOtpError("Verification failed. Please try again.");
+    } finally {
+      setVerifying(false);
     }
+  };
 
-    // Step 2 — OTP verified → trigger browser download
-    triggerDownload();
-
-    // Step 3 — tell backend to send brochure to WhatsApp + admin alert
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads/verified`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name:         form.name,
-        email:        form.email,
-        phone:        form.phone,
-        course_id:    course.id,
-        course_title: course.title,
-        brochure_url: course.brochure_url,
-      }),
-    }).catch(err => console.error("leads/verified failed:", err));
-    // ↑ non-blocking — don't await, user sees step 3 immediately
-
-    // Step 4 — move to success screen
-    setStep(3);
-  } catch {
-    setOtpError("Verification failed. Please try again.");
-  } finally {
-    setVerifying(false);
-  }
-};
-const handleResend = async () => {
-  if (countdown > 0) return;
-  setSendingOtp(true);
-  try {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/send`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone:        form.phone,
-        name:         form.name,
-        course_title: course.title,
-      }),
-    });
-    setOtpDigits(["", "", "", "", "", ""]);
-    setOtpError("");
-    startCountdown(30);
-    setTimeout(() => otpRefs.current[0]?.focus(), 50);
-  } catch {
-    setOtpError("Failed to resend OTP.");
-  } finally {
-    setSendingOtp(false);
-  }
-};
-
+  const handleResend = async () => {
+    if (countdown > 0) return;
+    setSendingOtp(true);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone:        form.phone,
+          name:         form.name,
+          course_title: course.title,
+        }),
+      });
+      setOtpDigits(["", "", "", "", "", ""]);
+      setOtpError("");
+      startCountdown(30);
+      setTimeout(() => otpRefs.current[0]?.focus(), 50);
+    } catch {
+      setOtpError("Failed to resend OTP.");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
 
   const StepDots = () => (
     <div className="flex items-center gap-2 justify-center mb-6">
@@ -689,7 +665,7 @@ const handleResend = async () => {
         <div
           key={s}
           className={`h-1.5 rounded-full transition-all duration-300 ${
-            s === step ? "w-8 bg-blue-600" : s < step ? "w-4 bg-blue-300" : "w-4 bg-slate-200"
+            s === step ? "w-8 bg-[#f97316]" : s < step ? "w-4 bg-[#0a2d5c]" : "w-4 bg-slate-200"
           }`}
         />
       ))}
@@ -710,7 +686,7 @@ const handleResend = async () => {
         onClick={(e) => e.stopPropagation()}
         className="relative bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden max-h-[96vh] flex flex-col"
       >
-        <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500 shrink-0" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#0a2d5c] via-[#f97316] to-[#0a2d5c] shrink-0" />
         <div className="flex justify-center pt-3 pb-1 sm:hidden shrink-0">
           <div className="w-10 h-1 bg-slate-200 rounded-full" />
         </div>
@@ -720,74 +696,74 @@ const handleResend = async () => {
               <motion.div key="step1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
-                      <Rocket className="w-5 h-5 text-white" />
+                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0a2d5c] to-[#081f3d] flex items-center justify-center shadow-lg shadow-[#0a2d5c]/20">
+                      <Rocket className="w-5 h-5 text-[#f97316]" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-slate-900">Start Your Career Journey</h3>
-                      <p className="text-xs text-slate-400 mt-0.5">Free brochure · phone verified</p>
+                      <h3 className="text-lg font-black text-[#0a2d5c]">Start Your Career Journey</h3>
+                      <p className="text-xs text-slate-500 mt-0.5 font-medium">Free brochure · phone verified</p>
                     </div>
                   </div>
-                  <button onClick={onClose} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition shrink-0">
+                  <button onClick={onClose} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition shrink-0 cursor-pointer">
                     <X className="w-4 h-4 text-slate-500" />
                   </button>
                 </div>
                 <StepDots />
-                <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3 mb-5 flex items-center gap-3">
-                  <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
+                <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3 mb-5 flex items-center gap-3">
+                  <BookOpen className="w-4 h-4 text-[#ea580c] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-0.5">Selected Course</p>
-                    <p className="text-sm font-semibold text-blue-800 truncate">{course.title}</p>
+                    <p className="text-[10px] font-bold text-[#ea580c] uppercase tracking-wider mb-0.5">Selected Course</p>
+                    <p className="text-sm font-black text-[#0a2d5c] truncate">{course.title}</p>
                   </div>
-                  <BadgeCheck className="w-4 h-4 text-blue-400 shrink-0" />
+                  <BadgeCheck className="w-4 h-4 text-[#ea580c] shrink-0" />
                 </div>
                 <div className="space-y-3 mb-5">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <User className="w-3 h-3" /> Full Name <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                      <User className="w-3 h-3" /> Full Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text" placeholder="Your full name" value={form.name}
                       onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setErrors((er) => ({ ...er, name: "" })); }}
-                      className={`w-full border rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-300 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all ${errors.name ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0a2d5c] focus:border-transparent focus:bg-white transition-all ${errors.name ? "border-red-300 bg-red-50" : "border-slate-200"}`}
                     />
                     {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <Mail className="w-3 h-3" /> Email Address <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                      <Mail className="w-3 h-3" /> Email Address <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email" placeholder="you@example.com" value={form.email}
                       onChange={(e) => { setForm((f) => ({ ...f, email: e.target.value })); setErrors((er) => ({ ...er, email: "" })); }}
-                      className={`w-full border rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-300 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all ${errors.email ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0a2d5c] focus:border-transparent focus:bg-white transition-all ${errors.email ? "border-red-300 bg-red-50" : "border-slate-200"}`}
                     />
                     {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <Phone className="w-3 h-3" /> Mobile Number <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                      <Phone className="w-3 h-3" /> Mobile Number <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-2">
-                      <div className="flex items-center gap-1.5 border border-slate-200 bg-slate-50 rounded-xl px-3 py-3 text-sm text-slate-600 font-semibold shrink-0">
+                      <div className="flex items-center gap-1.5 border border-slate-200 bg-slate-50 rounded-xl px-3 py-3 text-sm text-slate-700 font-bold shrink-0">
                         🇮🇳 +91
                       </div>
                       <input
                         type="tel" placeholder="98765 43210" maxLength={10} value={form.phone}
                         onChange={(e) => { setForm((f) => ({ ...f, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })); setErrors((er) => ({ ...er, phone: "" })); }}
-                        className={`flex-1 border rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-300 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all ${errors.phone ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+                        className={`flex-1 border rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0a2d5c] focus:border-transparent focus:bg-white transition-all ${errors.phone ? "border-red-300 bg-red-50" : "border-slate-200"}`}
                       />
                     </div>
                     {errors.phone ? (
                       <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
                     ) : (
-                      <p className="text-[11px] text-slate-400 mt-1.5">A 6-digit OTP will be sent to verify your number.</p>
+                      <p className="text-[11px] text-slate-500 mt-1.5">A 6-digit OTP will be sent to verify your number.</p>
                     )}
                   </div>
                 </div>
                 <button
                   onClick={handleSendOtp} disabled={sendingOtp}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-blue-200 disabled:shadow-none"
+                  className="w-full bg-[#f97316] hover:bg-[#ea580c] disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-orange-600/20 disabled:shadow-none uppercase tracking-wider text-xs sm:text-sm cursor-pointer"
                 >
                   {sendingOtp ? (
                     <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -797,27 +773,27 @@ const handleResend = async () => {
                   ) : <Phone className="w-4 h-4" />}
                   {sendingOtp ? "Sending OTP…" : "Send OTP & Continue"}
                 </button>
-                <p className="text-center text-[11px] text-slate-300 mt-3">We'll never spam you. Privacy guaranteed.</p>
+                <p className="text-center text-[11px] text-slate-400 mt-3 font-medium">We'll never spam you. Privacy guaranteed.</p>
               </motion.div>
             )}
 
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
                 <div className="flex items-start justify-between mb-2">
-                  <button onClick={() => { setStep(1); setOtpDigits(["","","","","",""]); setOtpError(""); }} className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+                  <button onClick={() => { setStep(1); setOtpDigits(["","","","","",""]); setOtpError(""); }} className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#0a2d5c] transition cursor-pointer">
                     <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back
                   </button>
-                  <button onClick={onClose} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition">
+                  <button onClick={onClose} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition cursor-pointer">
                     <X className="w-4 h-4 text-slate-500" />
                   </button>
                 </div>
                 <StepDots />
                 <div className="text-center mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
-                    <Phone className="w-7 h-7 text-white" />
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0a2d5c] to-[#081f3d] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#0a2d5c]/20">
+                    <Phone className="w-7 h-7 text-[#f97316]" />
                   </div>
-                  <h3 className="text-xl font-black text-slate-900 mb-1">Verify Your Number</h3>
-                  <p className="text-sm text-slate-500 mb-0.5">We sent a 6-digit OTP to</p>
+                  <h3 className="text-xl font-black text-[#0a2d5c] mb-1">Verify Your Number</h3>
+                  <p className="text-sm text-slate-500 mb-0.5 font-medium">We sent a 6-digit OTP to</p>
                   <p className="text-base font-black text-slate-800">+91 {form.phone}</p>
                 </div>
                 <div className="flex gap-2 justify-center mb-3" onPaste={handleOtpPaste}>
@@ -829,7 +805,7 @@ const handleResend = async () => {
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
                       className={`w-11 h-14 text-center text-2xl font-black border-2 rounded-2xl focus:outline-none transition-all ${
-                        otpError ? "border-red-300 bg-red-50 text-red-600" : d ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-800 focus:border-blue-400 focus:bg-white"
+                        otpError ? "border-red-300 bg-red-50 text-red-600" : d ? "border-[#f97316] bg-orange-50 text-[#0a2d5c]" : "border-slate-200 bg-slate-50 text-slate-800 focus:border-[#0a2d5c] focus:bg-white"
                       }`}
                     />
                   ))}
@@ -841,9 +817,9 @@ const handleResend = async () => {
                 )}
                 <div className="text-center mb-5">
                   {countdown > 0 ? (
-                    <p className="text-xs text-slate-400">Resend in <span className="font-bold text-slate-700">{countdown}s</span></p>
+                    <p className="text-xs text-slate-500 font-medium">Resend in <span className="font-bold text-[#0a2d5c]">{countdown}s</span></p>
                   ) : (
-                    <button onClick={handleResend} disabled={sendingOtp} className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition disabled:opacity-50">
+                    <button onClick={handleResend} disabled={sendingOtp} className="text-xs font-bold text-[#f97316] hover:text-[#ea580c] transition disabled:opacity-50 cursor-pointer">
                       {sendingOtp ? "Sending…" : "Resend OTP"}
                     </button>
                   )}
@@ -851,7 +827,7 @@ const handleResend = async () => {
                 <button
                   onClick={handleVerify}
                   disabled={verifying || otpDigits.join("").length < 6}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-blue-200 disabled:shadow-none"
+                  className="w-full bg-[#f97316] hover:bg-[#ea580c] disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-orange-600/20 disabled:shadow-none uppercase tracking-wider text-xs sm:text-sm cursor-pointer"
                 >
                   {verifying ? (
                     <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -861,18 +837,18 @@ const handleResend = async () => {
                   ) : <CheckCircle2 className="w-4 h-4" />}
                   {verifying ? "Verifying…" : "Verify & Download Brochure"}
                 </button>
-                <p className="text-center text-[11px] text-slate-300 mt-3">OTP valid for 10 minutes · Use 000000 to test locally</p>
+                <p className="text-center text-[11px] text-slate-400 mt-3 font-medium">OTP valid for 10 minutes · Use 000000 to test locally</p>
               </motion.div>
             )}
 
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-2">
                 <StepDots />
-                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200">
-                  <CheckCircle2 className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-100">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2">You're All Set! 🎉</h3>
-                <p className="text-slate-500 text-sm mb-4">Your brochure is downloading now.</p>
+                <h3 className="text-2xl font-black text-[#0a2d5c] mb-2">You're All Set! 🎉</h3>
+                <p className="text-slate-600 text-sm mb-4 font-medium">Your brochure is downloading now.</p>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-left mb-5 space-y-2.5">
                   {[
                     { label: "Name",   value: form.name },
@@ -881,17 +857,17 @@ const handleResend = async () => {
                     { label: "Course", value: course.title },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex gap-3">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 w-12 shrink-0 pt-0.5">{label}</span>
-                      <span className="text-sm font-semibold text-slate-700 flex-1 break-all">{value}</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 w-12 shrink-0 pt-0.5">{label}</span>
+                      <span className="text-sm font-bold text-slate-800 flex-1 break-all">{value}</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-slate-400 text-xs mb-5">Our admissions team will reach out on <span className="font-semibold text-slate-600">+91 {form.phone}</span> shortly.</p>
+                <p className="text-slate-500 text-xs mb-5 font-medium">Our admissions team will reach out on <span className="font-bold text-[#0a2d5c]">+91 {form.phone}</span> shortly.</p>
                 <div className="flex gap-3">
-                  <button onClick={triggerDownload} className="flex-1 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-3 rounded-xl transition text-sm">
+                  <button onClick={triggerDownload} className="flex-1 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-3 rounded-xl transition text-sm cursor-pointer">
                     <Download className="w-4 h-4" /> Re-download
                   </button>
-                  <button onClick={onClose} className="flex-1 bg-slate-900 text-white px-4 py-3 rounded-xl font-semibold hover:bg-slate-700 transition text-sm">Close</button>
+                  <button onClick={onClose} className="flex-1 bg-[#0a2d5c] text-white px-4 py-3 rounded-xl font-bold hover:bg-[#081f3d] transition text-sm cursor-pointer">Close</button>
                 </div>
               </motion.div>
             )}
@@ -902,7 +878,17 @@ const handleResend = async () => {
   );
 }
 
-// ─── Mobile Sidebar Sheet ──────────────────────────────────────────────────────
+// ─── Course Icon Helper ─────────────────────────────────────────────────────────
+function CourseIcon({ index = 0, active = false }: { index?: number; active?: boolean }) {
+  const icons = [
+    BookOpen, Award, Users, Star, FileText,
+    Clock, GraduationCap, ShieldCheck, Briefcase, TrendingUp,
+  ];
+  const IconComponent = icons[index % icons.length];
+  return <IconComponent className={`w-4 h-4 ${active ? "text-white" : "text-[#0a2d5c]"}`} />;
+}
+
+// ─── Mobile Course Sheet ───────────────────────────────────────────────────────
 function MobileCourseSheet({
   currentId,
   currentCategory,
@@ -914,76 +900,97 @@ function MobileCourseSheet({
   allCourses: { id: string; title: string; category: string }[];
   onClose: () => void;
 }) {
+  const [tab, setTab] = useState<"category" | "all">("category");
+  const sameCategory = allCourses.filter((c) => c.category === currentCategory);
   const grouped = allCourses.reduce(
-    (acc: Record<string, { name: string; id: string }[]>, c) => {
+    (acc: Record<string, typeof allCourses>, c) => {
       if (!acc[c.category]) acc[c.category] = [];
-      acc[c.category].push({ name: c.title, id: c.id });
+      acc[c.category].push(c);
       return acc;
     },
     {}
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-sm lg:hidden" onClick={onClose}>
       <motion.div
-        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-        transition={{ type: "spring", stiffness: 350, damping: 35 }}
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-white w-full rounded-t-3xl max-h-[80vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-t-3xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
       >
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-slate-200 rounded-full" />
-        </div>
-        <div className="flex items-center justify-between px-5 pb-3 border-b border-slate-100">
-          <h3 className="font-black text-slate-900">All Courses</h3>
-          <button onClick={onClose} className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center">
-            <X className="w-4 h-4 text-slate-500" />
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => setTab("category")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
+                tab === "category" ? "bg-white text-[#0a2d5c] shadow-sm" : "text-slate-500"
+              }`}
+            >
+              {currentCategory} ({sameCategory.length})
+            </button>
+            <button
+              onClick={() => setTab("all")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
+                tab === "all" ? "bg-white text-[#0a2d5c] shadow-sm" : "text-slate-500"
+              }`}
+            >
+              All Courses ({allCourses.length})
+            </button>
+          </div>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-50">
+            <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="overflow-y-auto flex-1 p-4 space-y-4">
-          {Object.entries(grouped).map(([cat, items]) => (
-            <div key={cat}>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">{cat}</p>
-              <div className="space-y-1">
-                {(items as any[]).map((item) => (
+
+        <div className="p-4 overflow-y-auto space-y-2 flex-1">
+          {tab === "category" ? (
+            sameCategory.map((c, i) => (
+              <Link
+                key={c.id}
+                href={`/courses/${c.id}`}
+                onClick={onClose}
+                className={`flex items-center gap-3 p-3 rounded-xl transition ${
+                  c.id === currentId ? "bg-[#0a2d5c] text-white shadow-md shadow-[#0a2d5c]/20" : "hover:bg-slate-50 text-slate-700"
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${c.id === currentId ? "bg-white/20 text-white" : "bg-orange-50 text-[#f97316]"}`}>
+                  <CourseIcon index={i} active={c.id === currentId} />
+                </div>
+                <span className="text-sm font-bold line-clamp-1">{c.title}</span>
+              </Link>
+            ))
+          ) : (
+            Object.entries(grouped).map(([cat, courses]) => (
+              <div key={cat} className="space-y-1 mb-4">
+                <p className="text-[11px] font-black tracking-wider uppercase text-[#ea580c] px-2">{cat}</p>
+                {courses.map((c, i) => (
                   <Link
-                    key={item.id}
-                    href={`/courses/${item.id}`}
+                    key={c.id}
+                    href={`/courses/${c.id}`}
                     onClick={onClose}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition ${
-                      item.id === currentId ? "bg-blue-600 text-white font-semibold" : "text-slate-600 hover:bg-slate-50"
+                    className={`flex items-center gap-3 p-3 rounded-xl transition ${
+                      c.id === currentId ? "bg-[#0a2d5c] text-white shadow-md shadow-[#0a2d5c]/20" : "hover:bg-slate-50 text-slate-700"
                     }`}
                   >
-                    {item.id === currentId && <span className="w-1.5 h-1.5 rounded-full bg-white/70" />}
-                    {item.name}
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${c.id === currentId ? "bg-white/20 text-white" : "bg-orange-50 text-[#f97316]"}`}>
+                      <CourseIcon index={i} active={c.id === currentId} />
+                    </div>
+                    <span className="text-sm font-bold line-clamp-1">{c.title}</span>
                   </Link>
                 ))}
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </motion.div>
     </div>
   );
 }
 
-// ─── Course Icon ───────────────────────────────────────────────────────────────
-function CourseIcon({ index, active }: { index: number; active?: boolean }) {
-  const s = active ? "white" : "currentColor";
-  const p = { fill: "none" as const, stroke: s, strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  const icons = [
-    <svg key={0} viewBox="0 0 16 16" width="14" height="14" fill="none"><path {...p} d="M8 2C5.8 2 4 3.8 4 6c0 1.5.8 2.8 2 3.5V11h4V9.5c1.2-.7 2-2 2-3.5 0-2.2-1.8-4-4-4z" /><path {...p} d="M6 12h4M7 14h2" /></svg>,
-    <svg key={1} viewBox="0 0 16 16" width="14" height="14" fill="none"><rect {...p} x="2" y="2" width="12" height="12" rx="2" /><path {...p} d="M5 8h6M9 5l3 3-3 3" /></svg>,
-    <svg key={2} viewBox="0 0 16 16" width="14" height="14" fill="none"><rect {...p} x="2" y="1" width="12" height="14" rx="2" /><path {...p} d="M5 5h6M5 8h4M5 11h3" /></svg>,
-    <svg key={3} viewBox="0 0 16 16" width="14" height="14" fill="none"><circle {...p} cx="8" cy="6" r="3" /><path {...p} d="M2 14c0-2.2 2.7-4 6-4s6 1.8 6 4" /></svg>,
-    <svg key={4} viewBox="0 0 16 16" width="14" height="14" fill="none"><path {...p} d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10.1 4.4 12l.7-4L2.2 5.2l4-.6z" /></svg>,
-    <svg key={5} viewBox="0 0 16 16" width="14" height="14" fill="none"><path {...p} d="M10.5 2a3.5 3.5 0 00-3.3 4.6L2 12l2 2 5.4-5.2A3.5 3.5 0 1010.5 2z" /></svg>,
-  ];
-  return icons[index % icons.length];
-}
-
-// ─── Desktop Sidebar ───────────────────────────────────────────────────────────
+// ─── Course Sidebar ────────────────────────────────────────────────────────────
 function CourseSidebar({
   currentId,
   currentCategory,
@@ -997,9 +1004,9 @@ function CourseSidebar({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   const grouped = allCourses.reduce(
-    (acc: Record<string, { name: string; id: string }[]>, c) => {
+    (acc: Record<string, { id: string; title: string; category: string }[]>, c) => {
       if (!acc[c.category]) acc[c.category] = [];
-      acc[c.category].push({ name: c.title, id: c.id });
+      acc[c.category].push(c);
       return acc;
     },
     {}
@@ -1020,36 +1027,34 @@ function CourseSidebar({
     <Link
       href={`/courses/${id}`}
       className={`group flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all duration-150 ${
-        active ? "bg-blue-600 shadow-md shadow-blue-200/60" : "hover:bg-slate-50"
+        active ? "bg-[#0a2d5c] text-white shadow-md shadow-[#0a2d5c]/20 font-bold" : "hover:bg-orange-50/50 text-slate-700"
       }`}
     >
-      <div className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${active ? "bg-white/20" : "bg-slate-100 group-hover:bg-slate-200"}`}>
-        <span className={active ? "text-white" : "text-slate-500"}>
-          <CourseIcon index={idx} active={active} />
-        </span>
+      <div className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${active ? "bg-white/20 text-white" : "bg-orange-50 text-[#f97316] group-hover:bg-orange-100"}`}>
+        <CourseIcon index={idx} active={active} />
       </div>
-      {active && <span className="w-1.5 h-1.5 rounded-full bg-white/60 shrink-0" />}
-      <span className={`text-sm md:text-[15px] leading-snug line-clamp-2 flex-1 transition-colors ${active ? "text-white font-bold" : "text-slate-600 font-semibold group-hover:text-slate-900"}`}>
+      {active && <span className="w-2 h-2 rounded-full bg-[#f97316] shrink-0 shadow-xs" />}
+      <span className={`text-sm md:text-[15px] leading-snug line-clamp-2 flex-1 transition-colors ${active ? "text-white font-bold" : "text-slate-700 font-semibold group-hover:text-[#0a2d5c]"}`}>
         {name}
       </span>
     </Link>
   );
 
   return (
-    <div className="sticky top-28 bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
+    <div className="sticky top-28 bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
       <div className="px-5 pt-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm md:text-base font-black uppercase tracking-[0.1em] text-black">
+          <p className="text-sm md:text-base font-black uppercase tracking-[0.1em] text-[#0a2d5c]">
             {showAll ? "All Courses" : currentCategory}
           </p>
           {!showAll && (
-            <p className="text-base text-black font-black mt-0.5">{sameCategoryCourses.length} courses</p>
+            <p className="text-xs text-slate-500 font-bold mt-0.5">{sameCategoryCourses.length} courses</p>
           )}
         </div>
         <button
           onClick={() => setShowAll((v) => !v)}
-          className={`shrink-0 flex items-center gap-1.5 text-xs md:text-sm font-bold px-3.5 py-2 rounded-xl border transition-all duration-200 ${
-            showAll ? "bg-blue-600 text-white border-blue-600" : "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100 hover:border-blue-200"
+          className={`shrink-0 flex items-center gap-1.5 text-xs md:text-sm font-bold px-3.5 py-2 rounded-xl border transition-all duration-200 cursor-pointer ${
+            showAll ? "bg-[#0a2d5c] text-white border-[#0a2d5c]" : "bg-orange-50 text-[#ea580c] border-orange-200 hover:bg-orange-100"
           }`}
         >
           {showAll ? <><X className="w-3.5 h-3.5" /> Close</> : <><LayoutGrid className="w-3.5 h-3.5" /> All</>}
@@ -1061,7 +1066,7 @@ function CourseSidebar({
           {!showAll && (
             <div className="space-y-1">
               {sameCategoryCourses.map((item, idx) => (
-                <CourseLink key={item.id} id={item.id} name={item.name} active={item.id === currentId} idx={idx} />
+                <CourseLink key={item.id} id={item.id} name={item.title} active={item.id === currentId} idx={idx} />
               ))}
             </div>
           )}
@@ -1070,13 +1075,13 @@ function CourseSidebar({
               <motion.div key="all-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2 px-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
-                    <p className="text-xs md:text-sm font-black text-blue-600 uppercase tracking-widest flex-1 truncate">{currentCategory}</p>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#f97316] shrink-0" />
+                    <p className="text-xs md:text-sm font-black text-[#0a2d5c] uppercase tracking-widest flex-1 truncate">{currentCategory}</p>
                     <span className="text-xs md:text-sm text-slate-500 font-bold">{sameCategoryCourses.length}</span>
                   </div>
                   <div className="space-y-1">
                     {sameCategoryCourses.map((item, idx) => (
-                      <CourseLink key={item.id} id={item.id} name={item.name} active={item.id === currentId} idx={idx} />
+                      <CourseLink key={item.id} id={item.id} name={item.title} active={item.id === currentId} idx={idx} />
                     ))}
                   </div>
                 </div>
@@ -1085,18 +1090,18 @@ function CourseSidebar({
                   const isExpanded = expandedCategories.has(cat);
                   return (
                     <div key={cat}>
-                      <button onClick={() => toggleCategory(cat)} className="w-full flex items-center gap-2 px-2 py-2 rounded-xl hover:bg-slate-50 transition group">
-                        <span className="w-2.5 h-2.5 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors shrink-0" />
-                        <p className="text-xs md:text-sm font-black text-slate-400 group-hover:text-slate-600 uppercase tracking-widest flex-1 text-left transition-colors truncate">{cat}</p>
+                      <button onClick={() => toggleCategory(cat)} className="w-full flex items-center gap-2 px-2 py-2 rounded-xl hover:bg-slate-50 transition group cursor-pointer">
+                        <span className="w-2.5 h-2.5 rounded-full bg-slate-300 group-hover:bg-[#f97316] transition-colors shrink-0" />
+                        <p className="text-xs md:text-sm font-black text-slate-500 group-hover:text-[#0a2d5c] uppercase tracking-widest flex-1 text-left transition-colors truncate">{cat}</p>
                         <span className="text-xs md:text-sm text-slate-400 font-bold mr-1">{(items as any[]).length}</span>
-                        <ChevronDown className={`w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                       </button>
                       <AnimatePresence initial={false}>
                         {isExpanded && (
                           <motion.div key="items" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                             <div className="space-y-1 mt-1 mb-1">
                               {(items as any[]).map((item, idx) => (
-                                <CourseLink key={item.id} id={item.id} name={item.name} idx={idx} />
+                                <CourseLink key={item.id} id={item.id} name={item.title} idx={idx} />
                               ))}
                             </div>
                           </motion.div>
@@ -1113,7 +1118,7 @@ function CourseSidebar({
           <div className="px-3 pb-4">
             <Link
               href={`/courses?category=${toSlug(currentCategory)}`}
-              className="flex items-center justify-center gap-2 w-full py-3.5 text-sm md:text-base font-bold text-blue-600 hover:text-blue-700 border border-blue-100 hover:border-blue-200 rounded-2xl bg-blue-50 hover:bg-blue-100 transition-all shadow-sm"
+              className="flex items-center justify-center gap-2 w-full py-3.5 text-sm md:text-base font-bold text-[#ea580c] hover:text-[#f97316] border border-orange-200 hover:border-orange-300 rounded-2xl bg-orange-50 hover:bg-orange-100 transition-all shadow-sm"
             >
               View all in category <ChevronRight className="w-4 h-4" />
             </Link>
@@ -1133,15 +1138,15 @@ function StatsBar({ course }: { course: any }) {
     { value: "100%",          label: "Job Assistance",    icon: Briefcase },
   ];
   return (
-    <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
       <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100">
         {stats.map(({ value, label, icon: Icon }) => (
           <div key={label} className="flex flex-col items-center justify-center py-5 px-4 text-center gap-1.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center mb-1">
-              <Icon className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center mb-1">
+              <Icon className="w-5 h-5 text-[#f97316]" />
             </div>
-            <span className="text-2xl sm:text-3xl font-black text-black">{value}</span>
-            <span className="text-sm text-slate-950 font-bold">{label}</span>
+            <span className="text-2xl sm:text-3xl font-black text-[#0a2d5c]">{value}</span>
+            <span className="text-xs sm:text-sm text-slate-600 font-bold">{label}</span>
           </div>
         ))}
       </div>
@@ -1184,8 +1189,6 @@ function ImageCarousel({ category, courseTitle, gallery, thumbnailUrl }: {
 }) {
   const categorySlides = CATEGORY_IMAGES[category] ?? FALLBACK_SLIDES;
 
-  // If admin uploaded gallery images — use those as slides
-  // Otherwise fall back to category Unsplash images
   const slides = gallery && gallery.length > 0
     ? gallery.map((url, i) => ({
         url,
@@ -1196,7 +1199,7 @@ function ImageCarousel({ category, courseTitle, gallery, thumbnailUrl }: {
     : categorySlides;
   const [current, setCurrent] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isHovered) return;
@@ -1209,7 +1212,7 @@ const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   return (
     <div
-      className="relative w-full rounded-3xl overflow-hidden shadow-sm border border-slate-100 bg-slate-900"
+      className="relative w-full rounded-3xl overflow-hidden shadow-sm border border-slate-200 bg-slate-950"
       style={{ aspectRatio: "16/7" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -1224,130 +1227,36 @@ const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
           className="absolute inset-0"
         >
           <img src={slides[current].url} alt={slides[current].caption} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
         </motion.div>
       </AnimatePresence>
       <div className="absolute bottom-0 left-0 right-0 px-6 py-5 z-10">
         <motion.div key={`cap-${current}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <p className="text-[10px] font-black uppercase tracking-widest text-blue-300 mb-1">{category}</p>
-          <p className="text-white font-semibold text-sm">{slides[current].caption}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-[#f97316] mb-1">{category}</p>
+          <p className="text-white font-bold text-sm sm:text-base">{slides[current].caption}</p>
         </motion.div>
       </div>
-      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all">
+      <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all cursor-pointer">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
       </button>
-      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all">
+      <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all cursor-pointer">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l4 5-4 5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
       </button>
       <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
         {slides.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)} className={`transition-all duration-300 rounded-full ${i === current ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/40 hover:bg-white/70"}`} />
+          <button key={i} onClick={() => setCurrent(i)} className={`transition-all duration-300 rounded-full cursor-pointer ${i === current ? "w-6 h-2 bg-[#f97316]" : "w-2 h-2 bg-white/40 hover:bg-white/70"}`} />
         ))}
       </div>
       {!isHovered && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/10 z-20">
-          <motion.div key={`progress-${current}`} className="h-full bg-blue-400" initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 3.5, ease: "linear" }} />
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-20">
+          <motion.div key={`progress-${current}`} className="h-full bg-[#f97316]" initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 3.5, ease: "linear" }} />
         </div>
       )}
     </div>
   );
 }
 
-// ─── Video Section — Option A (main player + thumbnail strip) ─────────────────
-// function VideoSection({ videos }: { videos: any[] }) {
-//   const [activeIdx, setActiveIdx] = useState(0);
-
-//   if (!videos || videos.length === 0) return null;
-
-//   const active = videos[activeIdx];
-
-//   return (
-//     <div className="relative">
-//       <div className="absolute -inset-4 bg-blue-600/20 rounded-3xl blur-2xl pointer-events-none" />
-
-//      <div className="relative bg-slate-950 rounded-2xl border border-white/10 p-3 pt-4 space-y-3">
-
-//         {videos.length > 1 && (
-//           <div className="flex items-center gap-2 px-1">
-//             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-//             <span className="text-[11px] text-white/40 font-semibold uppercase tracking-wider">
-//               Now playing —
-//             </span>
-//             <span className="text-[11px] text-white/80 font-semibold truncate">
-//               {active.type ?? active.title ?? `Video ${activeIdx + 1}`}
-//             </span>
-//           </div>
-//         )}
-
-//         {/* ✅ FIX 1 — resolveVideoUrl added here */}
-//         <div className="rounded-xl overflow-hidden">
-//           <VideoPlayer
-//             key={activeIdx}
-//             src={resolveVideoUrl(active.url)}
-//             label={active.type ?? active.title ?? "Video"}
-//           />
-//         </div>
-
-//         {videos.length > 1 && (
-//           <div
-//             className="flex gap-2 overflow-x-auto pb-1"
-//             style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
-//           >
-//             {videos.map((v: any, i: number) => (
-//               <button
-//                 key={v.id ?? i}
-//                 onClick={() => setActiveIdx(i)}
-//                 className={`relative flex-shrink-0 w-28 rounded-lg overflow-hidden border-2 transition-all duration-150 ${
-//                   i === activeIdx
-//                     ? "border-blue-500"
-//                     : "border-white/10 hover:border-white/30 opacity-60 hover:opacity-100"
-//                 }`}
-//               >
-//                 {/* ✅ FIX 2 — resolveVideoUrl added here */}
-//                 <video
-//                   src={resolveVideoUrl(v.url)}
-//                   className="w-full aspect-video object-cover bg-slate-800"
-//                   preload="metadata"
-//                   muted
-//                   playsInline
-//                   onLoadedMetadata={(e) => {
-//                     e.currentTarget.currentTime = 1;
-//                   }}
-//                 />
-
-//                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-1.5">
-//                   <p className="text-[9px] font-black uppercase tracking-wider text-blue-300 leading-none mb-0.5">
-//                     {v.type ?? "Video"}
-//                   </p>
-//                   <p className="text-[10px] font-semibold text-white leading-tight line-clamp-1">
-//                     {v.title ?? `Video ${i + 1}`}
-//                   </p>
-//                 </div>
-
-//                 {i === activeIdx && (
-//                   <div className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-blue-500 flex items-center justify-center">
-//                     <div className="w-1 h-1 rounded-full bg-white" />
-//                   </div>
-//                 )}
-
-//                 {i !== activeIdx && (
-//                   <div className="absolute inset-0 flex items-center justify-center">
-//                     <div className="w-6 h-6 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
-//                       <svg width="8" height="8" viewBox="0 0 8 8" fill="white">
-//                         <path d="M2 1l5 3-5 3z" />
-//                       </svg>
-//                     </div>
-//                   </div>
-//                 )}
-//               </button>
-//             ))}
-//           </div>
-//         )}
-
-//       </div>
-//     </div>
-//   );
-// }
+// ─── Video Section ─────────────────────────────────────────────────────────────
 function VideoSection({ videos }: { videos: any[] }) {
   const [activeIdx, setActiveIdx] = useState(0);
   if (!videos || videos.length === 0) return null;
@@ -1369,10 +1278,10 @@ function VideoSection({ videos }: { videos: any[] }) {
             <div key={v.id ?? i} className="relative group/tooltip">
               <button
                 onClick={() => setActiveIdx(i)}
-                className={`group relative w-full rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+                className={`group relative w-full rounded-2xl overflow-hidden border-2 transition-all duration-300 cursor-pointer ${
                   i === activeIdx
-                    ? "border-blue-600 ring-2 ring-blue-600/20 opacity-100 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
-                    : "border-slate-200/80 hover:border-slate-300 opacity-80 hover:opacity-100 bg-white"
+                    ? "border-[#f97316] ring-2 ring-orange-500/20 opacity-100 shadow-[0_0_15px_rgba(249,115,22,0.15)]"
+                    : "border-slate-200 hover:border-slate-300 opacity-80 hover:opacity-100 bg-white"
                 }`}
               >
                 <div className="relative bg-slate-900 aspect-video max-h-44 rounded-2xl overflow-hidden">
@@ -1385,7 +1294,7 @@ function VideoSection({ videos }: { videos: any[] }) {
                     onLoadedMetadata={(e) => { e.currentTarget.currentTime = 1; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-2.5 overflow-hidden">
-                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-400 leading-none mb-1 drop-shadow-md truncate">
+                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#f97316] leading-none mb-1 drop-shadow-md truncate">
                       {v.type ?? "Video"}
                     </p>
                     <p className="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-1 drop-shadow-md truncate">
@@ -1399,10 +1308,9 @@ function VideoSection({ videos }: { videos: any[] }) {
               </button>
               
               {/* Custom Tooltip */}
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-30">
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0a2d5c] text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-xl z-30">
                 {v.title ?? `Video ${i + 1}`}
-                {/* Tooltip Arrow */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900" />
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-[#0a2d5c]" />
               </div>
             </div>
           ))}
@@ -1411,6 +1319,7 @@ function VideoSection({ videos }: { videos: any[] }) {
     </div>
   );
 }
+
 // ─── Course Info Card ──────────────────────────────────────────────────────────
 function CourseInfoCard({ course }: { course: any }) {
   const certifications = [
@@ -1419,29 +1328,29 @@ function CourseInfoCard({ course }: { course: any }) {
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
       {/* Duration */}
       <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-slate-100">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Clock className="w-5 h-5 text-blue-500" />
+          <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center">
+            <Clock className="w-5 h-5 text-[#f97316]" />
           </div>
-          <h2 className="text-base sm:text-lg font-black text-slate-900 uppercase tracking-wide">Course Duration</h2>
+          <h2 className="text-base sm:text-lg font-black text-[#0a2d5c] uppercase tracking-wide">Course Duration</h2>
         </div>
         <div className="flex items-center gap-5 flex-wrap">
-          <div className="flex-1 min-w-[140px] bg-blue-50 border border-blue-100 rounded-2xl px-5 py-5 text-center">
-            <p className="text-2xl sm:text-3xl font-black text-blue-600">{course.duration}</p>
-            <p className="text-xs sm:text-sm text-blue-500 font-bold mt-1">Total Programme Length</p>
+          <div className="flex-1 min-w-[140px] bg-orange-50/70 border border-orange-200 rounded-2xl px-5 py-5 text-center">
+            <p className="text-2xl sm:text-3xl font-black text-[#ea580c]">{course.duration}</p>
+            <p className="text-xs sm:text-sm text-[#0a2d5c] font-bold mt-1">Total Programme Length</p>
           </div>
           <div className="flex-1 min-w-[140px] space-y-3.5">
-            {[{ label: "Theory", value: "40%" }, { label: "Practical", value: "60%" }].map(({ label, value }) => (
+            {[{ label: "Theory", value: "40%", bar: "bg-[#0a2d5c]" }, { label: "Practical", value: "60%", bar: "bg-[#f97316]" }].map(({ label, value, bar }) => (
               <div key={label}>
                 <div className="flex justify-between text-sm sm:text-base mb-1.5">
                   <span className="font-bold text-slate-700">{label}</span>
-                  <span className="font-black text-slate-900">{value}</span>
+                  <span className="font-black text-[#0a2d5c]">{value}</span>
                 </div>
                 <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full ${label === "Practical" ? "bg-blue-400" : "bg-blue-400"}`} style={{ width: value }} />
+                  <div className={`h-full rounded-full ${bar}`} style={{ width: value }} />
                 </div>
               </div>
             ))}
@@ -1452,18 +1361,18 @@ function CourseInfoCard({ course }: { course: any }) {
       {/* Certification */}
       <div className="px-6 sm:px-8 py-5 border-b border-slate-100">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Medal className="w-4 h-4 text-blue-500" />
+          <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center">
+            <Medal className="w-4 h-4 text-[#f97316]" />
           </div>
-          <h2 className="text-base font-black text-slate-900 uppercase tracking-wide">Certification</h2>
+          <h2 className="text-base font-black text-[#0a2d5c] uppercase tracking-wide">Certification</h2>
         </div>
         <div className="space-y-2.5">
           {certifications.map(({ label, sub }) => (
-            <div key={label} className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3">
-              <BadgeCheck className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+            <div key={label} className="flex items-start gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3">
+              <BadgeCheck className="w-4 h-4 text-[#ea580c] mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-bold text-blue-800">{label}</p>
-                <p className="text-[11px] text-blue-600 mt-0.5">{sub}</p>
+                <p className="text-sm font-bold text-[#0a2d5c]">{label}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">{sub}</p>
               </div>
             </div>
           ))}
@@ -1473,10 +1382,10 @@ function CourseInfoCard({ course }: { course: any }) {
       {/* Career Opportunities */}
       <div className="px-6 sm:px-8 py-5">
         <div className="flex items-center gap-2.5 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Rocket className="w-5 h-5 text-blue-500" />
+          <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center">
+            <Rocket className="w-5 h-5 text-[#f97316]" />
           </div>
-          <h2 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-wide">Career Opportunities</h2>
+          <h2 className="text-lg md:text-xl font-black text-[#0a2d5c] uppercase tracking-wide">Career Opportunities</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {(course.careerOpportunities?.length
@@ -1484,22 +1393,23 @@ function CourseInfoCard({ course }: { course: any }) {
             : ["Field Service Technician","Maintenance Engineer","Technical Supervisor","Self-Employment / Business","Government Sector Jobs","Export Opportunities Abroad"]
           ).map((role: string, i: number) => (
             <div key={i} className="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#f97316] shrink-0" />
               <span className="text-base font-bold text-slate-800">{role}</span>
             </div>
           ))}
         </div>
-        <div className="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl px-4 py-3 flex items-center gap-3">
-          <TrendingUp className="w-5 h-5 text-white shrink-0" />
+        <div className="mt-4 bg-gradient-to-r from-[#0a2d5c] to-[#0b244d] rounded-2xl px-4 py-3 flex items-center gap-3 text-white">
+          <TrendingUp className="w-5 h-5 text-[#f97316] shrink-0" />
           <div>
             <p className="text-white text-sm font-bold">High Demand Sector</p>
-            <p className="text-blue-100 text-xs">Growing 18% year-on-year across India</p>
+            <p className="text-slate-300 text-xs">Growing 18% year-on-year across India</p>
           </div>
         </div>
       </div>
     </motion.div>
   );
 }
+
 interface FAQItem {
   q: string;
   a: string;
@@ -1528,23 +1438,23 @@ const DEFAULT_FAQS_EN: FAQItem[] = [
     q: "Does the training include both theory and practical sessions, and what practical facilities are available?",
     a: "Yes, both theory and practical sessions are covered. However, our courses primarily focus on hands-on practical training using world class industrial equipment, enabling students to gain real-world experience",
   },
-{
-  q: "Do you provide placement assistance, and what are the job opportunities and starting salary for freshers & experienced?",
-  a: "Yes. We provide placement assurance for jobs in India and overseas industries after successful completion of the course. NTSC gives several opportunities to students to attend interviews for their placement.",
-  table: [
-    { skill: "HVAC Technician",                                              fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Electrician",                                                  fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Plumbing Technician",                                          fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Welding (MIG/TIG)",                                            fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "MEP Technician",                                               fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Fire & Safety Officer",                                        fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Home Appliance Technician",                                    fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Certified HVAC Engineer (CHE)",                                fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-    { skill: "International Diploma in Quality Management Training",                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-    { skill: "International Certified Health, Safety & Environmental Officer (CHSEO)",                                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-    { skill: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",                                   fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
- ],
-},
+  {
+    q: "Do you provide placement assistance, and what are the job opportunities and starting salary for freshers & experienced?",
+    a: "Yes. We provide placement assurance for jobs in India and overseas industries after successful completion of the course. NTSC gives several opportunities to students to attend interviews for their placement.",
+    table: [
+      { skill: "HVAC Technician",                                              fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Electrician",                                                  fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Plumbing Technician",                                          fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Welding (MIG/TIG)",                                            fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "MEP Technician",                                               fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Fire & Safety Officer",                                        fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Home Appliance Technician",                                    fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Certified HVAC Engineer (CHE)",                                fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+      { skill: "International Diploma in Quality Management Training",                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+      { skill: "International Certified Health, Safety & Environmental Officer (CHSEO)",                                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+      { skill: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",                                   fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    ],
+  },
   {
     q: "Will I receive a recognized certificate after course completion, valid for jobs in India and abroad?",
     a: "Yes, students receive recognized certificates from Government of India or NSDC-accredited organizations, which help them secure jobs or start their own businesses.",
@@ -1592,23 +1502,23 @@ const DEFAULT_FAQS_TA: FAQItem[] = [
     q: "இந்த பயிற்சியில் Theory மற்றும் Practical இரண்டும் உள்ளதா? என்ன வகையான Practical வசதிகள் உள்ளன?",
     a: "ஆம், Theory மற்றும் Practical இரண்டும் உள்ளன. ஆனால் எங்கள் பயிற்சியின் முக்கிய கவனம் முழுமையாக Hands-on Practical Training மீது உள்ளது. உலகத் தரம் வாய்ந்த தொழில்துறை உபகரணங்கள் மூலம் மாணவர்கள் நேரடி அனுபவம் பெறுவர்.",
   },
-{
-  q: "Placement உதவி வழங்கப்படுமா? வேலை வாய்ப்புகள் மற்றும் சம்பளம் எப்படி இருக்கும்?",
-  a: "ஆம். கோர்ஸ் வெற்றிகரமாக முடித்த பிறகு இந்தியா மற்றும் வெளிநாடுகளில் வேலை வாய்ப்புகளுக்கு Placement Assistance வழங்கப்படுகிறது.குறிப்பு:  NTSC மாணவர்களுக்கு பல Interview வாய்ப்புகள் வழங்குகிறது.",
-  table: [
-    { skill: "HVAC Technician",                                          fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Electrician",                                              fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Plumbing Technician",                                      fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Welding (MIG/TIG)",                                        fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "MEP Technician",                                           fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Fire & Safety Officer",                                    fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Home Appliance Technician",                                fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
-    { skill: "Certified HVAC Engineer (CHE)",                            fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-    { skill: "International Diploma in Quality Management Training",                               fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-    { skill: "International Certified Health, Safety & Environmental Officer (CHSEO)",                                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-    { skill: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",                                   fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
-  ],
-},
+  {
+    q: "Placement உதவி வழங்கப்படுமா? வேலை வாய்ப்புகள் மற்றும் சம்பளம் எப்படி இருக்கும்?",
+    a: "ஆம். கோர்ஸ் வெற்றிகரமாக முடித்த பிறகு இந்தியா மற்றும் வெளிநாடுகளில் வேலை வாய்ப்புகளுக்கு Placement Assistance வழங்கப்படுகிறது.குறிப்பு:  NTSC மாணவர்களுக்கு பல Interview வாய்ப்புகள் வழங்குகிறது.",
+    table: [
+      { skill: "HVAC Technician",                                          fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Electrician",                                              fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Plumbing Technician",                                      fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Welding (MIG/TIG)",                                        fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "MEP Technician",                                           fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Fire & Safety Officer",                                    fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Home Appliance Technician",                                fresher: "₹15,000 – ₹25,000", experienced: "₹30,000 – ₹50,000", overseas: "₹60,000 – ₹80,000"  },
+      { skill: "Certified HVAC Engineer (CHE)",                            fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+      { skill: "International Diploma in Quality Management Training",                               fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+      { skill: "International Certified Health, Safety & Environmental Officer (CHSEO)",                                  fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+      { skill: "International Certified Mechanical Electrical & Plumbing Engineer (MEP)",                                   fresher: "₹25,000",           experienced: "₹40,000 – ₹60,000", overseas: "₹80,000 – ₹1,00,000" },
+    ],
+  },
   {
     q: "கோர்ஸ் முடித்த பிறகு அங்கீகரிக்கப்பட்ட சான்றிதழ் கிடைக்குமா?",
     a: "ஆம், மாணவர்கள் இந்திய அரசு அல்லது NSDC அங்கீகாரம் பெற்ற சான்றிதழ்களை பெறுவார்கள். இது இந்தியா மற்றும் வெளிநாடுகளில் வேலை பெற உதவும் அல்லது தனியாக தொழில் தொடங்கவும் உதவும்.",
@@ -1633,11 +1543,12 @@ const DEFAULT_FAQS_TA: FAQItem[] = [
     q: "கோர்ஸில் எப்படி பதிவு செய்வது?",
     a: "•	பயிற்சி மையத்திற்கு நேரில் வருகை  அல்லது Call / WhatsApp: +91 98842 09774 அல்லது Website-ல் Registration Form பூர்த்தி செய்யவும் அல்லதுCareer Counselling Session-ல் கலந்து கொள்ளுதல் ",
   },
-    {
+  {
     q: "மேலதிக தகவல்களுக்கு",
     a: "📞 தொடர்புக்கு: +91 9884209774",
   },
 ];
+
 function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQItem[], lang?: "en" | "ta", onEnquire?: () => void }) {
   const [lang, setLang]       = useState<"en" | "ta">(initialLang);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
@@ -1646,7 +1557,6 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
   const defaultFaqs   = lang === "en" ? DEFAULT_FAQS_EN : DEFAULT_FAQS_TA;
   const items         = [...courseSpecific, ...defaultFaqs];
 
-  // reset open item when language switches
   const handleLangSwitch = (l: "en" | "ta") => {
     setLang(l);
     setOpenIdx(null);
@@ -1657,15 +1567,15 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.35 }}
-      className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+      className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden"
     >
       {/* Header */}
       <div className="px-6 sm:px-8 pt-8 pb-6 border-b border-slate-100 flex items-center justify-between gap-6 flex-wrap">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center shrink-0">
-            <HelpCircle className="w-5 h-5 text-purple-500" />
+          <div className="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+            <HelpCircle className="w-5 h-5 text-[#f97316]" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#0a2d5c] tracking-tight">
             {lang === "en" ? "Frequently Asked Questions" : "அடிக்கடி கேட்கப்படும் கேள்விகள்"}
           </h2>
         </div>
@@ -1674,20 +1584,20 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
         <div className="flex items-center bg-slate-100 rounded-xl p-1.5 gap-1 shrink-0">
           <button
             onClick={() => handleLangSwitch("en")}
-            className={`px-4 py-2 rounded-lg text-sm font-black transition-all duration-200 ${
+            className={`px-4 py-2 rounded-lg text-sm font-black transition-all duration-200 cursor-pointer ${
               lang === "en"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-[#0a2d5c] text-white shadow-sm"
+                : "text-slate-600 hover:text-[#0a2d5c]"
             }`}
           >
             English
           </button>
           <button
             onClick={() => handleLangSwitch("ta")}
-            className={`px-4 py-2 rounded-lg text-sm font-black transition-all duration-200 ${
+            className={`px-4 py-2 rounded-lg text-sm font-black transition-all duration-200 cursor-pointer ${
               lang === "ta"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-[#0a2d5c] text-white shadow-sm"
+                : "text-slate-600 hover:text-[#0a2d5c]"
             }`}
           >
             தமிழ்
@@ -1699,8 +1609,8 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
       {courseSpecific.length > 0 && (
         <div className="px-6 sm:px-8 pt-5 pb-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
-            <p className="text-xs md:text-sm font-black uppercase tracking-wider text-blue-500">
+            <span className="w-2 h-2 rounded-full bg-[#f97316]" />
+            <p className="text-xs md:text-sm font-black uppercase tracking-wider text-[#ea580c]">
               {lang === "en" ? "Course-specific questions" : "கோர்ஸ் சார்ந்த கேள்விகள்"}
             </p>
           </div>
@@ -1730,19 +1640,19 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
               <div
                 className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                   isOpen
-                    ? "border-purple-200 bg-purple-50/50"
+                    ? "border-orange-200 bg-orange-50/40"
                     : isCourseSpecific
-                    ? "border-blue-100 bg-blue-50/30 hover:border-blue-200"
+                    ? "border-orange-100 bg-orange-50/20 hover:border-orange-200"
                     : "border-slate-100 bg-slate-50 hover:border-slate-200"
                 }`}
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
+                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
                 >
                   <span
                     className={`text-base md:text-lg font-bold transition-colors leading-snug ${
-                      isOpen ? "text-purple-800" : "text-slate-800"
+                      isOpen ? "text-[#0a2d5c]" : "text-slate-800"
                     }`}
                   >
                     {item.q}
@@ -1750,8 +1660,8 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
                   <span
                     className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
                       isOpen
-                        ? "bg-purple-500 text-white"
-                        : "bg-slate-200 text-slate-500"
+                        ? "bg-[#f97316] text-white"
+                        : "bg-slate-200 text-slate-600"
                     }`}
                   >
                     {isOpen ? (
@@ -1761,71 +1671,67 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
                     )}
                   </span>
                 </button>
-            <AnimatePresence initial={false}>
-  {isOpen && (
-    <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "auto", opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.22 }}
-      className="overflow-hidden"
-    >
-      <div className="px-6 pb-5 space-y-4">
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-5 space-y-4">
+                        <p className="text-base text-slate-700 leading-relaxed whitespace-pre-line">
+                          {item.a}
+                        </p>
 
-        {/* Answer text */}
-        <p className="text-base text-slate-600 leading-relaxed whitespace-pre-line">
-          {item.a}
-        </p>
-
-        {/* Salary table — only renders if this FAQ has table data */}
-        {item.table && item.table.length > 0 && (
-          <div className="overflow-x-auto rounded-xl border border-slate-100 mt-3">
-            <table className="w-full text-sm min-w-[480px]">
-              <thead>
-                <tr className="bg-slate-800 text-white">
-                  <th className="text-left px-4 py-3 font-bold rounded-tl-xl">
-                    {lang === "en" ? "Skill" : "திறன்"}
-                  </th>
-                  <th className="text-left px-4 py-3 font-bold">
-                    {lang === "en" ? "Fresher (India)" : "புதியவர் (இந்தியா)"}
-                  </th>
-                  <th className="text-left px-4 py-3 font-bold">
-                    {lang === "en" ? "Experienced (India)" : "அனுபவம் (இந்தியா)"}
-                  </th>
-                  <th className="text-left px-4 py-3 font-bold rounded-tr-xl">
-                    {lang === "en" ? "Overseas (Gulf)" : "வெளிநாடு (Gulf)"}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {item.table.map((row, ri) => (
-                  <tr
-                    key={ri}
-                    className={ri % 2 === 0 ? "bg-white" : "bg-slate-50"}
-                  >
-                    <td className="px-4 py-3 font-semibold text-slate-700 border-b border-slate-100">
-                      {row.skill}
-                    </td>
-                    <td className="px-4 py-3 text-emerald-700 font-semibold border-b border-slate-100">
-                      {row.fresher}
-                    </td>
-                    <td className="px-4 py-3 text-blue-700 font-semibold border-b border-slate-100">
-                      {row.experienced}
-                    </td>
-                    <td className="px-4 py-3 text-violet-700 font-semibold border-b border-slate-100">
-                      {row.overseas}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                        {item.table && item.table.length > 0 && (
+                          <div className="overflow-x-auto rounded-xl border border-slate-200 mt-3 shadow-xs">
+                            <table className="w-full text-sm min-w-[480px]">
+                              <thead>
+                                <tr className="bg-[#0a2d5c] text-white">
+                                  <th className="text-left px-4 py-3 font-bold rounded-tl-xl">
+                                    {lang === "en" ? "Skill" : "திறன்"}
+                                  </th>
+                                  <th className="text-left px-4 py-3 font-bold">
+                                    {lang === "en" ? "Fresher (India)" : "புதியவர் (இந்தியா)"}
+                                  </th>
+                                  <th className="text-left px-4 py-3 font-bold">
+                                    {lang === "en" ? "Experienced (India)" : "அனுபவம் (இந்தியா)"}
+                                  </th>
+                                  <th className="text-left px-4 py-3 font-bold rounded-tr-xl">
+                                    {lang === "en" ? "Overseas (Gulf)" : "வெளிநாடு (Gulf)"}
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {item.table.map((row, ri) => (
+                                  <tr
+                                    key={ri}
+                                    className={ri % 2 === 0 ? "bg-white" : "bg-slate-50"}
+                                  >
+                                    <td className="px-4 py-3 font-semibold text-slate-800 border-b border-slate-100">
+                                      {row.skill}
+                                    </td>
+                                    <td className="px-4 py-3 text-emerald-700 font-bold border-b border-slate-100">
+                                      {row.fresher}
+                                    </td>
+                                    <td className="px-4 py-3 text-[#0a2d5c] font-bold border-b border-slate-100">
+                                      {row.experienced}
+                                    </td>
+                                    <td className="px-4 py-3 text-[#ea580c] font-bold border-b border-slate-100">
+                                      {row.overseas}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           );
@@ -1834,11 +1740,11 @@ function FAQSection({ faqs, lang: initialLang = "en", onEnquire }: { faqs?: FAQI
 
       {/* Footer */}
       <div className="px-6 sm:px-8 py-6 border-t border-slate-100 bg-slate-50/50">
-        <p className="text-base text-slate-600 text-center">
+        <p className="text-base text-slate-600 text-center font-medium">
           {lang === "en" ? "Still have questions?" : "இன்னும் கேள்விகள் உள்ளதா?"}{" "}
           <button
             onClick={onEnquire}
-            className="font-extrabold text-purple-600 hover:text-purple-700 transition"
+            className="font-extrabold text-[#ea580c] hover:text-[#f97316] transition cursor-pointer"
           >
             {lang === "en" ? "Talk to our counsellors →" : "எங்கள் ஆலோசகரை தொடர்பு கொள்ளுங்கள் →"}
           </button>
@@ -1903,10 +1809,8 @@ export default function CourseDetailClient({
         <section className="relative pt-10 md:pt-14 pb-12 md:pb-16 overflow-hidden bg-[#eef3fb]">
           {/* ── Background Waves ── */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            {/* Base soft blue-to-white gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#eaf0fa] via-[#f1f5fc] to-[#f8fbfd]" />
             
-            {/* Top-Right Soft Wave (Large) */}
             <motion.svg
               className="absolute top-0 right-0 w-[80%] h-full opacity-40 text-white"
               viewBox="0 0 1000 800"
@@ -1928,9 +1832,8 @@ export default function CourseDetailClient({
               />
             </motion.svg>
 
-            {/* Ocean Wave Layer 1 (Deepest & slowest) */}
             <motion.svg
-              className="absolute bottom-0 left-0 w-[200%] h-[85%] opacity-[0.22] text-blue-200"
+              className="absolute bottom-0 left-0 w-[200%] h-[85%] opacity-[0.22] text-slate-300"
               viewBox="0 0 2400 120"
               fill="none"
               preserveAspectRatio="none"
@@ -1949,9 +1852,8 @@ export default function CourseDetailClient({
               />
             </motion.svg>
 
-            {/* Ocean Wave Layer 2 (Medium speed, opposite direction) */}
             <motion.svg
-              className="absolute bottom-0 left-0 w-[200%] h-[70%] opacity-[0.28] text-[#93c5fd]"
+              className="absolute bottom-0 left-0 w-[200%] h-[70%] opacity-[0.28] text-orange-100"
               viewBox="0 0 2000 120"
               fill="none"
               preserveAspectRatio="none"
@@ -1969,48 +1871,6 @@ export default function CourseDetailClient({
                 fill="currentColor"
               />
             </motion.svg>
-
-            {/* Ocean Wave Layer 3 (Fastest, front-most overlay) */}
-            <motion.svg
-              className="absolute bottom-0 left-0 w-[200%] h-[55%] opacity-[0.32] text-[#bfdbfe]"
-              viewBox="0 0 1600 120"
-              fill="none"
-              preserveAspectRatio="none"
-              animate={{
-                x: [0, "-50%"]
-              }}
-              transition={{
-                duration: 18,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            >
-              <path
-                d="M0,50 C120,80 280,20 400,50 C520,80 680,20 800,50 C920,80 1080,20 1200,50 C1320,80 1480,20 1600,50 L1600,120 L0,120 Z"
-                fill="currentColor"
-              />
-            </motion.svg>
-
-            {/* Bottom Curve Wave (Ocean Style - Blue) */}
-            <motion.svg
-              className="absolute bottom-0 left-0 w-[200%] h-[180px] opacity-[0.4] text-blue-200"
-              viewBox="0 0 1600 180"
-              fill="none"
-              preserveAspectRatio="none"
-              animate={{
-                x: ["-50%", 0]
-              }}
-              transition={{
-                duration: 22,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            >
-              <path
-                d="M0,90 C120,135 280,45 400,90 C520,135 680,45 800,90 C920,135 1080,45 1200,90 C1320,135 1480,45 1600,90 L1600,180 L0,180 Z"
-                fill="currentColor"
-              />
-            </motion.svg>
           </div>
 
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -2019,22 +1879,22 @@ export default function CourseDetailClient({
               {/* Left: Text */}
               <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.65 }}>
                 {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 mb-6 text-black text-sm font-bold uppercase tracking-[0.2em] flex-wrap">
-                  <Link href="/" className="hover:text-blue-600 transition">Home</Link>
-                  <ChevronRight className="w-3.5 h-3.5 text-black/60" />
-                  <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-blue-600 transition">{course.category}</Link>
-                  <ChevronRight className="w-3.5 h-3.5 text-black/60" />
-                  <span className="text-black">{course.title}</span>
+                <div className="flex items-center gap-2 mb-6 text-slate-600 text-sm font-bold uppercase tracking-[0.15em] flex-wrap">
+                  <Link href="/" className="hover:text-[#ea580c] transition">Home</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <Link href={`/courses?category=${toSlug(course.category)}`} className="hover:text-[#ea580c] transition">{course.category}</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="text-[#0a2d5c] font-black">{course.title}</span>
                 </div>
 
                 {/* Category Badge */}
-                <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200/80 text-[#0b1f3a] text-[11px] font-black uppercase tracking-[0.2em] px-5 py-2.5 rounded-full mb-6 shadow-sm">
+                <div className="inline-flex items-center gap-2.5 bg-orange-50 border border-orange-200 text-[#ea580c] text-[11px] font-black uppercase tracking-[0.2em] px-5 py-2.5 rounded-full mb-6 shadow-sm">
                   <span className="text-sm">📖</span>
                   {course.category}
                 </div>
 
                 {/* Title Heading */}
-                <h1 className="text-blue-600 text-4xl md:text-5xl font-black uppercase tracking-tight mb-8 break-words">
+                <h1 className="text-[#0a2d5c] text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight mb-8 break-words leading-tight">
                   {course.title}
                 </h1>
 
@@ -2045,14 +1905,13 @@ export default function CourseDetailClient({
                     { icon: GraduationCap, label: course.eligibility ?? "Open to All", title: "Eligibility" },
                     { icon: ShieldCheck,   label: "Govt. Approved Certified", title: "Certification" },
                   ].map(({ icon: Icon, label, title }) => (
-                    <div key={label} className="group relative flex items-center gap-2.5 bg-white border border-slate-200/80 px-5 py-3 rounded-full text-[13px] font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-slate-300 cursor-default">
-                      <Icon className="w-4 h-4 text-blue-600" />
+                    <div key={label} className="group relative flex items-center gap-2.5 bg-white border border-slate-200/80 px-5 py-3 rounded-full text-[13px] font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-orange-300 cursor-default">
+                      <Icon className="w-4 h-4 text-[#f97316]" />
                       <span>{label}</span>
                       {/* Custom Tooltip */}
-                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-2xl z-20">
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0a2d5c] text-white text-xs font-bold px-4 py-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-2xl z-20">
                         {title}
-                        {/* Tooltip Arrow */}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-800" />
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-[#0a2d5c]" />
                       </div>
                     </div>
                   ))}
@@ -2062,19 +1921,19 @@ export default function CourseDetailClient({
                 <div className="flex flex-wrap gap-4">
                   <button 
                     onClick={() => setShowEnquiryModal(true)}
-                    className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider shadow-lg shadow-blue-600/20"
+                    className="flex items-center justify-center bg-[#f97316] hover:bg-[#ea580c] text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider shadow-lg shadow-orange-600/25 cursor-pointer"
                   >
                     Enquire Now
                   </button>
                   <button 
                     onClick={() => setShowDemoModal(true)}
-                    className="flex items-center justify-center gap-2 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-black px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider shadow-sm"
+                    className="flex items-center justify-center gap-2 bg-white border-2 border-[#0a2d5c] text-[#0a2d5c] hover:bg-[#0a2d5c] hover:text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider shadow-sm cursor-pointer"
                   >
-                    <CalendarDays className="w-5 h-5 text-blue-600" />
+                    <CalendarDays className="w-5 h-5 text-[#f97316]" />
                     Book a Free Demo
                   </button>
-                  <button onClick={() => setShowMobileSheet(true)} className="lg:hidden flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider">
-                    <Menu className="w-5 h-5" /> Browse Courses
+                  <button onClick={() => setShowMobileSheet(true)} className="lg:hidden flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold px-8 py-4 rounded-2xl transition-all duration-300 text-[14px] uppercase tracking-wider cursor-pointer">
+                    <Menu className="w-5 h-5 text-[#f97316]" /> Browse Courses
                   </button>
                 </div>
               </motion.div>
@@ -2087,7 +1946,7 @@ export default function CourseDetailClient({
                   transition={{ duration: 0.65, delay: 0.2 }}
                   className="hidden lg:block w-full max-w-[650px] shrink-0 ml-auto"
                 >
-                  <div className="bg-white border border-slate-100 rounded-[32px] p-3.5 shadow-md shadow-slate-200/50">
+                  <div className="bg-white border border-slate-200/80 rounded-[32px] p-3.5 shadow-md shadow-slate-200/50">
                     <VideoSection videos={videos} />
                   </div>
                 </motion.div>
@@ -2102,7 +1961,7 @@ export default function CourseDetailClient({
                 transition={{ duration: 0.55, delay: 0.25 }}
                 className="block lg:hidden mt-8"
               >
-                <div className="bg-white border border-slate-100 rounded-[32px] p-3.5 shadow-md shadow-slate-200/50">
+                <div className="bg-white border border-slate-200/80 rounded-[32px] p-3.5 shadow-md shadow-slate-200/50">
                   <VideoSection videos={videos} />
                 </div>
               </motion.div>
@@ -2117,12 +1976,12 @@ export default function CourseDetailClient({
 
         {/* ── IMAGE CAROUSEL ── */}
         <div className="container mx-auto px-4 sm:px-6 mb-8">
-         <ImageCarousel
-  category={course.category}
-  courseTitle={course.title}
-  gallery={course.gallery}
-  thumbnailUrl={course.thumbnail_url}
-/>
+          <ImageCarousel
+            category={course.category}
+            courseTitle={course.title}
+            gallery={course.gallery}
+            thumbnailUrl={course.thumbnail_url}
+          />
         </div>
 
         {/* ── MAIN CONTENT ── */}
@@ -2139,24 +1998,24 @@ export default function CourseDetailClient({
                   </div>
 
                   {/* Quick Actions */}
-                  <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 mb-1">Quick Actions</h3>
+                  <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm p-5 space-y-3">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-[#0a2d5c] mb-1">Quick Actions</h3>
                     <button
                       onClick={() => setShowDemoModal(true)}
-                      className="w-full flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-blue-200"
+                      className="w-full flex items-center gap-3 bg-[#f97316] hover:bg-[#ea580c] text-white font-bold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-orange-600/20 cursor-pointer"
                     >
                       <CalendarDays className="w-4 h-4" /> Book a Free Demo
                     </button>
                     <button
                       onClick={() => setShowEnquiryModal(true)}
-                      className="w-full flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-blue-200"
+                      className="w-full flex items-center gap-3 bg-[#0a2d5c] hover:bg-[#081f3d] text-white font-bold px-4 py-3 rounded-xl transition text-sm shadow-md shadow-[#0a2d5c]/20 cursor-pointer"
                     >
-                      <Users className="w-4 h-4" /> Talk to Counsellor
+                      <Users className="w-4 h-4 text-[#f97316]" /> Talk to Counsellor
                     </button>
                   </div>
 
                   {/* Stats */}
-                  <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-5 space-y-3">
+                  <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm p-5 space-y-3">
                     {[
                       { icon: ShieldCheck, text: "Government Certified",  sub: "Ministry of Skill Development" },
                       { icon: Award,       text: "Industry Recognised",   sub: "Accepted by top employers"     },
@@ -2164,12 +2023,12 @@ export default function CourseDetailClient({
                       { icon: Users,       text: "500+ Placements",       sub: "Across India"                  },
                     ].map(({ icon: Icon, text, sub }) => (
                       <div key={text} className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4 text-blue-600" />
+                        <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                          <Icon className="w-4 h-4 text-[#f97316]" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-700">{text}</p>
-                          <p className="text-[11px] text-slate-400">{sub}</p>
+                          <p className="text-sm font-bold text-slate-800">{text}</p>
+                          <p className="text-[11px] text-slate-500 font-medium">{sub}</p>
                         </div>
                       </div>
                     ))}
@@ -2181,16 +2040,16 @@ export default function CourseDetailClient({
               <main className="lg:col-span-8 space-y-6">
 
                 {/* About */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 mb-3">About This Course</h2>
-                  <p className="text-slate-500 leading-relaxed text-sm sm:text-base">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
+                  <h2 className="text-xl sm:text-2xl font-black text-[#0a2d5c] mb-3">About This Course</h2>
+                  <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
                     This government-certified programme in{" "}
-                    <span className="font-semibold text-slate-700">{course.title}</span>{" "}
+                    <span className="font-bold text-[#0a2d5c]">{course.title}</span>{" "}
                     is designed to equip students with industry-relevant skills. Gain hands-on training, expert mentorship, and a nationally recognised credential that opens doors across sectors.
                   </p>
                   {course.delivery_method && (
-                    <p className="text-slate-400 text-xs mt-2">
-                      Delivery: <span className="font-semibold text-slate-600">{course.delivery_method}</span>
+                    <p className="text-slate-500 text-xs mt-2 font-medium">
+                      Delivery: <span className="font-bold text-[#0a2d5c]">{course.delivery_method}</span>
                     </p>
                   )}
                   <div className="mt-6 flex flex-wrap gap-3">
@@ -2199,8 +2058,8 @@ export default function CourseDetailClient({
                       { icon: TrendingUp, text: "High Placement Rate"     },
                       { icon: Users,      text: "Expert Instructors"       },
                     ].map(({ icon: Icon, text }) => (
-                      <div key={text} className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-sm sm:text-base font-extrabold text-slate-700 shadow-xs">
-                        <Icon className="w-4.5 h-4.5 sm:w-5 h-5 text-blue-600 shrink-0" />
+                      <div key={text} className="flex items-center gap-2 bg-orange-50/60 border border-orange-100 rounded-xl px-4 py-2 text-sm sm:text-base font-extrabold text-[#0a2d5c] shadow-xs">
+                        <Icon className="w-4.5 h-4.5 sm:w-5 h-5 text-[#ea580c] shrink-0" />
                         {text}
                       </div>
                     ))}
@@ -2211,37 +2070,37 @@ export default function CourseDetailClient({
                 <CourseInfoCard course={course} />
 
                 {/* Syllabus */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
                   <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-slate-100 flex items-center justify-between">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900">Course Syllabus</h2>
-                    <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full shrink-0">
+                    <h2 className="text-xl sm:text-2xl font-black text-[#0a2d5c]">Course Syllabus</h2>
+                    <span className="text-xs font-bold bg-orange-50 text-[#ea580c] border border-orange-200 px-3 py-1 rounded-full shrink-0">
                       {syllabusItems.length} Topics
                     </span>
                   </div>
                   <div className="px-6 sm:px-8 py-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {syllabusItems.length > 0 ? syllabusItems.map((item: string, i: number) => (
                       <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }} className="flex items-start gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3">
-                        <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
-                        <span className="text-sm sm:text-base font-bold text-black leading-snug">{item}</span>
+                        <CheckCircle2 className="w-5 h-5 text-[#f97316] mt-0.5 shrink-0" />
+                        <span className="text-sm sm:text-base font-bold text-slate-800 leading-snug">{item}</span>
                       </motion.div>
                     )) : (
-                      <p className="text-slate-900 font-bold text-sm col-span-2">Syllabus details coming soon.</p>
+                      <p className="text-slate-600 font-bold text-sm col-span-2">Syllabus details coming soon.</p>
                     )}
                   </div>
                 </motion.div>
 
                 {/* Brochure CTA */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 sm:p-8 text-white">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="relative overflow-hidden bg-gradient-to-br from-[#0a2d5c] via-[#0b244d] to-[#081f3d] rounded-3xl p-6 sm:p-8 text-white shadow-lg">
                   <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/5 rounded-full" />
                   <div className="absolute bottom-0 left-20 w-32 h-32 bg-white/5 rounded-full" />
                   <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                       <h3 className="text-lg sm:text-xl font-black mb-1 text-white">Start Your Career Journey</h3>
-                      <p className="text-blue-100 text-sm">Get the full brochure — detailed syllabus, fee structure & career outcomes</p>
+                      <p className="text-slate-300 text-sm">Get the full brochure — detailed syllabus, fee structure & career outcomes</p>
                     </div>
                     <button
                       onClick={() => setShowBrochureModal(true)}
-                      className="shrink-0 flex items-center gap-2 bg-white text-blue-700 font-bold px-5 py-3 rounded-xl hover:bg-blue-50 transition shadow-lg text-sm"
+                      className="shrink-0 flex items-center gap-2 bg-[#f97316] hover:bg-[#ea580c] text-white font-black px-6 py-3.5 rounded-xl transition shadow-lg text-sm uppercase tracking-wider cursor-pointer"
                     >
                       <Rocket className="w-4 h-4" /> Download Brochure
                     </button>
@@ -2254,8 +2113,6 @@ export default function CourseDetailClient({
                   onEnquire={() => setShowEnquiryModal(true)}
                 />
               </main>
-
-
 
             </div>
           </div>

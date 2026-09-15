@@ -181,11 +181,8 @@ export default function UpcomingBatchesSection() {
           {/* Left: Next Available Batches Table (lg:col-span-8) */}
           <div className="lg:col-span-8 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
             <div>
-              <p className="text-[#f97316] font-extrabold text-xs sm:text-sm tracking-wider uppercase mb-1">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight uppercase mb-5">
                 UPCOMING BATCHES
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight mb-5">
-                Next Available Batches
               </h2>
 
               <div className="overflow-x-auto">
@@ -270,44 +267,52 @@ export default function UpcomingBatchesSection() {
           </div>
 
           {/* Right: Download Course Calendar Card (lg:col-span-4) */}
-          <div className="lg:col-span-4 bg-[#031b34] rounded-3xl p-6 sm:p-7 text-white shadow-[0_10px_35px_rgb(0,0,0,0.15)] flex flex-col justify-between relative overflow-hidden group">
+          <div className="lg:col-span-4 bg-[#031b34] rounded-3xl p-6 sm:p-7 text-white shadow-[0_12px_40px_rgb(0,0,0,0.18)] flex flex-col justify-between relative overflow-hidden group">
+            
+            {/* Background Glows */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -right-8 -bottom-8 w-56 h-56 bg-orange-500/15 rounded-full blur-3xl pointer-events-none" />
+
             <div className="relative z-10">
-              <p className="text-[#f97316] font-extrabold text-xs uppercase tracking-wider mb-1.5">
+              <p className="text-[#f97316] font-extrabold text-xs uppercase tracking-wider mb-2">
                 DOWNLOAD
               </p>
-              <h3 className="text-2xl font-black text-white leading-tight mb-2">
+              <h3 className="text-2xl sm:text-[26px] font-black text-white leading-tight mb-2.5">
                 Course Calendar<br />2026–27
               </h3>
-              <p className="text-xs font-medium text-slate-300 leading-relaxed mb-4">
+              <p className="text-xs sm:text-[13px] font-medium text-slate-300 leading-relaxed mb-4 max-w-[280px]">
                 Get complete schedule of all upcoming batches, course details &amp; duration.
               </p>
             </div>
 
-            {/* Flyer / Brochure Graphic */}
-            <div className="relative z-10 my-2 flex items-center justify-center">
-              <div className="w-48 sm:w-52 transform group-hover:scale-105 transition-transform duration-500 shadow-2xl rounded-xl overflow-hidden border border-white/20">
-                <img
-                  src="/coursecalender/calenderbanner.png"
-                  alt="Course Calendar Brochure"
-                  className="w-full h-auto object-cover"
-                />
+            {/* Flyer / Brochure Graphic (Angled 3D Mockup matching screenshot) */}
+            <div className="relative z-10 my-3 flex items-center justify-center">
+              <div className="relative w-48 sm:w-56 transition-transform duration-500 group-hover:scale-105">
+                {/* Layered stack shadow */}
+                <div className="absolute -inset-1 bg-[#f97316]/25 rounded-xl transform -rotate-3 scale-95 blur-[2px]" />
+                
+                {/* Main Flyer */}
+                <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/20 transform rotate-2 group-hover:rotate-0 transition-transform duration-500 bg-white">
+                  <img
+                    src="/course-calendar-flyer.png"
+                    alt="NSkill Course Calendar"
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Download Button */}
-            <div className="relative z-10 pt-4">
+            <div className="relative z-10 pt-2">
               <button
                 type="button"
                 onClick={handleDownloadCalendar}
-                className="w-full py-3.5 bg-[#f97316] hover:bg-[#ea580c] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                className="w-full py-3.5 bg-[#f97316] hover:bg-[#ea580c] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <span>DOWNLOAD NOW</span>
-                <Download className="w-4 h-4" />
+                <Download className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
-
-            {/* Background Glow */}
-            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
           </div>
 
         </div>
@@ -315,11 +320,8 @@ export default function UpcomingBatchesSection() {
         {/* ── Bottom Row: How To Join N-Skill (5 Steps) ── */}
         <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 shadow-[0_4px_25px_rgb(0,0,0,0.03)]">
           <div className="mb-8">
-            <p className="text-[#f97316] font-extrabold text-xs sm:text-sm tracking-wider uppercase mb-1">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight uppercase">
               HOW TO JOIN N-SKILL
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight">
-              Start Your Journey in 5 Simple Steps
             </h2>
           </div>
 

@@ -651,114 +651,95 @@ export default function StudentCalendar() {
         .cal-cell:hover { background: #f8fafc !important; }
       `}</style>
 
-      {/* ── Hero Banner ── */}
-      <section className="relative overflow-hidden bg-[#031525] pb-8 md:pb-10 lg:pb-12">
+      {/* ── HERO BANNER ── */}
+      <section className="relative min-h-[315px] overflow-hidden">
         {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/coursecalender/calenderbanner.png"
-            alt="Course Calendar Banner"
-            className="h-full w-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#031525] via-[#031525]/90 to-transparent lg:w-[65%]" />
+        <img
+          src="/coursecalender/calenderhero.png"
+          alt="Course Calendar Banner"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          loading="eager"
+        />
+
+        <div className="relative z-10 mx-auto flex min-h-[315px] max-w-[1420px] items-center px-6 py-10 md:px-10">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-[650px] text-white"
+          >
+            {/* Orange "Upcoming" label */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-3.5 py-1 backdrop-blur-sm border border-orange-400/30 mb-3">
+              <span className="h-2 w-2 rounded-full bg-orange-500" />
+              <span className="text-xs font-black uppercase tracking-widest text-orange-400">Upcoming</span>
+            </div>
+
+            {/* Main heading */}
+            <h1 className="text-[40px] font-black leading-[1.12] tracking-tight md:text-[46px]">
+              <span className="text-white">Technical Training Courses<br /></span>
+              <span className="text-orange-500">&amp; Batch Calendar 2026–27</span>
+            </h1>
+
+            {/* Description */}
+            <p className="mt-4 max-w-[540px] text-sm font-medium leading-relaxed text-white/90 md:text-base">
+              Choose your course, check upcoming batches and start your journey towards a successful career.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                onClick={() => {
+                  const el = document.getElementById("calendar-section");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="whitespace-nowrap rounded-md bg-orange-500 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-orange-600 cursor-pointer shadow-md"
+              >
+                VIEW UPCOMING BATCHES
+              </button>
+              <button
+                onClick={() => setShowEnquiryModal(true)}
+                className="inline-flex whitespace-nowrap items-center gap-2 rounded-md border border-white/80 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-white hover:text-[#061f4d] cursor-pointer bg-white/5 backdrop-blur-sm"
+              >
+                <MessageCircle size={16} /> TALK TO COUNSELLOR
+              </button>
+            </div>
+          </motion.div>
         </div>
+      </section>
 
-        <div className="relative z-10 mx-auto max-w-[1500px] px-3 py-5 md:px-6 md:py-7 lg:px-10 lg:py-8">
-          <div className="grid min-h-[360px] items-center gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="max-w-[620px] text-left">
-              {/* Orange "Upcoming" label */}
-              <p className="text-[#f97316] text-xs sm:text-sm md:text-base font-bold mb-1">Upcoming</p>
-
-              {/* Main heading */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-white leading-tight tracking-tight mb-1 lg:whitespace-nowrap">
-                Technical Training Courses
-              </h1>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-white leading-tight tracking-tight mb-3">
-                &amp; Batch Calendar <span className="text-[#f97316]">2026–27</span>
-              </h1>
-
-              {/* Description */}
-              <p className="text-slate-200 text-xs sm:text-sm md:text-base font-normal mb-5 leading-relaxed max-w-lg">
-                Choose your course, check upcoming batches and start your journey towards a successful career.
-              </p>
-
-              {/* 4 Feature Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-white">
-                <div className="flex items-center gap-2">
-                  <PracticalTrainingIcon className="w-6 h-6 text-white/80 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Practical<br />Training</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IndustryCurriculumIcon className="w-6 h-6 text-white/80 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Industry<br />Oriented</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ExperiencedTrainersIcon className="w-6 h-6 text-white/80 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Expert<br />Trainers</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <PlacementAssistanceIcon className="w-6 h-6 text-white/80 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">Placement<br />Assistance</span>
-                </div>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
-                <button
-                  onClick={() => {
-                    const el = document.getElementById("calendar-section");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer"
-                >
-                  VIEW UPCOMING BATCHES
-                </button>
-                <button
-                  onClick={() => setShowEnquiryModal(true)}
-                  className="w-full sm:w-auto inline-flex items-center justify-center bg-white hover:bg-slate-50 text-[#0b1f3a] px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-md"
-                >
-                  <MessageCircle className="w-4 h-4 text-green-500 mr-2" />
-                  TALK TO COUNSELLOR
-                </button>
-              </div>
+      {/* ── BANNER STATS OVERLAY ── */}
+      <section className="relative z-20 -mt-5 px-4 md:px-6 mb-8 md:mb-12">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-2 overflow-hidden rounded-lg border border-slate-200 bg-white py-4 shadow-[0_5px_18px_rgba(15,23,42,0.14)] md:grid-cols-4 md:py-5">
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left">
+            <GraduationCap className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
+            <div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">5000+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">STUDENTS TRAINED</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left md:border-l md:border-slate-200">
+            <BookOpen className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
+            <div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">50+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">SKILL PROGRAMS</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left border-t border-slate-200 md:border-t-0 md:border-l md:border-slate-200">
+            <Building2 className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
+            <div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">100+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">INDUSTRY CONNECTIONS</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left border-t border-slate-200 md:border-t-0 md:border-l md:border-slate-200">
+            <UserCheck className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
+            <div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">25+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">EXPERIENCED TRAINERS</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Floating Stats Bar */}
-      <div className="mx-auto max-w-[1200px] px-4 relative z-20 -mt-8 md:-mt-10 mb-8 md:mb-10">
-        <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-6 px-4 md:px-10 grid grid-cols-2 lg:grid-cols-4 gap-6 border border-slate-100">
-          <div className="flex items-center gap-3 sm:gap-4 justify-center">
-            <GraduationCap className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
-            <div>
-              <h3 className="text-xl md:text-2xl font-black text-[#0b1f3a]">5000+</h3>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Students Trained</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4 justify-center lg:border-l lg:border-slate-200">
-            <BookOpen className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
-            <div>
-              <h3 className="text-xl md:text-2xl font-black text-[#0b1f3a]">50+</h3>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Skill Programs</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4 justify-center lg:border-l lg:border-slate-200">
-            <Building2 className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
-            <div>
-              <h3 className="text-xl md:text-2xl font-black text-[#0b1f3a]">100+</h3>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Industry Connections</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4 justify-center lg:border-l lg:border-slate-200">
-            <UserCheck className="w-9 h-9 sm:w-10 sm:h-10 text-[#0b1f3a] shrink-0" strokeWidth={1.5} />
-            <div>
-              <p className="text-base font-black text-[#0b1f3a] leading-tight">Experienced</p>
-              <p className="text-base font-black text-[#0b1f3a] leading-tight">Trainers</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* ─── Next Available Batches & Search ───────────────────────────────────── */}
       <div id="next-batches-section" className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 relative z-10 mb-16">

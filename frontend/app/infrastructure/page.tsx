@@ -140,14 +140,13 @@ export default function InfrastructurePage() {
     <div className="min-h-screen bg-slate-50">
 
       {/* ── HERO BANNER ── */}
-      <section className="relative min-h-[315px] overflow-hidden bg-[#061f4d]">
+      <section className="relative min-h-[315px] overflow-hidden">
         <img
           src="/infrastructure/infrastructurebanner.png"
           alt="N-Skill practical technical training workshop"
           className="absolute inset-0 h-full w-full object-cover"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#061f4d]/95 via-[#061f4d]/75 to-[#061f4d]/10" />
         <div className="relative z-10 mx-auto flex min-h-[315px] max-w-[1420px] items-center px-6 py-10 md:px-10">
           <motion.div
             initial={{ opacity: 0, x: -20 }}

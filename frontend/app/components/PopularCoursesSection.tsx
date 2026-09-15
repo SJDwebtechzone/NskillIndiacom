@@ -161,11 +161,8 @@ export default function PopularCoursesSection() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
-            <p className="text-[#f97316] font-extrabold text-xs sm:text-sm tracking-wider uppercase mb-1.5">
-              OUR POPULAR COURSES
-            </p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0b1f3a] tracking-tight leading-tight">
-              Industry-Focused Training Programs
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0b1f3a] tracking-tight uppercase leading-tight">
+              POPULAR COURSES
             </h2>
           </div>
 

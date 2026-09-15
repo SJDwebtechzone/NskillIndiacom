@@ -71,11 +71,11 @@ export default function TestimonialsSection() {
 
         {/* Header */}
         <div className="text-center mb-12">
-          <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">
-            Success Stories
-          </p>
-          <h2 className="mb-6">What Our Students Say</h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0b1f3a] tracking-tight uppercase mb-3">
+            WHAT OUR STUDENTS SAY
+          </h2>
+          <div className="w-16 h-1 bg-[#0b1f3a] mx-auto rounded-full mb-3" />
+          <p className="text-slate-600 max-w-xl mx-auto text-sm sm:text-base font-normal">
             Real experiences from students who transformed their careers with us
           </p>
         </div>

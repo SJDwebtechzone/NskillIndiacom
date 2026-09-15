@@ -29,7 +29,38 @@ export default function CorporateTrainingPage() {
   return <main className="corporate-training-page bg-white pb-10 font-sans text-slate-700">
     <style>{`.corporate-training-page > div > section + section { margin-top: 5.5rem !important; } .corporate-training-page h2, .corporate-training-page h3 { font-family: var(--font-heading); font-weight: 900; } @media (max-width: 768px) { .corporate-training-page > div > section + section { margin-top: 4rem !important; } }`}</style>
     <section className="relative min-h-[315px] overflow-hidden bg-[#061f4d]"><Image src="/Corporate/Corporatebanner.png" alt="Corporate technical training session" fill priority className="object-cover object-top" sizes="100vw" /><div className="relative z-10 mx-auto flex min-h-[315px] max-w-[1420px] items-center px-6 py-10 md:px-10"><div className="max-w-[650px] text-white"><h1 className="!m-0 text-[40px] font-black leading-[1.12] tracking-tight !text-white md:text-[46px]"><span>Corporate Training That<br />Builds Skills, Safety &amp;</span><br /><span className="text-orange-500">Productivity</span></h1><p className="mt-4 max-w-[540px] text-sm font-medium leading-relaxed !text-white/90 md:text-base">Customized training solutions to upskill your workforce, improve performance and drive organizational excellence.</p><div className="mt-5 flex flex-wrap gap-3"><a href="#request" className="whitespace-nowrap rounded-md bg-orange-500 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-orange-600">Request Training Proposal</a><a href="tel:+919884209774" className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-white/70 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-white/10"><Phone size={14} /> Talk to Our Training Team</a></div></div></div></section>
-    <section className="relative z-10 mx-auto -mt-5 w-[calc(100%-24px)] max-w-[1380px] rounded bg-white shadow-md"><div className="grid grid-cols-1 divide-y divide-slate-200 sm:grid-cols-5 sm:divide-x sm:divide-y-0">{stats.map(([Icon, number, label]) => <div key={label} className="flex items-center justify-center gap-3 py-4 md:py-5"><Icon size={36} strokeWidth={1.8} className="text-[#173981]" /><div><b className="block text-lg font-extrabold leading-none text-[#082567] md:text-xl">{number}</b><span className="mt-1 block text-[10px] font-semibold text-slate-500 md:text-xs">{label}</span></div></div>)}</div></section>
+    <section className="relative z-10 mx-auto -mt-5 w-[calc(100%-24px)] max-w-[1380px] rounded-2xl bg-white shadow-lg border border-slate-200/80 overflow-hidden">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
+        {stats.map(([Icon, number, label]) => (
+          <div key={label} className="flex items-center justify-center gap-3.5 px-4 py-4 md:py-5">
+            <Icon size={32} strokeWidth={1.8} className="text-[#0a2d5c] shrink-0" />
+            <div>
+              <b className="block text-xl font-black leading-none text-[#0a2d5c] md:text-2xl">{number}</b>
+              <span className="mt-1 block text-xs font-medium text-slate-500 whitespace-nowrap">{label}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* ─── Corporate Training Intro Banner ─────────────────────────────────── */}
+    <div className="mx-auto max-w-[1380px] px-4 pt-6 sm:px-6">
+      <div className="bg-gradient-to-r from-blue-50/80 via-white to-orange-50/60 border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
+          <div className="w-12 h-12 rounded-xl bg-[#0a2d5c] text-[#f97316] flex items-center justify-center shrink-0 shadow-md">
+            <Building2 className="w-6 h-6" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-base sm:text-lg font-black text-[#0a2d5c] mb-2 uppercase tracking-wide">
+              Corporate Training &amp; Workforce Advancement
+            </h3>
+            <p className="text-slate-700 text-sm sm:text-[15px] font-normal leading-relaxed text-justify">
+              Continuous employee training is essential. It enables your employees to advance their knowledge. Spending on your employees is very important to your company. You can improve on the basic skills gained in corporate training. This improves your business performance. When employees improve on what they learned, they can improve in their output. Your employees reflect on your business. How skilled they are is shown in your business output. Employees can bring more to the table if they know more. Invest in your employees' knowledge. In turn, they will do the same for their work. Moreover, you and your company will be the ones reaping the fruits.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div className="mx-auto max-w-[1380px] px-4 pt-6 sm:px-6"><section><div className="mb-6 text-center"><h2 className="text-xl font-black uppercase tracking-tight text-[#0b1f3a] md:text-2xl">OUR CORPORATE TRAINING SOLUTIONS</h2><div className="mx-auto mt-2 h-1 w-9 bg-[#f59e0b]" /></div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">{solutions.map(([title, Icon, color, items]) => <article key={title} className="rounded border border-slate-200 bg-white p-5 shadow-sm"><Icon size={40} className={color} /><h3 className="mt-4 min-h-12 text-sm font-extrabold leading-tight !text-slate-800 md:text-base">{title}</h3><ul className="mt-4 space-y-2 text-xs font-medium leading-tight text-slate-600 md:text-[13px]">{items.map(item => <li key={item}>• {item}</li>)}</ul><a href="#programs" className="mt-5 inline-flex items-center gap-1 text-xs font-extrabold text-[#123a89] md:text-[13px]">View Programs <ArrowRight size={15} className="text-orange-500" /></a></article>)}</div></section>
     <section className="mt-7 grid gap-6 lg:grid-cols-2"><div><Title>WHY PARTNER WITH N-SKILL?</Title><div className="grid grid-cols-3 divide-x divide-slate-200 rounded border border-slate-200">{benefits.map(([Icon, label]) => <div key={label} className="flex min-h-36 flex-col items-center justify-center px-4 text-center"><Icon size={38} className="text-[#123a89]" /><span className="mt-3 text-xs font-bold leading-snug text-slate-600 md:text-sm">{label}</span></div>)}</div></div><div><Title>TRAINING FORMATS</Title><div className="grid grid-cols-3 divide-x divide-slate-200 rounded border border-slate-200">{formats.map(([Icon, label]) => <div key={label} className="flex min-h-36 flex-col items-center justify-center px-4 text-center"><Icon size={38} className="text-[#123a89]" /><span className="mt-3 text-xs font-bold leading-snug text-slate-600 md:text-sm">{label}</span></div>)}</div></div></section>
     <section className="mt-7"><Title>OUR TRAINING PROCESS</Title><div className="flex items-start justify-between gap-4 overflow-x-auto rounded border border-slate-100 px-5 py-6">{trainingProcess.map(([Icon, label], index) => <div key={label} className="flex min-w-[155px] items-center gap-4"><div className="flex flex-col items-center text-center"><span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#9aa9c9] text-[#123a89]"><Icon size={28} /></span><b className="mt-2 text-base font-extrabold text-orange-500">{String(index + 1).padStart(2, "0")}</b><span className="text-sm font-bold leading-snug text-slate-600 md:text-base">{label}</span></div>{index < trainingProcess.length - 1 && <ArrowRight size={22} className="shrink-0 text-[#123a89]" />}</div>)}</div></section>

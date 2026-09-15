@@ -5,10 +5,10 @@ import axios from "axios";
 import Link from "next/link";
 import {
   GraduationCap,
-  BookOpen,
   Building2,
-  Award,
   Users,
+  Handshake,
+  UserRoundCog,
   MessageCircle,
   Phone,
   ArrowRight,
@@ -101,9 +101,9 @@ export default function BannerSection() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden bg-[#031525] select-none">
+    <div className="relative w-full select-none">
       {/* Hero Main Banner Area */}
-      <div className="relative w-full min-h-[340px] sm:min-h-[380px] md:min-h-[420px] lg:min-h-[450px] flex items-center">
+      <div className="relative w-full min-h-[320px] sm:min-h-[360px] md:min-h-[400px] flex items-center overflow-hidden">
         
         {/* Dynamic Background Image Slider with Smooth Crossfade */}
         <div className="absolute inset-0 z-0 overflow-hidden">
@@ -134,71 +134,65 @@ export default function BannerSection() {
               className="w-full h-full object-cover object-right md:object-center"
             />
           )}
-
-          {/* Smooth Dark Navy Gradient overlay on left side for crisp text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#031525] via-[#031525]/90 sm:via-[#031525]/85 to-transparent w-full lg:w-[68%]" />
-          <div className="absolute inset-0 bg-black/20" />
         </div>
 
         {/* Hero Left Content */}
-        <div className="relative z-10 mx-auto max-w-[1440px] w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-12">
-          <div className="max-w-[620px] text-left">
+        <div className="relative z-10 mx-auto max-w-[1420px] w-full px-6 py-10 md:px-10">
+          <div className="max-w-[650px] text-left text-white">
             
+            {/* Welcome NSkill Label */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-3.5 py-1 backdrop-blur-sm border border-orange-400/30 mb-3">
+              <span className="h-2 w-2 rounded-full bg-orange-500" />
+              <span className="text-xs font-black uppercase tracking-widest text-orange-400">Welcome NSkill</span>
+            </div>
+
             {/* Main Headline */}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-white leading-tight tracking-tight uppercase">
-              BUILD YOUR SKILL.{" "}
-              <span className="block text-[#f97316]">BUILD YOUR FUTURE.</span>
+            <h1 className="text-[34px] sm:text-[40px] md:text-[46px] font-black leading-[1.12] tracking-tight uppercase">
+              <span className="text-white">BUILD YOUR SKILL.</span><br />
+              <span className="text-orange-500">BUILD YOUR FUTURE.</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="mt-2.5 sm:mt-3.5 text-xs sm:text-sm md:text-[15px] font-medium text-slate-200 leading-relaxed max-w-lg">
-              Industry-oriented technical training with practical exposure, expert faculty & placement assistance.
+            <p className="mt-3 max-w-[540px] text-sm font-medium leading-relaxed text-white/90 md:text-base">
+              Industry-oriented technical training with practical exposure, expert faculty &amp; placement assistance.
             </p>
 
             {/* 4 Feature Badges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 my-5 sm:my-6 text-white">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5 text-white">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-white/10 text-[#f97316] shrink-0 border border-white/10">
-                  <PracticalTrainingIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <span className="text-[11px] sm:text-xs font-bold leading-tight">
+                <PracticalTrainingIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
                   100% Practical<br className="hidden sm:inline" /> Training
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-white/10 text-[#f97316] shrink-0 border border-white/10">
-                  <IndustryOrientedIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <span className="text-[11px] sm:text-xs font-bold leading-tight">
+                <IndustryOrientedIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
                   Industry<br className="hidden sm:inline" /> Oriented
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-white/10 text-[#f97316] shrink-0 border border-white/10">
-                  <ExpertTrainersIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <span className="text-[11px] sm:text-xs font-bold leading-tight">
+                <ExpertTrainersIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
                   Expert<br className="hidden sm:inline" /> Trainers
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-white/10 text-[#f97316] shrink-0 border border-white/10">
-                  <PlacementAssistanceIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <span className="text-[11px] sm:text-xs font-bold leading-tight">
+                <PlacementAssistanceIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
                   Placement<br className="hidden sm:inline" /> Assistance
                 </span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 href="/courses"
-                className="bg-[#f97316] hover:bg-[#ea580c] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer inline-flex items-center gap-2"
+                className="whitespace-nowrap rounded-md bg-orange-500 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-orange-600 cursor-pointer shadow-md inline-flex items-center gap-2"
               >
                 <span>EXPLORE COURSES</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -207,9 +201,9 @@ export default function BannerSection() {
               <button
                 type="button"
                 onClick={handleTalkToCounsellor}
-                className="border border-white/40 hover:border-white text-white hover:bg-white/10 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all active:scale-95 cursor-pointer bg-white/5 backdrop-blur-sm"
+                className="inline-flex whitespace-nowrap items-center gap-2 rounded-md border border-white/80 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-white hover:text-[#061f4d] cursor-pointer bg-white/5 backdrop-blur-sm"
               >
-                <MessageCircle className="w-4 h-4 text-white" />
+                <MessageCircle className="w-4 h-4 text-green-400" />
                 <span>TALK TO COUNSELLOR</span>
               </button>
             </div>
@@ -263,72 +257,65 @@ export default function BannerSection() {
           ))}
         </div>
       )}
-    </div>
+      </div>
 
-    {/* Bottom White Stats Bar */}
-    <div className="relative z-20 w-full bg-white border-t border-slate-100 shadow-[0_10px_35px_rgb(0,0,0,0.06)]">
-      <div className="mx-auto max-w-[1500px] px-4 sm:px-8 lg:px-12 py-6 sm:py-7">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+      {/* ── BANNER STATS OVERLAY ── */}
+      <section className="relative z-20 -mt-5 px-4 md:px-6 mb-2">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-2 sm:grid-cols-3 md:grid-cols-5 overflow-hidden rounded-lg border border-slate-200 bg-white py-4 shadow-[0_5px_18px_rgba(15,23,42,0.14)] md:py-5">
           
-          <div className="flex items-center gap-4 px-2 sm:px-4 pt-3 sm:pt-0">
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/90 text-[#0b1f3a] border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-              <GraduationCap className="w-7 h-7 text-[#0b1f3a]" />
-            </div>
+          {/* 1. Years of Experience */}
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left">
+            <Building2 className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
             <div>
-              <div className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight leading-none mb-1">5000+</div>
-              <div className="text-xs sm:text-sm font-bold text-slate-600">Students Trained</div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">15+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">Years of Experience</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 px-2 sm:px-4 pt-3 sm:pt-0">
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/90 text-[#0b1f3a] border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-              <BookOpen className="w-7 h-7 text-[#0b1f3a]" />
-            </div>
+          {/* 2. Corporate Programs */}
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left border-l border-slate-200">
+            <Users className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
             <div>
-              <div className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight leading-none mb-1">50+</div>
-              <div className="text-xs sm:text-sm font-bold text-slate-600">Courses</div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">250+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">Corporate Programs</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 px-2 sm:px-4 pt-3 sm:pt-0">
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/90 text-[#0b1f3a] border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-              <Building2 className="w-7 h-7 text-[#0b1f3a]" />
-            </div>
+          {/* 3. Employees Trained */}
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left border-t border-slate-200 sm:border-t-0 sm:border-l">
+            <GraduationCap className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
             <div>
-              <div className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight leading-none mb-1">100+</div>
-              <div className="text-xs sm:text-sm font-bold text-slate-600">Industry Partners</div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">10,000+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">Employees Trained</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 px-2 sm:px-4 pt-3 sm:pt-0">
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/90 text-[#0b1f3a] border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-              <Award className="w-7 h-7 text-[#0b1f3a]" />
-            </div>
+          {/* 4. Industrial Clients */}
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left border-t border-slate-200 md:border-t-0 md:border-l">
+            <Handshake className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
             <div>
-              <div className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight leading-none mb-1">15+</div>
-              <div className="text-xs sm:text-sm font-bold text-slate-600">Years of Excellence</div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">150+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">Industrial Clients</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 px-2 sm:px-4 pt-3 sm:pt-0 col-span-2 sm:col-span-1">
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-blue-50/90 text-[#0b1f3a] border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-              <Users className="w-7 h-7 text-[#0b1f3a]" />
-            </div>
+          {/* 5. Expert Trainers */}
+          <div className="flex items-center justify-center gap-3 px-4 py-2 text-left border-t border-slate-200 md:border-t-0 md:border-l col-span-2 sm:col-span-1">
+            <UserRoundCog className="h-9 w-9 shrink-0 text-[#0b356b]" strokeWidth={1.7} />
             <div>
-              <div className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight leading-none mb-1">95%</div>
-              <div className="text-xs sm:text-sm font-bold text-slate-600">Placement Assistance</div>
+              <p className="text-xl font-black leading-none text-[#0b356b] md:text-2xl">25+</p>
+              <p className="mt-1 text-[10px] font-semibold leading-tight text-slate-600 md:text-[11px]">Expert Trainers</p>
             </div>
           </div>
 
         </div>
-      </div>
-    </div>
+      </section>
 
-    <EnquiryModal
-      isOpen={isEnquiryOpen}
-      onClose={() => setIsEnquiryOpen(false)}
-      defaultCourse="General Enquiry"
-    />
-  </div>
-);
+      <EnquiryModal
+        isOpen={isEnquiryOpen}
+        onClose={() => setIsEnquiryOpen(false)}
+        defaultCourse="General Enquiry"
+      />
+    </div>
+  );
 }

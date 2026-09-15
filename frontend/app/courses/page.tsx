@@ -1010,82 +1010,81 @@ function CoursesPageContent() {
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-24">
       {/* ─── Hero Section ───────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#031525]">
+      <section className="relative min-h-[315px] overflow-hidden">
         {/* Welder Background Image */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/Skills/skillsbanner.png"
-            alt="Technical Training Banner"
-            className="h-full w-full object-cover object-right md:object-center"
-          />
-          {/* Smooth dark navy gradient overlay blending seamlessly */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#031525] via-[#031525]/90 to-transparent lg:w-[65%]" />
-        </div>
+        <img
+          src="/Skills/skillsbanner.png"
+          alt="Technical Training Banner"
+          className="absolute inset-0 h-full w-full object-cover object-right md:object-center"
+          loading="eager"
+        />
 
-        <div className="relative z-10 mx-auto max-w-[1500px] px-3 py-5 md:px-6 md:py-7 lg:px-10 lg:py-8">
-          <div className="grid min-h-[360px] items-center gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="max-w-[620px] text-left">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-white leading-tight tracking-tight">
-                Industry-Oriented
-              </h1>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-black text-[#f97316] leading-tight tracking-tight mt-0.5 mb-3 lg:whitespace-nowrap">
-                Technical Training Courses
-              </h1>
-              <p className="text-slate-200 text-xs sm:text-sm md:text-base font-normal mb-5 leading-relaxed max-w-lg">
-                Learn practical skills from industry experts and build a successful career with N-Skill.
-              </p>
+        <div className="relative z-10 mx-auto flex min-h-[315px] max-w-[1420px] items-center px-6 py-10 md:px-10">
+          <div className="max-w-[650px] text-left text-white">
+            {/* Courses Label */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-3.5 py-1 backdrop-blur-sm border border-orange-400/30 mb-3">
+              <span className="h-2 w-2 rounded-full bg-orange-500" />
+              <span className="text-xs font-black uppercase tracking-widest text-orange-400">Courses</span>
+            </div>
 
-              {/* 4 Feature Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-white">
-                <div className="flex items-center gap-2">
-                  <PracticalTrainingIcon className="w-6 h-6 text-white/90 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
-                    100%<br />Practical Training
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IndustryCurriculumIcon className="w-6 h-6 text-white/90 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
-                    Industry<br />Curriculum
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ExperiencedTrainersIcon className="w-6 h-6 text-white/90 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
-                    Experienced<br />Trainers
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <PlacementAssistanceIcon className="w-6 h-6 text-white/90 shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-semibold leading-snug">
-                    Placement<br />Assistance
-                  </span>
-                </div>
+            <h1 className="text-[34px] sm:text-[40px] md:text-[46px] font-black leading-[1.12] tracking-tight uppercase">
+              <span className="text-white">Industry-Oriented</span><br />
+              <span className="text-orange-500">Technical Training Courses</span>
+            </h1>
+            <p className="mt-4 max-w-[540px] text-sm font-medium leading-relaxed text-white/90 md:text-base">
+              Learn practical skills from industry experts and build a successful career with N-Skill.
+            </p>
+
+            {/* 4 Feature Badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5 text-white">
+              <div className="flex items-center gap-2">
+                <PracticalTrainingIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                  100%<br />Practical Training
+                </span>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <button
-                  onClick={handleExploreCourses}
-                  className="bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer"
-                >
-                  EXPLORE COURSES
-                </button>
-                <button
-                  onClick={handleTalkToCounsellor}
-                  className="border border-white/50 hover:border-white text-white hover:bg-white/10 px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 text-white" />
-                  <span>TALK TO COUNSELLOR</span>
-                </button>
+              <div className="flex items-center gap-2">
+                <IndustryCurriculumIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                  Industry<br />Curriculum
+                </span>
               </div>
+              <div className="flex items-center gap-2">
+                <ExperiencedTrainersIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                  Experienced<br />Trainers
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <PlacementAssistanceIcon className="w-5 h-5 text-orange-400 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-semibold leading-snug">
+                  Placement<br />Assistance
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                onClick={handleExploreCourses}
+                className="whitespace-nowrap rounded-md bg-orange-500 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-orange-600 cursor-pointer shadow-md"
+              >
+                EXPLORE COURSES
+              </button>
+              <button
+                onClick={handleTalkToCounsellor}
+                className="inline-flex whitespace-nowrap items-center gap-2 rounded-md border border-white/80 px-5 py-3 text-xs font-black uppercase text-white transition hover:bg-white hover:text-[#061f4d] cursor-pointer bg-white/5 backdrop-blur-sm"
+              >
+                <MessageCircle className="w-4 h-4 text-green-400" />
+                <span>TALK TO COUNSELLOR</span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── Floating Elevated Search Bar ───────────────────────────────────── */}
-      <div className="mx-auto max-w-[1500px] px-3 sm:px-6 md:px-10 relative z-30 -mt-6 mb-8">
+      <div className="mx-auto max-w-[1280px] px-4 md:px-6 relative z-30 -mt-5 mb-8">
         <form
           onSubmit={handleSearchSubmit}
           className="bg-white rounded-2xl shadow-[0_12px_35px_rgba(0,0,0,0.08)] p-2.5 md:p-3 flex items-center gap-3 border border-slate-100"
@@ -1122,6 +1121,25 @@ function CoursesPageContent() {
             SEARCH COURSES
           </button>
         </form>
+      </div>
+
+      {/* ─── Skill Development Intro Banner ──────────────────────────────────── */}
+      <div className="mx-auto max-w-[1500px] px-3 sm:px-6 md:px-10 mb-10">
+        <div className="bg-gradient-to-r from-blue-50/80 via-white to-orange-50/60 border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
+            <div className="w-12 h-12 rounded-xl bg-[#0a2d5c] text-[#f97316] flex items-center justify-center shrink-0 shadow-md">
+              <GraduationCap className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-base sm:text-lg font-black text-[#0a2d5c] mb-2 uppercase tracking-wide">
+                Skill Development &amp; Professional Career Training
+              </h3>
+              <p className="text-slate-700 text-sm sm:text-[15px] font-normal leading-relaxed text-justify">
+                Skill development has been considered one of the critical aspects for job creation in India. India has unique demographic advantage with more than 60% of the population is in young age group. But to get dividend from such large work force, employability must be improved. As per current statistics only 10% of the fresh graduates are employable and rest of the 90% lack skills required for eligible to be hired by corporate. Here at NTSC, we provide the required skill training for you to achieve the required professional skillset for any domain.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ─── Browse Courses by Category ─────────────────────────────────────── */}

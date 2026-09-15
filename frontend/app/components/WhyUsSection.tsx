@@ -63,11 +63,8 @@ const WhyUsSection = () => {
   return (
     <section className="py-14 md:py-18 bg-white relative overflow-hidden">
       <div className="mx-auto max-w-[1440px] px-4 md:px-8 lg:px-12">
-        <p className="text-[#f97316] font-extrabold text-xs sm:text-sm tracking-wider uppercase mb-1">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0b1f3a] tracking-tight uppercase mb-8">
           WHY CHOOSE N-SKILL
-        </p>
-        <h2 className="text-2xl sm:text-3xl font-black text-[#0b1f3a] tracking-tight mb-8">
-          We Provide The Best Training Experience
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

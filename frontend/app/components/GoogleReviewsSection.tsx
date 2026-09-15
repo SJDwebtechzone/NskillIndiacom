@@ -83,8 +83,9 @@ const getPhotoUrl = (photoUrl: string) => {
             </svg>
             <p className="font-semibold text-sm uppercase tracking-widest text-gray-500">Google Reviews</p>
           </div>
-          <h2 className="mb-6">Student Reviews</h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0b1f3a] tracking-tight mb-3">Google Reviews</h2>
+          <div className="w-16 h-1 bg-[#0b1f3a] mx-auto rounded-full mb-3" />
+          <p className="text-slate-600 max-w-xl mx-auto text-sm sm:text-base font-normal">
             Verified reviews from our students on Google
           </p>
           <div className="flex items-center justify-center gap-3 mt-4">

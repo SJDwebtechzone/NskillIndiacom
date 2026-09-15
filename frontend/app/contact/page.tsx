@@ -1,11 +1,12 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import {
   MapPin, Phone, Mail, Send, RefreshCw,
-  Facebook, Twitter, Instagram, Linkedin, Star
+  Facebook, Twitter, Instagram, Linkedin, Star,
+  MessageCircle
 } from "lucide-react";
 
 interface Location {
@@ -88,7 +89,6 @@ const ContactPage: React.FC = () => {
     }
   };
 
-  // ─── KEY LOGIC: Pick primary location, fallback to first, then hardcoded ───
   const fallbackLocation: Location = {
     id: 0,
     location_name: "Head Office",
@@ -107,7 +107,6 @@ const ContactPage: React.FC = () => {
 
   const displayLocations = (!loading && locations.length > 0) ? locations : [fallbackLocation];
 
-  // Default = admin-marked primary. User can override by clicking "Other Locations"
   const defaultPrimary: Location =
     displayLocations.find(loc => loc.is_primary) || displayLocations[0];
 
@@ -128,43 +127,53 @@ const ContactPage: React.FC = () => {
     <div className="bg-gray-50 min-h-screen">
 
       {/* ── Page Header ── */}
-      <div className="relative min-h-[280px] md:h-[350px] lg:h-[400px] flex items-start pt-12 md:pt-20 overflow-hidden py-8 md:py-0">
+      <section className="relative min-h-[315px] overflow-hidden flex items-center">
         <img
           src="/images/contact/contactus.png"
           alt="Contact Us"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
         />
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2563eb]" />
-        <div className="relative z-10 px-6 md:px-12 max-w-7xl mx-auto w-full flex justify-start">
-          <div className="max-w-xl text-left">
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 bg-[#e0e7ff] border border-[#c7d2fe] rounded-full px-4 py-1.5 mb-3 shadow-sm"
-            >
-              <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
-              <span className="text-[#2563eb] text-xs font-black tracking-widest uppercase">Get In Touch</span>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-[#0f172a] text-3xl sm:text-4xl md:text-6xl font-black mb-3 md:mb-4 uppercase tracking-tight"
-            >
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#f97316]" />
+        <div className="relative z-10 mx-auto flex min-h-[315px] max-w-[1420px] items-center px-6 py-10 md:px-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-[650px] text-white"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-3.5 py-1 backdrop-blur-sm border border-orange-400/30 mb-3.5">
+              <span className="h-2 w-2 rounded-full bg-orange-500" />
+              <span className="text-xs font-black uppercase tracking-widest text-orange-400">Get In Touch</span>
+            </div>
+            <h1 className="text-[40px] font-black leading-[1.12] tracking-tight md:text-[46px] text-white">
               Contact Us
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-slate-600 text-base md:text-xl font-bold"
-            >
-              We&apos;re here to help you
-            </motion.p>
-          </div>
+            </h1>
+            <p className="mt-3 max-w-[540px] text-sm md:text-base font-semibold leading-relaxed text-orange-500">
+              We&apos;re here to help you build your career
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 mt-5">
+              <Link
+                href="/courses"
+                className="bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-orange-600/30 transition-all active:scale-95 cursor-pointer inline-flex items-center justify-center"
+              >
+                EXPLORE COURSES
+              </Link>
+              <a
+                href="https://wa.me/919884209774?text=Hi%20NSkill%2C%20I%20am%20interested%20in%20courses.%20Please%20guide%20me."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-white/80 hover:border-white text-white hover:bg-white/10 px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all active:scale-95 cursor-pointer shadow-sm bg-white/5 backdrop-blur-sm"
+              >
+                <MessageCircle className="w-4 h-4 text-green-400" />
+                <span>TALK TO COUNSELLOR</span>
+              </a>
+            </div>
+          </motion.div>
         </div>
-      </div>
+      </section>
 
       <div className="max-w-6xl mx-auto px-4 md:px-12 py-16 space-y-12">
 
@@ -181,19 +190,19 @@ const ContactPage: React.FC = () => {
               transition={{ duration: 0.3 }}
               className="flex items-center gap-2"
             >
-              <div className="flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                <MapPin size={14} />
+              <div className="flex items-center gap-2 bg-[#0a2d5c] text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">
+                <MapPin size={14} className="text-[#f97316]" />
                 {primaryLocation.location_name}
                 {primaryLocation.is_primary && selectedLocationId === null && (
-                  <span className="flex items-center gap-1 bg-white text-blue-600 text-[10px] font-black px-2 py-0.5 rounded-full">
-                    <Star size={8} className="fill-blue-600" /> Primary
+                  <span className="flex items-center gap-1 bg-white text-[#ea580c] text-[10px] font-black px-2 py-0.5 rounded-full">
+                    <Star size={8} className="fill-[#ea580c]" /> Primary
                   </span>
                 )}
                 {selectedLocationId !== null && (
                   <button
                     type="button"
                     onClick={() => setSelectedLocationId(null)}
-                    className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2 py-0.5 rounded-full transition-all"
+                    className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-[10px] font-black px-2 py-0.5 rounded-full transition-all cursor-pointer"
                   >
                     ✕ Reset
                   </button>
@@ -207,15 +216,15 @@ const ContactPage: React.FC = () => {
               initial="hidden"
               animate="visible"
               variants={cardVariants}
-              whileHover={{ scale: 1.02 }}
-              className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
+              whileHover={{ scale: 1.01 }}
+              className="bg-white p-6 rounded-2xl shadow-sm flex items-start space-x-4 border-l-4 border-[#0a2d5c] border border-slate-100"
             >
-              <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
+              <div className="bg-orange-50 p-3 rounded-xl text-[#f97316] shrink-0">
                 <MapPin size={24} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[#2563eb] mb-1">Office Location</h3>
-                <p className="text-sm text-gray-600">{primaryLocation.address}</p>
+                <h3 className="text-lg font-black text-[#0a2d5c] mb-1">Office Location</h3>
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">{primaryLocation.address}</p>
               </div>
             </motion.div>
 
@@ -226,26 +235,26 @@ const ContactPage: React.FC = () => {
                 initial="hidden"
                 animate="visible"
                 variants={cardVariants}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
+                whileHover={{ scale: 1.01 }}
+                className="bg-white p-6 rounded-2xl shadow-sm flex items-start space-x-4 border-l-4 border-[#0a2d5c] border border-slate-100"
               >
-                <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
+                <div className="bg-orange-50 p-3 rounded-xl text-[#f97316] shrink-0">
                   <Phone size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2563eb] mb-1">Phone</h3>
+                  <h3 className="text-lg font-black text-[#0a2d5c] mb-1">Phone</h3>
                   {primaryLocation.primary_phone && (
-                    <p className="text-sm text-gray-600 font-semibold">{primaryLocation.primary_phone}</p>
+                    <p className="text-sm text-slate-700 font-bold">{primaryLocation.primary_phone}</p>
                   )}
                   {primaryLocation.secondary_phone && (
-                    <p className="text-sm text-gray-600 font-semibold">{primaryLocation.secondary_phone}</p>
+                    <p className="text-sm text-slate-700 font-bold">{primaryLocation.secondary_phone}</p>
                   )}
                   {primaryLocation.whatsapp_number && (
                     <a
                       href={`https://wa.me/${primaryLocation.whatsapp_number.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full hover:bg-green-100 transition-all"
+                      className="inline-flex items-center gap-1.5 mt-2.5 text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full hover:bg-green-100 transition-all cursor-pointer"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -264,17 +273,17 @@ const ContactPage: React.FC = () => {
                 initial="hidden"
                 animate="visible"
                 variants={cardVariants}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
+                whileHover={{ scale: 1.01 }}
+                className="bg-white p-6 rounded-2xl shadow-sm flex items-start space-x-4 border-l-4 border-[#0a2d5c] border border-slate-100"
               >
-                <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
+                <div className="bg-orange-50 p-3 rounded-xl text-[#f97316] shrink-0">
                   <Mail size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2563eb] mb-1">Email</h3>
+                  <h3 className="text-lg font-black text-[#0a2d5c] mb-1">Email</h3>
                   <a
                     href={`mailto:${primaryLocation.email}`}
-                    className="text-sm text-gray-600 font-semibold hover:text-[#2563eb] transition-colors"
+                    className="text-sm text-slate-700 font-bold hover:text-[#ea580c] transition-colors"
                   >
                     {primaryLocation.email}
                   </a>
@@ -282,7 +291,7 @@ const ContactPage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Social Media Card — shown only if at least one social URL exists */}
+            {/* Social Media Card */}
             {(primaryLocation.facebook_url || primaryLocation.twitter_url ||
               primaryLocation.instagram_url || primaryLocation.linkedin_url) && (
               <motion.div
@@ -290,40 +299,40 @@ const ContactPage: React.FC = () => {
                 initial="hidden"
                 animate="visible"
                 variants={cardVariants}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white p-6 rounded-lg shadow-sm flex items-start space-x-4 border-l-4 border-[#2563eb]"
+                whileHover={{ scale: 1.01 }}
+                className="bg-white p-6 rounded-2xl shadow-sm flex items-start space-x-4 border-l-4 border-[#0a2d5c] border border-slate-100"
               >
-                <div className="bg-blue-50 p-3 rounded-full text-[#2563eb] shrink-0">
+                <div className="bg-orange-50 p-3 rounded-xl text-[#f97316] shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2563eb] mb-3">Follow Us</h3>
+                  <h3 className="text-lg font-black text-[#0a2d5c] mb-3">Follow Us</h3>
                   <div className="flex items-center gap-3">
                     {primaryLocation.facebook_url && (
                       <a href={primaryLocation.facebook_url} target="_blank" rel="noopener noreferrer"
-                        className="bg-[#2563eb] text-white p-2 rounded-full hover:bg-[#1d4ed8] transition-all hover:scale-110" title="Facebook">
-                        <Facebook size={18} />
+                        className="bg-[#0a2d5c] text-white p-2.5 rounded-full hover:bg-[#081f3d] transition-all hover:scale-105" title="Facebook">
+                        <Facebook size={16} />
                       </a>
                     )}
                     {primaryLocation.twitter_url && (
                       <a href={primaryLocation.twitter_url} target="_blank" rel="noopener noreferrer"
-                        className="bg-slate-800 text-white p-2 rounded-full hover:bg-slate-900 transition-all hover:scale-110" title="Twitter / X">
-                        <Twitter size={18} />
+                        className="bg-slate-800 text-white p-2.5 rounded-full hover:bg-slate-900 transition-all hover:scale-105" title="Twitter / X">
+                        <Twitter size={16} />
                       </a>
                     )}
                     {primaryLocation.instagram_url && (
                       <a href={primaryLocation.instagram_url} target="_blank" rel="noopener noreferrer"
-                        className="bg-pink-500 text-white p-2 rounded-full hover:bg-pink-600 transition-all hover:scale-110" title="Instagram">
-                        <Instagram size={18} />
+                        className="bg-pink-600 text-white p-2.5 rounded-full hover:bg-pink-700 transition-all hover:scale-105" title="Instagram">
+                        <Instagram size={16} />
                       </a>
                     )}
                     {primaryLocation.linkedin_url && (
                       <a href={primaryLocation.linkedin_url} target="_blank" rel="noopener noreferrer"
-                        className="bg-[#2563eb] text-white p-2 rounded-full hover:bg-[#1d4ed8] transition-all hover:scale-110" title="LinkedIn">
-                        <Linkedin size={18} />
+                        className="bg-[#0a2d5c] text-white p-2.5 rounded-full hover:bg-[#081f3d] transition-all hover:scale-105" title="LinkedIn">
+                        <Linkedin size={16} />
                       </a>
                     )}
                   </div>
@@ -331,7 +340,7 @@ const ContactPage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Other Locations Mini List (shown only if 2+ locations exist) */}
+            {/* Other Locations Mini List */}
             {displayLocations.length > 1 && (
               <motion.div
                 custom={3}
@@ -339,10 +348,10 @@ const ContactPage: React.FC = () => {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={cardVariants}
-                className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-[#2563eb]"
+                className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-[#0a2d5c] border border-slate-100"
               >
-                <h3 className="text-lg font-bold text-[#2563eb] mb-3 flex items-center gap-2">
-                  <MapPin size={18} className="text-[#2563eb]" />
+                <h3 className="text-lg font-black text-[#0a2d5c] mb-3 flex items-center gap-2">
+                  <MapPin size={18} className="text-[#f97316]" />
                   Our Other Locations
                 </h3>
                 <div className="space-y-2">
@@ -357,15 +366,15 @@ const ContactPage: React.FC = () => {
                           onClick={() =>
                             setSelectedLocationId(isActive ? null : loc.id)
                           }
-                          className={`w-full text-left flex items-start gap-2 px-4 py-3 rounded-xl transition-all text-sm
+                          className={`w-full text-left flex items-start gap-2.5 px-4 py-3 rounded-xl transition-all text-sm cursor-pointer
                             ${isActive
-                              ? "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white"
-                              : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-[#2563eb]"
+                              ? "bg-[#0a2d5c] text-white shadow-md shadow-[#0a2d5c]/20"
+                              : "bg-slate-50 text-slate-700 hover:bg-orange-50 hover:text-[#0a2d5c]"
                             }`}
                         >
-                          <MapPin size={13} className={`shrink-0 mt-0.5 ${isActive ? "text-blue-200" : "text-[#2563eb]"}`} />
+                          <MapPin size={14} className={`shrink-0 mt-0.5 ${isActive ? "text-[#f97316]" : "text-[#f97316]"}`} />
                           <div>
-                            <p className={`font-bold ${isActive ? "text-white" : "text-[#2563eb]"}`}>{loc.location_name}</p>
+                            <p className={`font-bold ${isActive ? "text-white" : "text-[#0a2d5c]"}`}>{loc.location_name}</p>
                             <p className={`text-xs ${isActive ? "text-slate-300" : "text-slate-500"}`}>{loc.address}</p>
                             {loc.primary_phone && (
                               <p className={`text-xs ${isActive ? "text-slate-300" : "text-slate-500"}`}>{loc.primary_phone}</p>
@@ -386,65 +395,66 @@ const ContactPage: React.FC = () => {
             viewport={{ once: true }}
             variants={cardVariants}
             custom={4}
-            className="bg-white p-8 rounded-lg shadow-md border border-gray-200 border-t-4 border-t-[#2563eb]"
+            className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-[#0a2d5c]"
           >
-            <h2 className="text-3xl font-bold text-[#2563eb] mb-4">Send a Message</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0a2d5c] mb-2">Send a Message</h2>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mb-6">Fill out the form below and our counseling team will get in touch.</p>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Full Name</label>
+                  <label className="text-xs font-black text-[#0a2d5c] uppercase tracking-wider ml-1">Full Name</label>
                   <input
                     type="text" name="name" placeholder="Enter your name"
                     value={formData.name} onChange={handleChange} required
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0a2d5c] focus:bg-white focus:ring-2 focus:ring-[#0a2d5c]/10 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium text-sm"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Email Address</label>
+                  <label className="text-xs font-black text-[#0a2d5c] uppercase tracking-wider ml-1">Email Address</label>
                   <input
                     type="email" name="email" placeholder="Enter your email"
                     value={formData.email} onChange={handleChange} required
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0a2d5c] focus:bg-white focus:ring-2 focus:ring-[#0a2d5c]/10 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium text-sm"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Phone Number</label>
+                  <label className="text-xs font-black text-[#0a2d5c] uppercase tracking-wider ml-1">Phone Number</label>
                   <input
                     type="tel" name="phone" placeholder="Enter phone number"
                     value={formData.phone} onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0a2d5c] focus:bg-white focus:ring-2 focus:ring-[#0a2d5c]/10 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium text-sm"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Subject</label>
+                  <label className="text-xs font-black text-[#0a2d5c] uppercase tracking-wider ml-1">Subject</label>
                   <input
                     type="text" name="subject" placeholder="How can we help?"
                     value={formData.subject} onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0a2d5c] focus:bg-white focus:ring-2 focus:ring-[#0a2d5c]/10 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium text-sm"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-[#2563eb] uppercase tracking-wider ml-1">Message</label>
+                <label className="text-xs font-black text-[#0a2d5c] uppercase tracking-wider ml-1">Message</label>
                 <textarea
                   name="message" rows={4} placeholder="Write your message here..."
                   value={formData.message} onChange={handleChange} required
-                  className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none transition-all placeholder:text-gray-400 text-gray-900 font-medium"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0a2d5c] focus:bg-white focus:ring-2 focus:ring-[#0a2d5c]/10 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium text-sm"
                 />
               </div>
 
               {/* Captcha */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="bg-gray-100 px-6 py-3 border border-dashed border-gray-400 rounded font-serif italic text-2xl tracking-[0.3em] text-gray-800 select-none shadow-inner min-w-[140px] text-center">
+                  <div className="bg-slate-100 px-6 py-2.5 border border-dashed border-slate-400 rounded-xl font-mono italic text-xl font-bold tracking-[0.3em] text-[#0a2d5c] select-none shadow-inner min-w-[140px] text-center">
                     {captcha}
                   </div>
                   <button
                     type="button"
                     onClick={() => { generateCaptcha(); setCaptchaInput(""); }}
-                    className="p-2 text-gray-500 hover:text-[#2563eb] hover:bg-blue-50 rounded-full transition-all"
+                    className="p-2 text-slate-500 hover:text-[#0a2d5c] hover:bg-orange-50 rounded-full transition-all cursor-pointer"
                     title="Refresh Captcha"
                   >
                     <RefreshCw size={20} />
@@ -454,15 +464,15 @@ const ContactPage: React.FC = () => {
                   type="text" placeholder="Enter Captcha"
                   value={captchaInput}
                   onChange={(e) => setCaptchaInput(e.target.value)}
-                  className="px-4 py-3 bg-white border border-gray-300 rounded focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200 outline-none w-full sm:w-48 text-gray-900"
+                  className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-[#0a2d5c] focus:bg-white focus:ring-2 focus:ring-[#0a2d5c]/10 outline-none w-full sm:w-48 text-slate-900 text-sm font-medium"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] text-white font-bold py-4 rounded-xl hover:from-[#1d4ed8] hover:to-[#1e40af] transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 hover:shadow-xl active:scale-[0.99]"
+                className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-orange-600/25 active:scale-[0.99] uppercase tracking-wider text-sm cursor-pointer"
               >
-                Send Message <Send size={18} />
+                Send Message <Send size={16} />
               </button>
             </form>
           </motion.div>
@@ -476,12 +486,12 @@ const ContactPage: React.FC = () => {
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <MapPin size={18} className="text-[#2563eb]" />
-              <h3 className="font-bold text-[#2563eb] text-lg">
+              <MapPin size={20} className="text-[#f97316]" />
+              <h3 className="font-black text-[#0a2d5c] text-lg uppercase tracking-wide">
                 {primaryLocation.location_name} — Map
               </h3>
             </div>
-            <div className="w-full h-[400px] bg-gray-200 relative rounded-2xl overflow-hidden shadow-md">
+            <div className="w-full h-[400px] bg-slate-200 relative rounded-2xl overflow-hidden shadow-sm border border-slate-200">
               <iframe
                 title={`${primaryLocation.location_name} Map`}
                 src={primaryLocation.map_embed_url}

@@ -36,10 +36,11 @@ const AccreditationsSection = () => {
                     viewport={{ once: true, margin: "-100px" }}
                     className="text-center mb-12"
                 >
-                    <h2 className="mb-6">
-                        Accreditations
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0b1f3a] tracking-tight uppercase mb-3">
+                        RECOGNITIONS &amp; AFFILIATIONS
+                        ACCREDITATIONS
                     </h2>
-                    <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full" />
+                    <div className="w-16 h-1 bg-[#0b1f3a] mx-auto rounded-full" />
                 </motion.div>
             </div>
 
