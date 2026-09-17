@@ -37,6 +37,7 @@ import {
   ShieldCheck,
   PhoneCall,
   FileText,
+  Globe,
 } from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
 import AnimatedCalendarBanner from "../components/AnimatedCalendarBanner";
@@ -481,6 +482,8 @@ export default function StudentCalendar() {
     seats: number;
     status: "Open" | "Few Seats" | "Upcoming" | "Batch Full";
     batchType: string;
+    week: string;
+    dates: string;
   }
 
   const currentMonthBatches = useMemo<BatchRowItem[]>(() => {
@@ -492,6 +495,8 @@ export default function StudentCalendar() {
       if (ev.event_type === "batch2") status = "Few Seats";
       else if (index % 4 === 3) status = "Upcoming";
       else if (index % 5 === 4) status = "Few Seats";
+
+      const weekName = WEEK_LABEL[dateToWeek(ev.start_date)] || "1st Week";
 
       return {
         id: `ev-${ev.id}`,
@@ -505,6 +510,8 @@ export default function StudentCalendar() {
         seats: 12 + (index % 6),
         status,
         batchType: ev.event_type === "batch2" ? "Batch 2" : "Batch 1",
+        week: weekName,
+        dates: dStr,
       };
     });
 
@@ -520,12 +527,13 @@ export default function StudentCalendar() {
       seats: number;
       status: "Open" | "Few Seats" | "Upcoming" | "Batch Full";
       batch: string;
+      week: string;
     }[] = [
-      { name: "HVAC Engineer", category: "HVAC & Refrigeration", duration: "30 Days", day: 1, timing: "10AM - 02PM", seats: 15, status: "Open", batch: "Batch 1" },
-      { name: "Industrial Electrician", category: "Electrical", duration: "30 Days", day: 7, timing: "10AM - 02PM", seats: 12, status: "Open", batch: "Batch 1" },
-      { name: "6G Welding Training", category: "Welding", duration: "45 Days", day: 14, timing: "10AM - 04PM", seats: 10, status: "Open", batch: "Batch 1" },
-      { name: "Quality Inspector", category: "Quality", duration: "30 Days", day: 21, timing: "10AM - 02PM", seats: 15, status: "Few Seats", batch: "Batch 2" },
-      { name: "MEP Technician", category: "MEP", duration: "30 Days", day: 28, timing: "10AM - 02PM", seats: 12, status: "Upcoming", batch: "Upcoming" },
+      { name: "HVAC Engineer", category: "HVAC & Refrigeration", duration: "30 Days", day: 1, timing: "10AM - 02PM", seats: 15, status: "Open", batch: "Batch 1", week: "1st Week" },
+      { name: "Industrial Electrician", category: "Electrical", duration: "30 Days", day: 7, timing: "10AM - 02PM", seats: 12, status: "Open", batch: "Batch 1", week: "1st Week" },
+      { name: "6G Welding Training", category: "Welding", duration: "45 Days", day: 14, timing: "10AM - 04PM", seats: 10, status: "Open", batch: "Batch 1", week: "2nd Week" },
+      { name: "Quality Inspector", category: "Quality", duration: "30 Days", day: 21, timing: "10AM - 02PM", seats: 15, status: "Few Seats", batch: "Batch 2", week: "3rd Week" },
+      { name: "MEP Technician", category: "MEP", duration: "30 Days", day: 28, timing: "10AM - 02PM", seats: 12, status: "Upcoming", batch: "Upcoming", week: "4th Week" },
     ];
 
     if (courses.length > 0) {
@@ -536,6 +544,8 @@ export default function StudentCalendar() {
         let status: "Open" | "Few Seats" | "Upcoming" | "Batch Full" = "Open";
         if (idx === 3 || idx === 6) status = "Few Seats";
         else if (idx === 4 || idx === 7) status = "Upcoming";
+
+        const weekStr = day <= 7 ? "1st Week" : day <= 14 ? "2nd Week" : day <= 21 ? "3rd Week" : "4th Week";
 
         return {
           id: `c-${c.id || idx}`,
@@ -549,6 +559,8 @@ export default function StudentCalendar() {
           seats: 10 + ((idx * 3) % 8),
           status,
           batchType: status === "Few Seats" ? "Batch 2" : status === "Upcoming" ? "Upcoming" : "Batch 1",
+          week: weekStr,
+          dates: dayStr,
         };
       });
     }
@@ -565,6 +577,8 @@ export default function StudentCalendar() {
       seats: f.seats,
       status: f.status,
       batchType: f.batch,
+      week: f.week,
+      dates: `${f.day.toString().padStart(2, "0")} ${month.slice(0, 3)} ${year}`,
     }));
   }, [monthEvents, courses, month, year, totalDays]);
 
@@ -806,18 +820,14 @@ export default function StudentCalendar() {
                 className="flex gap-4 overflow-x-auto scrollbar-hide py-1 pb-3 snap-x snap-mandatory scroll-smooth"
               >
                 {filteredCourses.map((course, idx) => {
-                  const meta = getCourseMeta(course);
                   const imgSrc = course.thumbnail_url || course.image_url || getCourseImage(course.category || "Welding", idx);
-                  let badgeBg = "bg-[#15803d]";
-                  if (meta.badge === "FEW SEATS") badgeBg = "bg-[#ea580c]";
-                  if (meta.badge === "UPCOMING BATCH") badgeBg = "bg-[#2563eb]";
 
                   return (
                     <div
                       key={course.id || course.slug || idx}
-                      className="w-[260px] sm:w-[280px] shrink-0 snap-start bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col group hover:shadow-[0_8px_25px_rgb(0,0,0,0.08)] hover:border-slate-300 transition-all duration-300"
+                      className="w-[260px] sm:w-[280px] shrink-0 snap-start bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between group hover:shadow-[0_8px_25px_rgb(0,0,0,0.08)] hover:border-slate-300 transition-all duration-300"
                     >
-                      {/* Image & Badge */}
+                      {/* Image */}
                       <div className="relative h-36 overflow-hidden bg-slate-100">
                         <img
                           src={imgSrc}
@@ -825,11 +835,6 @@ export default function StudentCalendar() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
                         />
-                        <div
-                          className={`absolute top-2.5 left-2.5 px-2.5 py-1 ${badgeBg} text-white font-extrabold text-[9px] uppercase tracking-wider rounded-sm shadow-md`}
-                        >
-                          {meta.badge}
-                        </div>
                       </div>
 
                       {/* Content */}
@@ -840,26 +845,17 @@ export default function StudentCalendar() {
                           </h3>
                           <div className="space-y-1.5 mb-3 text-xs font-medium text-slate-600">
                             <div className="flex items-center gap-2">
-                              <Calendar className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-                              <span>{course.duration || "30 Days"}</span>
+                              <Clock className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+                              <span>{course.duration || "15 days"}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Clock className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-                              <span>{meta.time}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-                              <span>Chennai</span>
+                              <Globe className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+                              <span>Online</span>
                             </div>
                           </div>
                         </div>
 
                         <div>
-                          {/* Price / Fee */}
-                          <div className="text-sm font-black text-[#ea580c] mb-3">
-                            {meta.fee}
-                          </div>
-
                           {/* Action Buttons */}
                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
                             <Link
@@ -1181,79 +1177,44 @@ export default function StudentCalendar() {
                   <thead>
                     <tr className="border-b border-slate-200 text-[11px] sm:text-xs font-bold text-slate-600 uppercase tracking-wider">
                       <th className="py-3 px-2">Course Name</th>
-                      <th className="py-3 px-2">Start Date</th>
-                      <th className="py-3 px-2">Duration</th>
-                      <th className="py-3 px-2">Timing</th>
-                      <th className="py-3 px-2">Location</th>
-                      <th className="py-3 px-2 text-center">Seats</th>
-                      <th className="py-3 px-2 text-center">Status</th>
-                      <th className="py-3 px-2 text-center">Action</th>
+                      <th className="py-3 px-2">Batch</th>
+                      <th className="py-3 px-2">Week</th>
+                      <th className="py-3 px-2">Dates</th>
+                      <th className="py-3 px-2 text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
                     {displayedBatches.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="text-center py-10 text-slate-400 font-medium">
+                        <td colSpan={5} className="text-center py-10 text-slate-400 font-medium">
                           No batches found for the selected criteria.
                         </td>
                       </tr>
                     ) : (
                       displayedBatches.map((b) => {
-                        let statusBadge = (
-                          <span className="bg-[#e6f7ed] text-[#16a34a] border border-[#bbf7d0] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
-                            Open
-                          </span>
-                        );
-                        if (b.status === "Few Seats") {
-                          statusBadge = (
-                            <span className="bg-[#fff7ed] text-[#ea580c] border border-[#ffedd5] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
-                              Few Seats
-                            </span>
-                          );
-                        } else if (b.status === "Upcoming") {
-                          statusBadge = (
-                            <span className="bg-[#eff6ff] text-[#2563eb] border border-[#dbeafe] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
-                              Upcoming
-                            </span>
-                          );
-                        } else if (b.status === "Batch Full") {
-                          statusBadge = (
-                            <span className="bg-[#fef2f2] text-[#dc2626] border border-[#fee2e2] px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
-                              Batch Full
-                            </span>
-                          );
-                        }
-
                         return (
                           <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="py-3.5 px-2 font-bold text-[#0b1f3a] max-w-[140px] truncate" title={b.courseName}>
+                            <td className="py-3.5 px-2 font-bold text-[#0b1f3a] max-w-[160px] truncate" title={b.courseName}>
                               {b.courseName}
                             </td>
                             <td className="py-3.5 px-2 whitespace-nowrap text-slate-600">
-                              {b.startDate}
+                              <span className="font-bold text-[#0b1f3a] bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                                {b.batchType || "Batch 1"}
+                              </span>
                             </td>
-                            <td className="py-3.5 px-2 whitespace-nowrap text-slate-600">
-                              {b.duration}
+                            <td className="py-3.5 px-2 whitespace-nowrap text-slate-600 font-medium">
+                              {b.week || "1st Week"}
                             </td>
-                            <td className="py-3.5 px-2 whitespace-nowrap font-bold text-[#0b1f3a]">
-                              {b.timing}
-                            </td>
-                            <td className="py-3.5 px-2 text-slate-600">
-                              {b.location}
-                            </td>
-                            <td className="py-3.5 px-2 text-center font-bold text-slate-700">
-                              {b.seats}
-                            </td>
-                            <td className="py-3.5 px-2 text-center">
-                              {statusBadge}
+                            <td className="py-3.5 px-2 whitespace-nowrap text-slate-600 font-medium">
+                              {b.dates || b.startDate}
                             </td>
                             <td className="py-3.5 px-2 text-center">
                               <button
                                 type="button"
                                 onClick={() => handleOpenEnquiry(b.courseName)}
-                                className="border border-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white text-[#0b1f3a] font-bold text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                                className="border border-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white text-[#0b1f3a] font-bold text-xs px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
                               >
-                                Enquire
+                                Enquire Now
                               </button>
                             </td>
                           </tr>

@@ -68,7 +68,15 @@ const infrastructureHighlights = [
   { title: "Continuous Upgradation", description: "Infrastructure and equipment upgraded as per industry requirements", icon: RefreshCw },
 ];
 
-const studentVoices = [
+interface DynamicTestimonial {
+  id?: number | string;
+  name: string;
+  course: string;
+  quote: string;
+  rating?: number;
+}
+
+const STATIC_STUDENT_VOICES: DynamicTestimonial[] = [
   { name: "Karthik R.", course: "6G Welding - Placed at Larsen & Toubro", quote: "Excellent infrastructure and practical training facilities. Helped me gain confidence and a job." },
   { name: "Suresh M.", course: "Industrial Electrician - Placed at Daikin", quote: "The electrical lab is very good. We got hands-on practice in all electrical equipment." },
   { name: "Imran A.", course: "HVAC Technician - Placed at Blue Star", quote: "Best HVAC lab with all modern equipment. Trainers are very supportive." },
@@ -84,6 +92,7 @@ const bannerStats = [
 
 export default function InfrastructurePage() {
   const [media, setMedia] = useState<MediaItem[]>([]);
+  const [testimonials, setTestimonials] = useState<DynamicTestimonial[]>(STATIC_STUDENT_VOICES);
   const [loading, setLoading] = useState<boolean>(true);
   const [selected, setSelected] = useState<MediaItem | null>(null);
   const [filter, setFilter] = useState<"all" | "photo" | "video">("all");
@@ -93,7 +102,31 @@ export default function InfrastructurePage() {
   const tourVideoRef = useRef<HTMLVideoElement>(null);
   const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
-  useEffect(() => { fetchMedia(); }, []);
+  useEffect(() => {
+    fetchMedia();
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const res = await fetch(`${API}/api/placement-feedback/testimonials/approved`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.testimonials && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+          const mapped: DynamicTestimonial[] = data.testimonials.slice(0, 3).map((t: any) => ({
+            id: t.id,
+            name: t.full_name || "Student",
+            course: t.course_name || "Skill Training",
+            quote: t.testimonial || "",
+            rating: t.rating || 5,
+          }));
+          setTestimonials(mapped);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch testimonials, using fallback:", err);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -315,18 +348,26 @@ export default function InfrastructurePage() {
             <div>
               <h2 className="mb-4 text-xl md:text-2xl font-black uppercase text-[#0b1f3a]">What Our Students Say</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {studentVoices.map((student) => (
-                  <article key={student.name} className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-12 w-12 shrink-0 rounded-full bg-slate-200 flex items-center justify-center text-lg font-black text-[#0b356b]">
-                        {student.name.charAt(0)}
+                {testimonials.map((student, idx) => (
+                  <article key={student.id || idx} className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.06)] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="h-12 w-12 shrink-0 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-lg font-black text-[#0b356b]">
+                          {(student.name || "S").charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex text-orange-500 text-base leading-none">
+                          {Array.from({ length: student.rating || 5 }).map((_, i) => (
+                            <span key={i}>★</span>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex text-orange-500 text-lg leading-none" aria-label="5 star rating">★★★★★</div>
+                      <p className="min-h-[80px] text-[12px] leading-relaxed text-slate-700 italic">
+                        &quot;{student.quote}&quot;
+                      </p>
                     </div>
-                    <p className="min-h-[96px] text-[12px] leading-relaxed text-slate-700">&quot;{student.quote}&quot;</p>
-                    <div className="mt-4 border-t border-slate-200 pt-3">
-                      <h3 className="text-sm font-black text-[#0b1f3a]">{student.name}</h3>
-                      <p className="mt-1 text-[10px] leading-relaxed text-slate-500">{student.course}</p>
+                    <div className="mt-4 border-t border-slate-100 pt-3">
+                      <h3 className="text-sm font-black text-[#0b1f3a] truncate">{student.name}</h3>
+                      <p className="mt-1 text-[10px] leading-relaxed text-slate-500 truncate">{student.course}</p>
                     </div>
                   </article>
                 ))}

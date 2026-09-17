@@ -35,10 +35,27 @@ type JobRecord = {
   salary?: string;
 };
 
+type SuccessStory = {
+  id?: number | string;
+  name: string;
+  role: string;
+  company?: string;
+  salary?: string;
+  review: string;
+  rating?: number;
+};
+
+const fallbackSuccessStories: SuccessStory[] = [
+  { name: "Karthik R.", role: "HVAC Engineer", company: "DAIKIN", salary: "₹20,000 / Month", review: "N-Skill training helped me build confidence and was placed in a reputed company.", rating: 5 },
+  { name: "Suresh M.", role: "6G Welder", company: "LARSEN & TOUBRO", salary: "₹22,000 / Month", review: "Excellent practical training and interview preparation. Thank you N-Skill!", rating: 5 },
+  { name: "Imran A.", role: "Industrial Electrician", company: "TATA PROJECTS", salary: "₹18,500 / Month", review: "From a fresher to an employed professional. N-Skill changed my career.", rating: 5 },
+];
+
 export default function PlacementsPage() {
   const router = useRouter();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [jobs, setJobs] = useState<JobRecord[]>([]);
+  const [successStories, setSuccessStories] = useState<SuccessStory[]>(fallbackSuccessStories);
   const carouselRef = React.useRef<HTMLDivElement>(null);
   const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -72,8 +89,29 @@ export default function PlacementsPage() {
       }
     };
 
+    const fetchSuccessStories = async () => {
+      try {
+        const res = await axios.get(`${API}/api/placement-feedback/testimonials/approved`);
+        if (res.data?.testimonials && Array.isArray(res.data.testimonials) && res.data.testimonials.length > 0) {
+          const mapped: SuccessStory[] = res.data.testimonials.map((t: any) => ({
+            id: t.id,
+            name: t.full_name || "Student",
+            role: t.course_name || "Skill Training",
+            company: t.company_name || "Hiring Partner",
+            salary: t.salary ? `₹${t.salary}` : undefined,
+            review: t.testimonial || "",
+            rating: t.rating || 5,
+          }));
+          setSuccessStories(mapped);
+        }
+      } catch (err) {
+        console.error("Error fetching success stories, using fallback:", err);
+      }
+    };
+
     fetchPartners();
     fetchJobs();
+    fetchSuccessStories();
   }, [API]);
 
   const fallbackJobs = [
@@ -373,7 +411,7 @@ export default function PlacementsPage() {
           <div className="rounded-[18px] border border-[#dfe8f4] bg-white p-4 md:p-5 shadow-sm">
             <div className="mb-5 flex items-center justify-between">
               <h3 className="text-[1.1rem] font-black text-[#0a2d5c]">Success Stories</h3>
-              <a href="#" className="text-[0.8rem] font-black text-[#ff8c2a] hover:text-[#e67a18]">View All →</a>
+              <a href="/#testimonials" className="text-[0.8rem] font-black text-[#ff8c2a] hover:text-[#e67a18]">View All →</a>
             </div>
             <div className="relative">
               <div 
@@ -386,44 +424,50 @@ export default function PlacementsPage() {
                     display: none;
                   }
                 `}</style>
-                {[
-                  { name: "Karthik R.", role: "HVAC Engineer", company: "DAIKIN", salary: "₹20,000 / Month", review: "N-Skill training helped me build confidence and was placed in a reputed company." },
-                  { name: "Suresh M.", role: "6G Welder", company: "LARSEN & TOUBRO", salary: "₹22,000 / Month", review: "Excellent practical training and interview preparation. Thank you N-Skill!" },
-                  { name: "Imran A.", role: "Industrial Electrician", company: "TATA PROJECTS", salary: "₹18,500 / Month", review: "From a fresher to an employed professional. N-Skill changed my career." },
-                ].map((story, idx) => (
-                  <div key={idx} className="flex-shrink-0 w-[280px] rounded-[12px] border border-slate-200 p-4 bg-white">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#ff8c2a] to-[#e67a18] flex items-center justify-center flex-shrink-0">
-                        <div className="text-sm font-black text-white">{story.name.charAt(0)}</div>
+                {successStories.map((story, idx) => (
+                  <div key={story.id || idx} className="flex-shrink-0 w-[280px] rounded-[12px] border border-slate-200 p-4 bg-white flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="h-12 w-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                          <div className="text-sm font-black text-[#0a2d5c]">{(story.name || "S").charAt(0).toUpperCase()}</div>
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                          <div className="text-[0.95rem] font-black text-[#0a2d5c] truncate">{story.name}</div>
+                          <div className="text-[0.8rem] text-slate-500 truncate">{story.role}</div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <div className="text-[0.95rem] font-black text-[#0a2d5c]">{story.name}</div>
-                        <div className="text-[0.8rem] text-slate-500">{story.role}</div>
+                      <div className="flex gap-0.5 mb-3 text-[#ff8c2a] text-base">
+                        {[...Array(story.rating || 5)].map((_, i) => (
+                          <span key={i}>★</span>
+                        ))}
                       </div>
+                      <div className="text-[0.85rem] text-slate-600 mb-3 italic leading-relaxed line-clamp-3">&quot;{story.review}&quot;</div>
                     </div>
-                    <div className="flex gap-0.5 mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-[#ff8c2a] text-base">★</span>
-                      ))}
-                    </div>
-                    <div className="text-[0.85rem] text-slate-600 mb-3 italic">"{story.review}"</div>
-                    <div className="pt-3 border-t border-slate-200">
-                      <div className="text-[0.8rem] font-bold text-slate-500 mb-1">Placed at</div>
-                      <div className="text-[0.95rem] font-black text-[#0a2d5c] mb-2">{story.company}</div>
-                      <div className="text-[0.85rem] font-bold text-[#ff8c2a]">Salary: {story.salary}</div>
-                    </div>
+                    {(story.company || story.salary) && (
+                      <div className="pt-3 border-t border-slate-200">
+                        {story.company && (
+                          <>
+                            <div className="text-[0.8rem] font-bold text-slate-500 mb-0.5">Placed at</div>
+                            <div className="text-[0.95rem] font-black text-[#0a2d5c] mb-1 truncate">{story.company}</div>
+                          </>
+                        )}
+                        {story.salary && (
+                          <div className="text-[0.85rem] font-bold text-[#ff8c2a]">Salary: {story.salary}</div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
               <button 
                 onClick={() => scrollCarousel("left")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 h-8 w-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hidden md:flex cursor-pointer transition"
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 h-8 w-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hidden md:flex cursor-pointer transition shadow-sm z-10"
               >
                 ‹
               </button>
               <button 
                 onClick={() => scrollCarousel("right")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 h-8 w-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hidden md:flex cursor-pointer transition"
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 h-8 w-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hidden md:flex cursor-pointer transition shadow-sm z-10"
               >
                 ›
               </button>

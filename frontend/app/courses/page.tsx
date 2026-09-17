@@ -25,6 +25,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Phone,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -428,16 +429,11 @@ function PopularCourseCard({
   index: number;
   onEnquire: (courseTitle: string) => void;
 }) {
-  const meta = getCourseMeta(course);
   const imgSrc = course.thumbnail_url || getCourseImage(course.category || "Welding", index);
 
-  let badgeBg = "bg-[#15803d]";
-  if (meta.badge === "FEW SEATS") badgeBg = "bg-[#ea580c]";
-  if (meta.badge === "UPCOMING BATCH") badgeBg = "bg-[#2563eb]";
-
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300 group">
-      {/* Top Image with Status Badge */}
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-xl transition-all duration-300 group">
+      {/* Top Image */}
       <div className="relative h-36 sm:h-40 overflow-hidden bg-slate-100">
         <img
           src={imgSrc}
@@ -445,11 +441,6 @@ function PopularCourseCard({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div
-          className={`absolute top-2.5 left-2.5 px-2.5 py-1 ${badgeBg} text-white font-extrabold text-[9px] uppercase tracking-wider rounded-sm shadow-md`}
-        >
-          {meta.badge}
-        </div>
       </div>
 
       {/* Content */}
@@ -460,28 +451,19 @@ function PopularCourseCard({
           </h3>
 
           {/* Metadata items */}
-          <div className="space-y-1 text-xs text-slate-600 font-medium mb-3">
+          <div className="space-y-1.5 text-xs text-slate-600 font-medium mb-3">
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-              <span>{course.duration || "30 Days"}</span>
+              <Clock className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+              <span>{course.duration || "15 days"}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-              <span>{meta.time}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-              <span>Chennai</span>
+              <Globe className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+              <span>Online</span>
             </div>
           </div>
         </div>
 
         <div>
-          {/* Price */}
-          <div className="text-sm font-extrabold text-[#ea580c] mb-2.5">
-            {meta.fee}
-          </div>
-
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-100">
             <Link
@@ -507,17 +489,17 @@ function PopularCourseCard({
 function AllCoursesGridCard({
   course,
   index,
+  onEnquire,
 }: {
   course: any;
   index: number;
+  onEnquire?: (courseTitle: string) => void;
 }) {
-  const meta = getCourseMeta(course);
   const imgSrc = course.thumbnail_url || getCourseImage(course.category || "Welding", index);
 
   return (
-    <Link
-      href={`/courses/${course.slug || course.id}`}
-      className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-[#0b1f3a] transition-all duration-300 flex p-3 gap-3.5 group"
+    <div
+      className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-[#0b1f3a] transition-all duration-300 flex p-3 gap-3.5 group justify-between"
     >
       {/* Left Image */}
       <div className="w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 shrink-0 rounded-xl overflow-hidden bg-slate-100 relative">
@@ -537,34 +519,32 @@ function AllCoursesGridCard({
           </h3>
           <div className="space-y-1 text-xs text-slate-600 font-medium">
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-              <span>{course.duration || "30 Days"}</span>
+              <Clock className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+              <span>{course.duration || "15 days"}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#0b1f3a] shrink-0" />
-              <span>Chennai</span>
+              <Globe className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+              <span>Online</span>
             </div>
           </div>
         </div>
 
-        <div>
-          <div className="text-xs sm:text-sm font-bold text-[#ea580c] mb-1.5">
-            {meta.fee}
-          </div>
-          <div>
-            <span
-              className={`inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-md ${
-                meta.badge === "UPCOMING BATCH"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-emerald-100 text-emerald-700"
-              }`}
-            >
-              {meta.badge === "UPCOMING BATCH" ? "Upcoming Batch" : "Admissions Open"}
-            </span>
-          </div>
+        <div className="grid grid-cols-2 gap-1.5 pt-2">
+          <Link
+            href={`/courses/${course.slug || course.id}`}
+            className="border border-[#0b1f3a] text-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white text-[10px] sm:text-[11px] font-bold py-1.5 rounded-lg text-center transition-colors uppercase tracking-tight flex items-center justify-center"
+          >
+            VIEW DETAILS
+          </Link>
+          <button
+            onClick={() => onEnquire && onEnquire(course.title)}
+            className="bg-[#f97316] hover:bg-[#ea580c] text-white text-[10px] sm:text-[11px] font-bold py-1.5 rounded-lg text-center transition-colors uppercase tracking-tight cursor-pointer"
+          >
+            ENQUIRE NOW
+          </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -578,7 +558,6 @@ function AllCoursesListCard({
   index: number;
   onEnquire: (courseTitle: string) => void;
 }) {
-  const meta = getCourseMeta(course);
   const imgSrc = course.thumbnail_url || getCourseImage(course.category || "Welding", index);
   const desc = getDescription(course.content ?? "");
 
@@ -597,21 +576,6 @@ function AllCoursesListCard({
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center gap-2 mb-1">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            {course.eligibility || "Open to All"}
-          </span>
-          <span className="text-slate-300">•</span>
-          <span
-            className={`text-[11px] font-bold px-2 py-0.5 rounded ${
-              meta.badge === "UPCOMING BATCH"
-                ? "bg-blue-50 text-blue-700"
-                : "bg-green-50 text-green-700"
-            }`}
-          >
-            {meta.badge}
-          </span>
-        </div>
         <h3 className="text-base sm:text-lg font-bold text-[#0b1f3a] mb-1.5 group-hover:text-blue-600 transition-colors">
           {course.title}
         </h3>
@@ -619,20 +583,16 @@ function AllCoursesListCard({
           {desc || (course.content ?? "").substring(0, 140).replace(/[#\-]/g, "").trim()}
         </p>
         <div className="flex flex-wrap items-center gap-4 text-xs text-slate-700 font-semibold">
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-[#0b1f3a]" /> {course.duration || "30 Days"}
+          <span className="flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-slate-700" /> {course.duration || "15 days"}
           </span>
-          <span className="flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5 text-[#0b1f3a]" /> {meta.time}
-          </span>
-          <span className="flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-[#0b1f3a]" /> Chennai
+          <span className="flex items-center gap-1.5">
+            <Globe className="w-3.5 h-3.5 text-slate-700" /> Online
           </span>
         </div>
       </div>
 
       <div className="w-full sm:w-44 sm:border-l sm:border-slate-100 sm:pl-5 flex flex-col justify-center items-start sm:items-end gap-2 shrink-0">
-        <div className="text-base font-extrabold text-[#ea580c]">{meta.fee}</div>
         <Link
           href={`/courses/${course.slug || course.id}`}
           className="w-full text-center px-4 py-2 border border-[#0b1f3a] text-[#0b1f3a] hover:bg-[#0b1f3a] hover:text-white rounded-xl text-xs font-bold transition-colors"
@@ -711,16 +671,16 @@ function WhyChooseAndBatchesSection({
           </h3>
           <div className="space-y-1.5 text-[11px] sm:text-xs text-slate-200 font-medium">
             <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-slate-300 shrink-0" />
-              <span>01 Sep 2026 - HVAC Engineer</span>
+              <span className="text-slate-400 font-bold">•</span>
+              <span>HVAC Engineer</span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-slate-300 shrink-0" />
-              <span>07 Sep 2026 - Industrial Electrician</span>
+              <span className="text-slate-400 font-bold">•</span>
+              <span>Industrial Electrician</span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-slate-300 shrink-0" />
-              <span>14 Sep 2026 - 6G Welding Training</span>
+              <span className="text-slate-400 font-bold">•</span>
+              <span>6G Welding Training</span>
             </div>
           </div>
           <button
@@ -1468,6 +1428,7 @@ function CoursesPageContent() {
                       key={course.id ?? course.slug ?? idx}
                       course={course}
                       index={idx}
+                      onEnquire={handleOpenEnquiry}
                     />
                   ))}
                 </div>

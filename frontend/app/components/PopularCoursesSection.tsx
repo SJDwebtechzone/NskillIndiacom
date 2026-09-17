@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Clock, MapPin, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { Clock, Globe, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import EnquiryModal from "./EnquiryModal";
 
 interface CourseItem {
@@ -236,26 +236,15 @@ export default function PopularCoursesSection() {
                       </h3>
 
                       {/* Meta Rows */}
-                      <div className="space-y-1.5 mb-3 text-xs font-medium text-slate-600">
+                      <div className="space-y-1.5 mb-4 text-xs font-medium text-slate-600">
                         <div className="flex items-center gap-2">
                           <Clock className="w-3.5 h-3.5 text-slate-700 shrink-0" />
-                          <span>{course.duration || "30 Days"}</span>
+                          <span>{course.duration || "15 Days"}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="w-3.5 h-3.5 text-slate-700 shrink-0" />
-                          <span>{course.timing || "10:00 AM - 02:00 PM"}</span>
+                          <Globe className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+                          <span>Online</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-slate-700 shrink-0" />
-                          <span>{course.location || "Chennai"}</span>
-                        </div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="mb-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-extrabold ${badgeStyle}`}>
-                          {course.status || "Admissions Open"}
-                        </span>
                       </div>
                     </div>
 

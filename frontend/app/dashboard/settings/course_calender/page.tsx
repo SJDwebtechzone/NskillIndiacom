@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { X, Calendar, BookOpen, Layers, Check, Plus, ArrowLeft } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -201,217 +202,194 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
     }
   }
 
-  /* shared input style */
-  const inputStyle = {
-    width: "100%",
-    background: "#ffffff",
-    border: "1.5px solid #e2e8f0",
-    borderRadius: "12px",
-    padding: "10px 14px",
-    fontSize: "14px",
-    color: "#1e293b",
-    outline: "none",
-  } as React.CSSProperties;
-
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)" }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
-        className="w-full max-w-md rounded-2xl p-6 relative overflow-hidden"
-        style={{
-          background: "#ffffff",
-          border: "1.5px solid #dbeafe",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.12)",
-        }}
-      >
-
-        <h2 className="text-base font-bold mb-5" style={{ color: "#1e293b" }}>
-          {event ? "Edit session" : "Add new session"}
-        </h2>
-
-        {error && (
-          <div className="mb-4 p-3 rounded-xl text-xs border"
-            style={{ background: "#fef2f2", borderColor: "#fecaca", color: "#dc2626" }}>
-            {error}
-          </div>
-        )}
-
-        {/* Title */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "#64748b" }}>
-            Session title
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. React Fundamentals"
-            style={inputStyle}
-          />
-        </div>
-
-        {/* Description */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "#64748b" }}>
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Brief description..."
-            rows={2}
-            style={{ ...inputStyle, resize: "none" }}
-          />
-        </div>
-
-        {/* Course */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "#64748b" }}>
-            Course
-          </label>
-          {!addingNew ? (
-            <div className="flex gap-2">
-              <select
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-                style={{ ...inputStyle, flex: 1 }}
-              >
-                {allCourses.map((c) => <option key={c} value={c} style={{ background: "#ffffff" }}>{c}</option>)}
-                {allCourses.length === 0 && <option value="" style={{ background: "#ffffff" }}>No courses yet</option>}
-              </select>
-              <button
-                type="button"
-                onClick={() => setAddingNew(true)}
-                className="px-3 py-2 rounded-xl text-xs font-semibold transition"
-                style={{
-                  border: "1.5px dashed #bfdbfe",
-                  color: "#2563eb",
-                  background: "#eff6ff",
-                }}
-              >
-                + New
-              </button>
+      <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+        {/* Modal Header */}
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+              <Calendar className="w-5 h-5" />
             </div>
-          ) : (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newCourse}
-                onChange={(e) => setNewCourse(e.target.value)}
-                placeholder="New course name"
-                autoFocus
-                style={{ ...inputStyle, flex: 1 }}
-              />
-              <button
-                type="button"
-                onClick={() => setAddingNew(false)}
-                className="px-3 py-2 rounded-xl text-xs font-semibold transition"
-                style={{
-                  border: "1.5px solid #e2e8f0",
-                  color: "#64748b",
-                  background: "#f8fafc",
-                }}
-              >
-                ← Back
-              </button>
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-[#0b1f3a] tracking-tight">
+                {event ? "Edit Session" : "Add New Session"}
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">
+                {month} {year} · Schedule batch timetable
+              </p>
             </div>
-          )}
-        </div>
-
-        {/* Batch */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "#64748b" }}>
-            Batch
-          </label>
-          <div className="flex gap-2">
-            {(["batch1", "batch2", "both"] as EventType[]).map((b) => {
-              const isActive = eventType === b;
-              let activeStyle = {};
-              if (isActive && b === "batch1") activeStyle = { background: "linear-gradient(135deg,#1d4ed8,#2563eb)", border: "1.5px solid #93c5fd", color: "#fff" };
-              else if (isActive && b === "batch2") activeStyle = { background: "linear-gradient(135deg,#1e40af,#3b82f6)", border: "1.5px solid #93c5fd", color: "#fff" };
-              else if (isActive) activeStyle = { background: "#2563eb", border: "1.5px solid #3b82f6", color: "#fff" };
-              return (
-                <button
-                  key={b}
-                  type="button"
-                  onClick={() => setEventType(b)}
-                  className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
-                  style={isActive ? activeStyle : {
-                    background: "#f8fafc",
-                    border: "1.5px solid #e2e8f0",
-                    color: "#64748b",
-                  }}
-                >
-                  {b === "batch1" ? "Batch 1" : b === "batch2" ? "Batch 2" : "Both"}
-                </button>
-              );
-            })}
           </div>
-        </div>
-
-        {/* Week */}
-        <div className="mb-3">
-          <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
-            style={{ color: "#64748b" }}>
-            Week
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {WEEK_ORDER.map((w) => {
-              const isActive = week === w;
-              return (
-                <button
-                  key={w}
-                  type="button"
-                  onClick={() => setWeek(w)}
-                  className="py-2 rounded-xl text-xs font-semibold transition-all"
-                  style={isActive ? {
-                    background: "#dbeafe",
-                    border: "1.5px solid #93c5fd",
-                    color: "#1d4ed8",
-                  } : {
-                    background: "#f8fafc",
-                    border: "1.5px solid #e2e8f0",
-                    color: "#64748b",
-                  }}
-                >
-                  {WEEK_LABEL[w]}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Date preview */}
-        <div className="mb-6 px-3 py-2 rounded-xl text-xs"
-          style={{
-            background: "#eff6ff",
-            border: "1.5px solid #bfdbfe",
-            color: "#64748b",
-          }}>
-          📅 Dates:{" "}
-          <span style={{ color: "#1e293b", fontWeight: 600 }}>{preview.start}</span>
-          {" → "}
-          <span style={{ color: "#1e293b", fontWeight: 600 }}>{preview.end}</span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-            style={{
-              background: "#f8fafc",
-              border: "1.5px solid #e2e8f0",
-              color: "#64748b",
-            }}
+            title="Close"
+            className="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Modal Scrollable Body */}
+        <div className="p-6 overflow-y-auto space-y-4 text-left flex-1" style={{ scrollbarWidth: "thin" }}>
+          {error && (
+            <div className="p-3.5 rounded-xl text-xs bg-red-50 border border-red-200 text-red-700 font-medium">
+              {error}
+            </div>
+          )}
+
+          {/* Title */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Session Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. React Fundamentals / Welding Practicals"
+              className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all outline-none"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of the session objectives..."
+              rows={2}
+              className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all outline-none resize-none"
+            />
+          </div>
+
+          {/* Course */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Course <span className="text-red-500">*</span>
+            </label>
+            {!addingNew ? (
+              <div className="flex gap-2">
+                <select
+                  value={courseName}
+                  onChange={(e) => setCourseName(e.target.value)}
+                  className="flex-1 px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-800 focus:bg-white focus:border-blue-600 outline-none cursor-pointer"
+                >
+                  {allCourses.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                  {allCourses.length === 0 && <option value="">No courses yet</option>}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setAddingNew(true)}
+                  title="Add new custom course"
+                  className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" /> New
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newCourse}
+                  onChange={(e) => setNewCourse(e.target.value)}
+                  placeholder="Enter new course name"
+                  autoFocus
+                  className="flex-1 px-3.5 py-2.5 bg-white border border-blue-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 outline-none ring-2 ring-blue-50"
+                />
+                <button
+                  type="button"
+                  onClick={() => setAddingNew(false)}
+                  title="Go back to course list"
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Back
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Batch */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Batch
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["batch1", "batch2", "both"] as EventType[]).map((b) => {
+                const isActive = eventType === b;
+                const label = b === "batch1" ? "Batch 1" : b === "batch2" ? "Batch 2" : "Both";
+                return (
+                  <button
+                    key={b}
+                    type="button"
+                    title={`Select ${label}`}
+                    onClick={() => setEventType(b)}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border text-center ${
+                      isActive
+                        ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Week */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Week
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {WEEK_ORDER.map((w) => {
+                const isActive = week === w;
+                const label = WEEK_LABEL[w];
+                return (
+                  <button
+                    key={w}
+                    type="button"
+                    title={`Select ${label}`}
+                    onClick={() => setWeek(w)}
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border text-center ${
+                      isActive
+                        ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Date Preview Card */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50/60 border border-blue-100 text-xs flex items-center justify-between text-slate-700">
+            <span className="font-semibold text-slate-500">Scheduled Dates</span>
+            <div className="font-black text-blue-700 bg-white px-3 py-1 rounded-lg border border-blue-200/80 shadow-xs">
+              📅 {preview.start} → {preview.end}
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="p-4 sm:p-5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -419,20 +397,13 @@ function SessionModal({ event, monthIdx, allCourses, onSave, onClose }: SessionM
             type="button"
             onClick={handleSave}
             disabled={!isValid || saving}
-            className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
-            style={isValid && !saving ? {
-              background: "linear-gradient(135deg, #1d4ed8, #0ea5e9)",
-              border: "1px solid rgba(96,165,250,0.4)",
-              color: "#ffffff",
-              boxShadow: "0 4px 14px rgba(30,64,175,0.4)",
-            } : {
-              background: "#f1f5f9",
-              border: "1.5px solid #e2e8f0",
-              color: "#94a3b8",
-              cursor: "not-allowed",
-            }}
+            className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 ${
+              isValid && !saving
+                ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-blue-500/25"
+                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+            }`}
           >
-            {saving ? "Saving…" : event ? "Save changes" : "Add session"}
+            {saving ? "Saving..." : event ? "Save Changes" : "Add Session"}
           </button>
         </div>
       </div>
